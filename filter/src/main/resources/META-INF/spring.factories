@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.cmpay.lemon.monitor.autoconfigure.LoginAutoConfiguration,\
+  com.cmpay.lemon.monitor.autoconfigure.WebMvcConfiguration

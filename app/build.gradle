@@ -1,0 +1,24 @@
+apply plugin: 'org.springframework.boot'
+dependencies {
+    compile project(':service')
+    compile project(':common')
+    compile project(':filter')
+    compile project(':interface')
+    compile("org.springframework.cloud:spring-cloud-starter-config")
+}
+
+bootRepackage {
+    enabled = true
+    mainClass = 'com.cmpay.lemon.monitor.MonitorApplication'
+}
+
+jar {
+    baseName = 'hims-manager-app'
+    manifest {
+        attributes(
+                "Implementation-Title": "Gradle",
+                "Implementation-Version": "${version}",
+                "Class-Path": '. config/'
+        )
+    }
+}

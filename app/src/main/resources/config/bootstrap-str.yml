@@ -1,0 +1,59 @@
+eureka:
+  client:
+    serviceUrl:
+      zone-csse2x: http://172.16.49.79:9002/eureka/
+
+spring:
+  redis:
+    cluster:
+      nodes: 172.16.49.168:6301,172.16.49.168:6302,172.16.49.168:6303
+    password:  '*****'
+  cloud:
+    stream:
+      binders:
+        rabbit-lemon:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.16.48.133:5672,172.16.48.134:5672,172.16.48.135:5672
+                password: '*****'
+        rabbit:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.16.48.133:5672,172.16.48.134:5672,172.16.48.135:5672
+                password: '*****'
+lemon:
+  alerting:
+    redis:
+      cluster:
+        nodes: 172.16.49.135:6579,172.16.49.135:6580,172.16.49.136:6579,172.16.49.136:6580,172.16.49.137:6579,172.16.49.137:6580
+      password:  '*****'
+  dataSources:
+    primary:
+      initialSize: 50
+      maxActive: 50
+      minIdle: 50
+      url: jdbc:oracle:thin:@//172.16.49.200:1521/uatsrv1
+      username: retryadm
+      password: '*****'
+  idgen:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.16.49.168:6301,172.16.49.168:6302,172.16.49.168:6303
+  cache:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.16.49.168:6301,172.16.49.168:6302,172.16.49.168:6303
+  redisson:
+    nodeAddress: redis://172.16.49.168:6301,redis://172.16.49.168:6302,redis://172.16.49.168:6303
+    password: '*****'
+
+ics:
+  acc:
+    redis:
+      password: '*****'
+      sentinel:
+        nodes: 172.16.49.135:26879,172.16.49.136:26880,172.16.49.137:26881

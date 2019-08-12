@@ -1,0 +1,91 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.10.RELEASE'
+        lemonVersion = '1.5.x'
+        cmpayVersion = '1.6.x'
+        sonarUrl = 'http://172.16.50.222:9000/'
+        mavenUrl = 'http://maven.cmpay.com:8081/repository/maven-public/'
+        versionMngUrl = 'http://gitlab.cmpay.com:82/snippets/2/raw'
+
+    }
+    repositories {
+        maven { url "${mavenUrl}" }
+    }
+    apply from: versionMngUrl
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("io.spring.gradle:dependency-management-plugin:1.0.1.RELEASE")
+        classpath("com.cmpay:lemon-plugin:${lemonVersion}")
+    }
+}
+
+subprojects{
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'maven'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'lemon'
+    version = '1.1.0'
+    group = 'com.cmpay'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    configurations.all {
+        // check for updates every build
+        resolutionStrategy.cacheChangingModulesFor 5, 'seconds'
+        resolutionStrategy.cacheDynamicVersionsFor 5, 'seconds'
+    }
+
+    repositories {
+        maven { url "${mavenUrl}" }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "com.cmpay:cmpay-dependencies:${cmpayVersion}"
+            mavenBom "com.cmpay:lemon-framework-dependencies:${lemonVersion}"
+            mavenBom "com.cmpay:lemon-dependencies:${lemonVersion}"
+        }
+
+    }
+    dependencies {
+        // resolve dependencies conflicts
+        compile('mysql:mysql-connector-java:5.1.34')
+        compile('org.elasticsearch:elasticsearch:6.5.4')
+        compileOnly("org.springframework.boot:spring-boot-configuration-processor")
+        testCompile("org.springframework.boot:spring-boot-starter-test")
+    }
+
+    //打包源代码
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    artifacts {
+        archives jar
+        archives sourcesJar
+    }
+}
+configure(subprojects.findAll {it.name.matches ('\\S*(-interface|-constant)\\S*')}){
+    println("project name:"+project.getName())
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+
+                snapshotRepository(url: "http://maven.cmpay.com:8081/repository/cmpay-interface-snapshots/") {
+                    authentication(userName: appMavenUserSnap, password: appMavenPasswordSnap)
+                }
+
+                repository(url: "http://maven.cmpay.com:8081/repository/cmpay-interface-releases/") {
+                    authentication(userName: appMavenUserRelease, password: appMavenPasswordRelease)
+                }
+            }
+        }
+    }
+}
+description = 'cmpay monitoring ui application'

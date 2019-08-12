@@ -1,0 +1,71 @@
+eureka:
+  instance:
+    metadata-map:
+      zone: zone1
+  client:
+    region: css
+    availability-zones:
+      css: zone1
+    serviceUrl:
+      zone1: http://172.16.49.77:9002/eureka/
+
+spring:
+  redis:
+    cluster:
+      nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+    password:  '*****'
+  cloud:
+    stream:
+      binders:
+        rabbit-lemon:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.16.49.111:5672,172.16.49.112:5672
+                password: '*****'
+        rabbit:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.16.49.111:5672,172.16.49.112:5672
+                password: '*****'
+
+lemon:
+  alerting:
+    redis:
+      cluster:
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+      password:  '*****'
+  dataSources:
+    primary:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
+      username: hims
+      password: 'hims2016'
+  idgen:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+  cache:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+  redisson:
+    nodeAddress: redis://172.16.49.135:6679,redis://172.16.49.135:6680,redis://172.16.49.136:6679,redis://172.16.49.136:6680,redis://172.16.49.137:6679,redis://172.16.49.137:6680
+    password: '*****'
+
+public:
+  cache:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+
+ics:
+  acc:
+    redis:
+      password: '*****'
+      sentinel:
+        nodes: 172.16.49.135:26779,172.16.49.136:26780,172.16.49.137:26781

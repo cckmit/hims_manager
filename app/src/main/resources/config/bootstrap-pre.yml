@@ -1,0 +1,73 @@
+eureka:
+  instance:
+    metadata-map:
+      zone: sifangping
+  client:
+    region: css
+    availability-zones:
+      css: sifangping,hexi
+    serviceUrl:
+      sifangping: http://172.29.51.38:9002/eureka/
+      hexi: http://172.29.51.29:9002/eureka/
+
+spring:
+  redis:
+    cluster:
+      nodes:  172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+    password:  '*****'
+  cloud:
+    stream:
+      binders:
+        rabbit-lemon:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.29.51.69:5672
+                password: '*****'
+        rabbit:
+          environment:
+            spring:
+              rabbitmq:
+                addresses: 172.29.51.69:5672
+                password: '*****'
+
+lemon:
+  alerting:
+    redis:
+      cluster:
+        nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+      password:  '*****'
+  dataSources:
+    primary:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
+      username: hims
+      password: 'hims2016'
+  idgen:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.29.46.32:2000,172.29.46.32:2001,172.29.46.33:2000,172.29.46.33:2001,172.29.46.34:2000,172.29.46.34:2001
+  cache:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+  redisson:
+    nodeAddress: redis://172.29.46.24:6379,redis://172.29.46.25:6379,redis://172.29.46.26:6379,redis://172.29.46.24:6380,redis://172.29.46.25:6380,redis://172.29.46.26:6380
+    password: '*****'
+
+public:
+  cache:
+    redis:
+      password: '*****'
+      cluster:
+        nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+
+ics:
+  acc:
+    redis:
+      password: '*****'
+      sentinel:
+        master: mymaster
+        nodes: 172.29.46.27:26479,172.29.46.28:26479,172.29.46.29:26479

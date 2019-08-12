@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ICenterDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.CenterDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="center_name" property="centerName" jdbcType="VARCHAR" />
+        <result column="app" property="app" jdbcType="VARCHAR" />
+        <result column="manager" property="manager" jdbcType="VARCHAR" />
+        <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+        <result column="report_num" property="reportNum" jdbcType="VARCHAR" />
+        <result column="enable" property="enable" jdbcType="TINYINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, center_name, app, manager, mobile, report_num, enable
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from center
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from center
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.CenterDO" >
+        insert into center
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="centerName != null" >
+                center_name,
+            </if>
+            <if test="app != null" >
+                app,
+            </if>
+            <if test="manager != null" >
+                manager,
+            </if>
+            <if test="mobile != null" >
+                mobile,
+            </if>
+            <if test="reportNum != null" >
+                report_num,
+            </if>
+            <if test="enable != null" >
+                enable,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="centerName != null" >
+                #{centerName,jdbcType=VARCHAR},
+            </if>
+            <if test="app != null" >
+                #{app,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null" >
+                #{manager,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null" >
+                #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="reportNum != null" >
+                #{reportNum,jdbcType=VARCHAR},
+            </if>
+            <if test="enable != null" >
+                #{enable,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.CenterDO" >
+        update center
+        <set >
+            <if test="centerName != null" >
+                center_name = #{centerName,jdbcType=VARCHAR},
+            </if>
+            <if test="app != null" >
+                app = #{app,jdbcType=VARCHAR},
+            </if>
+            <if test="manager != null" >
+                manager = #{manager,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null" >
+                mobile = #{mobile,jdbcType=VARCHAR},
+            </if>
+            <if test="reportNum != null" >
+                report_num = #{reportNum,jdbcType=VARCHAR},
+            </if>
+            <if test="enable != null" >
+                enable = #{enable,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.CenterDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from center
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="centerName != null" >
+                and center_name = #{centerName,jdbcType=VARCHAR}
+            </if>
+            <if test="app != null" >
+                and app = #{app,jdbcType=VARCHAR}
+            </if>
+            <if test="manager != null" >
+                and manager = #{manager,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null" >
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="reportNum != null" >
+                and report_num = #{reportNum,jdbcType=VARCHAR}
+            </if>
+            <if test="enable != null" >
+                and enable = #{enable,jdbcType=TINYINT}
+            </if>
+        </where>
+    </select>
+</mapper>

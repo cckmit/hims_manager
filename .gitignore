@@ -1,0 +1,16 @@
+bin/
+build/
+.settings/
+.gradle/
+.classpath
+.project
+.git/
+.svn*
+.settings/
+catalina*
+/logs/
+.iml
+.idea
+.DS_Store
+out/
+gradle/

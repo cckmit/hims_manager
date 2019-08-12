@@ -1,0 +1,21 @@
+dependencies {
+    compile project(":common")
+    //lemon核心框架starter
+    compile("com.cmpay:lemon-framework-starter")
+    compile("com.cmpay:lemon-framework-starter-session")
+    compile("com.cmpay:lemon-framework-starter-security")
+    compile("com.cmpay:lemon-framework-starter-security-refresh")
+    compile 'com.cmpay:alerting-starter'
+    //其他依赖
+    compile("org.apache.shiro:shiro-core:1.4.0")
+    compile("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4")
+}
+jar {
+    manifest {
+        attributes(
+                "Implementation-Title": "Gradle",
+                "Implementation-Version": "${version}",
+                "Class-Path": '. config/'
+        )
+    }
+}

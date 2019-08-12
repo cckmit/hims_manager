@@ -1,0 +1,188 @@
+eureka:
+  instance:
+    preferIpAddress: true
+    metadata-map:
+      zone: zone-csse2x
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    region: css
+    availability-zones:
+      css: zone-csse2x
+    serviceUrl:
+      zone-csse2x: http://127.0.0.1:9002/eureka/
+
+server:
+  port: 6005
+  tomcat:
+    accept-count: 10
+    max-connections: 5000
+    max-threads: 500
+spring:
+  application:
+    name: himsmanagerui
+  http:
+    encoding:
+      force: true
+  mvc:
+    throw-exception-if-no-handler-found: true
+  messages:
+    basename: i18n/messages
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  cache:
+    jcache:
+      config: classpath:config/ehcache3.xml
+      provider: org.ehcache.jsr107.EhcacheCachingProvider
+  redis:
+    cluster:
+      maxRedirects: 1
+    pool:
+      max-active: 200
+      max-wait: 5000
+      max-idle: 300
+      min-idle: 10
+    timeout: 10000
+  cloud:
+    config:
+      username: lemon
+      password: lemon@cmpay
+      discovery:
+        enabled: true
+        failFast: false
+        serviceId: config-server
+#logging configuration
+logging:
+  config: classpath:config/logback-spring.xml
+  level:
+    com.hisun.lemon.framework.dao: ${lemon.sql.level:DEBUG}
+    com.cmpay.lemon.monitor: DEBUG
+
+endpoints:
+  shutdown:
+    enabled: true
+    sensitive: false
+  metrics:
+    enabled: true
+    sensitive: false
+
+management:
+  security:
+    enabled: false
+
+lemon:
+  #错误码前缀
+  alerting:
+    prefix: MON
+    source: redis
+    internal: true # 表示是对内的应用，或者是对外的应用
+    redis:
+      cluster:
+        nodes: 127.0.0.1:6379
+        password:  '*****'
+  session:
+    sessionId:
+      cookie:
+        cookieName: token
+        domain: cmpay.com
+        maxAge: -1
+        cookiePath: /
+      strategy : Header
+      headerName: token
+  security:
+    #session踢出纬度
+    principal:
+      principalNameExpression: username
+    #认证地址
+    authentication:
+      loginPathPrefix: /v1/monitoringui/login              #默认 /security/login
+      refreshPath: /v1/monitoringui/refresh                #默认 /security/refresh
+      logoutPath: /v1/monitoringui/logout                  #默认 /security/logout
+    authorizeRequests:
+      #配置不进行认证检查的交易请求url
+      permitAll:
+      - /sys/test
+  #Multiple dataSources
+  dataSources:
+    primary:
+      type: com.alibaba.druid.pool.DruidDataSource
+      driverClassName: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/monitoring
+      username: monadm
+      password:
+      removeAbandoned: false
+  #dynamic datasource
+  dynamicDataSource:
+    enabled: true
+    defaultDataSource: primary
+  idgen:
+    redis:
+      #password : 123
+      cluster:
+        #nodes : 127.0.0.1:6679
+        maxRedirects: 1
+      pool:
+        #连接池最大连接数（使用负值表示没有限制）
+        max-active: 200
+        #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: 5000
+        # 连接池中的最大空闲连接
+        max-idle: 50
+        # 连接池中的最小空闲连接
+        min-idle: 10
+      #连接超时时间（毫秒）
+      timeout: 5000
+    #每次从redis申请Id的数量
+    delta:
+      default: 500
+      MSGID_: 1000
+      REQUESTID_: 1000
+      SYS:PUB:SEQ: 1000
+    #ID sequence 最大值，默认值无穷大，配置方式是在max-value 下配置key 及长度
+    max-value:
+      #msgId key
+      MSGID_: 999999999
+      REQUESTID_: 999999999
+      SYS:PUB:SEQ: 999999999
+  cache:
+    jcache:
+      config: classpath:config/ehcache3.xml
+      provider: org.ehcache.jsr107.EhcacheCachingProvider
+  #default locale for application
+  locale:
+    defaultLocale: zh_cn
+    supportLocales: zh_cn,en_us
+  pagehelper:
+    defaultPageNum: 1
+    defaultPageSize: 8
+  sql:
+    # print sql set 'DEBUG'
+    level: DEBUG
+#解析mapper文件
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+
+monitor:
+  ui:
+    httpCredentials: true
+    httpMethods: POST, GET, PATCH, DELETE, PUT
+    httpMaxAge: 3600
+    httpHeaders: Origin, X-Requested-With, Content-Type, Accept, token
+  elasticsearch:
+    nodes:
+    - 172.16.48.66:9200
+    - 172.16.48.67:9200
+    - 172.16.48.68:9200
+    - 172.16.48.69:9200
+    - 172.16.48.70:9200
+    schema: http
+    max-connect-total: 50
+    max-connect-per-route: 10
+    connection-request-timeout-millis: 20000
+    socket-timeout-millis: 1800000
+    connect-timeout-millis: 20000
+
+
+
+
