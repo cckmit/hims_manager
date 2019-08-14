@@ -41,6 +41,10 @@ public class MonitorConstants {
      * 需求管理uri
      */
     public static final String REQTASK_PATH = BASE_URI + "/task";
+    /**
+     * 字典uri
+     */
+    public static final String DICTIONARY_PATH = BASE_URI + "/dic";
 
     /**
      * 超级管理员ID
