@@ -123,7 +123,7 @@
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
-        <include refid="Base_Column_List" />1
+        <include refid="Base_Column_List" />
         from t_demand_info
         where req_inner_seq=#{req_inner_seq}
     </select>
