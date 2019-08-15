@@ -491,4 +491,19 @@
         ORDER BY a.req_inner_seq asc
     </select>
 
+    <select id="getReqTaskByUK" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        SELECT
+        a.req_nm,a.req_no
+        FROM t_demand_info a
+        <where>
+            <if test="req_nm != null and req_nm != ''">
+                AND a.req_nm =#{req_nm}
+            </if>
+            <if test="req_no != null and req_no != ''">
+                OR a.req_no = #{req_no}
+            </if>
+        </where>
+        group by a.req_nm,a.req_no
+    </select>
+
 </mapper>
