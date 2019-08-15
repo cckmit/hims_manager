@@ -23,7 +23,7 @@ public interface ReqTaskService {
      * @param demandBO
      * @return
      */
-    PageInfo<DemandBO> findDemand(DemandBO demandBO);
+    PageInfo<DemandBO> find(DemandBO demandBO);
 
     /**
      * 新增
@@ -40,6 +40,13 @@ public interface ReqTaskService {
     void delete(String req_inner_seq);
 
     /**
+     * 批量删除
+     *
+     * @param ids
+     */
+    void deleteBatch(List<String> ids);
+
+    /**
      * 修改
      *
      * @param demandBO
@@ -52,5 +59,18 @@ public interface ReqTaskService {
      * @return
      */
     List<DemandBO> findAll();
+
+    /**
+     * 校验需求编号
+     *
+     * @return
+     */
+    Boolean checkNumber(String req_no) ;
+
+    /**
+     * 按需求编号需求名称查找
+     * @param
+     */
+    List<DemandBO> getReqTaskByUK(DemandBO demandBO);
 
 }

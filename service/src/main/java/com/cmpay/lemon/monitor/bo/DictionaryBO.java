@@ -16,6 +16,12 @@ public class DictionaryBO {
     private String remark;
     private String sort;
 
+    private Integer mail_jd_id;
+    private String user_type;
+    private String user_name;
+    private String user_mail;
+    private Date creat_time;
+
     private List<DictionaryBO> dictionaryBOList;
 
     public DictionaryBO() {
@@ -31,6 +37,47 @@ public class DictionaryBO {
 
     public String getSeq_id() {
         return seq_id;
+    }
+
+
+    public String getUser_type() {
+        return user_type;
+    }
+
+    public void setUser_type(String user_type) {
+        this.user_type = user_type;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
+    }
+
+    public String getUser_mail() {
+        return user_mail;
+    }
+
+    public void setUser_mail(String user_mail) {
+        this.user_mail = user_mail;
+    }
+
+    public Integer getMail_jd_id() {
+        return mail_jd_id;
+    }
+
+    public void setMail_jd_id(Integer mail_jd_id) {
+        this.mail_jd_id = mail_jd_id;
+    }
+
+    public Date getCreat_time() {
+        return creat_time;
+    }
+
+    public void setCreat_time(Date creat_time) {
+        this.creat_time = creat_time;
     }
 
     public void setSeq_id(String seq_id) {

@@ -16,4 +16,9 @@ public interface DictionaryService {
      * 查询日志类型列表
      */
     DictionaryBO getDicByDicId(DictionaryDO dictionaryDO);
+
+    /**
+     * 查询基地人员信息
+     */
+    DictionaryBO getJdInfo();
 }

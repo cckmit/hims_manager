@@ -11,6 +11,11 @@
         <result property="dic_id" jdbcType="VARCHAR" column="dic_id" />
         <result property="remark" jdbcType="VARCHAR" column="remark" />
         <result property="sort" jdbcType="BIGINT" column="sort" />
+        <result property="mail_jd_id" jdbcType="INTEGER" column="mail_jd_id" />
+        <result property="user_type" jdbcType="VARCHAR" column="user_type" />
+        <result property="user_name" jdbcType="VARCHAR" column="user_name" />
+        <result property="user_mail" jdbcType="VARCHAR" column="user_mail" />
+        <result property="creat_time" jdbcType="TIMESTAMP" column="creat_time" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -24,11 +29,26 @@
         sort
     </sql>
 
+    <sql id="Jd_Column_List" >
+        mail_jd_id,
+        user_type,
+        user_name,
+        user_mail,
+        creat_time
+    </sql>
+
     <select id="getDicByDicId" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DictionaryDO" >
         SELECT
         <include refid="Base_Column_List" />
         FROM t_permi_dic_data t
         WHERE t.dic_id = #{dic_id}
+    </select>
+
+    <select id="getJdInfo" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DictionaryDO" >
+        SELECT
+        <include refid="Jd_Column_List" />
+        FROM t_mail_jd t
+        ORDER BY user_name desc
     </select>
 
 </mapper>

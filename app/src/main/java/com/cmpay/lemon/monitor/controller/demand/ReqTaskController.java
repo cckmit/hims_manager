@@ -39,14 +39,14 @@ public class ReqTaskController {
      * @return
      */
     @RequestMapping("/list")
-    public GenericRspDTO<DemandRspDTO> getUserInfoPage(@RequestBody DemandReqDTO reqDTO) {
+    public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
         if(demandBO.getReq_impl_mon()==null){
             demandBO.setReq_impl_mon(month);
         }
-        PageInfo<DemandBO> pageInfo = reqTaskService.findDemand(demandBO);
+        PageInfo<DemandBO> pageInfo = reqTaskService.find(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i =0; i < demandBOList.size();i++){
@@ -99,17 +99,6 @@ public class ReqTaskController {
             }
         }
 
-//        model.addAttribute("deptIdList", dictionaryServiceMgr.findDictionary("DEV_DEPT"));
-//        model.addAttribute("reqPeroidList", dictionaryServiceMgr.findDictionary("REQ_PEROID"));
-//        model.addAttribute("prdLineList", dictionaryServiceMgr.findDictionary("PRD_LINE"));
-//        model.addAttribute("reqAbnorTypeList", dictionaryServiceMgr.findDictionary("REQ_ABNOR_TYPE"));
-//        model.addAttribute("reqTaskList", lst);
-//        Integer length=reqTaskService.findNumberByCondition(reqTaskVO);
-//        model.addAttribute("totalCount", length);
-//        model.addAttribute("pageSize", reqTaskVO.getPageSize());
-//        model.addAttribute("pageNum", reqTaskVO.getPageNum());
-//        model.addAttribute("condition", reqTaskVO);
-
         DemandRspDTO rspDTO = new DemandRspDTO();
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandBOList, DemandDTO.class));
         rspDTO.setPageNum(pageInfo.getPageNum());
@@ -124,19 +113,9 @@ public class ReqTaskController {
      * @return
      */
     @RequestMapping("/info/{id}")
-    public GenericRspDTO<DemandDTO> getUserInfoById(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
+    public GenericRspDTO<DemandDTO> getInfoById(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
         DemandBO demandBO = reqTaskService.findById(req_inner_seq);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
-    }
-
-    /**
-     * 查询所有需求信息
-     */
-    @RequestMapping("/all")
-    public GenericRspDTO<DemandRspDTO> findAll(GenericDTO reqDTO) {
-        DemandRspDTO rspDTO = new DemandRspDTO();
-        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(reqTaskService.findAll(), DemandDTO.class));
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
     /**
@@ -145,22 +124,22 @@ public class ReqTaskController {
      * @param
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping("/add")
     public GenericRspDTO add(@RequestBody DemandDTO demandDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
-        reqTaskService.add(demandBO);
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
-    }
 
-    /**
-     * 删除需求信息
-     *
-     * @param
-     * @return
-     */
-    @RequestMapping("/delete/{id}")
-    public GenericRspDTO delete(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
-        reqTaskService.delete(req_inner_seq);
+        //判断编号是否规范
+        String reqNo = demandBO.getReq_no();
+        if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)){
+            return GenericRspDTO.newInstance(MsgEnum.DB_INSERT_FAILED, NoBody.class);
+        }
+        // 判断需求编号或需求名称是否重复
+        List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
+        if (list.size() > 0) {
+            return GenericRspDTO.newInstance(MsgEnum.DB_INSERT_FAILED, NoBody.class);
+        }
+
+        reqTaskService.add(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
@@ -174,6 +153,18 @@ public class ReqTaskController {
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqTaskService.update(demandBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /**
+     * 删除/批量删除需求信息
+     *
+     * @param reqDTO
+     * @return
+     */
+    @DeleteMapping("/delete")
+    public GenericRspDTO delete(@RequestBody DemandReqDTO reqDTO) {
+        reqTaskService.deleteBatch(reqDTO.getIds());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 

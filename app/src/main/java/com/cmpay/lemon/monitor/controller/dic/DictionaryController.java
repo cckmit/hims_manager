@@ -44,4 +44,17 @@ public class DictionaryController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
 
+    /**
+     * 查询基地人员信息
+     *
+     */
+    @GetMapping("/getJdInfo")
+    public GenericRspDTO<DictionaryRspDTO> getJdInfo(GenericDTO<NoBody> req) {
+        DictionaryBO dictionaryBO = dictionaryService.getJdInfo();
+        List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
+    }
+
 }

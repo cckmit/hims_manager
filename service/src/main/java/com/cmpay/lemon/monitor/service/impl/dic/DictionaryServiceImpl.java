@@ -29,4 +29,13 @@ public class DictionaryServiceImpl implements DictionaryService {
         dictionaryBO.setDictionaryBOList(dictionaryBOList);
         return dictionaryBO;
     }
+
+    @Override
+    public DictionaryBO getJdInfo() {
+        List<DictionaryDO> dictionaryDOList = dictionaryDao.getJdInfo();
+        List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
+        DictionaryBO dictionaryBO = new DictionaryBO();
+        dictionaryBO.setDictionaryBOList(dictionaryBOList);
+        return dictionaryBO;
+    }
 }

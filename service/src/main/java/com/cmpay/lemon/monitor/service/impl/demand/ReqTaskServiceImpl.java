@@ -45,7 +45,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     }
 
     @Override
-    public PageInfo<DemandBO> findDemand(DemandBO demandBO) {
+    public PageInfo<DemandBO> find(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
@@ -88,6 +88,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void deleteBatch(List<String> ids) {
+        try {
+            ids.forEach(demandDao::delete);
+        } catch (Exception e) {
+            LOGGER.error("delete error:", e);
+            BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
         try {
             if (!"30".equals(demandBO.getReq_sts()) && !"40".equals(demandBO.getReq_sts())) {
@@ -112,6 +123,26 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     public List<DemandBO> findAll() {
         return BeanConvertUtils.convertList(demandDao.find(new DemandDO()), DemandBO.class);
+    }
+
+    @Override
+    public List<DemandBO> getReqTaskByUK(DemandBO demandBO) {
+        DemandDO demandDO = new DemandDO();
+        BeanUtils.copyPropertiesReturnDest(demandDO, demandBO);
+        return BeanConvertUtils.convertList(demandDao.getReqTaskByUK(demandDO), DemandBO.class);
+    }
+
+    @Override
+    public Boolean checkNumber(String req_no) {
+        boolean bool = false;
+        String[] reqNo = req_no.split("-");
+        if (reqNo.length == 3){
+            if ((("REQ".equals(reqNo[0]) || "REQJIRA".equals(reqNo[0]))
+                    && reqNo[1].matches("^\\d{8}$") && reqNo[2].matches("^\\d{4}$"))){
+                bool = true;
+            }
+        }
+        return bool;
     }
 
 }

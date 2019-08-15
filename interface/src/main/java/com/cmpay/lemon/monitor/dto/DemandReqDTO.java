@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.dto;
 import com.cmpay.framework.data.response.PageableRspDTO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author: zhou_xiong
@@ -85,6 +86,16 @@ public class DemandReqDTO extends PageableRspDTO {
     private String creat_user;
     private String update_user;
     private String req_abnor_type;
+    private List<String> ids;
+
+    public List<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(List<String> ids) {
+        this.ids = ids;
+    }
+
     public DemandReqDTO() {
     }
 
