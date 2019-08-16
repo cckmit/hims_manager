@@ -18,6 +18,10 @@ public class MonitorConstants {
      */
     public static final String SYSTEM_ROLE_PATH = BASE_URI + "/role";
     /**
+     * 系统日志请求uri
+     */
+    public static final String SYSTEM_LOG_PATH=BASE_URI + "/log";
+    /**
      * 中台管理请求uri
      */
     public static final String CENTER_PATH = BASE_URI + "/center";
