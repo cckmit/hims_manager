@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISysLogDao">
+    <!-- 分页条件查询 -->
+    <select id="pageQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_log
+        <where>
+            <if test="userNo != null and userNo != ''">
+                and user_no = #{userNo}
+            </if>
+            <if test="operation != null and operation != ''">
+                and operation  LIKE CONCAT('%',#{operation},'%')
+            </if>
+            <if test="requestUri != null and requestUri != ''">
+                and request_uri LIKE CONCAT('%',#{requestUri},'%')
+            </if>
+            <if test="startTime != null">
+                and create_Date &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_Date &lt;= #{endTime}
+            </if>
+        </where>
+        order by create_Date desc
+    </select>
+</mapper>

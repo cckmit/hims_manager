@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISnapshotLogDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SnapshotLogDO" >
+        <id column="ID" property="id" jdbcType="VARCHAR" />
+        <result column="TITLE" property="title" jdbcType="VARCHAR" />
+        <result column="CREATE_BY" property="createBy" jdbcType="VARCHAR" />
+        <result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="REMOTE_ADDR" property="remoteAddr" jdbcType="VARCHAR" />
+        <result column="REQUEST_URI" property="requestUri" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="ResultMapWithBLOBs" type="com.cmpay.lemon.monitor.entity.SnapshotLogDO" extends="BaseResultMap" >
+        <result column="PARAMS" property="params" jdbcType="LONGVARCHAR" />
+        <result column="HTML" property="html" jdbcType="LONGVARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        ID, TITLE, CREATE_BY, CREATE_DATE, REMOTE_ADDR, REQUEST_URI
+    </sql>
+
+    <sql id="Blob_Column_List" >
+        PARAMS, HTML
+    </sql>
+
+    <select id="get" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from sys_snapshot_log
+        where ID = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from sys_snapshot_log
+        where ID = #{id,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.SnapshotLogDO" >
+        insert into sys_snapshot_log
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                ID,
+            </if>
+            <if test="title != null" >
+                TITLE,
+            </if>
+            <if test="createBy != null" >
+                CREATE_BY,
+            </if>
+            <if test="createDate != null" >
+                CREATE_DATE,
+            </if>
+            <if test="remoteAddr != null" >
+                REMOTE_ADDR,
+            </if>
+            <if test="requestUri != null" >
+                REQUEST_URI,
+            </if>
+            <if test="params != null" >
+                PARAMS,
+            </if>
+            <if test="html != null" >
+                HTML,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null" >
+                #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remoteAddr != null" >
+                #{remoteAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="requestUri != null" >
+                #{requestUri,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null" >
+                #{params,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="html != null" >
+                #{html,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.SnapshotLogDO" >
+        update sys_snapshot_log
+        <set >
+            <if test="title != null" >
+                TITLE = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="createBy != null" >
+                CREATE_BY = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="remoteAddr != null" >
+                REMOTE_ADDR = #{remoteAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="requestUri != null" >
+                REQUEST_URI = #{requestUri,jdbcType=VARCHAR},
+            </if>
+            <if test="params != null" >
+                PARAMS = #{params,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="html != null" >
+                HTML = #{html,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cmpay.lemon.monitor.entity.SnapshotLogDO" >
+        update sys_snapshot_log
+        set TITLE = #{title,jdbcType=VARCHAR},
+            CREATE_BY = #{createBy,jdbcType=VARCHAR},
+            CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+            REMOTE_ADDR = #{remoteAddr,jdbcType=VARCHAR},
+            REQUEST_URI = #{requestUri,jdbcType=VARCHAR},
+            PARAMS = #{params,jdbcType=LONGVARCHAR},
+            HTML = #{html,jdbcType=LONGVARCHAR}
+        where ID = #{id,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SnapshotLogDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from sys_snapshot_log
+        <where >
+            <if test="id != null" >
+                and ID = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and TITLE = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="createBy != null" >
+                and CREATE_BY = #{createBy,jdbcType=VARCHAR}
+            </if>
+            <if test="createDate != null" >
+                and CREATE_DATE = #{createDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="remoteAddr != null" >
+                and REMOTE_ADDR = #{remoteAddr,jdbcType=VARCHAR}
+            </if>
+            <if test="requestUri != null" >
+                and REQUEST_URI = #{requestUri,jdbcType=VARCHAR}
+            </if>
+            <if test="params != null" >
+                and PARAMS = #{params,jdbcType=LONGVARCHAR}
+            </if>
+            <if test="html != null" >
+                and HTML = #{html,jdbcType=LONGVARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
