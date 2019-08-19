@@ -429,25 +429,6 @@
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
         SELECT
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
-        req_prd_line AND
-        t.DIC_ID='PRD_LINE') AS req_prd_line,
-        (SELECT VALUE
-        FROM t_permi_dic_data t WHERE t.NAME = req_type AND
-        t.DIC_ID='REQ_TASK_TYPE') AS req_type,
-        (SELECT VALUE FROM
-        t_permi_dic_data t WHERE t.NAME = req_sts AND
-        t.DIC_ID='REQ_STS') AS
-        req_sts,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
-        pre_cur_period AND
-        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
-        (SELECT
-        VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND
-        t.DIC_ID='REQ_PEROID') AS cur_mon_target,
-        (SELECT VALUE FROM
-        t_permi_dic_data t WHERE t.NAME = pre_mon_period AND
-        t.DIC_ID='REQ_PEROID') AS pre_mon_period,
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
@@ -504,6 +485,11 @@
             </if>
         </where>
         group by a.req_nm,a.req_no
+    </select>
+
+    <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        select
+        max(req_inner_seq) as req_inner_seq from t_demand_info
     </select>
 
 </mapper>

@@ -62,4 +62,5 @@ public class MonitorConstants {
     public static final String TIME_FILED = "@timestamp";
     public static final String SEPARATOR = "&";
     public static final String ALL = "整体";
+    public static final String FILE = "file";
 }

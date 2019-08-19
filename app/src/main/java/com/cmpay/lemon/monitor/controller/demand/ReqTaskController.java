@@ -4,7 +4,6 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
-import com.cmpay.lemon.framework.annotation.QueryBody;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
@@ -18,9 +17,17 @@ import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
+import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
  * @author: zhou_xiong
@@ -127,18 +134,6 @@ public class ReqTaskController {
     @RequestMapping("/add")
     public GenericRspDTO add(@RequestBody DemandDTO demandDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
-
-        //判断编号是否规范
-        String reqNo = demandBO.getReq_no();
-        if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)){
-            return GenericRspDTO.newInstance(MsgEnum.DB_INSERT_FAILED, NoBody.class);
-        }
-        // 判断需求编号或需求名称是否重复
-        List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
-        if (list.size() > 0) {
-            return GenericRspDTO.newInstance(MsgEnum.DB_INSERT_FAILED, NoBody.class);
-        }
-
         reqTaskService.add(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -166,6 +161,30 @@ public class ReqTaskController {
     public GenericRspDTO delete(@RequestBody DemandReqDTO reqDTO) {
         reqTaskService.deleteBatch(reqDTO.getIds());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /**
+     * 批量导入模板 下载
+     *
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/template/download")
+    public GenericRspDTO<NoBody> download(GenericDTO<NoBody> req, HttpServletResponse response) {
+        doWrite("static/reqTask.xlsm", response);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 批量导入
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        reqTaskService.doBatchImport(file);
+        return GenericRspDTO.newSuccessInstance();
     }
 
 }

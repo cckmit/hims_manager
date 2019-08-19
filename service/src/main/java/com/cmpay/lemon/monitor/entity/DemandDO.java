@@ -8,51 +8,86 @@ package com.cmpay.lemon.monitor.entity;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Date;
 
 @DataObject
 public class DemandDO extends BaseDO {
-    private String req_inner_seq;
+    @Excel(name = "归属部门", orderNum = "0")
+    @NotBlank(message = "归属部门不能为空")
+    private String req_pro_dept;
+    @Excel(name = "需求提出人", orderNum = "1")
+    @NotBlank(message = "需求提出人不能为空")
+    private String req_proposer;
+    @Excel(name = "需求负责人", orderNum = "2")
+    @NotBlank(message = "需求负责人不能为空")
+    private String req_mnger;
+    @Excel(name = "产品线", orderNum = "3")
+    @NotBlank(message = "产品线不能为空")
     private String req_prd_line;
+    @Excel(name = "需求名称", orderNum = "4")
+    @NotBlank(message = "需求名称不能为空")
+    private String req_nm;
+    @Excel(name = "需求描述", orderNum = "5")
+    @NotBlank(message = "需求描述不能为空")
+    private String req_desc;
+    @Excel(name = "当月预计投入（人月）", orderNum = "6")
+    private double exp_input;
+    @Excel(name = "是否核减", orderNum = "7")
+    private String is_cut;
+    @Excel(name = "月初备注", orderNum = "8")
+    private String mon_remark;
+    @Excel(name = "预计投产时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "9")
+    private String exp_prd_release_tm;
+    @Excel(name = "月初需求阶段", orderNum = "10")
+    private String pre_mon_period;
+    @Excel(name = "本月预计完成阶段", orderNum = "11")
+    private String cur_mon_target;
+    @Excel(name = "内部编号", orderNum = "12")
+    private String req_inner_seq;
+    @Excel(name = "需求编号", orderNum = "13")
+    private String req_no;
+    @Excel(name = "投入资源", orderNum = "14")
+    private int input_res;
+    @Excel(name = "开发周期", orderNum = "15")
+    private int dev_cycle;
+    @Excel(name = "反馈时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "16")
+    private String risk_feedback_tm;
+    @Excel(name = "最新进展", orderNum = "17")
+    private String pre_cur_period;
+    @Excel(name = "风险点、问题及解决方案", orderNum = "18")
+    private String risk_solution;
+    @Excel(name = "PRD定稿时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "19")
+    private String prd_finsh_tm;
+    @Excel(name = "UAT更新时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "20")
+    private String uat_update_tm;
+    @Excel(name = "高阳开发负责部门", orderNum = "21")
+    private String devp_lead_dept;
+    @Excel(name = "高阳开发配合部门", orderNum = "22")
+    private String devp_coor_dept;
+    @Excel(name = "高阳产品经理", orderNum = "23")
+    private String product_mng;
+    @Excel(name = "需求启动月份", exportFormat = "yyyy-MM", importFormat = "yyyy-MM", orderNum = "24")
+    private String req_start_mon;
+    @Excel(name = "需求实施月份", exportFormat = "yyyy-MM", importFormat = "yyyy-MM", orderNum = "25")
+    private String req_impl_mon;
+
     private String req_type;
     private String req_sts;
-    private String req_no;
-    private String req_nm;
-    private String req_desc;
-    private int input_res;
-    private int dev_cycle;
-    private double exp_input;
-    private String prd_finsh_tm;
     private String act_prd_finsh_tm;
-    private String pre_cur_period;
-    private String cur_mon_target;
-    private String exp_prd_release_tm;
-    private String devp_lead_dept;
-    private String devp_coor_dept;
-    private String req_pro_dept;
-    private String req_proposer;
-    private String req_mnger;
     private String devp_res_mng;
-    private String req_start_mon;
-    private String req_impl_mon;
     private String project_mng;
-    private String product_mng;
-    private String is_cut;
-    private String pre_mon_period;
     private String qa_mng;
     private String config_mng;
-    private String mon_remark;
     private String devp_eng;
     private String front_eng;
     private String test_eng;
-    private String uat_update_tm;
     private String act_uat_update_tm;
     private String pre_tm;
     private String test_finsh_tm;
     private String act_test_finsh_tm;
-    private String risk_solution;
-    private String risk_feedback_tm;
     private String end_mon_remark;
     private String end_feedback_tm;
     private int total_workload;

@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.demand;
 
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -73,4 +74,22 @@ public interface ReqTaskService {
      */
     List<DemandBO> getReqTaskByUK(DemandBO demandBO);
 
+    /**
+     * 获取下一个内部用户号
+     * @param
+     */
+    String getNextInnerSeq();
+
+    /**
+     * 查找最大内部用户号
+     * @param
+     */
+    DemandBO getMaxInnerSeq();
+
+    /**
+     * 批量导入
+     *
+     * @param file
+     */
+    void doBatchImport(MultipartFile file);
 }
