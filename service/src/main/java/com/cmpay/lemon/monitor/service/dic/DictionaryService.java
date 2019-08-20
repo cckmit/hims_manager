@@ -20,5 +20,5 @@ public interface DictionaryService {
     /**
      * 查询基地人员信息
      */
-    DictionaryBO getJdInfo();
+    DictionaryBO getJdInfo(DictionaryDO dictionaryDO);
 }

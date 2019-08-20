@@ -8,7 +8,9 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
+import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,6 +39,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqTaskServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
+    @Autowired
+    private IDictionaryExtDao dictionaryDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -64,30 +69,29 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(DemandBO demandBO) {
+        //校验数据
+        checkReqTask(demandBO);
+
+        // 判断需求编号或需求名称是否重复
+        List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
+        if (list.size() > 0) {
+            BusinessException.throwBusinessException(MsgEnum.NON_UNIQUE);
+        }
+
+        //设置默认值
+        demandBO.getReq_type();
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        demandBO.setReq_impl_mon(month);
+        demandBO.setReq_start_mon(month);
+        demandBO.setReq_inner_seq(reqTaskService.getNextInnerSeq());
+        demandBO.setQa_mng("刘桂娟");
+        demandBO.setConfig_mng("黄佳海");
+        demandBO.setReq_abnor_type("01");
+
+        setDefaultValue(demandBO);
+        setDefaultUser(demandBO);
+        setReqSts(demandBO);
         try {
-            //校验数据
-            checkReqTask(demandBO);
-
-            // 判断需求编号或需求名称是否重复
-            List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
-            if (list.size() > 0) {
-                BusinessException.throwBusinessException(MsgEnum.NON_UNIQUE);
-            }
-
-            //设置默认值
-            demandBO.getReq_type();
-            String month = DateUtil.date2String(new Date(), "yyyy-MM");
-            demandBO.setReq_impl_mon(month);
-            demandBO.setReq_start_mon(month);
-            demandBO.setReq_inner_seq(reqTaskService.getNextInnerSeq());
-            demandBO.setQa_mng("刘桂娟");
-            demandBO.setConfig_mng("黄佳海");
-            demandBO.setReq_abnor_type("01");
-
-            setDefaultValue(demandBO);
-            setDefaultUser(demandBO);
-            setReqSts(demandBO);
-
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
@@ -118,15 +122,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
+        //校验数据
+        checkReqTask(demandBO);
+
+        //设置默认值
+        setDefaultValue(demandBO);
+        setDefaultUser(demandBO);
+        setReqSts(demandBO);
+
         try {
-            //校验数据
-            checkReqTask(demandBO);
-
-            //设置默认值
-            setDefaultValue(demandBO);
-            setDefaultUser(demandBO);
-            setReqSts(demandBO);
-
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
@@ -237,6 +241,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
     }
 
+
     @Override
     public String getNextInnerSeq() {
         // 从最大的值往后排
@@ -264,15 +269,130 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void doBatchImport(MultipartFile file) {
         List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
+        List<DemandDO> insertList = new ArrayList<>();
+        List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
-//            m.setCreateTime(DateTimeUtils.getCurrentLocalDateTime());
-//            m.setUpdateTime(DateTimeUtils.getCurrentLocalDateTime());
-            try {
-                demandDao.insert(m);
-            } catch (Exception e) {
-                LOGGER.error("msgCode为[{}]的记录insert失败", m.getReq_nm(), e);
-                BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+            if (StringUtils.isBlank(m.getReq_pro_dept())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"归属部门不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            if (StringUtils.isBlank(m.getReq_nm())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求名称不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            if (StringUtils.isBlank(m.getReq_desc())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求描述不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            //判断编号是否规范
+            String reqNo = m.getReq_no();
+            if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)){
+                BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
+            }
+
+            DictionaryDO dictionaryDO = new DictionaryDO();
+            dictionaryDO.setDic_id("PRD_LINE");
+            dictionaryDO.setValue(m.getReq_prd_line());
+            List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
+            if ( dic.size() == 0 ){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"产品线字典项不存在");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            m.setReq_prd_line(dic.get(0).getName());
+
+            dictionaryDO.setUser_name(m.getReq_proposer());
+            dic = dictionaryDao.getJdInfo(dictionaryDO);
+            if (dic.size() == 0){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求提出人不存在");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            dictionaryDO.setUser_name(m.getReq_mnger());
+            dic = dictionaryDao.getJdInfo(dictionaryDO);
+            if (dic.size() == 0){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求负责人不存在");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            if (StringUtils.isNotBlank(m.getPre_cur_period())) {
+                dictionaryDO.setDic_id("REQ_PEROID");
+                dictionaryDO.setValue(m.getPre_cur_period());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if ( dic.size() == 0 ){
+                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"最新进展字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+               m.setPre_cur_period(dic.get(0).getName());
+            }
+
+
+            if (StringUtils.isNotBlank(m.getPre_mon_period())) {
+                dictionaryDO.setDic_id("REQ_PEROID");
+                dictionaryDO.setValue(m.getPre_mon_period());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if ( dic.size() == 0 ){
+                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"月初需求阶段字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+                m.setPre_mon_period(dic.get(0).getName());
+            }
+            m.setPre_cur_period(StringUtils.isBlank(m.getPre_cur_period())?m.getPre_mon_period():m.getPre_cur_period());
+            m.setPre_mon_period(StringUtils.isBlank(m.getPre_mon_period())?m.getPre_cur_period():m.getPre_mon_period());
+
+            if (StringUtils.isNotBlank(m.getCur_mon_target())) {
+                dictionaryDO.setDic_id("REQ_PEROID");
+                dictionaryDO.setValue(m.getCur_mon_target());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if ( dic.size() == 0 ){
+                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"本月预计完成阶段字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+                m.setCur_mon_target(dic.get(0).getName());
+            }
+
+            DemandBO tmp= new DemandBO();
+            BeanUtils.copyPropertiesReturnDest(tmp, m);
+            setReqSts(tmp);
+            setDefaultUser(tmp);
+            BeanUtils.copyPropertiesReturnDest(m, tmp);
+
+            List<DemandDO> dem = demandDao.getReqTaskByUKImpl(m);
+            if (dem.size() == 0) {
+                // 默认设置需求状态为新增
+                m.setReq_type("01");
+                // 默认设置qa人员为刘桂娟
+                m.setQa_mng("刘桂娟");
+                // 默认设置配置人员为黄佳海
+                m.setConfig_mng("黄佳海");
+                m.setReq_abnor_type("01");
+                //设置默认值
+                //插入SVN为否
+                m.setIs_svn_build("否");
+                insertList.add(m);
+            }else {
+                m.setReq_inner_seq(dem.get(0).getReq_inner_seq());
+                //设置默认值
+                m.setReq_start_mon("");
+                updateList.add(m);
             }
         });
+
+        try {
+            // 插入数据库
+            insertList.forEach(m -> {
+                m.setReq_inner_seq(getNextInnerSeq());
+                demandDao.insert(m);
+            });
+
+            // 更新数据库
+            updateList.forEach(m -> {
+                demandDao.update(m);
+            });
+
+        } catch (Exception e) {
+            LOGGER.error("需求记录导入失败", e);
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
     }
 }

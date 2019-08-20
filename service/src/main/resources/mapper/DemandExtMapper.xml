@@ -468,6 +468,14 @@
             <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '02'">
                 AND a.req_abnor_type != '01'
             </if>
+            <if test="end_mon_remark eq '01'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
+            </if>
+            <if test="end_mon_remark eq '02'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
         </where>
         ORDER BY a.req_inner_seq asc
     </select>
@@ -485,6 +493,25 @@
             </if>
         </where>
         group by a.req_nm,a.req_no
+    </select>
+
+    <select id="getReqTaskByUKImpl" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        SELECT
+        a.req_inner_seq,a.req_nm,a.req_no,req_impl_mon
+        FROM t_demand_info a
+        where	1=1
+        and	(
+        <if test="req_nm != null and req_nm != ''">
+            a.req_nm =#{req_nm}
+        </if>
+        <if test="req_no != null and req_no != ''">
+            OR a.req_no = #{req_no}
+        </if>
+        )
+        <if test="req_impl_mon != null and req_impl_mon != ''">
+            AND a.req_impl_mon =#{req_impl_mon}
+        </if>
+        group by a.req_nm,a.req_no,req_impl_mon
     </select>
 
     <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">

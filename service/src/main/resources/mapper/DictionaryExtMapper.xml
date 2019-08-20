@@ -41,13 +41,25 @@
         SELECT
         <include refid="Base_Column_List" />
         FROM t_permi_dic_data t
-        WHERE t.dic_id = #{dic_id}
+        <where>
+            <if test="dic_id != null and dic_id != ''">
+                t.dic_id = #{dic_id}
+            </if>
+            <if test="value != null and value != ''">
+                and t.value = #{value}
+            </if>
+        </where>
     </select>
 
     <select id="getJdInfo" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DictionaryDO" >
         SELECT
         <include refid="Jd_Column_List" />
         FROM t_mail_jd t
+        <where>
+            <if test="user_name != null and user_name != ''">
+                t.user_name = #{user_name}
+            </if>
+        </where>
         ORDER BY user_name desc
     </select>
 
