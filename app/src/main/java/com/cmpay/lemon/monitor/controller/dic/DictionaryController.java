@@ -50,7 +50,7 @@ public class DictionaryController {
      */
     @GetMapping("/getJdInfo")
     public GenericRspDTO<DictionaryRspDTO> getJdInfo(GenericDTO<NoBody> req) {
-        DictionaryBO dictionaryBO = dictionaryService.getJdInfo();
+        DictionaryBO dictionaryBO = dictionaryService.getJdInfo(new DictionaryDO());
         List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
         DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));

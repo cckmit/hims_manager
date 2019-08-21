@@ -9,29 +9,23 @@ package com.cmpay.lemon.monitor.entity;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import org.hibernate.validator.constraints.NotBlank;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @DataObject
 public class DemandDO extends BaseDO {
     @Excel(name = "归属部门", orderNum = "0")
-    @NotBlank(message = "归属部门不能为空")
     private String req_pro_dept;
     @Excel(name = "需求提出人", orderNum = "1")
-    @NotBlank(message = "需求提出人不能为空")
     private String req_proposer;
     @Excel(name = "需求负责人", orderNum = "2")
-    @NotBlank(message = "需求负责人不能为空")
     private String req_mnger;
     @Excel(name = "产品线", orderNum = "3")
-    @NotBlank(message = "产品线不能为空")
     private String req_prd_line;
     @Excel(name = "需求名称", orderNum = "4")
-    @NotBlank(message = "需求名称不能为空")
     private String req_nm;
     @Excel(name = "需求描述", orderNum = "5")
-    @NotBlank(message = "需求描述不能为空")
     private String req_desc;
     @Excel(name = "当月预计投入（人月）", orderNum = "6")
     private double exp_input;
@@ -39,7 +33,7 @@ public class DemandDO extends BaseDO {
     private String is_cut;
     @Excel(name = "月初备注", orderNum = "8")
     private String mon_remark;
-    @Excel(name = "预计投产时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "9")
+    @Excel(name = "预计投产时间", orderNum = "9")
     private String exp_prd_release_tm;
     @Excel(name = "月初需求阶段", orderNum = "10")
     private String pre_mon_period;
@@ -53,15 +47,15 @@ public class DemandDO extends BaseDO {
     private int input_res;
     @Excel(name = "开发周期", orderNum = "15")
     private int dev_cycle;
-    @Excel(name = "反馈时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "16")
+    @Excel(name = "反馈时间", orderNum = "16")
     private String risk_feedback_tm;
     @Excel(name = "最新进展", orderNum = "17")
     private String pre_cur_period;
     @Excel(name = "风险点、问题及解决方案", orderNum = "18")
     private String risk_solution;
-    @Excel(name = "PRD定稿时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "19")
+    @Excel(name = "PRD定稿时间", orderNum = "19")
     private String prd_finsh_tm;
-    @Excel(name = "UAT更新时间", exportFormat = "yyyy-MM-dd", importFormat = "yyyy-MM-dd", orderNum = "20")
+    @Excel(name = "UAT更新时间", orderNum = "20")
     private String uat_update_tm;
     @Excel(name = "高阳开发负责部门", orderNum = "21")
     private String devp_lead_dept;
@@ -69,9 +63,9 @@ public class DemandDO extends BaseDO {
     private String devp_coor_dept;
     @Excel(name = "高阳产品经理", orderNum = "23")
     private String product_mng;
-    @Excel(name = "需求启动月份", exportFormat = "yyyy-MM", importFormat = "yyyy-MM", orderNum = "24")
+    @Excel(name = "需求启动月份", orderNum = "24")
     private String req_start_mon;
-    @Excel(name = "需求实施月份", exportFormat = "yyyy-MM", importFormat = "yyyy-MM", orderNum = "25")
+    @Excel(name = "需求实施月份", orderNum = "25")
     private String req_impl_mon;
 
     private String req_type;

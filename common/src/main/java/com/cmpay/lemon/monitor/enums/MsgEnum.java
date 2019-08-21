@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.enums;
 
 import com.cmpay.lemon.common.AlertCapable;
+import com.cmpay.lemon.common.utils.StringUtils;
 
 /**
  * @author: zhou_xiong
@@ -24,6 +25,7 @@ public enum MsgEnum implements AlertCapable {
     NON_UNIQUE("MON00106", "需求任务提交失败,已存在需求名或需求编号相同的记录！"),
     NULL_REMARK("MON00107", "需求任务提交失败:需求状态为取消或暂停时，月初备注信息不能为空！"),
     ERROR_DEVP("MON00108", "需求任务提交失败:配合部门不能和主导部门相同！"),
+    ERROR_IMPORT("MON00109", "需求任务导入失败:"),
 
     MENU_NAME_CANNOT_NULL("MON00200", "菜单名称不能为空"),
     PARENT_MENU_CANNOT_NULL("MON00201", "上级菜单不能为空"),
@@ -47,6 +49,14 @@ public enum MsgEnum implements AlertCapable {
         this.msgInfo = msgInfo;
     }
 
+    public void setMsgCd(String msgCd) {
+        this.msgCd = msgCd;
+    }
+
+    public void setMsgInfo(String msgInfo) {
+        this.msgInfo = msgInfo;
+    }
+
     @Override
     public String getMsgCd() {
         return msgCd;
@@ -55,5 +65,14 @@ public enum MsgEnum implements AlertCapable {
     @Override
     public String getMsgInfo() {
         return msgInfo;
+    }
+
+    public static MsgEnum getEnum(String msgCd) {
+        for (MsgEnum m : MsgEnum.values()) {
+            if (StringUtils.equals( m.msgCd, msgCd )) {
+                return m;
+            }
+        }
+        return null;
     }
 }

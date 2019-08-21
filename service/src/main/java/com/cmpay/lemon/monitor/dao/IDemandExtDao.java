@@ -12,8 +12,9 @@ import java.util.List;
 @Mapper
 public interface IDemandExtDao extends IDemandDao{
 
-    //根据字典id查询字段值
     public List<DemandDO> getReqTaskByUK(DemandDO demandDO);
+
+    public List<DemandDO> getReqTaskByUKImpl(DemandDO demandDO);
 
     /**
      * 查找最大内部用户号

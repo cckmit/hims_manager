@@ -19,5 +19,5 @@ public interface IDictionaryExtDao extends IDictionaryDao {
     public List<DictionaryDO> getDicByDicId(DictionaryDO dictionaryDO);
 
     //查询基地人员信息
-    public List<DictionaryDO> getJdInfo();
+    public List<DictionaryDO> getJdInfo(DictionaryDO dictionaryDO);
 }

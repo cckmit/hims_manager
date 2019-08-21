@@ -506,6 +506,14 @@
                 AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%05%' ) )
             </if>
+            <if test="end_mon_remark eq '01'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
+            </if>
+            <if test="end_mon_remark eq '02'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
         </where>
         ORDER BY a.req_inner_seq asc
     </select>
@@ -523,6 +531,25 @@
             </if>
         </where>
         group by a.req_nm,a.req_no
+    </select>
+
+    <select id="getReqTaskByUKImpl" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        SELECT
+        a.req_inner_seq,a.req_nm,a.req_no,req_impl_mon
+        FROM t_demand_info a
+        where	1=1
+        and	(
+        <if test="req_nm != null and req_nm != ''">
+            a.req_nm =#{req_nm}
+        </if>
+        <if test="req_no != null and req_no != ''">
+            OR a.req_no = #{req_no}
+        </if>
+        )
+        <if test="req_impl_mon != null and req_impl_mon != ''">
+            AND a.req_impl_mon =#{req_impl_mon}
+        </if>
+        group by a.req_nm,a.req_no,req_impl_mon
     </select>
 
     <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
