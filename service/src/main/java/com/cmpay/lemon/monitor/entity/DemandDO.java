@@ -9,63 +9,63 @@ package com.cmpay.lemon.monitor.entity;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 import cn.afterturn.easypoi.excel.annotation.Excel;
-import org.hibernate.validator.constraints.NotBlank;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @DataObject
 public class DemandDO extends BaseDO {
-    @Excel(name = "归属部门")
+    @Excel(name = "归属部门", orderNum = "0")
     private String req_pro_dept;
-    @Excel(name = "需求提出人")
+    @Excel(name = "需求提出人", orderNum = "1")
     private String req_proposer;
-    @Excel(name = "需求负责人")
+    @Excel(name = "需求负责人", orderNum = "2")
     private String req_mnger;
-    @Excel(name = "产品线")
+    @Excel(name = "产品线", orderNum = "3")
     private String req_prd_line;
-    @Excel(name = "需求名称")
+    @Excel(name = "需求名称", orderNum = "4")
     private String req_nm;
-    @Excel(name = "需求描述")
+    @Excel(name = "需求描述", orderNum = "5")
     private String req_desc;
-    @Excel(name = "当月预计投入（人月）")
+    @Excel(name = "当月预计投入（人月）", orderNum = "6")
     private double exp_input;
-    @Excel(name = "是否核减")
+    @Excel(name = "是否核减", orderNum = "7")
     private String is_cut;
-    @Excel(name = "月初备注")
+    @Excel(name = "月初备注", orderNum = "8")
     private String mon_remark;
-    @Excel(name = "预计投产时间")
+    @Excel(name = "预计投产时间", orderNum = "9")
     private String exp_prd_release_tm;
-    @Excel(name = "月初需求阶段")
+    @Excel(name = "月初需求阶段", orderNum = "10")
     private String pre_mon_period;
-    @Excel(name = "本月预计完成阶段")
+    @Excel(name = "本月预计完成阶段", orderNum = "11")
     private String cur_mon_target;
-    @Excel(name = "内部编号")
+    @Excel(name = "内部编号", orderNum = "12")
     private String req_inner_seq;
-    @Excel(name = "需求编号")
+    @Excel(name = "需求编号", orderNum = "13")
     private String req_no;
-    @Excel(name = "投入资源")
+    @Excel(name = "投入资源", orderNum = "14")
     private int input_res;
-    @Excel(name = "开发周期")
+    @Excel(name = "开发周期", orderNum = "15")
     private int dev_cycle;
-    @Excel(name = "反馈时间")
+    @Excel(name = "反馈时间", orderNum = "16")
     private String risk_feedback_tm;
-    @Excel(name = "最新进展")
+    @Excel(name = "最新进展", orderNum = "17")
     private String pre_cur_period;
-    @Excel(name = "风险点、问题及解决方案")
+    @Excel(name = "风险点、问题及解决方案", orderNum = "18")
     private String risk_solution;
-    @Excel(name = "PRD定稿时间")
+    @Excel(name = "PRD定稿时间", orderNum = "19")
     private String prd_finsh_tm;
-    @Excel(name = "UAT更新时间")
+    @Excel(name = "UAT更新时间", orderNum = "20")
     private String uat_update_tm;
-    @Excel(name = "高阳开发负责部门")
+    @Excel(name = "高阳开发负责部门", orderNum = "21")
     private String devp_lead_dept;
-    @Excel(name = "高阳开发配合部门")
+    @Excel(name = "高阳开发配合部门", orderNum = "22")
     private String devp_coor_dept;
-    @Excel(name = "高阳产品经理")
+    @Excel(name = "高阳产品经理", orderNum = "23")
     private String product_mng;
-    @Excel(name = "需求启动月份")
+    @Excel(name = "需求启动月份", orderNum = "24")
     private String req_start_mon;
-    @Excel(name = "需求实施月份")
+    @Excel(name = "需求实施月份", orderNum = "25")
     private String req_impl_mon;
 
     private String req_type;

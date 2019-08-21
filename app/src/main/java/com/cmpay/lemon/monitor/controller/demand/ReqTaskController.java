@@ -1,7 +1,11 @@
 package com.cmpay.lemon.monitor.controller.demand;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
@@ -11,10 +15,12 @@ import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.DemandDTO;
 import com.cmpay.lemon.monitor.dto.DemandReqDTO;
 import com.cmpay.lemon.monitor.dto.DemandRspDTO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,12 +28,16 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 /**
  * @author: zhou_xiong
@@ -49,15 +59,15 @@ public class ReqTaskController {
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        if(demandBO.getReq_impl_mon()==null){
+        String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        if (demandBO.getReq_impl_mon() == null) {
             demandBO.setReq_impl_mon(month);
         }
         PageInfo<DemandBO> pageInfo = reqTaskService.find(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
-        for (int i =0; i < demandBOList.size();i++){
-            String reqAbnorType=demandBOList.get(i).getReq_abnor_type();
+        for (int i = 0; i < demandBOList.size(); i++) {
+            String reqAbnorType = demandBOList.get(i).getReq_abnor_type();
             String reqAbnorTypeAll = "";
             DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReq_inner_seq());
 
@@ -83,10 +93,10 @@ public class ReqTaskController {
                 if (StringUtils.isBlank(reqAbnorTypeAll)) {
                     reqAbnorTypeAll += "正常";
                 }
-            } else if(reqAbnorType.indexOf("01") != -1){
+            } else if (reqAbnorType.indexOf("01") != -1) {
                 demandBOList.get(i).setReq_abnor_type("正常");
                 continue;
-            }else{
+            } else {
                 if (reqAbnorType.indexOf("03") != -1) {
                     reqAbnorTypeAll += "需求进度滞后,";
                 }
@@ -98,10 +108,10 @@ public class ReqTaskController {
                 }
             }
 
-            if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length()-1)){
-                reqAbnorTypeAll = reqAbnorTypeAll.substring(0,reqAbnorTypeAll.length()-1);
+            if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
+                reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
                 demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
-            }else{
+            } else {
                 demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
             }
         }
@@ -170,8 +180,37 @@ public class ReqTaskController {
      * @throws IOException
      */
     @PostMapping("/template/download")
-    public GenericRspDTO<NoBody> download(GenericDTO<NoBody> req, HttpServletResponse response) {
+    public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
         doWrite("static/reqTask.xlsm", response);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/download")
+    public GenericRspDTO<NoBody> download(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        PageInfo<DemandBO> pageInfo = reqTaskService.find(demandBO);
+        List<DemandDO> demandDOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandDO.class);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream(); BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                //return "fail";
+            }
+            // 设置excel的文件名称
+            String excelName = "测试excel.xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException("ertery");
+        }
         return GenericRspDTO.newSuccessInstance();
     }
 
