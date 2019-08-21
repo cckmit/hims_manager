@@ -628,4 +628,76 @@ public class DemandDO extends BaseDO {
     public void setLast_input_workload(int last_input_workload) {
         this.last_input_workload = last_input_workload;
     }
+
+    @Override
+    public String toString() {
+        return "DemandDO{" +
+                "req_pro_dept='" + req_pro_dept + '\'' +
+                ", req_proposer='" + req_proposer + '\'' +
+                ", req_mnger='" + req_mnger + '\'' +
+                ", req_prd_line='" + req_prd_line + '\'' +
+                ", req_nm='" + req_nm + '\'' +
+                ", req_desc='" + req_desc + '\'' +
+                ", exp_input=" + exp_input +
+                ", is_cut='" + is_cut + '\'' +
+                ", mon_remark='" + mon_remark + '\'' +
+                ", exp_prd_release_tm='" + exp_prd_release_tm + '\'' +
+                ", pre_mon_period='" + pre_mon_period + '\'' +
+                ", cur_mon_target='" + cur_mon_target + '\'' +
+                ", req_inner_seq='" + req_inner_seq + '\'' +
+                ", req_no='" + req_no + '\'' +
+                ", input_res=" + input_res +
+                ", dev_cycle=" + dev_cycle +
+                ", risk_feedback_tm='" + risk_feedback_tm + '\'' +
+                ", pre_cur_period='" + pre_cur_period + '\'' +
+                ", risk_solution='" + risk_solution + '\'' +
+                ", prd_finsh_tm='" + prd_finsh_tm + '\'' +
+                ", uat_update_tm='" + uat_update_tm + '\'' +
+                ", devp_lead_dept='" + devp_lead_dept + '\'' +
+                ", devp_coor_dept='" + devp_coor_dept + '\'' +
+                ", product_mng='" + product_mng + '\'' +
+                ", req_start_mon='" + req_start_mon + '\'' +
+                ", req_impl_mon='" + req_impl_mon + '\'' +
+                ", req_type='" + req_type + '\'' +
+                ", req_sts='" + req_sts + '\'' +
+                ", act_prd_finsh_tm='" + act_prd_finsh_tm + '\'' +
+                ", devp_res_mng='" + devp_res_mng + '\'' +
+                ", project_mng='" + project_mng + '\'' +
+                ", qa_mng='" + qa_mng + '\'' +
+                ", config_mng='" + config_mng + '\'' +
+                ", devp_eng='" + devp_eng + '\'' +
+                ", front_eng='" + front_eng + '\'' +
+                ", test_eng='" + test_eng + '\'' +
+                ", act_uat_update_tm='" + act_uat_update_tm + '\'' +
+                ", pre_tm='" + pre_tm + '\'' +
+                ", test_finsh_tm='" + test_finsh_tm + '\'' +
+                ", act_test_finsh_tm='" + act_test_finsh_tm + '\'' +
+                ", end_mon_remark='" + end_mon_remark + '\'' +
+                ", end_feedback_tm='" + end_feedback_tm + '\'' +
+                ", total_workload=" + total_workload +
+                ", input_workload=" + input_workload +
+                ", last_input_workload=" + last_input_workload +
+                ", remain_workload=" + remain_workload +
+                ", mon_input_workload=" + mon_input_workload +
+                ", lead_dept_pro='" + lead_dept_pro + '\'' +
+                ", coor_dept_pro='" + coor_dept_pro + '\'' +
+                ", lead_dept_workload='" + lead_dept_workload + '\'' +
+                ", coor_dept_workload='" + coor_dept_workload + '\'' +
+                ", is_svn_build='" + is_svn_build + '\'' +
+                ", pro_id='" + pro_id + '\'' +
+                ", project_start_tm='" + project_start_tm + '\'' +
+                ", act_prd_upload_tm='" + act_prd_upload_tm + '\'' +
+                ", act_workload_upload_tm='" + act_workload_upload_tm + '\'' +
+                ", act_sit_upload_tm='" + act_sit_upload_tm + '\'' +
+                ", act_test_cases_upload_tm='" + act_test_cases_upload_tm + '\'' +
+                ", act_uat_upload_tm='" + act_uat_upload_tm + '\'' +
+                ", act_pre_upload_tm='" + act_pre_upload_tm + '\'' +
+                ", act_production_upload_tm='" + act_production_upload_tm + '\'' +
+                ", creat_time=" + creat_time +
+                ", update_time=" + update_time +
+                ", creat_user='" + creat_user + '\'' +
+                ", update_user='" + update_user + '\'' +
+                ", req_abnor_type='" + req_abnor_type + '\'' +
+                '}';
+    }
 }

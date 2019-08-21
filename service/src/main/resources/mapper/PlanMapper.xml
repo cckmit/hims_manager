@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandExtDao">
+<mapper namespace="com.cmpay.lemon.monitor.dao.IPlanDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
         <result property="req_inner_seq" jdbcType="VARCHAR" column="req_inner_seq" />
@@ -529,5 +529,45 @@
         select
         max(req_inner_seq) as req_inner_seq from t_demand_info
     </select>
+    <!-- 根据姓名查询项目成员邮箱 -->
+    <select id="searchOtherUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b
+		WHERE  (a.user_name = b.qa_mng OR a.user_name = b.project_mng
+			OR a.user_name = b.product_mng)
+		AND req_inner_seq =#{req_inner_seq}
+	</select>
+    <!-- 根据姓名查询项目成员邮箱 -->
+    <select id="searchUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';')  as mon_remark
+		FROM  t_permi_user a
+		WHERE  a.user_name = #{name}
+	</select>
+    <!-- 根据条件查询项目成员邮箱 -->
+    <select id="searchUserEmailByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b
+		WHERE  (a.user_name = b.qa_mng OR a.user_name = b.devp_eng or a.user_name = b.project_mng
+			OR a.user_name = b.front_eng OR a.user_name = b.config_mng
+			OR a.user_name = b.test_eng or a.user_name = b.product_mng)
+		AND req_inner_seq =#{req_inner_seq}
+	</select>
 
+    <!-- 根据条件查询基地 -->
+    <select id="findBaseChargeEmailByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.user_mail separator';') as mon_remark
+		FROM t_mail_jd a, t_demand_info b
+		WHERE (a.user_name = b.req_proposer OR a.user_name = b.req_mnger OR a.user_name = b.devp_res_mng)
+		AND req_inner_seq = #{req_inner_seq}
+	</select>
+
+    <!-- 根据条件查询部门主管邮箱 -->
+    <select id="findDevpEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b,t_permi_user_role c,t_permi_role d
+		WHERE  (a.dept_name = b.devp_lead_dept OR a.dept_name = b.devp_coor_dept )
+		AND a.user_id = c.user_id AND c.role_id = d.role_id
+		AND req_inner_seq = #{req_inner_seq} AND (b.devp_coor_dept NOT like '%产品测试部%')
+		AND d.role_id='201401010003'
+	</select>
 </mapper>
