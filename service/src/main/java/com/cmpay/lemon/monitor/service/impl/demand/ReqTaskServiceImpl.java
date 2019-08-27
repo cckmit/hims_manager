@@ -24,10 +24,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static com.cmpay.lemon.monitor.utils.FileUtils.importExcel;
 
@@ -65,6 +71,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 () -> BeanConvertUtils.convertList(demandDao.find(demandDO), DemandBO.class));
         return pageInfo;
     }
+    @Override
+    public List<DemandDO> getReqTask(DemandBO demandBO) {
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        return  demandDao.getReqTask(demandDO);
+    }
+
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
@@ -213,7 +226,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     }
 
     /**
-     * 变更需求状态
+     * 校验需求
      *
      * @param demandBO
      */
@@ -395,4 +408,119 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public Map<String, Object> doBatchDown(MultipartFile file) {
+        List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
+        List<DemandDO> List = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
+        demandDOS.forEach(m -> {
+            if (StringUtils.isBlank(m.getReq_no())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求编号不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            if (StringUtils.isBlank(m.getReq_nm())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo()+"需求名称不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            //判断编号是否规范
+            String reqNo = m.getReq_no();
+            if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)){
+                BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
+            }
+
+            int start = m.getReq_no().indexOf("-")+1;
+            String reqMonth = m.getReq_no().substring(start,start+6);
+            m.setReq_start_mon(reqMonth);
+            List.add(m);
+        });
+
+        //循环文件目录
+        if (List != null) {
+            File srcfile[]=new File[List.size()*5];
+            int num = 0;
+            //要压缩的文件
+            for (int i=0;  i < List.size(); i++) {
+                //需求说明书、技术方案、原子功能点评估表
+                String path = "/home/hims/temp/Projectdoc/" + List.get(i).getReq_start_mon() + "/"
+                        + List.get(i).getReq_no() + "_" + List.get(i).getReq_nm() ;
+
+                File file1 = new File(path + "/开发技术文档/");
+                if  (!file1 .exists()  && !file1 .isDirectory()){
+                    file1 .mkdir();
+                }
+                File[] tempFile1 = file1.listFiles();
+                if(tempFile1==null){
+                    tempFile1= new File[0];
+                }
+                for(int j = 0; j < tempFile1.length; j++){
+                    if(tempFile1[j].getName().contains("原子功能点评估表(电子工单)") || tempFile1[j].getName().contains("技术方案说明书")){
+                        srcfile[num]=new File(path + "/开发技术文档/" + tempFile1[j].getName());
+                        num++;
+                    }
+                }
+
+                File file2 = new File(path + "/产品文档/");
+                if  (!file2 .exists()  && !file2 .isDirectory()){
+                    file2 .mkdir();
+                }
+                File[] tempFile2 = file2.listFiles();
+                if(tempFile2==null){
+                    tempFile2= new File[0];
+                }
+                for(int j = 0; j < tempFile2.length; j++){
+                    if(tempFile2[j].getName().contains("需求方案说明书")){
+                        srcfile[num]=new File(path + "/产品文档/"+ tempFile2[j].getName());
+                        num++;
+                    }
+                }
+
+            }
+            map.put("srcfile", srcfile);
+        }
+
+        return map;
+    }
+
+    /**
+      文件压缩
+     */
+    public String ZipFiles(File[] srcfile, File zipfile, boolean flag){
+        try {
+            byte[] buf=new byte[1024];
+            FileOutputStream fileOutputStream = new FileOutputStream(zipfile);
+            CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream, new CRC32());
+            ZipOutputStream out = new ZipOutputStream(cos);
+
+            for (int i=0; i < srcfile.length; i++) {
+                if (srcfile[i] != null) {
+                    FileInputStream in=new FileInputStream(srcfile[i]);
+                    if(flag){
+                        String demandName = srcfile[i].getPath().substring(34,srcfile[i].getPath().length());
+                        String name = demandName.substring(0,demandName.indexOf("/"));
+                        String  path = demandName.substring(demandName.lastIndexOf("/")+1);
+                        out.putNextEntry(new ZipEntry(name+"/"+path));
+                    }else{
+                        out.putNextEntry(new ZipEntry(srcfile[i].getPath()));
+                    }
+
+                    int len;
+                    while ((len=in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    out.closeEntry();
+                    in.close();
+                }
+            }
+            out.close();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+
+        return "";
+    }
+
+
 }

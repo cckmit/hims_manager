@@ -28,11 +28,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
@@ -58,11 +57,7 @@ public class ReqTaskController {
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
-        String month = DateUtil.date2String(new Date(), "yyyy-MM");
         String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        if (demandBO.getReq_impl_mon() == null) {
-            demandBO.setReq_impl_mon(month);
-        }
         PageInfo<DemandBO> pageInfo = reqTaskService.find(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
@@ -121,6 +116,8 @@ public class ReqTaskController {
         rspDTO.setPageNum(pageInfo.getPageNum());
         rspDTO.setPages(pageInfo.getPages());
         rspDTO.setTotal(pageInfo.getTotal());
+        rspDTO.setPageSize(pageInfo.getPageSize());
+
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
@@ -174,7 +171,7 @@ public class ReqTaskController {
     }
 
     /**
-     * 批量导入模板 下载
+     * 模板下载
      *
      * @return
      * @throws IOException
@@ -191,31 +188,71 @@ public class ReqTaskController {
      * @return
      * @throws IOException
      */
-    @PostMapping("/download")
+    @RequestMapping("/download")
     public GenericRspDTO<NoBody> download(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
-        PageInfo<DemandBO> pageInfo = reqTaskService.find(demandBO);
-        List<DemandDO> demandDOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandDO.class);
+        List<DemandDO> demandDOList = reqTaskService.getReqTask(demandBO);
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
-        try (OutputStream output = response.getOutputStream(); BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // 判断数据
             if (workbook == null) {
-                //return "fail";
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
             }
             // 设置excel的文件名称
-            String excelName = "测试excel.xls";
+            String excelName = "reqTask_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
             response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             workbook.write(bufferedOutPut);
             bufferedOutPut.flush();
         } catch (IOException e) {
-            BusinessException.throwBusinessException("ertery");
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
         return GenericRspDTO.newSuccessInstance();
     }
 
     /**
-     * 批量导入
+     * 项目文档下载
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/downloadProFile")
+    public GenericRspDTO<NoBody> downloadProFile(GenericDTO<NoBody> req, HttpServletRequest request, HttpServletResponse response) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+
+        response.reset();
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)){
+            Map<String, Object> resMap = reqTaskService.doBatchDown(file);
+
+            File srcfile[] = (File[]) resMap.get("srcfile");
+
+            //压缩包名称
+            String zipPath = "/home/hims/temp/propkg/";
+            String zipName = "项目文档_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
+
+            //压缩文件
+            File zip = new File(zipPath + zipName);
+            reqTaskService.ZipFiles(srcfile, zip, true);
+
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + zipName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            response.setContentType("application/octet-stream; charset=utf-8");
+
+            output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
+            bufferedOutPut.flush();
+
+            // 删除文件
+//            zip.delete();
+        } catch (Exception e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 导入
      *
      * @return
      */
@@ -225,5 +262,4 @@ public class ReqTaskController {
         reqTaskService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
     }
-
 }

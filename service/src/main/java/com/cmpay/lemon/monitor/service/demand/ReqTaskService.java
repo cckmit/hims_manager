@@ -2,9 +2,12 @@ package com.cmpay.lemon.monitor.service.demand;
 
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author: zhou_xiong
@@ -25,6 +28,8 @@ public interface ReqTaskService {
      * @return
      */
     PageInfo<DemandBO> find(DemandBO demandBO);
+
+    List<DemandDO> getReqTask(DemandBO demandBO);
 
     /**
      * 新增
@@ -92,4 +97,16 @@ public interface ReqTaskService {
      * @param file
      */
     void doBatchImport(MultipartFile file);
+
+    /**
+     * 项目文档下载
+     *
+     * @param file
+     */
+    Map<String, Object> doBatchDown(MultipartFile file);
+
+    /**
+     * 压缩文件
+     */
+    String ZipFiles(File[] srcfile, File zip, boolean flag);
 }

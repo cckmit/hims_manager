@@ -16,6 +16,8 @@ public interface IDemandExtDao extends IDemandDao{
 
     public List<DemandDO> getReqTaskByUKImpl(DemandDO demandDO);
 
+    public List<DemandDO> getReqTask(DemandDO demandDO);
+
     /**
      * 查找最大内部用户号
      * @param

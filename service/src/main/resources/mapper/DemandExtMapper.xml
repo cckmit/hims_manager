@@ -519,4 +519,63 @@
         max(req_inner_seq) as req_inner_seq from t_demand_info
     </select>
 
+    <select id="getReqTask" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        SELECT
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_prd_line AND t.DIC_ID='PRD_LINE') AS req_prd_line,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_type AND t.DIC_ID='REQ_TASK_TYPE') AS req_type,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_sts AND t.DIC_ID='REQ_STS') AS req_sts,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND t.DIC_ID='REQ_PEROID') AS cur_mon_target,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_mon_period AND t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            <if test="req_nm != null and req_nm != ''">
+                AND a.req_nm LIKE CONCAT('%',#{req_nm},'%')
+            </if>
+            <if test="req_no != null and req_no != ''">
+                AND a.req_no LIKE CONCAT('%',#{req_no},'%')
+            </if>
+            <if test="req_type != null and req_type != ''">
+                AND a.req_type = #{req_type}
+            </if>
+            <if test="pre_cur_period != null and pre_cur_period != ''">
+                AND a.pre_cur_period = #{pre_cur_period}
+            </if>
+            <if test="req_start_mon != null and req_start_mon != ''">
+                AND a.req_start_mon = #{req_start_mon}
+            </if>
+            <if test="devp_lead_dept != null and devp_lead_dept != ''">
+                AND a.devp_lead_dept = #{devp_lead_dept}
+            </if>
+            <if test="devp_coor_dept != null and devp_coor_dept != ''">
+                AND a.devp_coor_dept LIKE CONCAT('%',#{devp_coor_dept},'%')
+            </if>
+            <if test="req_impl_mon != null and req_impl_mon != ''">
+                AND a.req_impl_mon = #{req_impl_mon}
+            </if>
+            <if test="req_prd_line !=null and req_prd_line != ''">
+                AND a.req_prd_line = #{req_prd_line}
+            </if>
+            <if test="req_mnger !=null and req_mnger != ''">
+                AND a.req_mnger LIKE CONCAT('%',#{req_mnger},'%')
+            </if>
+            <if test="req_abnor_type !=null  and req_abnor_type != '' and  req_abnor_type != '02'">
+                AND a.req_abnor_type LIKE CONCAT('%',#{req_abnor_type},'%')
+            </if>
+            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '02'">
+                AND a.req_abnor_type != '01'
+            </if>
+            <if test="end_mon_remark eq '01'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
+            </if>
+            <if test="end_mon_remark eq '02'">
+                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
+                AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
+        </where>
+        ORDER BY a.req_inner_seq asc
+    </select>
+
 </mapper>
