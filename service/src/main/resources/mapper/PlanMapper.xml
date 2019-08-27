@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandExtDao">
+<mapper namespace="com.cmpay.lemon.monitor.dao.IPlanDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
         <result property="req_inner_seq" jdbcType="VARCHAR" column="req_inner_seq" />
@@ -506,14 +506,6 @@
                 AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%05%' ) )
             </if>
-            <if test="end_mon_remark eq '01'">
-                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
-                AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
-            </if>
-            <if test="end_mon_remark eq '02'">
-                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
-                AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
-            </if>
         </where>
         ORDER BY a.req_inner_seq asc
     </select>
@@ -533,87 +525,49 @@
         group by a.req_nm,a.req_no
     </select>
 
-    <select id="getReqTaskByUKImpl" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
-        SELECT
-        a.req_inner_seq,a.req_nm,a.req_no,req_impl_mon
-        FROM t_demand_info a
-        where	1=1
-        and	(
-        <if test="req_nm != null and req_nm != ''">
-            a.req_nm =#{req_nm}
-        </if>
-        <if test="req_no != null and req_no != ''">
-            OR a.req_no = #{req_no}
-        </if>
-        )
-        <if test="req_impl_mon != null and req_impl_mon != ''">
-            AND a.req_impl_mon =#{req_impl_mon}
-        </if>
-        group by a.req_nm,a.req_no,req_impl_mon
-    </select>
-
     <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         select
         max(req_inner_seq) as req_inner_seq from t_demand_info
     </select>
+    <!-- 根据姓名查询项目成员邮箱 -->
+    <select id="searchOtherUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b
+		WHERE  (a.user_name = b.qa_mng OR a.user_name = b.project_mng
+			OR a.user_name = b.product_mng)
+		AND req_inner_seq =#{req_inner_seq}
+	</select>
+    <!-- 根据姓名查询项目成员邮箱 -->
+    <select id="searchUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';')  as mon_remark
+		FROM  t_permi_user a
+		WHERE  a.user_name = #{name}
+	</select>
+    <!-- 根据条件查询项目成员邮箱 -->
+    <select id="searchUserEmailByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b
+		WHERE  (a.user_name = b.qa_mng OR a.user_name = b.devp_eng or a.user_name = b.project_mng
+			OR a.user_name = b.front_eng OR a.user_name = b.config_mng
+			OR a.user_name = b.test_eng or a.user_name = b.product_mng)
+		AND req_inner_seq =#{req_inner_seq}
+	</select>
 
-    <select id="getReqTask" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
-        SELECT
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_prd_line AND t.DIC_ID='PRD_LINE') AS req_prd_line,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_type AND t.DIC_ID='REQ_TASK_TYPE') AS req_type,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = req_sts AND t.DIC_ID='REQ_STS') AS req_sts,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID') AS pre_cur_period,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND t.DIC_ID='REQ_PEROID') AS cur_mon_target,
-        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_mon_period AND t.DIC_ID='REQ_PEROID') AS pre_mon_period,
-        <include refid="Base_Column_List" />
-        FROM t_demand_info a
-        <where>
-            <if test="req_nm != null and req_nm != ''">
-                AND a.req_nm LIKE CONCAT('%',#{req_nm},'%')
-            </if>
-            <if test="req_no != null and req_no != ''">
-                AND a.req_no LIKE CONCAT('%',#{req_no},'%')
-            </if>
-            <if test="req_type != null and req_type != ''">
-                AND a.req_type = #{req_type}
-            </if>
-            <if test="pre_cur_period != null and pre_cur_period != ''">
-                AND a.pre_cur_period = #{pre_cur_period}
-            </if>
-            <if test="req_start_mon != null and req_start_mon != ''">
-                AND a.req_start_mon = #{req_start_mon}
-            </if>
-            <if test="devp_lead_dept != null and devp_lead_dept != ''">
-                AND a.devp_lead_dept = #{devp_lead_dept}
-            </if>
-            <if test="devp_coor_dept != null and devp_coor_dept != ''">
-                AND a.devp_coor_dept LIKE CONCAT('%',#{devp_coor_dept},'%')
-            </if>
-            <if test="req_impl_mon != null and req_impl_mon != ''">
-                AND a.req_impl_mon = #{req_impl_mon}
-            </if>
-            <if test="req_prd_line !=null and req_prd_line != ''">
-                AND a.req_prd_line = #{req_prd_line}
-            </if>
-            <if test="req_mnger !=null and req_mnger != ''">
-                AND a.req_mnger LIKE CONCAT('%',#{req_mnger},'%')
-            </if>
-            <if test="req_abnor_type !=null  and req_abnor_type != '' and  req_abnor_type != '02'">
-                AND a.req_abnor_type LIKE CONCAT('%',#{req_abnor_type},'%')
-            </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '02'">
-                AND a.req_abnor_type != '01'
-            </if>
-            <if test="end_mon_remark eq '01'">
-                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
-                AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
-            </if>
-            <if test="end_mon_remark eq '02'">
-                AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
-                AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
-            </if>
-        </where>
-        ORDER BY a.req_inner_seq asc
-    </select>
+    <!-- 根据条件查询基地 -->
+    <select id="findBaseChargeEmailByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.user_mail separator';') as mon_remark
+		FROM t_mail_jd a, t_demand_info b
+		WHERE (a.user_name = b.req_proposer OR a.user_name = b.req_mnger OR a.user_name = b.devp_res_mng)
+		AND req_inner_seq = #{req_inner_seq}
+	</select>
 
+    <!-- 根据条件查询部门主管邮箱 -->
+    <select id="findDevpEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';') as mon_remark
+		FROM  t_permi_user a, t_demand_info b,t_permi_user_role c,t_permi_role d
+		WHERE  (a.dept_name = b.devp_lead_dept OR a.dept_name = b.devp_coor_dept )
+		AND a.user_id = c.user_id AND c.role_id = d.role_id
+		AND req_inner_seq = #{req_inner_seq} AND (b.devp_coor_dept NOT like '%产品测试部%')
+		AND d.role_id='201401010003'
+	</select>
 </mapper>
