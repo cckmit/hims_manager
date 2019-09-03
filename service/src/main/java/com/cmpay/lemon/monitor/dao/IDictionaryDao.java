@@ -7,9 +7,7 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.framework.dao.BaseDao;
-import com.cmpay.lemon.monitor.bo.DictionaryBO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
-import com.cmpay.lemon.monitor.entity.LogTypeDO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

@@ -9,7 +9,6 @@ dependencies {
     //其他依赖
     compile("mysql:mysql-connector-java:8.0.13")
     compile("org.apache.shiro:shiro-core:1.4.0")
-    compile("org.elasticsearch.client:elasticsearch-rest-high-level-client:6.5.4")
     compile("com.alibaba:fastjson:1.2.40")
 
     compile("cn.afterturn:easypoi-base:3.2.0")

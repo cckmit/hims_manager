@@ -4,7 +4,6 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DictionaryBO;
-import com.cmpay.lemon.monitor.bo.LogTypeBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;

@@ -1,10 +1,11 @@
 package com.cmpay.lemon.monitor.service.demand;
 
-import com.cmpay.lemon.framework.page.PageInfo;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandRspBO;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import java.util.Map;
  * @author: zhou_xiong
  */
 public interface ReqTaskService {
+
+
     /**
      * 通过id查找记录
      *
@@ -27,9 +30,9 @@ public interface ReqTaskService {
      * @param demandBO
      * @return
      */
-    PageInfo<DemandBO> find(DemandBO demandBO);
+    DemandRspBO find(DemandBO demandBO);
 
-    List<DemandDO> getReqTask(DemandBO demandBO);
+    void getReqTask(HttpServletResponse response,DemandBO demandBO);
 
     /**
      * 新增
@@ -101,12 +104,15 @@ public interface ReqTaskService {
     /**
      * 项目文档下载
      *
-     * @param file
+     * @param request response
      */
-    Map<String, Object> doBatchDown(MultipartFile file);
+   void doBatchDown(MultipartHttpServletRequest request, HttpServletResponse response);
 
     /**
      * 压缩文件
      */
     String ZipFiles(File[] srcfile, File zip, boolean flag);
+
+
+
 }

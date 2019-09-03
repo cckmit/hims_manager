@@ -1,5 +1,7 @@
 package com.cmpay.lemon.monitor.service.impl.demand;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
@@ -7,6 +9,7 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
@@ -16,6 +19,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.zip.CRC32;
@@ -35,7 +38,10 @@ import java.util.zip.CheckedOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.importExcel;
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 /**
  * @author: zhou_xiong
@@ -64,7 +70,67 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     }
 
     @Override
-    public PageInfo<DemandBO> find(DemandBO demandBO) {
+    public DemandRspBO find(DemandBO demandBO) {
+        String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
+        List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
+
+        for (int i = 0; i < demandBOList.size(); i++) {
+            String reqAbnorType = demandBOList.get(i).getReq_abnor_type();
+            String reqAbnorTypeAll = "";
+            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReq_inner_seq());
+
+            //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
+            if (StringUtils.isNotBlank(demand.getPrd_finsh_tm()) && StringUtils.isNotBlank(demand.getUat_update_tm())
+                    && StringUtils.isNotBlank(demand.getTest_finsh_tm()) && StringUtils.isNotBlank(demand.getPre_cur_period())
+                    && StringUtils.isNotBlank(demand.getReq_sts())) {
+                //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
+                if (time.compareTo(demand.getPrd_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) < 30
+                        && "30".compareTo(demand.getReq_sts()) != 0 && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "需求进度滞后,";
+                }
+                if (time.compareTo(demand.getUat_update_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 30
+                        && Integer.parseInt(demand.getPre_cur_period()) < 120 && "30".compareTo(demand.getReq_sts()) != 0
+                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "开发进度滞后,";
+                }
+                if (time.compareTo(demand.getTest_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 120
+                        && Integer.parseInt(demand.getPre_cur_period()) < 140 && "30".compareTo(demand.getReq_sts()) != 0
+                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "测试进度滞后";
+                }
+                if (StringUtils.isBlank(reqAbnorTypeAll)) {
+                    reqAbnorTypeAll += "正常";
+                }
+            } else if (reqAbnorType.indexOf("01") != -1) {
+                demandBOList.get(i).setReq_abnor_type("正常");
+                continue;
+            } else {
+                if (reqAbnorType.indexOf("03") != -1) {
+                    reqAbnorTypeAll += "需求进度滞后,";
+                }
+                if (reqAbnorType.indexOf("04") != -1) {
+                    reqAbnorTypeAll += "开发进度滞后,";
+                }
+                if (reqAbnorType.indexOf("05") != -1) {
+                    reqAbnorTypeAll += "测试进度滞后";
+                }
+            }
+
+            if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
+                reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
+                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+            } else {
+                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+            }
+        }
+        DemandRspBO demandRspBO = new DemandRspBO();
+        demandRspBO.setDemandBOList(demandBOList);
+        demandRspBO.setPageInfo(pageInfo);
+        return demandRspBO;
+    }
+
+    private PageInfo<DemandBO>  getPageInfo(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
@@ -72,7 +138,27 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         return pageInfo;
     }
     @Override
-    public List<DemandDO> getReqTask(DemandBO demandBO) {
+    public void getReqTask(HttpServletResponse response,DemandBO demandBO) {
+        List<DemandDO> demandDOList = reqTask(demandBO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "reqTask_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+
+    private List<DemandDO> reqTask(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         return  demandDao.getReqTask(demandDO);
@@ -411,7 +497,38 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public Map<String, Object> doBatchDown(MultipartFile file) {
+    public void doBatchDown(MultipartHttpServletRequest request, HttpServletResponse response) {
+        MultipartFile file = request.getFile(FILE);
+        response.reset();
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)){
+            Map<String, Object> resMap = BatchDown(file);
+
+            File srcfile[] = (File[]) resMap.get("srcfile");
+
+            //压缩包名称
+            String zipPath = "/home/hims/temp/propkg/";
+            String zipName = "项目文档_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
+
+            //压缩文件
+            File zip = new File(zipPath + zipName);
+            reqTaskService.ZipFiles(srcfile, zip, true);
+
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + zipName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            response.setContentType("application/octet-stream; charset=utf-8");
+
+            output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
+            bufferedOutPut.flush();
+
+            // 删除文件
+//            zip.delete();
+        } catch (Exception e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+
+    private Map<String, Object> BatchDown(MultipartFile file) {
         List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
         List<DemandDO> List = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
