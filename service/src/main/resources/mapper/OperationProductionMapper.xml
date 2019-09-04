@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.cmpay.lemon.monitor.dao.IOperationProductionDao">
+   <resultMap id="mm" type="com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO">
+        <result property="mail_group_id"         jdbcType="VARCHAR"      column="mail_group_id"/>
+        <result property="mail_group_name"         jdbcType="VARCHAR"      column="mail_group_name"/>
+        <result property="mail_user"         jdbcType="VARCHAR"      column="mail_user"/>
+        <result property="mail_group_desc"  jdbcType="VARCHAR"      column="mail_group_desc"/>
+        <result property="group_time"  jdbcType="DATE"      column="group_time"/>
+   </resultMap>
+    <sql id="Base_Column_List">
+       pro_number ,pro_need ,pro_type ,pro_date,application_dept,pro_applicant,applicant_tel,pro_module,business_principal ,base_principal,
+       pro_manager,pro_status ,is_up_database ,is_up_structure, pro_operation ,is_ref_cerificate ,is_advance_production , not_advance_reason ,
+       pro_advance_result ,not_production_impact,identifier,identifier_tel ,pro_checker,checker_tel ,validation,development_leader,approver,update_operator, remark ,
+	   unusual_reason_phrase,urgent_reason_phrase ,completion_update,early_implementation,influence_use,
+	   influence_use_reason,influence_use_inf,operating_time,production_deployment_result,is_operation_production,mail_recipient,mail_copy_person,
+	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name
+    </sql>
+    
+    
+     <sql id="Base_Column_List_One">
+        SUB_TASK_ID,
+        PROPOSED_DATE,
+        CREATE_DATE,
+        PRODUCT_TYPE_ID,
+        TASK_NAME,
+        TASK_DESCRIPTION,
+        COMPLETE_DATE,
+        BASE_CHARGE,
+        GAOY_CHARGE,
+        CHARGE_DEPT_ID,
+        COMPLETE_PERCENT,
+        STATUS_ID,
+        CYCLE_CATEGORY,
+        PRO_MANAGER,
+        REQ_TYPE,
+        RMD_NO,
+        CR_NO,
+        PRE_UPD_DATE,
+        PRO_CATEGORY,
+        THIRD_SYS_KEY,
+        AUDIT_FLAG,
+        AUDIT_REMARK,
+        BSF_SYS_KEY,
+        RMD_SYS_KEY,
+        actual_people,
+        cr_status_name,
+        actual_date
+    </sql>
+
+
+	<select id="findMailGroupBeanDetail" resultMap="mm" parameterType="string">
+    	SELECT
+    	mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time
+    	FROM t_mail_group t1
+    	WHERE mail_group_id = #{mail_group_id}
+    </select>
+    <insert id="addMailFlow"  parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
+    	insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)
+    	values(
+    	    #{mail_serial_number},
+    		#{mail_subject},
+    		#{mail_sender},
+    		#{mail_receiver},
+    		#{mail_annex},
+    		#{mail_send_content},
+    		#{flow_time}
+    		)
+    </insert>
+</mapper>

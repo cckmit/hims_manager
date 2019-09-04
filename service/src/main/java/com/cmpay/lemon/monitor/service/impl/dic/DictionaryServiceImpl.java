@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhou_xiong
@@ -37,5 +39,26 @@ public class DictionaryServiceImpl implements DictionaryService {
         DictionaryBO dictionaryBO = new DictionaryBO();
         dictionaryBO.setDictionaryBOList(dictionaryBOList);
         return dictionaryBO;
+    }
+
+    @Override
+    public String findFieldName(String fieldId, String fieldValue)  {
+        String fieldName = "";
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("fieldId", fieldId);
+        map.put("fieldValue", fieldValue);
+        if ("DEPART_NAME".equals(fieldId)) {
+            fieldName = dictionaryDao.findDepartId(fieldValue);
+        } else {
+            fieldName = dictionaryDao.findFieldName(map);
+        }
+        return (null == fieldName || "".equals(fieldName)) ? "" : fieldName;
+    }
+
+    @Override
+    public List<DictionaryBO> findUploadPeriod(String reqPeriod){
+        List<DictionaryDO> lst =  dictionaryDao.findUploadPeriod(reqPeriod);
+        List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(lst, DictionaryBO.class);
+        return dictionaryBOList;
     }
 }

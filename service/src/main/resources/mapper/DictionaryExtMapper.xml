@@ -63,4 +63,16 @@
         ORDER BY user_name desc
     </select>
 
+    <select id="findDepartId" resultType="string" parameterType="string">
+        SELECT DEPT_ID FROM t_permi_dept WHERE DEPT_NAME = #{fieldValue}
+    </select>
+
+    <select id="findFieldName" resultType="string" parameterType="map">
+        SELECT NAME FROM t_permi_dic_data WHERE DIC_ID = #{fieldId} AND NAME = #{fieldValue}
+    </select>
+
+    <select id="findUploadPeriod" resultMap="BaseResultMap" parameterType="string">
+       SELECT NAME AS VALUE,VALUE AS NAME FROM t_permi_dic_data
+           WHERE DIC_ID='REQ_PEROID' AND   NAME &lt;=  CAST(#{reqPeriod} as SIGNED     ) AND NAME IN ('30','50','110','70','140','160','180')
+    </select>
 </mapper>

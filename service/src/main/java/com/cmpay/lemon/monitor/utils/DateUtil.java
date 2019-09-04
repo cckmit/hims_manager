@@ -1,5 +1,10 @@
 package com.cmpay.lemon.monitor.utils;
 
+import org.springframework.util.Assert;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,12 +14,6 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.springframework.util.Assert;
-
 public class DateUtil {
     public static final String PATTERN_STANDARD = "yyyy-MM-dd HH:mm:ss";
 
@@ -23,7 +22,7 @@ public class DateUtil {
 
     public static String timestamp2String(Timestamp timestamp, String pattern) {
         if (timestamp == null) {
-            throw new java.lang.IllegalArgumentException("timestamp null illegal");
+            throw new IllegalArgumentException("timestamp null illegal");
         }
         if (pattern == null || pattern.equals("")) {
             pattern = PATTERN_STANDARD;
@@ -32,9 +31,9 @@ public class DateUtil {
         return sdf.format(new Date(timestamp.getTime()));
     }
 
-    public static String date2String(java.util.Date date, String pattern) {
+    public static String date2String(Date date, String pattern) {
         if (date == null) {
-            throw new java.lang.IllegalArgumentException("timestamp null illegal");
+            throw new IllegalArgumentException("timestamp null illegal");
         }
         if (pattern == null || pattern.equals("")) {
             pattern = PATTERN_STANDARD;
@@ -53,7 +52,7 @@ public class DateUtil {
 
     public static Timestamp string2Timestamp(String strDateTime, String pattern) {
         if (strDateTime == null || strDateTime.equals("")) {
-            throw new java.lang.IllegalArgumentException("Date Time Null Illegal");
+            throw new IllegalArgumentException("Date Time Null Illegal");
         }
         if (pattern == null || pattern.equals("")) {
             pattern = PATTERN_STANDARD;
@@ -89,7 +88,7 @@ public class DateUtil {
 
     public static String stringToYear(String strDest) {
         if (strDest == null || strDest.equals("")) {
-            throw new java.lang.IllegalArgumentException("str dest null");
+            throw new IllegalArgumentException("str dest null");
         }
 
         Date date = string2Date(strDest, DateUtil.PATTERN_DATE);
@@ -100,7 +99,7 @@ public class DateUtil {
 
     public static String stringToMonth(String strDest) {
         if (strDest == null || strDest.equals("")) {
-            throw new java.lang.IllegalArgumentException("str dest null");
+            throw new IllegalArgumentException("str dest null");
         }
 
         Date date = string2Date(strDest, DateUtil.PATTERN_DATE);
@@ -117,7 +116,7 @@ public class DateUtil {
 
     public static String stringToDay(String strDest) {
         if (strDest == null || strDest.equals("")) {
-            throw new java.lang.IllegalArgumentException("str dest null");
+            throw new IllegalArgumentException("str dest null");
         }
 
         Date date = string2Date(strDest, DateUtil.PATTERN_DATE);
@@ -153,7 +152,7 @@ public class DateUtil {
 
     public static String date2GregorianCalendarString(Date date) {
         if (date == null) {
-            throw new java.lang.IllegalArgumentException("Date is null");
+            throw new IllegalArgumentException("Date is null");
         }
         long tmp = date.getTime();
         GregorianCalendar ca = new GregorianCalendar();
@@ -164,14 +163,14 @@ public class DateUtil {
         } catch (DatatypeConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            throw new java.lang.IllegalArgumentException("Date is null");
+            throw new IllegalArgumentException("Date is null");
         }
 
     }
 
     public static boolean compareDate(Date firstDate, Date secondDate) {
         if (firstDate == null || secondDate == null) {
-            throw new java.lang.RuntimeException();
+            throw new RuntimeException();
         }
 
         String strFirstDate = date2String(firstDate, "yyyy-MM-dd");

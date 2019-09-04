@@ -3,9 +3,14 @@ package com.cmpay.lemon.monitor.service.demand;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * @author: tu_yi
@@ -66,4 +71,23 @@ public interface ReqPlanService {
      * 根据编号获取邮箱
      */
     Map<String,String> getMailbox(String req_inner_seq);
+    /**
+     * 项目启动
+     *
+     * @param
+     */
+    void projectStart(ProjectStartBO projectStartBO, HttpServletRequest request);
+
+    /**
+     * 发送邮件
+     */
+    String sendMail(String sendTo, String copyTo, String content, String subject, Vector<File> attachFiles);
+    /**
+     * 存量变更
+     */
+    void changeReq(String req_impl_mon);
+    /**
+     * 需求文档上传
+     */
+    void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files,HttpServletRequest request);
 }

@@ -39,7 +39,18 @@ public enum MsgEnum implements AlertCapable {
     BATCH_IMPORT_FAILED("MON00307", "批量导入失败,请稍后再试"),
 
     SEARCH_FAILED("MON00401", "搜索日志失败,请稍后再试"),
-    REQUESTID_IS_BLANK("MON00402", "日志号为空");
+    REQUESTID_IS_BLANK("MON00402", "日志号为空"),
+
+    ERROR_SENDT0_ISBLANK("MON00501", "项目启动失败，收件人必填，多个“;”分割!"),
+    ERROR_PLAN_NULL("MON00502", "项目启动失败，找不到该需求对应信息!"),
+    ERROR_REQNO_REQNM_ISBLANK("MON00503", "项目启动失败，需求编号和需求名称不能为空!"),
+    ERROR_NOT_PROJECTMNG("MON00504", "项目启动失败，只能有项目经理进行项目启动"),
+    ERROR_NOT_FINISHINFO("MON00505", "项目启动失败:人员或时间配置不完善"),
+    ERROR_NOT_SVN("MON00506", "项目启动失败:"),
+    ERROR_NOT_SVNBULID("MON00507", "项目启动失败，SVN项目建立失败："),
+    ERROR_MAIL_FAIL("MON00508", "项目启动失败，SVN项目建立成功，启动邮件发送失败："),
+    ERROR_NOT_PRIVILEGE("MON00509", "无权限使用该功能"),
+    ERROR_FAIL_CHANGE("MON00510", "存量需求转存失败:");
 
     private String msgCd;
     private String msgInfo;
