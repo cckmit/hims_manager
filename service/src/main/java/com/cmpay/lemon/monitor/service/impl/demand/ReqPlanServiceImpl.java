@@ -7,6 +7,7 @@ import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
@@ -95,9 +96,72 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
     }
-
     @Override
-    public PageInfo<DemandBO> findDemand(DemandBO demandBO) {
+    public DemandRspBO findDemand(DemandBO demandBO) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        if(demandBO.getReq_impl_mon()==null||"".equals(demandBO.getReq_impl_mon())){
+            demandBO.setReq_impl_mon(month);
+        }
+        PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
+        List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
+
+        for (int i = 0; i < demandBOList.size(); i++) {
+            String reqAbnorType = demandBOList.get(i).getReq_abnor_type();
+            String reqAbnorTypeAll = "";
+            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReq_inner_seq());
+
+            //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
+            if (StringUtils.isNotBlank(demand.getPrd_finsh_tm()) && StringUtils.isNotBlank(demand.getUat_update_tm())
+                    && StringUtils.isNotBlank(demand.getTest_finsh_tm()) && StringUtils.isNotBlank(demand.getPre_cur_period())
+                    && StringUtils.isNotBlank(demand.getReq_sts())) {
+                //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
+                if (time.compareTo(demand.getPrd_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) < 30
+                        && "30".compareTo(demand.getReq_sts()) != 0 && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "需求进度滞后,";
+                }
+                if (time.compareTo(demand.getUat_update_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 30
+                        && Integer.parseInt(demand.getPre_cur_period()) < 120 && "30".compareTo(demand.getReq_sts()) != 0
+                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "开发进度滞后,";
+                }
+                if (time.compareTo(demand.getTest_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 120
+                        && Integer.parseInt(demand.getPre_cur_period()) < 140 && "30".compareTo(demand.getReq_sts()) != 0
+                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                    reqAbnorTypeAll += "测试进度滞后";
+                }
+                if (StringUtils.isBlank(reqAbnorTypeAll)) {
+                    reqAbnorTypeAll += "正常";
+                }
+            } else if (reqAbnorType.indexOf("01") != -1) {
+                demandBOList.get(i).setReq_abnor_type("正常");
+                continue;
+            } else {
+                if (reqAbnorType.indexOf("03") != -1) {
+                    reqAbnorTypeAll += "需求进度滞后,";
+                }
+                if (reqAbnorType.indexOf("04") != -1) {
+                    reqAbnorTypeAll += "开发进度滞后,";
+                }
+                if (reqAbnorType.indexOf("05") != -1) {
+                    reqAbnorTypeAll += "测试进度滞后";
+                }
+            }
+
+            if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
+                reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
+                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+            } else {
+                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+            }
+        }
+        DemandRspBO demandRspBO = new DemandRspBO();
+        demandRspBO.setDemandBOList(demandBOList);
+        demandRspBO.setPageInfo(pageInfo);
+        return demandRspBO;
+    }
+
+    private PageInfo<DemandBO>  getPageInfo(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
@@ -670,7 +734,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
     }
     /**
-     *
+     *文档上传
      */
     @Override
     public void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files ,HttpServletRequest request){
@@ -707,11 +771,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
         String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
-        String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
-        if (!StringUtils.isEmpty(checOutMsg)) {
-            //return ajaxDoneError(checOutMsg);
-            BusinessException.throwBusinessException("checOutMsg");
-        }
+//        String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
+//        if (!StringUtils.isEmpty(checOutMsg)) {
+//            //return ajaxDoneError(checOutMsg);
+//            BusinessException.throwBusinessException("checOutMsg");
+//        }
         // 获取阶段中文名
         String periodChName = "";
         String nowTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
@@ -761,7 +825,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         Map<String, Object> map = null;
         try {
             //更新文档上传时间
-            updateExtraTm(reqPlan);
+            //updateExtraTm(reqPlan);
             map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
         } catch (Exception e) {
             // return ajaxDoneError(e.getMessage());
@@ -871,7 +935,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             }
                         }
                         // 保存本地svn
-                        importfile.transferTo(fl);
+                        //importfile.transferTo(fl);
                         File newWordLod =null;
                         //功能点解析
                         if (fileName.contains("原子功能点评估表(内部考核)")||fileName.contains("原子功能点评估表（内部考核）")) {
@@ -1405,8 +1469,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         for (int i = 7; i < rows; i++) {
             Row row = sheet.getRow(i);
-            if (row == null)
+            if (row == null){
                 break;
+            }
             // 原子功能点名称
             Map<String,Object > map=new HashMap<String, Object>();
             String bussNm = row.getCell(0)==null?"":row.getCell(0).getStringCellValue();

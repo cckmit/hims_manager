@@ -71,7 +71,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     public DemandRspBO find(DemandBO demandBO) {
-        String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        if(demandBO.getReq_impl_mon()==null||"".equals(demandBO.getReq_impl_mon())){
+            demandBO.setReq_impl_mon(month);
+        }
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 

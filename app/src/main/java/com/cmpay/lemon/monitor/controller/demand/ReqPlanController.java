@@ -3,35 +3,24 @@ package com.cmpay.lemon.monitor.controller.demand;
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.DictionaryBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
-import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.DateUtil;
-import com.cmpay.lemon.monitor.utils.SvnConstant;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.Style;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
-
-import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
@@ -46,6 +35,7 @@ public class ReqPlanController {
     private ReqPlanService reqPlanService;
     @Autowired
     private DictionaryService dictionaryService;
+    private static  MultipartFile[] FILES = null;
 
     /**
      * 分页需求列表
@@ -56,70 +46,13 @@ public class ReqPlanController {
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> getUserInfoPage(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
-        String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        if(demandBO.getReq_impl_mon()==null||"".equals(demandBO.getReq_impl_mon())){
-            demandBO.setReq_impl_mon(month);
-        }
-        PageInfo<DemandBO> pageInfo = reqPlanService.findDemand(demandBO);
-        List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
-
-        for (int i =0; i < demandBOList.size();i++){
-            String reqAbnorType=demandBOList.get(i).getReq_abnor_type();
-            String reqAbnorTypeAll = "";
-            DemandBO demand = reqPlanService.findById(demandBOList.get(i).getReq_inner_seq());
-
-            //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
-            if (StringUtils.isNotBlank(demand.getPrd_finsh_tm()) && StringUtils.isNotBlank(demand.getUat_update_tm())
-                    && StringUtils.isNotBlank(demand.getTest_finsh_tm()) && StringUtils.isNotBlank(demand.getPre_cur_period())
-                    && StringUtils.isNotBlank(demand.getReq_sts())) {
-                //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
-                if (time.compareTo(demand.getPrd_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) < 30
-                        && "30".compareTo(demand.getReq_sts()) != 0 && "40".compareTo(demand.getReq_sts()) != 0) {
-                    reqAbnorTypeAll += "需求进度滞后,";
-                }
-                if (time.compareTo(demand.getUat_update_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 30
-                        && Integer.parseInt(demand.getPre_cur_period()) < 120 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
-                    reqAbnorTypeAll += "开发进度滞后,";
-                }
-                if (time.compareTo(demand.getTest_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 120
-                        && Integer.parseInt(demand.getPre_cur_period()) < 140 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
-                    reqAbnorTypeAll += "测试进度滞后";
-                }
-                if (StringUtils.isBlank(reqAbnorTypeAll)) {
-                    reqAbnorTypeAll += "正常";
-                }
-            } else if(reqAbnorType.indexOf("01") != -1){
-                demandBOList.get(i).setReq_abnor_type("正常");
-                continue;
-            }else{
-                if (reqAbnorType.indexOf("03") != -1) {
-                    reqAbnorTypeAll += "需求进度滞后,";
-                }
-                if (reqAbnorType.indexOf("04") != -1) {
-                    reqAbnorTypeAll += "开发进度滞后,";
-                }
-                if (reqAbnorType.indexOf("05") != -1) {
-                    reqAbnorTypeAll += "测试进度滞后";
-                }
-            }
-
-            if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length()-1)){
-                reqAbnorTypeAll = reqAbnorTypeAll.substring(0,reqAbnorTypeAll.length()-1);
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
-            }else{
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
-            }
-        }
-
+        DemandRspBO demandRspBO = reqPlanService.findDemand(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
-        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandBOList, DemandDTO.class));
-        rspDTO.setPageNum(pageInfo.getPageNum());
-        rspDTO.setPages(pageInfo.getPages());
-        rspDTO.setTotal(pageInfo.getTotal());
-        rspDTO.setPageSize(pageInfo.getPageSize());
+        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
+        rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(demandRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(demandRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(demandRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
@@ -274,11 +207,16 @@ public class ReqPlanController {
      * @return
      */
     @PostMapping("uploadProjrctFile")
-    public GenericRspDTO<NoBody> uploadProjrctFile( ProjectStartReqDTO reqDTO,HttpServletRequest request) {
+    public GenericRspDTO<NoBody> uploadProjrctFile(@RequestBody ProjectStartReqDTO reqDTO,HttpServletRequest request) {
         System.out.println("需求文档上传："+reqDTO);
-//        ProjectStartBO ProjectStartBO = new ProjectStartBO();
-//        BeanConvertUtils.convert(ProjectStartBO, reqDTO);
-//        reqPlanService.uploadProjrctFile(ProjectStartBO,files,request);
+        System.out.println("上传的文档信息："+FILES);
+        for (MultipartFile importfile : FILES) {
+            String fileName = importfile.getOriginalFilename();
+            System.out.println("上传的文件名："+fileName);
+        }
+        ProjectStartBO ProjectStartBO = new ProjectStartBO();
+        BeanConvertUtils.convert(ProjectStartBO, reqDTO);
+        reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
         return GenericRspDTO.newSuccessInstance();
     }
 
@@ -293,7 +231,7 @@ public class ReqPlanController {
             String fileName = importfile.getOriginalFilename();
             System.out.println("文件名："+fileName);
         }
-//        reqTaskService.doBatchImport(file);
+        FILES=files;
         return GenericRspDTO.newSuccessInstance();
     }
 }
