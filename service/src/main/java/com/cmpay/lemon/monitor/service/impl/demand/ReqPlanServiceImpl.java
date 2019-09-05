@@ -98,11 +98,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
-        String month = DateUtil.date2String(new Date(), "yyyy-MM");
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        if(demandBO.getReq_impl_mon()==null||"".equals(demandBO.getReq_impl_mon())){
-            demandBO.setReq_impl_mon(month);
-        }
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
