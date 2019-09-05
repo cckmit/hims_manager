@@ -18,6 +18,28 @@ public class ProjectStartRspDTO extends GenericRspDTO {
     private String req_nm;
     private String sendTo;
     private String copyTo;
+    private String pre_cur_period;
+    private String uploadPeriod;
+    private DictionaryRspDTO dictionaryRspDTO;
+
+    public ProjectStartRspDTO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo, String pre_cur_period, String uploadPeriod, DictionaryRspDTO dictionaryRspDTO) {
+        this.req_inner_seq = req_inner_seq;
+        this.req_no = req_no;
+        this.req_nm = req_nm;
+        this.sendTo = sendTo;
+        this.copyTo = copyTo;
+        this.pre_cur_period = pre_cur_period;
+        this.uploadPeriod = uploadPeriod;
+        this.dictionaryRspDTO = dictionaryRspDTO;
+    }
+
+    public DictionaryRspDTO getDictionaryRspDTO() {
+        return dictionaryRspDTO;
+    }
+
+    public void setDictionaryRspDTO(DictionaryRspDTO dictionaryRspDTO) {
+        this.dictionaryRspDTO = dictionaryRspDTO;
+    }
 
     public String getReq_inner_seq() {
         return req_inner_seq;
@@ -59,6 +81,22 @@ public class ProjectStartRspDTO extends GenericRspDTO {
         this.copyTo = copyTo;
     }
 
+    public String getPre_cur_period() {
+        return pre_cur_period;
+    }
+
+    public void setPre_cur_period(String pre_cur_period) {
+        this.pre_cur_period = pre_cur_period;
+    }
+
+    public String getUploadPeriod() {
+        return uploadPeriod;
+    }
+
+    public void setUploadPeriod(String uploadPeriod) {
+        this.uploadPeriod = uploadPeriod;
+    }
+
     @Override
     public String toString() {
         return "ProjectStartRspDTO{" +
@@ -67,15 +105,20 @@ public class ProjectStartRspDTO extends GenericRspDTO {
                 ", req_nm='" + req_nm + '\'' +
                 ", sendTo='" + sendTo + '\'' +
                 ", copyTo='" + copyTo + '\'' +
+                ", pre_cur_period='" + pre_cur_period + '\'' +
+                ", uploadPeriod='" + uploadPeriod + '\'' +
+                ", dictionaryRspDTO=" + dictionaryRspDTO +
                 '}';
     }
 
-    public ProjectStartRspDTO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo) {
+    public ProjectStartRspDTO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo, String pre_cur_period, String uploadPeriod) {
         this.req_inner_seq = req_inner_seq;
         this.req_no = req_no;
         this.req_nm = req_nm;
         this.sendTo = sendTo;
         this.copyTo = copyTo;
+        this.pre_cur_period = pre_cur_period;
+        this.uploadPeriod = uploadPeriod;
     }
 
     public ProjectStartRspDTO() {

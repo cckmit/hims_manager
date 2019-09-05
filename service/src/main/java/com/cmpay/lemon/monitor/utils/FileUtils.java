@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -74,5 +75,32 @@ public class FileUtils {
         res.flushBuffer();
         out.close();
         inStream.close();
+    }
+    /**
+     * 创建目录
+     *
+     * @param descDirName
+     *            目录名,包含路径
+     * @return 如果创建成功，则返回true，否则返回false
+     */
+    public static boolean createDirectory(String descDirName) {
+        String descDirNames = descDirName;
+        if (!descDirNames.endsWith(File.separator)) {
+            descDirNames = descDirNames + File.separator;
+        }
+        File descDir = new File(descDirNames);
+        if (descDir.exists()) {
+            LOGGER.debug("目录 " + descDirNames + " 已存在!");
+            return false;
+        }
+        // 创建目录
+        if (descDir.mkdirs()) {
+            LOGGER.debug("目录 " + descDirNames + " 创建成功!");
+            return true;
+        } else {
+            LOGGER.debug("目录 " + descDirNames + " 创建失败!");
+            return false;
+        }
+
     }
 }

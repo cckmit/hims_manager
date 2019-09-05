@@ -9,8 +9,6 @@ package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.request.GenericDTO;
 
-import java.util.Date;
-
 /**
  * 项目启动dto
  */

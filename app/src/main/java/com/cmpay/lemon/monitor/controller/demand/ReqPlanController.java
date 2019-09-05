@@ -7,28 +7,32 @@ import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DictionaryBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.DemandDTO;
-import com.cmpay.lemon.monitor.dto.DemandReqDTO;
-import com.cmpay.lemon.monitor.dto.DemandRspDTO;
-import com.cmpay.lemon.monitor.dto.ProjectStartDTO;
-import com.cmpay.lemon.monitor.dto.ProjectStartRspDTO;
-import com.cmpay.lemon.monitor.dto.ProjectStartReqDTO;
+import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
+import com.cmpay.lemon.monitor.utils.SvnConstant;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.text.Style;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
+import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
  * @author: zhou_xiong
@@ -40,6 +44,8 @@ public class ReqPlanController {
 
     @Autowired
     private ReqPlanService reqPlanService;
+    @Autowired
+    private DictionaryService dictionaryService;
 
     /**
      * 分页需求列表
@@ -113,6 +119,7 @@ public class ReqPlanController {
         rspDTO.setPageNum(pageInfo.getPageNum());
         rspDTO.setPages(pageInfo.getPages());
         rspDTO.setTotal(pageInfo.getTotal());
+        rspDTO.setPageSize(pageInfo.getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
@@ -175,20 +182,118 @@ public class ReqPlanController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**
-     * 查询需求计划项目启动信息
+     * 项目启动，建立svn项目文档库以及下发项目启动邮件
      *
      * @return
      */
-    @RequestMapping("/projectStart")
+    @RequestMapping("/goProjectStart")
     public GenericRspDTO<ProjectStartRspDTO> goProjectStart(@RequestBody ProjectStartReqDTO reqDTO) {
-        System.out.println("项目启动："+reqDTO.getReq_inner_seq());
         ProjectStartBO demandBO = reqPlanService.goProjectStart(reqDTO.getReq_inner_seq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
         projectStartRspDTO.setReq_inner_seq(demandBO.getReq_inner_seq());
         projectStartRspDTO.setReq_nm(demandBO.getReq_nm());
         projectStartRspDTO.setReq_no(demandBO.getReq_no());
-        System.out.println("项目启动："+projectStartRspDTO);
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new ProjectStartRspDTO(), projectStartRspDTO));
+        projectStartRspDTO.setSendTo(demandBO.getSendTo());
+        projectStartRspDTO.setCopyTo(demandBO.getCopyTo());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, projectStartRspDTO);
+    }
+    /**
+     * 查询需求计划项目启动信息
+     *
+     * @return
+     */
+    @RequestMapping("/projectStart")
+    public GenericRspDTO projectStart(@RequestBody ProjectStartReqDTO reqDTO, HttpServletRequest request) {
+        // 项目启动邮件
+        reqPlanService.projectStart(new ProjectStartBO(reqDTO.getReq_inner_seq(),reqDTO.getReq_no(),reqDTO.getReq_nm(),reqDTO.getSendTo(),reqDTO.getCopyTo()),request);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    /**
+     * 存量变更
+     *
+     * @return
+     */
+    @RequestMapping("/changeReq")
+    public GenericRspDTO changeReq(@RequestBody DemandReqDTO reqDTO) {
+        reqPlanService.changeReq(reqDTO.getReq_impl_mon());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
+    /**
+     * 批量导入模板 下载
+     *
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/template/download")
+    public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
+        doWrite("static/gndDownload.xlsm", response);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 需求文档上传页面跳转
+     */
+    @RequestMapping("/goUploadFile")
+    public GenericRspDTO<ProjectStartRspDTO> goUploadFile(@RequestBody DemandReqDTO reqDTO) {
+        ProjectStartBO projectStartBO = reqPlanService.goProjectStart(reqDTO.getReq_inner_seq());
+        DemandBO demandBO = reqPlanService.findById(reqDTO.getReq_inner_seq());
+        ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
+        projectStartRspDTO.setReq_inner_seq(projectStartBO.getReq_inner_seq());
+        projectStartRspDTO.setPre_cur_period(demandBO.getPre_cur_period());
+        projectStartRspDTO.setReq_nm(projectStartBO.getReq_nm());
+        projectStartRspDTO.setReq_no(projectStartBO.getReq_no());
+        projectStartRspDTO.setSendTo(projectStartBO.getSendTo());
+        projectStartRspDTO.setCopyTo(projectStartBO.getCopyTo());
+        String reqPeriod = dictionaryService.findFieldName("REQ_PEROID",demandBO.getPre_cur_period());
+        //将需求阶段赋值成下一阶段
+        if (new Integer(reqPeriod) <= 30) {
+            reqPeriod = "30";
+        }else if (new Integer(reqPeriod) <= 50) {
+            reqPeriod = "50";
+        }else if (new Integer(reqPeriod) <= 70) {
+            reqPeriod = "70";
+        }else if (new Integer(reqPeriod) <= 110) {
+            reqPeriod = "110";
+        }else if (new Integer(reqPeriod) <= 140) {
+            reqPeriod = "140";
+        }else if (new Integer(reqPeriod) <= 160) {
+            reqPeriod = "160";
+        }else if (new Integer(reqPeriod) <= 180) {
+            reqPeriod = "180";
+        }
+        List<DictionaryBO> dictionaryBOList = dictionaryService.findUploadPeriod(reqPeriod);
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
+        projectStartRspDTO.setDictionaryRspDTO(dictionaryRspDTO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, projectStartRspDTO);
+    }
+    /**
+     * 文档上传
+     *
+     * @return
+     */
+    @PostMapping("uploadProjrctFile")
+    public GenericRspDTO<NoBody> uploadProjrctFile( ProjectStartReqDTO reqDTO,HttpServletRequest request) {
+        System.out.println("需求文档上传："+reqDTO);
+//        ProjectStartBO ProjectStartBO = new ProjectStartBO();
+//        BeanConvertUtils.convert(ProjectStartBO, reqDTO);
+//        reqPlanService.uploadProjrctFile(ProjectStartBO,files,request);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 文档上传接收文档
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(@RequestParam("file") MultipartFile[] files,HttpServletRequest request, GenericDTO<NoBody> req) {
+        for (MultipartFile importfile : files) {
+            String fileName = importfile.getOriginalFilename();
+            System.out.println("文件名："+fileName);
+        }
+//        reqTaskService.doBatchImport(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }
