@@ -62,7 +62,7 @@ public class ReqPlanController {
      * @return
      */
     @RequestMapping("/info/{id}")
-    public GenericRspDTO<DemandDTO> getUserInfoById(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
+    public GenericRspDTO<DemandDTO> getUserInfoById(@PathVariable("reqInnerSeq") String req_inner_seq, GenericDTO<NoBody> req) {
         DemandBO demandBO = reqPlanService.findById(req_inner_seq);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
     }
@@ -97,7 +97,7 @@ public class ReqPlanController {
      * @return
      */
     @RequestMapping("/delete/{id}")
-    public GenericRspDTO delete(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
+    public GenericRspDTO delete(@PathVariable("reqInnerSeq") String req_inner_seq, GenericDTO<NoBody> req) {
         reqPlanService.delete(req_inner_seq);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -123,9 +123,9 @@ public class ReqPlanController {
     public GenericRspDTO<ProjectStartRspDTO> goProjectStart(@RequestBody ProjectStartReqDTO reqDTO) {
         ProjectStartBO demandBO = reqPlanService.goProjectStart(reqDTO.getReq_inner_seq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
-        projectStartRspDTO.setReq_inner_seq(demandBO.getReq_inner_seq());
-        projectStartRspDTO.setReq_nm(demandBO.getReq_nm());
-        projectStartRspDTO.setReq_no(demandBO.getReq_no());
+        projectStartRspDTO.setReq_inner_seq(demandBO.getReqInnerSeq());
+        projectStartRspDTO.setReq_nm(demandBO.getReqNm());
+        projectStartRspDTO.setReq_no(demandBO.getReqNo());
         projectStartRspDTO.setSendTo(demandBO.getSendTo());
         projectStartRspDTO.setCopyTo(demandBO.getCopyTo());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, projectStartRspDTO);
@@ -148,7 +148,7 @@ public class ReqPlanController {
      */
     @RequestMapping("/changeReq")
     public GenericRspDTO changeReq(@RequestBody DemandReqDTO reqDTO) {
-        reqPlanService.changeReq(reqDTO.getReq_impl_mon());
+        reqPlanService.changeReq(reqDTO.getReqImplMon());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
@@ -169,16 +169,16 @@ public class ReqPlanController {
      */
     @RequestMapping("/goUploadFile")
     public GenericRspDTO<ProjectStartRspDTO> goUploadFile(@RequestBody DemandReqDTO reqDTO) {
-        ProjectStartBO projectStartBO = reqPlanService.goProjectStart(reqDTO.getReq_inner_seq());
-        DemandBO demandBO = reqPlanService.findById(reqDTO.getReq_inner_seq());
+        ProjectStartBO projectStartBO = reqPlanService.goProjectStart(reqDTO.getReqInnerSeq());
+        DemandBO demandBO = reqPlanService.findById(reqDTO.getReqInnerSeq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
-        projectStartRspDTO.setReq_inner_seq(projectStartBO.getReq_inner_seq());
-        projectStartRspDTO.setPre_cur_period(demandBO.getPre_cur_period());
-        projectStartRspDTO.setReq_nm(projectStartBO.getReq_nm());
-        projectStartRspDTO.setReq_no(projectStartBO.getReq_no());
+        projectStartRspDTO.setReq_inner_seq(projectStartBO.getReqInnerSeq());
+        projectStartRspDTO.setPre_cur_period(demandBO.getPreCurPeriod());
+        projectStartRspDTO.setReq_nm(projectStartBO.getReqNm());
+        projectStartRspDTO.setReq_no(projectStartBO.getReqNo());
         projectStartRspDTO.setSendTo(projectStartBO.getSendTo());
         projectStartRspDTO.setCopyTo(projectStartBO.getCopyTo());
-        String reqPeriod = dictionaryService.findFieldName("REQ_PEROID",demandBO.getPre_cur_period());
+        String reqPeriod = dictionaryService.findFieldName("REQ_PEROID",demandBO.getPreCurPeriod());
         //将需求阶段赋值成下一阶段
         if (new Integer(reqPeriod) <= 30) {
             reqPeriod = "30";

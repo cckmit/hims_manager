@@ -3,63 +3,63 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IDemandExtDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
-        <result property="req_inner_seq" jdbcType="VARCHAR" column="req_inner_seq" />
-        <result property="req_prd_line" jdbcType="VARCHAR" column="req_prd_line" />
-        <result property="req_type" jdbcType="VARCHAR" column="req_type" />
-        <result property="req_sts" jdbcType="VARCHAR" column="req_sts" />
-        <result property="req_no" jdbcType="VARCHAR" column="req_no" />
-        <result property="req_nm" jdbcType="VARCHAR" column="req_nm" />
-        <result property="req_desc" jdbcType="VARCHAR" column="req_desc" />
-        <result property="input_res" jdbcType="INTEGER" column="input_res" />
-        <result property="dev_cycle" jdbcType="INTEGER" column="dev_cycle" />
-        <result property="exp_input" jdbcType="DOUBLE" column="exp_input" />
-        <result property="prd_finsh_tm" jdbcType="VARCHAR" column="prd_finsh_tm" />
-        <result property="act_prd_finsh_tm" jdbcType="VARCHAR" column="act_prd_finsh_tm" />
-        <result property="pre_cur_period" jdbcType="VARCHAR" column="pre_cur_period" />
-        <result property="cur_mon_target" jdbcType="VARCHAR" column="cur_mon_target" />
-        <result property="exp_prd_release_tm" jdbcType="VARCHAR" column="exp_prd_release_tm" />
-        <result property="devp_lead_dept" jdbcType="VARCHAR" column="devp_lead_dept" />
-        <result property="devp_coor_dept" jdbcType="VARCHAR" column="devp_coor_dept" />
-        <result property="req_pro_dept" jdbcType="VARCHAR" column="req_pro_dept" />
-        <result property="req_proposer" jdbcType="VARCHAR" column="req_proposer" />
-        <result property="req_mnger" jdbcType="VARCHAR" column="req_mnger" />
-        <result property="req_start_mon" jdbcType="VARCHAR" column="req_start_mon" />
-        <result property="req_impl_mon" jdbcType="VARCHAR" column="req_impl_mon" />
-        <result property="project_mng" jdbcType="VARCHAR" column="project_mng" />
-        <result property="product_mng" jdbcType="VARCHAR" column="product_mng" />
-        <result property="is_cut" jdbcType="VARCHAR" column="is_cut" />
-        <result property="pre_mon_period" jdbcType="VARCHAR" column="pre_mon_period" />
-        <result property="qa_mng" jdbcType="VARCHAR" column="qa_mng" />
-        <result property="config_mng" jdbcType="VARCHAR" column="config_mng" />
-        <result property="mon_remark" jdbcType="VARCHAR" column="mon_remark" />
-        <result property="devp_eng" jdbcType="VARCHAR" column="devp_eng" />
-        <result property="front_eng" jdbcType="VARCHAR" column="front_eng" />
-        <result property="test_eng" jdbcType="VARCHAR" column="test_eng" />
-        <result property="uat_update_tm" jdbcType="VARCHAR" column="uat_update_tm" />
-        <result property="act_uat_update_tm" jdbcType="VARCHAR" column="act_uat_update_tm" />
-        <result property="pre_tm" jdbcType="VARCHAR" column="pre_tm" />
-        <result property="test_finsh_tm" jdbcType="VARCHAR" column="test_finsh_tm" />
-        <result property="act_test_finsh_tm" jdbcType="VARCHAR" column="act_test_finsh_tm" />
-        <result property="risk_solution" jdbcType="VARCHAR" column="risk_solution" />
-        <result property="risk_feedback_tm" jdbcType="VARCHAR" column="risk_feedback_tm" />
-        <result property="end_mon_remark" jdbcType="VARCHAR" column="end_mon_remark" />
-        <result property="end_feedback_tm" jdbcType="VARCHAR" column="end_feedback_tm" />
-        <result property="total_workload" jdbcType="INTEGER" column="total_workload" />
-        <result property="lead_dept_pro" jdbcType="VARCHAR" column="lead_dept_pro" />
-        <result property="coor_dept_pro" jdbcType="VARCHAR" column="coor_dept_pro" />
-        <result property="lead_dept_workload" jdbcType="VARCHAR" column="lead_dept_workload" />
-        <result property="coor_dept_workload" jdbcType="VARCHAR" column="coor_dept_workload" />
-        <result property="input_workload" jdbcType="INTEGER" column="input_workload" />
-        <result property="last_input_workload" jdbcType="INTEGER" column="last_input_workload" />
-        <result property="remain_workload" jdbcType="INTEGER" column="remain_workload" />
-        <result property="mon_input_workload" jdbcType="INTEGER" column="mon_input_workload" />
-        <result property="is_svn_build" jdbcType="VARCHAR" column="is_svn_build" />
-        <result property="req_abnor_type" jdbcType="VARCHAR" column="req_abnor_type" />
-        <result property="creat_time" jdbcType="TIMESTAMP" column="creat_time" />
-        <result property="update_time" jdbcType="TIMESTAMP" column="update_time" />
-        <result property="creat_user" jdbcType="VARCHAR" column="creat_user" />
-        <result property="update_user" jdbcType="VARCHAR" column="update_user" />
-        <result property="mon_remark" jdbcType="VARCHAR" column="mon_remark" />
+        <result property="reqInnerSeq" jdbcType="VARCHAR" column="req_inner_seq" />
+        <result property="reqPrdLine" jdbcType="VARCHAR" column="req_prd_line" />
+        <result property="reqType" jdbcType="VARCHAR" column="req_type" />
+        <result property="reqSts" jdbcType="VARCHAR" column="req_sts" />
+        <result property="reqNo" jdbcType="VARCHAR" column="req_no" />
+        <result property="reqNm" jdbcType="VARCHAR" column="req_nm" />
+        <result property="reqDesc" jdbcType="VARCHAR" column="req_desc" />
+        <result property="inputRes" jdbcType="INTEGER" column="input_res" />
+        <result property="devCycle" jdbcType="INTEGER" column="dev_cycle" />
+        <result property="expInput" jdbcType="DOUBLE" column="exp_input" />
+        <result property="prdFinshTm" jdbcType="VARCHAR" column="prd_finsh_tm" />
+        <result property="actPrdFinshTm" jdbcType="VARCHAR" column="act_prd_finsh_tm" />
+        <result property="preCurPeriod" jdbcType="VARCHAR" column="pre_cur_period" />
+        <result property="curMonTarget" jdbcType="VARCHAR" column="cur_mon_target" />
+        <result property="expPrdReleaseTm" jdbcType="VARCHAR" column="exp_prd_release_tm" />
+        <result property="devpLeadDept" jdbcType="VARCHAR" column="devp_lead_dept" />
+        <result property="devpCoorDept" jdbcType="VARCHAR" column="devp_coor_dept" />
+        <result property="reqProDept" jdbcType="VARCHAR" column="req_pro_dept" />
+        <result property="reqProposer" jdbcType="VARCHAR" column="req_proposer" />
+        <result property="reqMnger" jdbcType="VARCHAR" column="req_mnger" />
+        <result property="reqStartMon" jdbcType="VARCHAR" column="req_start_mon" />
+        <result property="reqImplMon" jdbcType="VARCHAR" column="req_impl_mon" />
+        <result property="projectMng" jdbcType="VARCHAR" column="project_mng" />
+        <result property="productMng" jdbcType="VARCHAR" column="product_mng" />
+        <result property="isCut" jdbcType="VARCHAR" column="is_cut" />
+        <result property="preMonPeriod" jdbcType="VARCHAR" column="pre_mon_period" />
+        <result property="qaMng" jdbcType="VARCHAR" column="qa_mng" />
+        <result property="configMng" jdbcType="VARCHAR" column="config_mng" />
+        <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+        <result property="devpEng" jdbcType="VARCHAR" column="devp_eng" />
+        <result property="frontEng" jdbcType="VARCHAR" column="front_eng" />
+        <result property="testEng" jdbcType="VARCHAR" column="test_eng" />
+        <result property="uatUpdateTm" jdbcType="VARCHAR" column="uat_update_tm" />
+        <result property="actUatUpdateTm" jdbcType="VARCHAR" column="act_uat_update_tm" />
+        <result property="preTm" jdbcType="VARCHAR" column="pre_tm" />
+        <result property="testFinshTm" jdbcType="VARCHAR" column="test_finsh_tm" />
+        <result property="actTestFinshTm" jdbcType="VARCHAR" column="act_test_finsh_tm" />
+        <result property="riskSolution" jdbcType="VARCHAR" column="risk_solution" />
+        <result property="riskFeedbackTm" jdbcType="VARCHAR" column="risk_feedback_tm" />
+        <result property="endMonRemark" jdbcType="VARCHAR" column="end_mon_remark" />
+        <result property="endFeedbackTm" jdbcType="VARCHAR" column="end_feedback_tm" />
+        <result property="totalWorkload" jdbcType="INTEGER" column="total_workload" />
+        <result property="leadDeptPro" jdbcType="VARCHAR" column="lead_dept_pro" />
+        <result property="coorDeptPro" jdbcType="VARCHAR" column="coor_dept_pro" />
+        <result property="leadDeptWorkload" jdbcType="VARCHAR" column="lead_dept_workload" />
+        <result property="coorDeptWorkload" jdbcType="VARCHAR" column="coor_dept_workload" />
+        <result property="inputWorkload" jdbcType="INTEGER" column="input_workload" />
+        <result property="lastInputWorkload" jdbcType="INTEGER" column="last_input_workload" />
+        <result property="remainWorkload" jdbcType="INTEGER" column="remain_workload" />
+        <result property="monInputWorkload" jdbcType="INTEGER" column="mon_input_workload" />
+        <result property="isSvnBuild" jdbcType="VARCHAR" column="is_svn_build" />
+        <result property="reqAbnorType" jdbcType="VARCHAR" column="req_abnor_type" />
+        <result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />
+        <result property="updateTime" jdbcType="TIMESTAMP" column="update_time" />
+        <result property="creatUser" jdbcType="VARCHAR" column="creat_user" />
+        <result property="updateUser" jdbcType="VARCHAR" column="update_user" />
+        <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -126,12 +126,12 @@
         select
         <include refid="Base_Column_List" />
         from t_demand_info
-        where req_inner_seq=#{req_inner_seq}
+        where req_inner_seq=#{reqInnerSeq}
     </select>
 
     <delete id="delete" parameterType="java.lang.String" >
         delete from t_demand_info
-        where req_inner_seq=#{req_inner_seq}
+        where req_inner_seq=#{reqInnerSeq}
     </delete>
 
     <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
@@ -194,238 +194,238 @@
         creat_user ,
         update_user)
         values(
-        #{req_inner_seq },
-        #{req_prd_line },
-        #{req_type },
-        #{req_sts },
-        #{req_no },
-        #{req_nm },
-        #{req_desc },
-        #{input_res },
-        #{dev_cycle },
-        #{exp_input },
-        #{prd_finsh_tm },
-        #{act_prd_finsh_tm },
-        #{pre_cur_period },
-        #{cur_mon_target },
-        #{exp_prd_release_tm },
-        #{devp_lead_dept },
-        #{devp_coor_dept },
-        #{req_pro_dept },
-        #{req_proposer },
-        #{req_mnger },
-        #{devp_res_mng },
-        #{req_start_mon },
-        #{req_impl_mon },
-        #{project_mng },
-        #{product_mng },
-        #{is_cut },
-        #{pre_mon_period },
-        #{qa_mng },
-        #{config_mng },
-        #{mon_remark },
-        #{devp_eng },
-        #{front_eng },
-        #{test_eng },
-        #{uat_update_tm },
-        #{act_uat_update_tm },
-        #{pre_tm },
-        #{test_finsh_tm },
-        #{act_test_finsh_tm },
-        #{risk_solution },
-        #{risk_feedback_tm },
-        #{end_mon_remark },
-        #{end_feedback_tm },
-        #{total_workload },
-        #{lead_dept_pro },
-        #{coor_dept_pro },
-        #{lead_dept_workload },
-        #{coor_dept_workload },
-        #{input_workload },
-        #{last_input_workload },
-        #{remain_workload },
-        #{mon_input_workload },
-        #{is_svn_build },
-        #{req_abnor_type },
-        #{creat_time },
-        #{update_time },
-        #{creat_user},
-        #{update_user})
+        #{reqInnerSeq },
+        #{reqPrdLine },
+        #{reqType },
+        #{reqSts },
+        #{reqNo },
+        #{reqNm },
+        #{reqDesc },
+        #{inputRes },
+        #{devCycle },
+        #{expInput },
+        #{prdFinshTm },
+        #{actPrdFinshTm },
+        #{preCurPeriod },
+        #{curMonTarget },
+        #{expPrdReleaseTm },
+        #{devpLeadDept },
+        #{devpCoorDept },
+        #{reqProDept },
+        #{reqProposer },
+        #{reqMnger },
+        #{devpResMng },
+        #{reqStartMon },
+        #{reqImplMon },
+        #{projectMng },
+        #{productMng },
+        #{isCut },
+        #{preMonPeriod },
+        #{qaMng },
+        #{configMng },
+        #{monRemark },
+        #{devpEng },
+        #{frontEng },
+        #{testEng },
+        #{uatUpdateTm },
+        #{actUatUpdateTm },
+        #{preTm },
+        #{testFinshTm },
+        #{actTestFinshTm},
+        #{riskSolution },
+        #{riskFeedbackTm },
+        #{endMonRemark },
+        #{endFeedbackTm },
+        #{totalWorkload },
+        #{leadDeptPro },
+        #{coorDeptPro },
+        #{leadDeptWorkload },
+        #{coorDeptWorkload },
+        #{inputWorkload },
+        #{lastInputWorkload },
+        #{remainWorkload },
+        #{monInputWorkload },
+        #{isSvnBuild },
+        #{reqAbnorType },
+        #{creatTime },
+        #{updateTime },
+        #{creatUser},
+        #{updateUser})
     </insert>
 
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
         update t_demand_info
         set
-        req_inner_seq =#{req_inner_seq }
-        <if test="req_prd_line != null and req_prd_line != ''">
-            ,req_prd_line =#{req_prd_line }
+        req_inner_seq =#{reqInnerSeq }
+        <if test="reqPrdLine != null and reqPrdLine != ''">
+            ,req_prd_line =#{reqPrdLine }
         </if>
-        <if test="req_type != null and req_type != ''">
-            ,req_type =#{req_type }
+        <if test="reqType != null and reqType != ''">
+            ,req_type =#{reqType }
         </if>
-        <if test="req_sts != null and req_sts != ''">
-            ,req_sts =#{req_sts }
+        <if test="reqSts != null and reqSts != ''">
+            ,req_sts =#{reqSts }
         </if>
-        <if test="req_no != null and req_no != ''">
-            ,req_no =#{req_no }
+        <if test="reqNo != null and reqNo != ''">
+            ,req_no =#{reqNo }
         </if>
-        <if test="req_nm != null and req_nm != ''">
-            ,req_nm =#{req_nm }
+        <if test="reqNm != null and reqNm != ''">
+            ,req_nm =#{reqNm }
         </if>
-        <if test="req_desc != null and req_desc != ''">
-            ,req_desc =#{req_desc }
+        <if test="reqDesc != null and reqDesc != ''">
+            ,req_desc =#{reqDesc }
         </if>
-        <if test="input_res != null">
-            ,input_res =#{input_res }
+        <if test="inputRes != null">
+            ,input_res =#{inputRes }
         </if>
-        <if test="dev_cycle != null">
-            ,dev_cycle =#{dev_cycle }
+        <if test="devCycle != null">
+            ,dev_cycle =#{devCycle }
         </if>
-        <if test="exp_input != null">
-            ,exp_input =#{exp_input }
+        <if test="expInput != null">
+            ,exp_input =#{expInput }
         </if>
-        <if test="prd_finsh_tm != null and prd_finsh_tm != ''">
-            ,prd_finsh_tm =#{prd_finsh_tm }
+        <if test="prdFinshTm != null and prdFinshTm != ''">
+            ,prd_finsh_tm =#{prdFinshTm }
         </if>
-        <if test="act_prd_finsh_tm != null and act_prd_finsh_tm != ''">
-            ,act_prd_finsh_tm =#{act_prd_finsh_tm }
+        <if test="actPrdFinshTm != null and actPrdFinshTm != ''">
+            ,act_prd_finsh_tm =#{actPrdFinshTm }
         </if>
-        <if test="pre_cur_period != null and pre_cur_period != ''">
-            ,pre_cur_period =#{pre_cur_period }
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            ,pre_cur_period =#{preCurPeriod }
         </if>
-        <if test="cur_mon_target != null and cur_mon_target != ''">
-            ,cur_mon_target =#{cur_mon_target }
+        <if test="curMonTarget != null and curMonTarget != ''">
+            ,cur_mon_target =#{curMonTarget }
         </if>
-        <if test="exp_prd_release_tm != null and exp_prd_release_tm != ''">
-            ,exp_prd_release_tm =#{exp_prd_release_tm }
+        <if test="expPrdReleaseTm != null and expPrdReleaseTm != ''">
+            ,exp_prd_release_tm =#{expPrdReleaseTm }
         </if>
-        <if test="devp_lead_dept != null and devp_lead_dept != ''">
-            ,devp_lead_dept =#{devp_lead_dept }
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept =#{devpLeadDept }
         </if>
-        <if test="devp_coor_dept != null and devp_coor_dept != ''">
-            ,devp_coor_dept =#{devp_coor_dept }
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept }
         </if>
-        <if test="req_pro_dept != null and req_pro_dept != ''">
-            ,req_pro_dept =#{req_pro_dept }
+        <if test="reqProDept != null and reqProDept != ''">
+            ,req_pro_dept =#{reqProDept }
         </if>
-        <if test="req_proposer != null and req_proposer != ''">
-            ,req_proposer =#{req_proposer }
+        <if test="reqProposer != null and reqProposer != ''">
+            ,req_proposer =#{reqProposer }
         </if>
-        <if test="req_mnger != null and req_mnger != ''">
-            ,req_mnger =#{req_mnger }
+        <if test="reqMnger != null and reqMnger != ''">
+            ,req_mnger =#{reqMnger }
         </if>
-        <if test="devp_res_mng != null and devp_res_mng != ''">
-            ,devp_res_mng =#{devp_res_mng }
+        <if test="devpResMng != null and devpResMng != ''">
+            ,devp_res_mng =#{devpResMng }
         </if>
-        <if test="req_start_mon != null and req_start_mon != ''">
-            ,req_start_mon =#{req_start_mon }
+        <if test="reqStartMon != null and reqStartMon != ''">
+            ,req_start_mon =#{reqStartMon }
         </if>
-        <if test="req_impl_mon != null and req_impl_mon != ''">
-            ,req_impl_mon =#{req_impl_mon }
+        <if test="reqImplMon != null and reqImplMon != ''">
+            ,req_impl_mon =#{reqImplMon }
         </if>
-        <if test="project_mng != null and project_mng != ''">
-            ,project_mng =#{project_mng }
+        <if test="projectMng != null and projectMng != ''">
+            ,project_mng =#{projectMng }
         </if>
-        <if test="product_mng != null and product_mng != ''">
-            ,product_mng =#{product_mng }
+        <if test="productMng != null and productMng != ''">
+            ,product_mng =#{productMng }
         </if>
-        <if test="is_cut != null and is_cut != ''">
-            ,is_cut =#{is_cut }
+        <if test="isCut != null and isCut != ''">
+            ,is_cut =#{isCut }
         </if>
-        <if test="pre_mon_period != null and pre_mon_period != ''">
-            ,pre_mon_period =#{pre_mon_period }
+        <if test="preMonPeriod != null and preMonPeriod != ''">
+            ,pre_mon_period =#{preMonPeriod }
         </if>
-        <if test="qa_mng != null and qa_mng != ''">
-            ,qa_mng =#{qa_mng }
+        <if test="qaMng != null and qaMng != ''">
+            ,qa_mng =#{qaMng }
         </if>
-        <if test="config_mng != null and config_mng != ''">
-            ,config_mng =#{config_mng }
+        <if test="configMng != null and configMng != ''">
+            ,config_mng =#{configMng }
         </if>
-        <if test="mon_remark != null and mon_remark != ''">
-            ,mon_remark =#{mon_remark }
+        <if test="monRemark != null and monRemark != ''">
+            ,mon_remark =#{monRemark }
         </if>
-        <if test="devp_eng != null and devp_eng != ''">
-            ,devp_eng =#{devp_eng }
+        <if test="devpEng != null and devpEng != ''">
+            ,devp_eng =#{devpEng }
         </if>
-        <if test="front_eng != null and front_eng != ''">
-            ,front_eng =#{front_eng }
+        <if test="frontEng != null and frontEng != ''">
+            ,front_eng =#{frontEng }
         </if>
-        <if test="test_eng != null and test_eng != ''">
-            ,test_eng =#{test_eng }
+        <if test="testEng != null and testEng != ''">
+            ,test_eng =#{testEng }
         </if>
-        <if test="uat_update_tm != null and uat_update_tm != ''">
-            ,uat_update_tm =#{uat_update_tm }
+        <if test="uatUpdateTm != null and uatUpdateTm != ''">
+            ,uat_update_tm =#{uatUpdateTm }
         </if>
-        <if test="act_uat_update_tm != null and act_uat_update_tm != ''">
-            ,act_uat_update_tm =#{act_uat_update_tm }
+        <if test="actUatUpdateTm != null and actUatUpdateTm != ''">
+            ,act_uat_update_tm =#{actUatUpdateTm }
         </if>
-        <if test="pre_tm != null and pre_tm != ''">
-            ,pre_tm =#{pre_tm }
+        <if test="preTm != null and preTm != ''">
+            ,pre_tm =#{preTm }
         </if>
-        <if test="test_finsh_tm != null and test_finsh_tm != ''">
-            ,test_finsh_tm =#{test_finsh_tm }
+        <if test="testFinshTm != null and testFinshTm != ''">
+            ,test_finsh_tm =#{testFinshTm }
         </if>
-        <if test="act_test_finsh_tm != null and act_test_finsh_tm != ''">
-            ,act_test_finsh_tm =#{act_test_finsh_tm }
+        <if test="actTestFinshTm != null and actTestFinshTm != ''">
+            ,act_test_finsh_tm =#{actTestFinshTm }
         </if>
-        <if test="risk_solution != null and risk_solution != ''">
-            ,risk_solution =#{risk_solution }
+        <if test="riskSolution != null and riskSolution != ''">
+            ,risk_solution =#{riskSolution }
         </if>
-        <if test="risk_feedback_tm != null and risk_feedback_tm != ''">
-            ,risk_feedback_tm =#{risk_feedback_tm }
+        <if test="riskFeedbackTm != null and riskFeedbackTm != ''">
+            ,risk_feedback_tm =#{riskFeedbackTm }
         </if>
-        <if test="end_mon_remark != null and end_mon_remark != ''">
-            ,end_mon_remark =#{end_mon_remark }
+        <if test="endMonRemark != null and endMonRemark != ''">
+            ,end_mon_remark =#{endMonRemark }
         </if>
-        <if test="end_feedback_tm != null and end_feedback_tm != ''">
-            ,end_feedback_tm =#{end_feedback_tm }
+        <if test="endFeedbackTm != null and endFeedbackTm != ''">
+            ,end_feedback_tm =#{endFeedbackTm }
         </if>
-        <if test="total_workload != null">
-            ,total_workload =#{total_workload }
+        <if test="totalWorkload != null">
+            ,total_workload =#{totalWorkload }
         </if>
-        <if test="lead_dept_pro != null and lead_dept_pro != ''">
-            ,lead_dept_pro =#{lead_dept_pro }
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro }
         </if>
-        <if test="coor_dept_pro != null and coor_dept_pro != ''">
-            ,coor_dept_pro =#{coor_dept_pro }
+        <if test="coorDeptPro != null and coorDeptPro != ''">
+            ,coor_dept_pro =#{coorDeptPro }
         </if>
-        <if test="lead_dept_workload != null and lead_dept_workload != ''">
-            ,lead_dept_workload =#{lead_dept_workload }
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload }
         </if>
-        <if test="coor_dept_workload != null and coor_dept_workload != ''">
-            ,coor_dept_workload =#{coor_dept_workload }
+        <if test="coorDeptWorkload != null and coorDeptWorkload != ''">
+            ,coor_dept_workload =#{coorDeptWorkload }
         </if>
-        <if test="input_workload != null">
-            ,input_workload =#{input_workload }
+        <if test="inputWorkload != null">
+            ,input_workload =#{inputWorkload }
         </if>
-        <if test="last_input_workload != null">
-            ,last_input_workload =#{last_input_workload }
+        <if test="lastInputWorkload != null">
+            ,last_input_workload =#{lastInputWorkload }
         </if>
-        <if test="remain_workload != null">
-            ,remain_workload =#{remain_workload }
+        <if test="remainWorkload != null">
+            ,remain_workload =#{remainWorkload }
         </if>
-        <if test="mon_input_workload != null">
-            ,mon_input_workload =#{mon_input_workload }
+        <if test="monInputWorkload != null">
+            ,mon_input_workload =#{monInputWorkload }
         </if>
-        <if test="is_svn_build != null and is_svn_build != ''">
-            ,is_svn_build=#{is_svn_build }
+        <if test="isSvnBuild != null and isSvnBuild != ''">
+            ,is_svn_build=#{isSvnBuild }
         </if>
-        <if test="req_abnor_type != null and req_abnor_type != ''">
-            ,req_abnor_type=#{req_abnor_type }
+        <if test="reqAbnorType != null and reqAbnorType != ''">
+            ,req_abnor_type=#{reqAbnorType }
         </if>
-        <if test="creat_time != null">
-            ,creat_time =#{creat_time,jdbcType=TIMESTAMP}
+        <if test="creatTime != null">
+            ,creat_time =#{creatTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="update_time != null">
-            ,update_time =#{update_time,jdbcType=TIMESTAMP}
+        <if test="updateTime != null">
+            ,update_time =#{updateTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="creat_user != null and creat_user != ''">
-            ,creat_user =#{creat_user}
+        <if test="creatUser != null and creatUser != ''">
+            ,creat_user =#{creatUser}
         </if>
-        <if test="update_user != null and update_user != ''">
-            ,update_user =#{update_user}
+        <if test="updateUser != null and updateUser != ''">
+            ,update_user =#{updateUser}
         </if>
-        where req_inner_seq =#{req_inner_seq }
+        where req_inner_seq =#{reqInnerSeq }
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
@@ -433,49 +433,49 @@
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
-            <if test="req_nm != null and req_nm != ''">
-                AND a.req_nm LIKE CONCAT('%',#{req_nm},'%')
+            <if test="reqNm != null and reqNm != ''">
+                AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
             </if>
-            <if test="req_no != null and req_no != ''">
-                AND a.req_no LIKE CONCAT('%',#{req_no},'%')
+            <if test="reqNo != null and reqNo != ''">
+                AND a.req_no LIKE CONCAT('%',#{reqNo},'%')
             </if>
-            <if test="req_type != null and req_type != ''">
-                AND a.req_type = #{req_type}
+            <if test="reqType != null and reqType != ''">
+                AND a.req_type = #{reqType}
             </if>
-            <if test="pre_cur_period != null and pre_cur_period != ''">
-                AND a.pre_cur_period = #{pre_cur_period}
+            <if test="preCurPeriod != null and preCurPeriod != ''">
+                AND a.pre_cur_period = #{preCurPeriod}
             </if>
-            <if test="req_start_mon != null and req_start_mon != ''">
-                AND a.req_start_mon = #{req_start_mon}
+            <if test="reqStartMon != null and reqStartMon != ''">
+                AND a.req_start_mon = #{reqStartMon}
             </if>
-            <if test="devp_lead_dept != null and devp_lead_dept != ''">
-                AND a.devp_lead_dept = #{devp_lead_dept}
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                AND a.devp_lead_dept = #{devpLeadDept}
             </if>
-            <if test="devp_coor_dept != null and devp_coor_dept != ''">
-                AND a.devp_coor_dept LIKE CONCAT('%',#{devp_coor_dept},'%')
+            <if test="devpCoorDept != null and devpCoorDept != ''">
+                AND a.devp_coor_dept LIKE CONCAT('%',#{devpCoorDept},'%')
             </if>
-            <if test="req_impl_mon != null and req_impl_mon != ''">
-                AND a.req_impl_mon = #{req_impl_mon}
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon = #{reqImplMon}
             </if>
-            <if test="req_prd_line !=null and req_prd_line != ''">
-                AND a.req_prd_line = #{req_prd_line}
+            <if test="reqPrdLine !=null and reqPrdLine != ''">
+                AND a.req_prd_line = #{reqPrdLine}
             </if>
-            <if test="req_mnger !=null and req_mnger != ''">
-                AND a.req_mnger LIKE CONCAT('%',#{req_mnger},'%')
+            <if test="reqMnger !=null and reqMnger != ''">
+                AND a.req_mnger LIKE CONCAT('%',#{reqMnger},'%')
             </if>
-            <if test="project_mng != null and project_mng != ''">
-                AND a.project_mng = #{project_mng}
+            <if test="projectMng != null and projectMng != ''">
+                AND a.project_mng = #{projectMng}
             </if>
-            <if test="product_mng != null and product_mng != ''">
-                AND a.product_mng = #{product_mng}
+            <if test="productMng != null and productMng != ''">
+                AND a.product_mng = #{productMng}
             </if>
-            <if test="is_svn_build != null and is_svn_build != ''">
-                AND a.is_svn_build = #{is_svn_build}
+            <if test="isSvnBuild != null and isSvnBuild != ''">
+                AND a.is_svn_build = #{isSvnBuild}
             </if>
-            <if test="req_sts !=null and req_sts != ''">
-                AND a.req_sts = #{req_sts}
+            <if test="reqSts !=null and reqSts != ''">
+                AND a.req_sts = #{reqSts}
             </if>
-            <if test="req_abnor_type !=null  and req_abnor_type != '' and req_abnor_type eq '01'">
+            <if test="reqAbnorType !=null  and reqAbnorType != '' and reqAbnorType eq '01'">
                 AND NOT ( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
                 OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
                 OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
@@ -483,7 +483,7 @@
                 AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )
             </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '02'">
+            <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '02'">
                 AND( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
                 OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
                 OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
@@ -491,26 +491,26 @@
                 AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )
             </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '03'">
+            <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '03'">
                 AND ( a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')   AND 30 > pre_cur_period
                 AND req_sts not in ('30','40') AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
             </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '04'">
+            <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '04'">
                 AND ( a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period
                 AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%04%' ) )
             </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '05'">
+            <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '05'">
                 AND ( a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
                 AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
                 OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%05%' ) )
             </if>
-            <if test="end_mon_remark eq '01'">
+            <if test="endMonRemark eq '01'">
                 AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
                 AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
             </if>
-            <if test="end_mon_remark eq '02'">
+            <if test="endMonRemark eq '02'">
                 AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
             </if>
@@ -523,11 +523,11 @@
         a.req_nm,a.req_no
         FROM t_demand_info a
         <where>
-            <if test="req_nm != null and req_nm != ''">
-                AND a.req_nm =#{req_nm}
+            <if test="reqNm != null and reqNm != ''">
+                AND a.req_nm =#{reqNm}
             </if>
-            <if test="req_no != null and req_no != ''">
-                OR a.req_no = #{req_no}
+            <if test="reqNo != null and reqNo != ''">
+                OR a.req_no = #{reqNo}
             </if>
         </where>
         group by a.req_nm,a.req_no
@@ -539,15 +539,15 @@
         FROM t_demand_info a
         where	1=1
         and	(
-        <if test="req_nm != null and req_nm != ''">
-            a.req_nm =#{req_nm}
+        <if test="reqNm != null and reqNm != ''">
+            a.req_nm =#{reqNm}
         </if>
-        <if test="req_no != null and req_no != ''">
-            OR a.req_no = #{req_no}
+        <if test="reqNo != null and reqNo != ''">
+            OR a.req_no = #{reqNo}
         </if>
         )
-        <if test="req_impl_mon != null and req_impl_mon != ''">
-            AND a.req_impl_mon =#{req_impl_mon}
+        <if test="reqImplMon != null and reqImplMon != ''">
+            AND a.req_impl_mon =#{reqImplMon}
         </if>
         group by a.req_nm,a.req_no,req_impl_mon
     </select>
@@ -568,47 +568,47 @@
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
-            <if test="req_nm != null and req_nm != ''">
-                AND a.req_nm LIKE CONCAT('%',#{req_nm},'%')
+            <if test="reqNm != null and reqNm != ''">
+                AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
             </if>
-            <if test="req_no != null and req_no != ''">
-                AND a.req_no LIKE CONCAT('%',#{req_no},'%')
+            <if test="reqNo != null and reqNo != ''">
+                AND a.req_no LIKE CONCAT('%',#{reqNo},'%')
             </if>
-            <if test="req_type != null and req_type != ''">
-                AND a.req_type = #{req_type}
+            <if test="reqType != null and reqType != ''">
+                AND a.req_type = #{reqType}
             </if>
-            <if test="pre_cur_period != null and pre_cur_period != ''">
-                AND a.pre_cur_period = #{pre_cur_period}
+            <if test="preCurPeriod != null and preCurPeriod != ''">
+                AND a.pre_cur_period = #{preCurPeriod}
             </if>
-            <if test="req_start_mon != null and req_start_mon != ''">
-                AND a.req_start_mon = #{req_start_mon}
+            <if test="reqStartMon != null and reqStartMon != ''">
+                AND a.req_start_mon = #{reqStartMon}
             </if>
-            <if test="devp_lead_dept != null and devp_lead_dept != ''">
-                AND a.devp_lead_dept = #{devp_lead_dept}
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                AND a.devp_lead_dept = #{devpLeadDept}
             </if>
-            <if test="devp_coor_dept != null and devp_coor_dept != ''">
-                AND a.devp_coor_dept LIKE CONCAT('%',#{devp_coor_dept},'%')
+            <if test="devpCoorDept != null and devpCoorDept != ''">
+                AND a.devp_coor_dept LIKE CONCAT('%',#{devpCoorDept},'%')
             </if>
-            <if test="req_impl_mon != null and req_impl_mon != ''">
-                AND a.req_impl_mon = #{req_impl_mon}
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon = #{reqImplMon}
             </if>
-            <if test="req_prd_line !=null and req_prd_line != ''">
-                AND a.req_prd_line = #{req_prd_line}
+            <if test="reqPrdLine !=null and reqPrdLine != ''">
+                AND a.req_prd_line = #{reqPrdLine}
             </if>
-            <if test="req_mnger !=null and req_mnger != ''">
-                AND a.req_mnger LIKE CONCAT('%',#{req_mnger},'%')
+            <if test="reqMnger !=null and reqMnger != ''">
+                AND a.req_mnger LIKE CONCAT('%',#{reqMnger},'%')
             </if>
-            <if test="req_abnor_type !=null  and req_abnor_type != '' and  req_abnor_type != '02'">
-                AND a.req_abnor_type LIKE CONCAT('%',#{req_abnor_type},'%')
+            <if test="reqAbnorType !=null  and reqAbnorType != '' and  reqAbnorType != '02'">
+                AND a.req_abnor_type LIKE CONCAT('%',#{reqAbnorType},'%')
             </if>
-            <if test="req_abnor_type !=null and req_abnor_type != '' and req_abnor_type eq '02'">
+            <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '02'">
                 AND a.req_abnor_type != '01'
             </if>
-            <if test="end_mon_remark eq '01'">
+            <if test="endMonRemark eq '01'">
                 AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
                 AND (a.end_mon_remark is NULL OR trim(a.end_mon_remark) = '')
             </if>
-            <if test="end_mon_remark eq '02'">
+            <if test="endMonRemark eq '02'">
                 AND  cast( a.pre_cur_period as SIGNED) &lt; cast( a.cur_mon_target as SIGNED)
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
             </if>
@@ -620,7 +620,7 @@
         select
         <include refid="Base_Column_List" />
         from t_demand_info
-        where req_impl_mon=#{req_impl_mon}
+        where req_impl_mon=#{reqImplMon}
         and pre_cur_period != '180'
         and req_sts not in ('30','40','50');
     </select>
@@ -685,271 +685,271 @@
 		creat_user ,
 		update_user)
 		values(
-		#{req_inner_seq },
-		#{req_prd_line },
-		#{req_type },
-		#{req_sts },
-		#{req_no },
-		#{req_nm },
-		#{req_desc },
-		#{input_res },
-		#{dev_cycle },
-		#{exp_input },
-		#{prd_finsh_tm },
-		#{act_prd_finsh_tm },
-		#{pre_cur_period },
-		#{cur_mon_target },
-		#{exp_prd_release_tm },
-		#{devp_lead_dept },
-		#{devp_coor_dept },
-		#{req_pro_dept },
-		#{req_proposer },
-		#{req_mnger },
-		#{devp_res_mng },
-		#{req_start_mon },
-		#{req_impl_mon },
-		#{project_mng },
-		#{product_mng },
-		#{is_cut },
-		#{pre_mon_period },
-		#{qa_mng },
-		#{config_mng },
-		#{mon_remark },
-		#{devp_eng },
-		#{front_eng },
-		#{test_eng },
-		#{uat_update_tm },
-		#{act_uat_update_tm },
-		#{pre_tm },
-		#{test_finsh_tm },
-		#{act_test_finsh_tm },
-		#{risk_solution },
-		#{risk_feedback_tm },
-		#{end_mon_remark },
-		#{end_feedback_tm },
-		#{total_workload },
-		#{lead_dept_pro },
-		#{coor_dept_pro },
-		#{lead_dept_workload },
-		#{coor_dept_workload },
-		#{input_workload },
-		#{last_input_workload },
-		#{remain_workload },
-		#{mon_input_workload },
-		#{is_svn_build },
-		#{req_abnor_type },
-		#{creat_time },
-		#{update_time },
-		#{creat_user},
-		#{update_user})
+		#{reqInnerSeq },
+		#{reqPrdLine },
+		#{reqType },
+		#{reqSts },
+		#{reqNo },
+		#{reqNm },
+		#{reqDesc },
+		#{inputRes },
+		#{devCycle },
+		#{expInput },
+		#{prdFinshTm },
+		#{actPrdFinshTm },
+		#{preCurPeriod },
+		#{curMonTarget },
+		#{expPrdReleaseTm },
+		#{devpLeadDept },
+		#{devpCoorDept },
+		#{reqProDept },
+		#{reqProposer },
+		#{reqMnger },
+		#{devpResMng },
+		#{reqStartMon },
+		#{reqImplMon },
+		#{projectMng },
+		#{productMng },
+		#{isCut },
+		#{preMonPeriod },
+		#{qaMng },
+		#{configMng },
+		#{monRemark },
+		#{devpEng },
+		#{frontEng },
+		#{testEng },
+		#{uatUpdateTm },
+		#{actUatUpdateTm },
+		#{preTm },
+		#{testFinshTm },
+		#{actTestFinshTm },
+		#{riskSolution },
+		#{riskFeedbackTm },
+		#{endMonRemark },
+		#{endFeedbackTm },
+		#{totalWorkload },
+		#{leadDeptPro },
+		#{coorDeptPro },
+		#{leadDeptWorkload },
+		#{coorDeptWorkload },
+		#{inputWorkload },
+		#{lastInputWorkload },
+		#{remainWorkload },
+		#{monInputWorkload },
+		#{isSvnBuild },
+		#{reqAbnorType },
+		#{creatTime },
+		#{updateTime },
+		#{creatUser},
+		#{updateUser})
 	</insert>
 
     <update id="updateStockReq" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         update t_demand_info
         set
-        req_inner_seq =#{req_inner_seq }
-        <if test="req_prd_line != null and req_prd_line != ''">
-            ,req_prd_line =#{req_prd_line }
+        req_inner_seq =#{reqInnerSeq }
+        <if test="reqPrdLine != null and reqPrdLine != ''">
+            ,req_prd_line =#{reqPrdLine }
         </if>
-        <if test="req_type != null and req_type != ''">
-            ,req_type =#{req_type }
+        <if test="reqType != null and reqType != ''">
+            ,req_type =#{reqType }
         </if>
-        <if test="req_sts != null and req_sts != ''">
-            ,req_sts =#{req_sts }
+        <if test="reqSts != null and reqSts != ''">
+            ,req_sts =#{reqSts }
         </if>
-        <if test="req_no != null and req_no != ''">
-            ,req_no =#{req_no }
+        <if test="reqNo != null and reqNo != ''">
+            ,req_no =#{reqNo }
         </if>
-        <if test="req_nm != null and req_nm != ''">
-            ,req_nm =#{req_nm }
+        <if test="reqNm != null and reqNm != ''">
+            ,req_nm =#{reqNm }
         </if>
-        <if test="req_desc != null and req_desc != ''">
-            ,req_desc =#{req_desc }
+        <if test="reqDesc != null and reqDesc != ''">
+            ,req_desc =#{reqDesc }
         </if>
-        <if test="input_res != null">
-            ,input_res =#{input_res }
+        <if test="inputRes != null">
+            ,input_res =#{inputRes }
         </if>
-        <if test="dev_cycle != null">
-            ,dev_cycle =#{dev_cycle }
+        <if test="devCycle != null">
+            ,dev_cycle =#{devCycle }
         </if>
-        <if test="exp_input != null">
-            ,exp_input =#{exp_input }
+        <if test="expInput != null">
+            ,exp_input =#{expInput }
         </if>
-        <if test="prd_finsh_tm != null and prd_finsh_tm != ''">
-            ,prd_finsh_tm =#{prd_finsh_tm }
+        <if test="prdFinshTm != null and prdFinshTm != ''">
+            ,prd_finsh_tm =#{prdFinshTm }
         </if>
-        <if test="act_prd_finsh_tm != null and act_prd_finsh_tm != ''">
-            ,act_prd_finsh_tm =#{act_prd_finsh_tm }
+        <if test="actPrdFinshTm != null and actPrdFinshTm != ''">
+            ,act_prd_finsh_tm =#{actPrdFinshTm }
         </if>
-        <if test="pre_cur_period != null and pre_cur_period != ''">
-            ,pre_cur_period =#{pre_cur_period }
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            ,pre_cur_period =#{preCurPeriod }
         </if>
-        <if test="cur_mon_target != null and cur_mon_target != ''">
-            ,cur_mon_target =#{cur_mon_target }
+        <if test="curMonTarget != null and curMonTarget != ''">
+            ,cur_mon_target =#{curMonTarget }
         </if>
-        <if test="exp_prd_release_tm != null and exp_prd_release_tm != ''">
-            ,exp_prd_release_tm =#{exp_prd_release_tm }
+        <if test="expPrdReleaseTm != null and expPrdReleaseTm != ''">
+            ,exp_prd_release_tm =#{expPrdReleaseTm }
         </if>
-        <if test="devp_lead_dept != null and devp_lead_dept != ''">
-            ,devp_lead_dept =#{devp_lead_dept }
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept =#{devpLeadDept }
         </if>
-        <if test="devp_coor_dept != null and devp_coor_dept != ''">
-            ,devp_coor_dept =#{devp_coor_dept }
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept }
         </if>
-        <if test="req_pro_dept != null and req_pro_dept != ''">
-            ,req_pro_dept =#{req_pro_dept }
+        <if test="reqProDept != null and reqProDept != ''">
+            ,req_pro_dept =#{reqProDept }
         </if>
-        <if test="req_proposer != null and req_proposer != ''">
-            ,req_proposer =#{req_proposer }
+        <if test="reqProposer != null and reqProposer != ''">
+            ,req_proposer =#{reqProposer }
         </if>
-        <if test="req_mnger != null and req_mnger != ''">
-            ,req_mnger =#{req_mnger }
+        <if test="reqMnger != null and reqMnger != ''">
+            ,req_mnger =#{reqMnger }
         </if>
-        <if test="devp_res_mng != null and devp_res_mng != ''">
-            ,devp_res_mng =#{devp_res_mng }
+        <if test="devpResMng != null and devpResMng != ''">
+            ,devp_res_mng =#{devpResMng }
         </if>
-        <if test="req_start_mon != null and req_start_mon != ''">
-            ,req_start_mon =#{req_start_mon }
+        <if test="reqStartMon != null and reqStartMon != ''">
+            ,req_start_mon =#{reqStartMon }
         </if>
-        <if test="req_impl_mon != null and req_impl_mon != ''">
-            ,req_impl_mon =#{req_impl_mon }
+        <if test="reqImplMon != null and reqImplMon != ''">
+            ,req_impl_mon =#{reqImplMon }
         </if>
-        <if test="project_mng != null and project_mng != ''">
-            ,project_mng =#{project_mng }
+        <if test="projectMng != null and projectMng != ''">
+            ,project_mng =#{projectMng }
         </if>
-        <if test="product_mng != null and product_mng != ''">
-            ,product_mng =#{product_mng }
+        <if test="productMng != null and productMng != ''">
+            ,product_mng =#{productMng }
         </if>
-        <if test="is_cut != null and is_cut != ''">
-            ,is_cut =#{is_cut }
+        <if test="isCut != null and isCut != ''">
+            ,is_cut =#{isCut }
         </if>
-        <if test="pre_mon_period != null and pre_mon_period != ''">
-            ,pre_mon_period =#{pre_mon_period }
+        <if test="preMonPeriod != null and preMonPeriod != ''">
+            ,pre_mon_period =#{preMonPeriod }
         </if>
-        <if test="qa_mng != null and qa_mng != ''">
-            ,qa_mng =#{qa_mng }
+        <if test="qaMng != null and qaMng != ''">
+            ,qa_mng =#{qaMng }
         </if>
-        <if test="config_mng != null and config_mng != ''">
-            ,config_mng =#{config_mng }
+        <if test="configMng != null and configMng != ''">
+            ,config_mng =#{configMng }
         </if>
-        <if test="mon_remark != null and mon_remark != ''">
-            ,mon_remark =#{mon_remark }
+        <if test="monRemark != null and monRemark != ''">
+            ,mon_remark =#{monRemark }
         </if>
-        <if test="devp_eng != null and devp_eng != ''">
-            ,devp_eng =#{devp_eng }
+        <if test="devpEng != null and devpEng != ''">
+            ,devp_eng =#{devpEng }
         </if>
-        <if test="front_eng != null and front_eng != ''">
-            ,front_eng =#{front_eng }
+        <if test="frontEng != null and frontEng != ''">
+            ,front_eng =#{frontEng }
         </if>
-        <if test="test_eng != null and test_eng != ''">
-            ,test_eng =#{test_eng }
+        <if test="testEng != null and testEng != ''">
+            ,test_eng =#{testEng }
         </if>
-        <if test="uat_update_tm != null and uat_update_tm != ''">
-            ,uat_update_tm =#{uat_update_tm }
+        <if test="uatUpdateTm != null and uatUpdateTm != ''">
+            ,uat_update_tm =#{uatUpdateTm }
         </if>
-        <if test="act_uat_update_tm != null and act_uat_update_tm != ''">
-            ,act_uat_update_tm =#{act_uat_update_tm }
+        <if test="actUatUpdateTm != null and actUatUpdateTm != ''">
+            ,act_uat_update_tm =#{actUatUpdateTm }
         </if>
-        <if test="pre_tm != null and pre_tm != ''">
-            ,pre_tm =#{pre_tm }
+        <if test="preTm != null and preTm != ''">
+            ,pre_tm =#{preTm }
         </if>
-        <if test="test_finsh_tm != null and test_finsh_tm != ''">
-            ,test_finsh_tm =#{test_finsh_tm }
+        <if test="testFinshTm != null and testFinshTm != ''">
+            ,test_finsh_tm =#{testFinshTm }
         </if>
-        <if test="act_test_finsh_tm != null and act_test_finsh_tm != ''">
-            ,act_test_finsh_tm =#{act_test_finsh_tm }
+        <if test="actTestFinshTm != null and actTestFinshTm != ''">
+            ,act_test_finsh_tm =#{actTestFinshTm }
         </if>
-        <if test="risk_solution != null and risk_solution != ''">
-            ,risk_solution =#{risk_solution }
+        <if test="riskSolution != null and riskSolution != ''">
+            ,risk_solution =#{riskSolution }
         </if>
-        <if test="risk_feedback_tm != null and risk_feedback_tm != ''">
-            ,risk_feedback_tm =#{risk_feedback_tm }
+        <if test="riskFeedbackTm != null and riskFeedbackTm != ''">
+            ,risk_feedback_tm =#{riskFeedbackTm }
         </if>
-        <if test="end_mon_remark != null and end_mon_remark != ''">
-            ,end_mon_remark =#{end_mon_remark }
+        <if test="endMonRemark != null and endMonRemark != ''">
+            ,end_mon_remark =#{endMonRemark }
         </if>
-        <if test="end_feedback_tm != null and end_feedback_tm != ''">
-            ,end_feedback_tm =#{end_feedback_tm }
+        <if test="endFeedbackTm != null and endFeedbackTm != ''">
+            ,end_feedback_tm =#{endFeedbackTm }
         </if>
-        <if test="total_workload != null">
-            ,total_workload =#{total_workload }
+        <if test="totalWorkload != null">
+            ,total_workload =#{totalWorkload }
         </if>
-        <if test="lead_dept_pro != null and lead_dept_pro != ''">
-            ,lead_dept_pro =#{lead_dept_pro }
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro }
         </if>
-        <if test="coor_dept_pro != null and coor_dept_pro != ''">
-            ,coor_dept_pro =#{coor_dept_pro }
+        <if test="coorDeptPro != null and coorDeptPro != ''">
+            ,coor_dept_pro =#{coorDeptPro }
         </if>
-        <if test="lead_dept_workload != null and lead_dept_workload != ''">
-            ,lead_dept_workload =#{lead_dept_workload }
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload }
         </if>
-        <if test="coor_dept_workload != null and coor_dept_workload != ''">
-            ,coor_dept_workload =#{coor_dept_workload }
+        <if test="coorDeptWorkload != null and coorDeptWorkload != ''">
+            ,coor_dept_workload =#{coorDeptWorkload }
         </if>
-        <if test="input_workload != null">
-            ,input_workload =#{input_workload }
+        <if test="inputWorkload != null">
+            ,input_workload =#{inputWorkload }
         </if>
-        <if test="last_input_workload != null">
-            ,last_input_workload =#{last_input_workload }
+        <if test="lastInputWorkload != null">
+            ,last_input_workload =#{lastInputWorkload }
         </if>
-        <if test="remain_workload != null">
-            ,remain_workload =#{remain_workload }
+        <if test="remainWorkload != null">
+            ,remain_workload =#{remainWorkload }
         </if>
-        <if test="mon_input_workload != null">
-            ,mon_input_workload =#{mon_input_workload }
+        <if test="monInputWorkload != null">
+            ,mon_input_workload =#{monInputWorkload }
         </if>
-        <if test="is_svn_build != null and is_svn_build != ''">
-            ,is_svn_build=#{is_svn_build }
+        <if test="isSvnBuild != null and is_svn_build != ''">
+            ,is_svn_build=#{isSvnBuild }
         </if>
-        <if test="req_abnor_type != null and req_abnor_type != ''">
-            ,req_abnor_type=#{req_abnor_type }
+        <if test="reqAbnorType != null and req_abnor_type != ''">
+            ,req_abnor_type=#{reqAbnorType }
         </if>
-        <if test="creat_time != null">
-            ,creat_time =#{creat_time,jdbcType=TIMESTAMP}
+        <if test="creatTime != null">
+            ,creat_time =#{creatTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="update_time != null">
-            ,update_time =#{update_time,jdbcType=TIMESTAMP}
+        <if test="updateTime != null">
+            ,update_time =#{updateTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="creat_user != null and creat_user != ''">
-            ,creat_user =#{creat_user}
+        <if test="creatUser != null and creat_user != ''">
+            ,creat_user =#{creatUser}
         </if>
-        <if test="update_user != null and update_user != ''">
-            ,update_user =#{update_user}
+        <if test="updateUser != null and update_user != ''">
+            ,update_user =#{updateUser}
         </if>
-        where req_inner_seq =#{req_inner_seq }
+        where req_inner_seq =#{reqInnerSeq }
     </update>
     <update id="updateExtraTm" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         UPDATE t_demand_extra
         SET
-        req_nm  = #{req_nm}
-        <if test="req_no != null and req_no != ''">
-            ,req_no = #{req_no}
+        req_nm  = #{reqNm}
+        <if test="reqNo != null and reqNo != ''">
+            ,req_no = #{reqNo}
         </if>
-        <if test="project_start_tm != null and project_start_tm != ''">
-            ,project_start_tm = #{project_start_tm}
+        <if test="projectStartTm != null and projectStartTm != ''">
+            ,project_start_tm = #{projectStartTm}
         </if>
-        <if test="act_prd_upload_tm != null and act_prd_upload_tm != ''">
-            ,act_prd_upload_tm = #{act_prd_upload_tm}
+        <if test="actPrdUploadTm != null and actPrdUploadTm != ''">
+            ,act_prd_upload_tm = #{actPrdUploadTm}
         </if>
-        <if test="act_workload_upload_tm != null and act_workload_upload_tm != ''">
-            ,act_workload_upload_tm = #{act_workload_upload_tm}
+        <if test="actWorkloadUploadTm != null and actWorkloadUploadTm != ''">
+            ,act_workload_upload_tm = #{actWorkloadUploadTm}
         </if>
-        <if test="act_sit_upload_tm != null and act_sit_upload_tm != ''">
-            ,act_sit_upload_tm = #{act_sit_upload_tm}
+        <if test="actSitUploadTm != null and actSitUploadTm != ''">
+            ,act_sit_upload_tm = #{actSitUploadTm}
         </if>
-        <if test="act_test_cases_upload_tm != null and act_test_cases_upload_tm != ''">
-            ,act_test_cases_upload_tm = #{act_test_cases_upload_tm}
+        <if test="actTestCasesUploadTm != null and actTestCasesUploadTm != ''">
+            ,act_test_cases_upload_tm = #{actTestCasesUploadTm}
         </if>
-        <if test="act_uat_upload_tm != null and act_uat_upload_tm != ''">
-            ,act_uat_upload_tm = #{act_uat_upload_tm}
+        <if test="actUatUploadTm != null and actUatUploadTm != ''">
+            ,act_uat_upload_tm = #{actUatUploadTm}
         </if>
-        <if test="act_pre_upload_tm != null and act_pre_upload_tm != ''">
-            ,act_pre_upload_tm = #{act_pre_upload_tm}
+        <if test="actPreUploadTm != null and actPreUploadTm != ''">
+            ,act_pre_upload_tm = #{actPreUploadTm}
         </if>
-        <if test="act_production_upload_tm != null and act_production_upload_tm != ''">
-            ,act_production_upload_tm= #{act_production_upload_tm}
+        <if test="actProductionUploadTm != null and actProductionUploadTm != ''">
+            ,act_production_upload_tm= #{actProductionUploadTm}
         </if>
-        where pro_id = #{pro_id}
+        where pro_id = #{proId}
     </update>
     <insert id="insertExtraTm" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
 		INSERT into t_demand_extra(
@@ -964,16 +964,16 @@
 		act_pre_upload_tm,
 		act_production_upload_tm
 		) VALUES(
-		#{req_no},
-		#{req_nm},
-		#{project_start_tm},
-		#{act_prd_upload_tm},
-		#{act_workload_upload_tm},
-		#{act_sit_upload_tm},
-		#{act_test_cases_upload_tm},
-		#{act_uat_upload_tm},
-		#{act_pre_upload_tm},
-		#{act_production_upload_tm}
+		#{reqNo},
+		#{reqNm},
+		#{projectStartTm},
+		#{actPrdUploadTm},
+		#{actWorkloadUploadTm},
+		#{actSitUploadTm},
+		#{actTestCasesUploadTm},
+		#{actUatUploadTm},
+		#{actPreUploadTm},
+		#{actProductionUploadTm}
 		)
 	</insert>
     <select id="getExtraTm" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
@@ -989,23 +989,23 @@
         act_production_upload_tm
         FROM t_demand_extra
         <where>
-            <if test="req_nm != null and req_nm != ''">
-                and req_nm  = #{req_nm}
+            <if test="reqNm != null and reqNm != ''">
+                and req_nm  = #{reqNm}
             </if>
-            <if test="req_no != null and req_no != ''">
-                or req_no = #{req_no}
+            <if test="reqNo != null and reqNo != ''">
+                or req_no = #{reqNo}
             </if>
         </where>
     </select>
     <update id="updatePreCurPeriod" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         UPDATE t_demand_info
         SET
-        <if test="pre_cur_period != null and pre_cur_period != ''">
-            pre_cur_period =#{pre_cur_period}
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            pre_cur_period =#{preCurPeriod}
         </if>
-        <if test="req_sts == '10' or req_sts == '20' or req_sts == '30' or req_sts == '40' or req_sts == '50'">
-            ,req_sts =#{req_sts}
+        <if test="reqSts == '10' or reqSts == '20' or reqSts == '30' or reqSts == '40' or reqSts == '50'">
+            ,req_sts =#{reqSts}
         </if>
-        WHERE req_inner_seq = #{req_inner_seq}
+        WHERE req_inner_seq = #{reqInnerSeq}
     </update>
 </mapper>

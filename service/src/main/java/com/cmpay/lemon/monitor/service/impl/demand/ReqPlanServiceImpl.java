@@ -103,34 +103,34 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i = 0; i < demandBOList.size(); i++) {
-            String reqAbnorType = demandBOList.get(i).getReq_abnor_type();
+            String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
-            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReq_inner_seq());
+            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
 
             //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
-            if (StringUtils.isNotBlank(demand.getPrd_finsh_tm()) && StringUtils.isNotBlank(demand.getUat_update_tm())
-                    && StringUtils.isNotBlank(demand.getTest_finsh_tm()) && StringUtils.isNotBlank(demand.getPre_cur_period())
-                    && StringUtils.isNotBlank(demand.getReq_sts())) {
+            if (StringUtils.isNotBlank(demand.getPrdFinshTm()) && StringUtils.isNotBlank(demand.getUatUpdateTm())
+                    && StringUtils.isNotBlank(demand.getTestFinshTm()) && StringUtils.isNotBlank(demand.getPreCurPeriod())
+                    && StringUtils.isNotBlank(demand.getReqSts())) {
                 //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
-                if (time.compareTo(demand.getPrd_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) < 30
-                        && "30".compareTo(demand.getReq_sts()) != 0 && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < 30
+                        && "30".compareTo(demand.getReqSts()) != 0 && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "需求进度滞后,";
                 }
-                if (time.compareTo(demand.getUat_update_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 30
-                        && Integer.parseInt(demand.getPre_cur_period()) < 120 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 30
+                        && Integer.parseInt(demand.getPreCurPeriod()) < 120 && "30".compareTo(demand.getReqSts()) != 0
+                        && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "开发进度滞后,";
                 }
-                if (time.compareTo(demand.getTest_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 120
-                        && Integer.parseInt(demand.getPre_cur_period()) < 140 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 120
+                        && Integer.parseInt(demand.getPreCurPeriod()) < 140 && "30".compareTo(demand.getReqSts()) != 0
+                        && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "测试进度滞后";
                 }
                 if (StringUtils.isBlank(reqAbnorTypeAll)) {
                     reqAbnorTypeAll += "正常";
                 }
             } else if (reqAbnorType.indexOf("01") != -1) {
-                demandBOList.get(i).setReq_abnor_type("正常");
+                demandBOList.get(i).setReqAbnorType("正常");
                 continue;
             } else {
                 if (reqAbnorType.indexOf("03") != -1) {
@@ -146,9 +146,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
             if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
                 reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+                demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
             } else {
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+                demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
             }
         }
         DemandRspBO demandRspBO = new DemandRspBO();
@@ -169,17 +169,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(DemandBO demandBO) {
         try {
-            if (!"30".equals(demandBO.getReq_sts()) && !"40".equals(demandBO.getReq_sts())) {
+            if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
                 //修改需求状态
-                if ("10".equals(demandBO.getPre_cur_period())) {
+                if ("10".equals(demandBO.getPreCurPeriod())) {
                     //提出
-                    demandBO.setReq_sts("10");
-                } else if ("180".equals(demandBO.getPre_cur_period())) {
+                    demandBO.setReqSts("10");
+                } else if ("180".equals(demandBO.getPreCurPeriod())) {
                     //完成
-                    demandBO.setReq_sts("50");
+                    demandBO.setReqSts("50");
                 } else {
                     //进行中
-                    demandBO.setReq_sts("20");
+                    demandBO.setReqSts("20");
                 }
             }
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
@@ -202,17 +202,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
         try {
-            if (!"30".equals(demandBO.getReq_sts()) && !"40".equals(demandBO.getReq_sts())) {
+            if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
                 //修改需求状态
-                if ("10".equals(demandBO.getPre_cur_period())) {
+                if ("10".equals(demandBO.getPreCurPeriod())) {
                     //提出
-                    demandBO.setReq_sts("10");
-                } else if ("180".equals(demandBO.getPre_cur_period())) {
+                    demandBO.setReqSts("10");
+                } else if ("180".equals(demandBO.getPreCurPeriod())) {
                     //完成
-                    demandBO.setReq_sts("50");
+                    demandBO.setReqSts("50");
                 } else {
                     //进行中
-                    demandBO.setReq_sts("20");
+                    demandBO.setReqSts("20");
                 }
             }
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
@@ -230,15 +230,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 根据内部编号查询项目启动信息
      */
     @Override
-    public  ProjectStartBO goProjectStart(String req_inner_seq){
-        DemandDO demandDO = demandDao.get(req_inner_seq);
+    public  ProjectStartBO goProjectStart(String reqInnerSeq){
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
         System.out.println("service："+demandDO.toString());
         ProjectStartDO projectStartDO = new ProjectStartDO();
-        projectStartDO.setReq_nm(demandDO.getReq_nm());
-        projectStartDO.setReq_no(demandDO.getReq_no());
-        projectStartDO.setReq_inner_seq(demandDO.getReq_inner_seq());
+        projectStartDO.setReqNm(demandDO.getReqNm());
+        projectStartDO.setReqNo(demandDO.getReqNo());
+        projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
         Map<String, String> resMap = new HashMap<>();
-        resMap = reqPlanService.getMailbox(req_inner_seq);
+        resMap = reqPlanService.getMailbox(reqInnerSeq);
         System.out.println("邮箱信息resMap："+resMap);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
@@ -266,7 +266,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 获取邮箱
      */
     @Override
-    public Map<String,String> getMailbox(String req_inner_seq){
+    public Map<String,String> getMailbox(String reqInnerSeq){
         Map<String, String> resMap = new HashMap<>();
         DemandDO demandDO = new DemandDO();
         //发送的邮箱
@@ -278,18 +278,18 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         //所有部门主管邮箱
         String devpEmail = "";
         //根据内部编号查询所有相关人员
-        DemandDO bean = demandDao.get(req_inner_seq);
+        DemandDO bean = demandDao.get(reqInnerSeq);
         //后台开发工程师
-        String[] devp_eng = StringUtils.isBlank(bean.getDevp_eng()) ? null : bean.getDevp_eng().split("、");
+        String[] devp_eng = StringUtils.isBlank(bean.getDevpEng()) ? null : bean.getDevpEng().split("、");
         String devp_eng_email = "";
         //前端开发工程师
-        String[] front_eng = StringUtils.isBlank(bean.getFront_eng()) ? null : bean.getFront_eng().split("、");
+        String[] front_eng = StringUtils.isBlank(bean.getFrontEng()) ? null : bean.getFrontEng().split("、");
         String front_eng_email = "";
         //测试工程师
-        String[] test_eng = StringUtils.isBlank(bean.getTest_eng()) ? null : bean.getTest_eng().split("、");
+        String[] test_eng = StringUtils.isBlank(bean.getTestEng()) ? null : bean.getTestEng().split("、");
         String test_eng_email = "";
         //配置人员
-        String[] config_mng = StringUtils.isBlank(bean.getConfig_mng()) ? null : bean.getConfig_mng().split("、");
+        String[] config_mng = StringUtils.isBlank(bean.getConfigMng()) ? null : bean.getConfigMng().split("、");
         String config_mng_email = "";
         //查询项目成员邮箱(后台开发工程师、项目经理、产品经理、前端开发工程师、测试工程师、配置人员、QA人员)
         if (devp_eng != null) {
@@ -297,13 +297,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for (int i = 0; i < devp_eng.length; i++) {
                     demandDO = planDao.searchUserEmail(devp_eng[i]);
                     if (demandDO != null) {
-                        devp_eng_email += demandDO.getMon_remark() + ";";
+                        devp_eng_email += demandDO.getMonRemark() + ";";
                     }
                 }
             } else {
-                demandDO = planDao.searchUserEmail(bean.getDevp_eng());
+                demandDO = planDao.searchUserEmail(bean.getDevpEng());
                 if (demandDO != null) {
-                    devp_eng_email += demandDO.getMon_remark() + ";";
+                    devp_eng_email += demandDO.getMonRemark() + ";";
                 }
             }
         }
@@ -313,13 +313,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for (int i = 0; i < front_eng.length; i++) {
                     demandDO = planDao.searchUserEmail(front_eng[i]);
                     if (demandDO != null) {
-                        front_eng_email += demandDO.getMon_remark() + ";";
+                        front_eng_email += demandDO.getMonRemark() + ";";
                     }
                 }
             } else {
-                demandDO = planDao.searchUserEmail(bean.getFront_eng());
+                demandDO = planDao.searchUserEmail(bean.getFrontEng());
                 if (demandDO != null) {
-                    front_eng_email += demandDO.getMon_remark() + ";";
+                    front_eng_email += demandDO.getMonRemark() + ";";
                 }
             }
         }
@@ -329,13 +329,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for (int i = 0; i < test_eng.length; i++) {
                     demandDO = planDao.searchUserEmail(test_eng[i]);
                     if (demandDO != null) {
-                        test_eng_email += demandDO.getMon_remark() + ";";
+                        test_eng_email += demandDO.getMonRemark() + ";";
                     }
                 }
             } else {
-                demandDO = planDao.searchUserEmail(bean.getTest_eng());
+                demandDO = planDao.searchUserEmail(bean.getTestEng());
                 if (demandDO != null) {
-                    test_eng_email += demandDO.getMon_remark() + ";";
+                    test_eng_email += demandDO.getMonRemark() + ";";
                 }
             }
         }
@@ -345,19 +345,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for (int i = 0; i < config_mng.length; i++) {
                     demandDO = planDao.searchUserEmail(config_mng[i]);
                     if (demandDO != null) {
-                        config_mng_email += demandDO.getMon_remark() + ";";
+                        config_mng_email += demandDO.getMonRemark() + ";";
                     }
                 }
             } else {
-                demandDO = planDao.searchUserEmail(bean.getConfig_mng());
+                demandDO = planDao.searchUserEmail(bean.getConfigMng());
                 if (demandDO != null) {
-                    config_mng_email += demandDO.getMon_remark() + ";";
+                    config_mng_email += demandDO.getMonRemark() + ";";
                 }
             }
         }
-        demandDO = planDao.searchOtherUserEmail(req_inner_seq);
+        demandDO = planDao.searchOtherUserEmail(reqInnerSeq);
         if (demandDO != null) {
-            String proMemberEmailAll = devp_eng_email + front_eng_email + test_eng_email + config_mng_email + demandDO.getMon_remark() + ";";
+            String proMemberEmailAll = devp_eng_email + front_eng_email + test_eng_email + config_mng_email + demandDO.getMonRemark() + ";";
             String[] proMemberEmailSplit = proMemberEmailAll.split(";");
             //去除重复的字符串
             List<String> list = new ArrayList<>();
@@ -371,14 +371,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
         }
         //查询基地邮箱(需求提出人，需求负责人,开发负责人)
-        demandDO = planDao.findBaseChargeEmailByName(req_inner_seq);
+        demandDO = planDao.findBaseChargeEmailByName(reqInnerSeq);
         if (demandDO != null) {
-            jdEmail = demandDO.getMon_remark() + ";";
+            jdEmail = demandDO.getMonRemark() + ";";
         }
         //查询部门邮箱(主导部门和配合部门，去除配合部门测试部)
-        demandDO = planDao.findDevpEmail(req_inner_seq);
+        demandDO = planDao.findDevpEmail(reqInnerSeq);
         if (demandDO != null) {
-            devpEmail = demandDO.getMon_remark() + ";";
+            devpEmail = demandDO.getMonRemark() + ";";
         }
         //测试部邮箱(田群、吴暇、谭杰、张勇、左娟)
         MailGroupDO mailBean = operationProductionDao.findMailGroupBeanDetail("4");
@@ -403,7 +403,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //"项目启动失败，收件人必填，多个“;”分割!"
             BusinessException.throwBusinessException(MsgEnum.ERROR_SENDT0_ISBLANK);
         }
-        String req_inner_seq = projectStartBO.getReq_inner_seq();
+        String req_inner_seq = projectStartBO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(req_inner_seq);
         DemandDO bean = new DemandDO();
         //String currentUser =  SecurityUtils.getLoginName();
@@ -412,16 +412,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_PLAN_NULL);
         } else {
             //将页面的需求编码值set进去，并更新
-            bean.setReq_inner_seq(reqPlan.getReq_inner_seq());
-            bean.setReq_no(projectStartBO.getReq_no());
+            bean.setReqInnerSeq(reqPlan.getReqInnerSeq());
+            bean.setReqNo(projectStartBO.getReqNo());
             demandDao.update(bean);
-            reqPlan.setReq_no(projectStartBO.getReq_no());
+            reqPlan.setReqNo(projectStartBO.getReqNo());
 
-            if(StringUtils.isBlank(reqPlan.getReq_no())||StringUtils.isBlank(reqPlan.getReq_nm())){
+            if(StringUtils.isBlank(reqPlan.getReqNo())||StringUtils.isBlank(reqPlan.getReqNm())){
                 //"项目启动失败，需求编号和需求名称不能为空!"
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQNO_REQNM_ISBLANK);
             }
-            String projectMng = reqPlan.getProject_mng();
+            String projectMng = reqPlan.getProjectMng();
 //            if (!currentUser.equals(projectMng)) {
 //                //"项目启动失败，只能有项目经理进行项目启动"
 //                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
@@ -440,15 +440,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN+message);
             }
             //文档建立成功后，更新字段 is_svn_build
-            bean.setIs_svn_build("是");
+            bean.setIsSvnBuild("是");
             demandDao.update(bean);
         } catch (Exception e1) {
             // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
             BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID+ e1.getMessage());
         }
         try {
-            String subject = "【项目启动】" + reqPlan.getReq_no() + "_" + reqPlan.getReq_nm() + "_"
-                    + reqPlan.getProject_mng();
+            String subject = "【项目启动】" + reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_"
+                    + reqPlan.getProjectMng();
             String content = genProjectStartContent(reqPlan);
             String message = reqPlanService.sendMail(sendTo, copyTo, content, subject, null);
             if (StringUtils.isNotBlank(message)) {
@@ -456,7 +456,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL+message);
             }
             //启动成功后记录时间
-            reqPlan.setProject_start_tm(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
+            reqPlan.setProjectStartTm(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
             demandDao.update(reqPlan);
         } catch (Exception e) {
             e.printStackTrace();
@@ -471,12 +471,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * @return
      */
     private boolean notFinishInfo(DemandDO reqPlan) {
-        return StringUtils.isEmpty(reqPlan.getProject_mng()) || StringUtils.isEmpty(reqPlan.getProduct_mng())
-                || StringUtils.isEmpty(reqPlan.getDevp_eng()) || StringUtils.isEmpty(reqPlan.getFront_eng())
-                || StringUtils.isEmpty(reqPlan.getTest_eng()) || StringUtils.isEmpty(reqPlan.getQa_mng())
-                || StringUtils.isEmpty(reqPlan.getConfig_mng()) || StringUtils.isEmpty(reqPlan.getPrd_finsh_tm())
-                || StringUtils.isEmpty(reqPlan.getUat_update_tm()) || StringUtils.isEmpty(reqPlan.getTest_finsh_tm())
-                || StringUtils.isEmpty(reqPlan.getPre_tm()) || StringUtils.isEmpty(reqPlan.getPrd_finsh_tm());
+        return StringUtils.isEmpty(reqPlan.getProjectMng()) || StringUtils.isEmpty(reqPlan.getProductMng())
+                || StringUtils.isEmpty(reqPlan.getDevpEng()) || StringUtils.isEmpty(reqPlan.getFrontEng())
+                || StringUtils.isEmpty(reqPlan.getTestEng()) || StringUtils.isEmpty(reqPlan.getQaMng())
+                || StringUtils.isEmpty(reqPlan.getConfigMng()) || StringUtils.isEmpty(reqPlan.getPrdFinshTm())
+                || StringUtils.isEmpty(reqPlan.getUatUpdateTm()) || StringUtils.isEmpty(reqPlan.getTestFinshTm())
+                || StringUtils.isEmpty(reqPlan.getPreTm()) || StringUtils.isEmpty(reqPlan.getPrdFinshTm());
     }
 
     /**
@@ -490,7 +490,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
         SVNClientManager clientManager = SVNUtil.authSvn(SvnConstant.SvnPath,authManager);
         try {
-            String reqNo=reqTask.getReq_no();
+            String reqNo=reqTask.getReqNo();
             int start=reqNo.indexOf("-")+1;
             String reqMonth=reqNo.substring(start,start+6);
             SVNURL urlDir = SVNURL.parseURIEncoded(SvnConstant.SvnPath + reqMonth);
@@ -499,7 +499,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             if (!isURLDirExist) {
                 SVNUtil.makeDirectory(clientManager, urlDir, "创建每月文档");
             }
-            String dirNm = reqMonth+"/"+reqNo + "_" + reqTask.getReq_nm();
+            String dirNm = reqMonth+"/"+reqNo + "_" + reqTask.getReqNm();
             SVNURL url = SVNURL.parseURIEncoded(SvnConstant.SvnPath + dirNm);
             // 判断项目是否已经建立
             boolean isURLExist = SVNUtil.isURLExist(url,authManager);
@@ -526,37 +526,37 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public String genProjectStartContent(DemandDO reqTask) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
         StringBuilder content = new StringBuilder();
-        content.append(reqTask.getReq_no() + "_" + reqTask.getReq_nm() + "项目启动。人员以及计划安排如下，请各位知悉：");
+        content.append(reqTask.getReqNo() + "_" + reqTask.getReqNm() + "项目启动。人员以及计划安排如下，请各位知悉：");
         content.append("<br/>");
         content.append("人员计划如下：");
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;项目经理：" + reqTask.getProject_mng());
+        content.append("&nbsp;&nbsp;项目经理：" + reqTask.getProjectMng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;产品经理：" + reqTask.getProduct_mng());
+        content.append("&nbsp;&nbsp;产品经理：" + reqTask.getProductMng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;后台开发：" + reqTask.getDevp_eng());
+        content.append("&nbsp;&nbsp;后台开发：" + reqTask.getDevpEng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;前端开发：" + reqTask.getFront_eng());
+        content.append("&nbsp;&nbsp;前端开发：" + reqTask.getFrontEng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;测试人员：" + reqTask.getTest_eng());
+        content.append("&nbsp;&nbsp;测试人员：" + reqTask.getTestEng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;QA人员：" + reqTask.getQa_mng());
+        content.append("&nbsp;&nbsp;QA人员：" + reqTask.getQaMng());
         content.append("<br/>");
-        content.append("&nbsp;&nbsp;配置人员：" + reqTask.getConfig_mng());
+        content.append("&nbsp;&nbsp;配置人员：" + reqTask.getConfigMng());
         content.append("<br/>");
         content.append("<br/>");
         content.append("实施计划如下：");
         content.append("<br/>");
         try {
             String prdFinshTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getPrd_finsh_tm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[] { "yyyy-MM-dd" }));
             String uatUpdateTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getUat_update_tm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[] { "yyyy-MM-dd" }));
             String testFinishTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getTest_finsh_tm(), new String[] { "yyyy-MM-dd" }));
-            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPre_tm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[] { "yyyy-MM-dd" }));
+            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[] { "yyyy-MM-dd" }));
             String oprFisnTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getExp_prd_release_tm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[] { "yyyy-MM-dd" }));
             content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
             content.append("<br/>");
             content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
@@ -648,38 +648,38 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < list.size(); i++) {
                 DemandDO demand = list.get(i);
                 // 需求类型变为存量
-                demand.setReq_type("02");
+                demand.setReqType("02");
                 // 需求实施月份，转为下个月
-                demand.setReq_impl_mon(last_month);
+                demand.setReqImplMon(last_month);
                 // 月初阶段等于需求当前阶段
-                demand.setPre_mon_period(demand.getPre_cur_period());
+                demand.setPreMonPeriod(demand.getPreCurPeriod());
                 //月初备注置空
-                demand.setMon_remark("");
+                demand.setMonRemark("");
                 //月底备注置空
-                demand.setEnd_mon_remark("");
-                demand.setEnd_feedback_tm("");
+                demand.setEndMonRemark("");
+                demand.setEndFeedbackTm("");
                 // 工作量已录入总量
-                int inputWorkLoad = demand.getInput_workload() + demand.getMon_input_workload();
-                demand.setInput_workload(inputWorkLoad);
-                demand.setRemain_workload(demand.getTotal_workload() - inputWorkLoad);
+                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                demand.setInputWorkload(inputWorkLoad);
+                demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
                 // 本月录入，计入上月录入
-                demand.setLast_input_workload(demand.getMon_input_workload());
+                demand.setLastInputWorkload(demand.getMonInputWorkload());
                 // 本月录入0
-                demand.setMon_input_workload(0);
+                demand.setMonInputWorkload(0);
                 // 更新人，更新时间
-                demand.setUpdate_user(update_user);
-                demand.setUpdate_time(new Date());
+                demand.setUpdateUser(update_user);
+                demand.setUpdateTime(new Date());
 
                 DemandDO vo = new DemandDO();
-                vo.setReq_nm(demand.getReq_nm());
-                vo.setReq_no(demand.getReq_no());
-                vo.setReq_impl_mon(demand.getReq_impl_mon());
+                vo.setReqNm(demand.getReqNm());
+                vo.setReqNo(demand.getReqNo());
+                vo.setReqImplMon(demand.getReqImplMon());
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
                 if (dem.size() == 0) {
-                    demand.setReq_inner_seq(getNextInnerSeq());
+                    demand.setReqInnerSeq(getNextInnerSeq());
                     demandDao.insertStockReq(demand);
                 }else {
-                    demand.setReq_inner_seq(dem.get(0).getReq_inner_seq());
+                    demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);
                 }
 
@@ -719,7 +719,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (reqTask == null) {
             return "XQ00000001";
         } else {
-            String maxInnerSeq = reqTask.getReq_inner_seq();
+            String maxInnerSeq = reqTask.getReqInnerSeq();
             if (StringUtils.isBlank(maxInnerSeq)) {
                 return "XQ00000001";
             } else {
@@ -735,7 +735,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files ,HttpServletRequest request){
         String uploadPeriod = reqDTO.getUploadPeriod();
-        String innerReqSeq = reqDTO.getReq_inner_seq();
+        String innerReqSeq = reqDTO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(innerReqSeq);
         if (null == reqPlan) {
             //return ajaxDoneError("文档上传失败：找不到需求相关信息，无法进行上传!");
@@ -744,14 +744,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         int period = 0;
         int curPeriod = 0;
         try {
-            String reqPeriod = dictionaryService.findFieldName("REQ_PEROID", reqPlan.getPre_cur_period());
+            String reqPeriod = dictionaryService.findFieldName("REQ_PEROID", reqPlan.getPreCurPeriod());
             period = Integer.parseInt(uploadPeriod) + 10;
             curPeriod = Integer.parseInt(reqPeriod);
         } catch (Exception e) {
             //return ajaxDoneError("文档上传失败：请选择相应需求阶段进行文件上传!");
             BusinessException.throwBusinessException("文档上传失败：请选择相应需求阶段进行文件上传!");
         }
-        String reqNo=reqPlan.getReq_no();
+        String reqNo=reqPlan.getReqNo();
         if(StringUtils.isBlank(reqNo)){
             //return ajaxDoneError("文档上传失败：需求编号不能为空!");
             BusinessException.throwBusinessException("文档上传失败：需求编号不能为空!");
@@ -763,7 +763,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if(!(new File(monthDir).exists())){
             FileUtils.createDirectory(monthDir);
         }
-        String directoryName = reqMonth+"/"+reqNo+"_" + reqPlan.getReq_nm();
+        String directoryName = reqMonth+"/"+reqNo+"_" + reqPlan.getReqNm();
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
         String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
@@ -780,39 +780,39 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 periodChName = "产品";
                 svnRoot = svnRoot + "/产品文档";
                 localSvnPath = localSvnPath + "/产品文档/";
-                reqPlan.setAct_prd_upload_tm(nowTime);
+                reqPlan.setActPrdUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.TECH_DOC_CONFIRM:
                 periodChName = "开发技术";
                 svnRoot = svnRoot + "/开发技术文档/";
                 localSvnPath = localSvnPath + "/开发技术文档/";
-                reqPlan.setAct_workload_upload_tm(nowTime);
+                reqPlan.setActWorkloadUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.FINISH_SIT_TEST:
                 periodChName = "sit测试";
                 svnRoot = svnRoot + "/开发技术文档/";
                 localSvnPath = localSvnPath + "/开发技术文档/";
-                reqPlan.setAct_sit_upload_tm(nowTime);
+                reqPlan.setActSitUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.TEST_CASE_CONFIRM:
                 svnRoot = svnRoot + "/测试文档/";
                 localSvnPath = localSvnPath + "/测试文档/";
-                reqPlan.setAct_test_cases_upload_tm(nowTime);
+                reqPlan.setActTestCasesUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.FINISH_UAT_TEST:
                 svnRoot = svnRoot + "/测试文档/";
                 localSvnPath = localSvnPath + "/测试文档/";
-                reqPlan.setAct_uat_upload_tm(nowTime);
+                reqPlan.setActUatUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.FINISH_PRE_TEST:
                 svnRoot = svnRoot + "/预投产投产文档/";
                 localSvnPath = localSvnPath + "/预投产投产文档/";
-                reqPlan.setAct_pre_upload_tm(nowTime);
+                reqPlan.setActPreUploadTm(nowTime);
                 break;
             case ReqPeriodConstants.FINISH_PRD:
                 svnRoot = svnRoot + "/预投产投产文档/";
                 localSvnPath = localSvnPath + "/预投产投产文档/";
-                reqPlan.setAct_production_upload_tm(nowTime);
+                reqPlan.setActProductionUploadTm(nowTime);
                 break;
             default:
                 break;
@@ -843,7 +843,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
             }
             UserPrincipal currentUser = (UserPrincipal) org.apache.shiro.SecurityUtils.getSubject().getPrincipal();
-            String  subject= reqPlan.getReq_no() + "_" + reqPlan.getReq_nm() + "_" + "需求" + periodChName + "文档";
+            String  subject= reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
             String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser.getUserName(), attachFiles);
             if (StringUtils.isNotEmpty(msg)) {
@@ -858,7 +858,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 period=80;
             }
             String preCurPeriod = period + "";
-            reqPlan.setPre_cur_period(preCurPeriod);
+            reqPlan.setPreCurPeriod(preCurPeriod);
             demandDao.updatePreCurPeriod(reqPlan);
         }
         //return ajaxDoneSuccess("文档上传成功!");
@@ -909,7 +909,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 if (!importfile.isEmpty()) {
                     try {
                         String fileName = importfile.getOriginalFilename();
-                        if(!fileName.startsWith(reqTask.getReq_no()+"_"+reqTask.getReq_nm())){
+                        if(!fileName.startsWith(reqTask.getReqNo()+"_"+reqTask.getReqNm())){
                             map.put("message", "文档提交到SVN失败：文件名与需求名不一致，请检查");
                             return map;
                         }
@@ -991,7 +991,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String deptInfo = params[2];
         // 总工作量
         String totalWorkload = params[3];
-        if (!crNum.equals(reqTask.getReq_no())) {
+        if (!crNum.equals(reqTask.getReqNo())) {
             return "功能点附件中需求编号有误！";
         }
         if (StringUtils.isBlank(deptInfo)) {
@@ -1014,16 +1014,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         // 更新工作量信息
         try {
-            reqTask.setTotal_workload(totWork);
-            reqTask.setLead_dept_pro(result.get("leadDeptRate"));
-            reqTask.setCoor_dept_pro(result.get("coorDeptRate"));
-            reqTask.setLead_dept_workload(result.get("leadDpetWorkLoad"));
-            reqTask.setCoor_dept_workload(result.get("coorDpetWorkLoad"));
+            reqTask.setTotalWorkload(totWork);
+            reqTask.setLeadDeptPro(result.get("leadDeptRate"));
+            reqTask.setCoorDeptPro(result.get("coorDeptRate"));
+            reqTask.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
+            reqTask.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
             //已录入总量 新增的时候默认为0
-            reqTask.setInput_workload(0);
-            reqTask.setLast_input_workload(0);
-            reqTask.setRemain_workload(totWork);
-            reqTask.setMon_input_workload(0);
+            reqTask.setInputWorkload(0);
+            reqTask.setLastInputWorkload(0);
+            reqTask.setRemainWorkload(totWork);
+            reqTask.setMonInputWorkload(0);
             //reqWorkLoadService.updateReqWorkLoad(reqTask);
         } catch (NumberFormatException e) {
             return "功能点导入失败："+e.getMessage();
@@ -1189,7 +1189,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     map.put("message", "不存在部门："+detailRate[0]);
                     return map;
                 }
-                if (detailRate[0].equals(demand.getDevp_lead_dept())) {
+                if (detailRate[0].equals(demand.getDevpLeadDept())) {
                     leadDeptName.add(detailRate[0]);
                     // 主导部门
                     leadDeptRate = detailRate[0] + ":" + detailRate[1] + ";";
@@ -1217,7 +1217,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             map.put("message", "存在重复的配合部门信息请检查！");
             return map;
         }
-        String coorDept=demand.getDevp_coor_dept();
+        String coorDept=demand.getDevpCoorDept();
         if(StringUtils.isNotBlank(coorDept)){
             String[] coorDeptArr=coorDept.split(",");
             for (int i = 0; i < coorDeptArr.length; i++) {
@@ -1235,7 +1235,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         map.put("coorDeptRate", coorDeptRate);
         map.put("leadDpetWorkLoad", leadDpetWorkLoad);
         map.put("coorDpetWorkLoad", coorDpetWorkLoad);
-        map.put("remainWordkLoad", String.valueOf(totWork-demand.getInput_workload()));
+        map.put("remainWordkLoad", String.valueOf(totWork-demand.getInputWorkload()));
         return map;
     }
     /**
@@ -1513,30 +1513,30 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (list.size() == 0) {
             demandDao.insertExtraTm(bean);
         }else {
-            bean.setPro_id(list.get(0).getPro_id());
-            if (StringUtils.isNotBlank(list.get(0).getProject_start_tm())) {
-                bean.setProject_start_tm(null);
+            bean.setProId(list.get(0).getProId());
+            if (StringUtils.isNotBlank(list.get(0).getProjectStartTm())) {
+                bean.setProjectStartTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_prd_upload_tm())) {
-                bean.setAct_prd_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActPrdUploadTm())) {
+                bean.setActPrdUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_workload_upload_tm())) {
-                bean.setAct_workload_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActWorkloadUploadTm())) {
+                bean.setActWorkloadUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_sit_upload_tm())) {
-                bean.setAct_sit_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActSitUploadTm())) {
+                bean.setActSitUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_test_cases_upload_tm())) {
-                bean.setAct_test_cases_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActTestCasesUploadTm())) {
+                bean.setActTestCasesUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_uat_upload_tm())) {
-                bean.setAct_uat_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActUatUploadTm())) {
+                bean.setActUatUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_pre_upload_tm())) {
-                bean.setAct_pre_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActPreUploadTm())) {
+                bean.setActPreUploadTm(null);
             }
-            if (StringUtils.isNotBlank(list.get(0).getAct_production_upload_tm())) {
-                bean.setAct_production_upload_tm(null);
+            if (StringUtils.isNotBlank(list.get(0).getActProductionUploadTm())) {
+                bean.setActProductionUploadTm(null);
             }
             demandDao.updateExtraTm(bean);
         }

@@ -10,71 +10,30 @@ package com.cmpay.lemon.monitor.dto;
 import java.util.Date;
 
 public class DictionaryDTO {
-    private String seq_id;
+    private String seqId;
     private String name;
     private String value;
     private String jp;
     private String qp;
-    private String dic_id;
+    private String dicId;
     private String remark;
     private String sort;
 
-    private Integer mail_jd_id;
-    private String user_type;
-    private String user_name;
-    private String user_mail;
-    private Date creat_time;
+    private Integer mailJdId;
+    private String userType;
+    private String userName;
+    private String userMail;
+    private Date creatTime;
 
     public DictionaryDTO() {
     }
 
-    public String getSeq_id() {
-        return seq_id;
+    public String getSeqId() {
+        return seqId;
     }
 
-
-    public String getUser_type() {
-        return user_type;
-    }
-
-    public void setUser_type(String user_type) {
-        this.user_type = user_type;
-    }
-
-    public String getUser_name() {
-        return user_name;
-    }
-
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
-    }
-
-    public String getUser_mail() {
-        return user_mail;
-    }
-
-    public void setUser_mail(String user_mail) {
-        this.user_mail = user_mail;
-    }
-
-    public Integer getMail_jd_id() {
-        return mail_jd_id;
-    }
-
-    public void setMail_jd_id(Integer mail_jd_id) {
-        this.mail_jd_id = mail_jd_id;
-    }
-
-    public Date getCreat_time() {
-        return creat_time;
-    }
-
-    public void setCreat_time(Date creat_time) {
-        this.creat_time = creat_time;
-    }
-
-    public void setSeq_id(String seq_id) {
-        this.seq_id = seq_id;
+    public void setSeqId(String seqId) {
+        this.seqId = seqId;
     }
 
     public String getName() {
@@ -109,12 +68,12 @@ public class DictionaryDTO {
         this.qp = qp;
     }
 
-    public String getDic_id() {
-        return dic_id;
+    public String getDicId() {
+        return dicId;
     }
 
-    public void setDic_id(String dic_id) {
-        this.dic_id = dic_id;
+    public void setDicId(String dicId) {
+        this.dicId = dicId;
     }
 
     public String getRemark() {
@@ -133,17 +92,62 @@ public class DictionaryDTO {
         this.sort = sort;
     }
 
+    public Integer getMailJdId() {
+        return mailJdId;
+    }
+
+    public void setMailJdId(Integer mailJdId) {
+        this.mailJdId = mailJdId;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getUserMail() {
+        return userMail;
+    }
+
+    public void setUserMail(String userMail) {
+        this.userMail = userMail;
+    }
+
+    public Date getCreatTime() {
+        return creatTime;
+    }
+
+    public void setCreatTime(Date creatTime) {
+        this.creatTime = creatTime;
+    }
+
     @Override
     public String toString() {
-        return "DictionaryDO{" +
-                "seq_id='" + seq_id + '\'' +
+        return "DictionaryDTO{" +
+                "seqId='" + seqId + '\'' +
                 ", name='" + name + '\'' +
                 ", value='" + value + '\'' +
                 ", jp='" + jp + '\'' +
                 ", qp='" + qp + '\'' +
-                ", dic_id='" + dic_id + '\'' +
+                ", dicId='" + dicId + '\'' +
                 ", remark='" + remark + '\'' +
                 ", sort='" + sort + '\'' +
+                ", mailJdId=" + mailJdId +
+                ", userType='" + userType + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userMail='" + userMail + '\'' +
+                ", creatTime=" + creatTime +
                 '}';
     }
 }

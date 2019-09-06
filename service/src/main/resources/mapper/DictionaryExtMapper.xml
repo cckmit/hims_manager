@@ -3,19 +3,19 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IDictionaryExtDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DictionaryDO">
-        <result property="seq_id" jdbcType="BIGINT" column="seq_id" />
+        <result property="seqId" jdbcType="BIGINT" column="seq_id" />
         <result property="name" jdbcType="VARCHAR" column="name" />
         <result property="value" jdbcType="VARCHAR" column="value" />
         <result property="jp" jdbcType="VARCHAR" column="jp" />
         <result property="qp" jdbcType="VARCHAR" column="qp" />
-        <result property="dic_id" jdbcType="VARCHAR" column="dic_id" />
+        <result property="dicId" jdbcType="VARCHAR" column="dic_id" />
         <result property="remark" jdbcType="VARCHAR" column="remark" />
         <result property="sort" jdbcType="BIGINT" column="sort" />
-        <result property="mail_jd_id" jdbcType="INTEGER" column="mail_jd_id" />
-        <result property="user_type" jdbcType="VARCHAR" column="user_type" />
-        <result property="user_name" jdbcType="VARCHAR" column="user_name" />
-        <result property="user_mail" jdbcType="VARCHAR" column="user_mail" />
-        <result property="creat_time" jdbcType="TIMESTAMP" column="creat_time" />
+        <result property="mailJdId" jdbcType="INTEGER" column="mail_jd_id" />
+        <result property="userType" jdbcType="VARCHAR" column="user_type" />
+        <result property="userName" jdbcType="VARCHAR" column="user_name" />
+        <result property="userMail" jdbcType="VARCHAR" column="user_mail" />
+        <result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -42,8 +42,8 @@
         <include refid="Base_Column_List" />
         FROM t_permi_dic_data t
         <where>
-            <if test="dic_id != null and dic_id != ''">
-                t.dic_id = #{dic_id}
+            <if test="dicId != null and dicId != ''">
+                t.dic_id = #{dicId}
             </if>
             <if test="value != null and value != ''">
                 and t.value = #{value}
@@ -56,8 +56,8 @@
         <include refid="Jd_Column_List" />
         FROM t_mail_jd t
         <where>
-            <if test="user_name != null and user_name != ''">
-                t.user_name = #{user_name}
+            <if test="userName != null and userName != ''">
+                t.user_name = #{userName}
             </if>
         </where>
         ORDER BY user_name desc

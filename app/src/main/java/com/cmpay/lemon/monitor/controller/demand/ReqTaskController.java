@@ -57,6 +57,7 @@ public class ReqTaskController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
+
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
@@ -75,7 +76,7 @@ public class ReqTaskController {
      * @return
      */
     @RequestMapping("/info/{id}")
-    public GenericRspDTO<DemandDTO> getInfoById(@PathVariable("req_inner_seq") String req_inner_seq, GenericDTO<NoBody> req) {
+    public GenericRspDTO<DemandDTO> getInfoById(@PathVariable("reqInnerSeq") String req_inner_seq, GenericDTO<NoBody> req) {
         DemandBO demandBO = reqTaskService.findById(req_inner_seq);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
     }

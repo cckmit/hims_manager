@@ -6,34 +6,34 @@ import com.cmpay.framework.data.BaseDO;
  * @author: ty
  */
 public class ProjectStartDO extends BaseDO {
-    private String req_inner_seq;
-    private String req_no;
-    private String req_nm;
+    private String reqInnerSeq;
+    private String reqNo;
+    private String reqNm;
     private String sendTo;
     private String copyTo;
 
-    public String getReq_inner_seq() {
-        return req_inner_seq;
+    public String getReqInnerSeq() {
+        return reqInnerSeq;
     }
 
-    public void setReq_inner_seq(String req_inner_seq) {
-        this.req_inner_seq = req_inner_seq;
+    public void setReqInnerSeq(String reqInnerSeq) {
+        this.reqInnerSeq = reqInnerSeq;
     }
 
-    public String getReq_no() {
-        return req_no;
+    public String getReqNo() {
+        return reqNo;
     }
 
-    public void setReq_no(String req_no) {
-        this.req_no = req_no;
+    public void setReqNo(String reqNo) {
+        this.reqNo = reqNo;
     }
 
-    public String getReq_nm() {
-        return req_nm;
+    public String getReqNm() {
+        return reqNm;
     }
 
-    public void setReq_nm(String req_nm) {
-        this.req_nm = req_nm;
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
     }
 
     public String getSendTo() {
@@ -54,19 +54,19 @@ public class ProjectStartDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "ProjectStartRspDTO{" +
-                "req_inner_seq='" + req_inner_seq + '\'' +
-                ", req_no='" + req_no + '\'' +
-                ", req_nm='" + req_nm + '\'' +
+        return "ProjectStartDO{" +
+                "reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
                 ", sendTo='" + sendTo + '\'' +
                 ", copyTo='" + copyTo + '\'' +
                 '}';
     }
 
-    public ProjectStartDO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo) {
-        this.req_inner_seq = req_inner_seq;
-        this.req_no = req_no;
-        this.req_nm = req_nm;
+    public ProjectStartDO(String reqInnerSeq, String reqNo, String reqNm, String sendTo, String copyTo) {
+        this.reqInnerSeq = reqInnerSeq;
+        this.reqNo = reqNo;
+        this.reqNm = reqNm;
         this.sendTo = sendTo;
         this.copyTo = copyTo;
     }
