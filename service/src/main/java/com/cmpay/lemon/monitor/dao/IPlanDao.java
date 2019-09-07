@@ -19,4 +19,6 @@ public interface IPlanDao extends IDemandDao {
 
     //根据条件查询部门主管邮箱
     DemandDO findDevpEmail(String req_inner_seq);
+    //根据功能点文档更新工作量
+    void updateReqWorkLoad(DemandDO bean);
 }

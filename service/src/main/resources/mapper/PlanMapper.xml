@@ -570,4 +570,43 @@
 		AND req_inner_seq = #{req_inner_seq} AND (b.devp_coor_dept NOT like '%产品测试部%')
 		AND d.role_id='201401010003'
 	</select>
+    <!--根据功能点文档更新需求工作量-->
+    <update id="updateReqWorkLoad" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        req_inner_seq = #{req_inner_seq}
+        <if test="devp_lead_dept != null and devp_lead_dept != ''">
+            ,devp_lead_dept =#{devp_lead_dept }
+        </if>
+        <if test="devp_coor_dept != null and devp_coor_dept != ''">
+            ,devp_coor_dept =#{devp_coor_dept }
+        </if>
+        <if test="input_workload != null">
+            ,input_workload =#{input_workload }
+        </if>
+        <if test="total_workload != null">
+            ,total_workload =#{total_workload }
+        </if>
+        <if test="remain_workload != null">
+            ,remain_workload =#{remain_workload }
+        </if>
+        <if test="mon_input_workload != null">
+            ,mon_input_workload =#{mon_input_workload }
+        </if>
+        <if test="lead_dept_pro != null and lead_dept_pro != ''">
+            ,lead_dept_pro =#{lead_dept_pro}
+            ,coor_dept_pro =#{coor_dept_pro}
+        </if>
+        <if test="lead_dept_workload != null and lead_dept_workload != ''">
+            ,lead_dept_workload =#{lead_dept_workload}
+            ,coor_dept_workload =#{coor_dept_workload}
+        </if>
+        <if test="update_time != null ">
+            ,update_time =#{ update_time }
+        </if>
+        <if test="update_user != null and update_user != ''">
+            ,update_user =#{ update_user }
+        </if>
+        WHERE req_inner_seq = #{req_inner_seq}
+    </update>
 </mapper>

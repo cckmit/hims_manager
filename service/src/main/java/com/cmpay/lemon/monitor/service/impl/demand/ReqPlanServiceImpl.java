@@ -98,11 +98,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
-        String month = DateUtil.date2String(new Date(), "yyyy-MM");
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        if(demandBO.getReq_impl_mon()==null||"".equals(demandBO.getReq_impl_mon())){
-            demandBO.setReq_impl_mon(month);
-        }
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
@@ -249,17 +245,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String devpEmail =  resMap.get("devpEmail");
         String jdEmail = resMap.get("jdEmail");
         if (StringUtils.isNotBlank(proMemberEmail)){
-            //model.addAttribute("sendTo", proMemberEmail);
             projectStartDO.setSendTo(proMemberEmail);
         }else{
-            //model.addAttribute("sendTo", "");
             projectStartDO.setSendTo("");
         }
         if (StringUtils.isNotBlank(testDevpEmail)){
-            // model.addAttribute("copyTo", testDevpEmail+devpEmail);
             projectStartDO.setCopyTo(testDevpEmail+devpEmail);
         }else{
-            // model.addAttribute("copyTo", "");
             projectStartDO.setCopyTo("");
         }
         System.out.println("projectStartDO："+projectStartDO);
@@ -509,13 +501,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             boolean isURLExist = SVNUtil.isURLExist(url,authManager);
             if (isURLExist) {
                 return "";
-//				return "项目文件夹已建立";
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
             String path = request.getSession().getServletContext().getRealPath("/") + SvnConstant.ProjectTemplatePath;
             File file = new File(path);
             // 导入文件夹
-            //SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
+            SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
         } catch (Exception e) {
             return "项目启动创建子文件夹失败，" + e.getMessage();
         }
@@ -593,19 +584,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             copyTo = BaseUtil.distinctStr(copyTo, ";");
         }
         // 记录邮箱信息
-        MailFlowDO bnb = new MailFlowDO(subject, Constant.P_EMAIL_NAME, sendTo, content.toString());
+        MailFlowDO bnb = new MailFlowDO(subject, Constant.P_EMAIL_NAME, sendTo, content);
 
         // 发邮件通知
         MailSenderInfo mailInfo = new MailSenderInfo();
         // 设置邮件服务器类型
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        // 设置端口号
+        //设置端口号
         mailInfo.setMailServerPort("25");
-        // 设置是否验证
-        mailInfo.setValidate(false);
-        // 设置用户名、密码、发送人地址
+        //设置是否验证
+        mailInfo.setValidate(true);
+        //设置用户名、密码、发送人地址
         mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+        // 您的邮箱密码
+        mailInfo.setPassword(Constant.P_EMAIL_PSWD);
         mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
         sendTo=sendTo.replaceAll("；", ";");
         mailInfo.setToAddress(sendTo.split(";"));
@@ -825,7 +817,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         Map<String, Object> map = null;
         try {
             //更新文档上传时间
-            //updateExtraTm(reqPlan);
+            updateExtraTm(reqPlan);
             map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
         } catch (Exception e) {
             // return ajaxDoneError(e.getMessage());
@@ -846,10 +838,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //return ajaxDoneError("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
                 BusinessException.throwBusinessException("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
             }
-            UserPrincipal currentUser = (UserPrincipal) org.apache.shiro.SecurityUtils.getSubject().getPrincipal();
+            String currentUser =  SecurityUtils.getLoginName();
             String  subject= reqPlan.getReq_no() + "_" + reqPlan.getReq_nm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
-            String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser.getUserName(), attachFiles);
+            String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser, attachFiles);
             if (StringUtils.isNotEmpty(msg)) {
                 //return ajaxDoneError("文档上传成功，邮件发送失败");
                 BusinessException.throwBusinessException("文档上传成功，邮件发送失败");
@@ -960,17 +952,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             attachFiles.add(fl);
                         }
                         // 上传到SVN
-                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
-                        clientManager = SVNUtil.authSvn(svnPath,authManager);
-                        clientManager.getWCClient().doCleanup(new File(loacalpath));
-                        clientManager.getDiffClient().setIgnoreExternals(true);
-                        SVNUtil.checkVersiondDirectory(clientManager,fl);
-                        SVNUtil.commit(clientManager, fl, true, "文档提交");
-                        if(newWordLod!=null){
-                            SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
-                            SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
-                        }
-                        SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY);
+//                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
+//                        clientManager = SVNUtil.authSvn(svnPath,authManager);
+//                        clientManager.getWCClient().doCleanup(new File(loacalpath));
+//                        clientManager.getDiffClient().setIgnoreExternals(true);
+//                        SVNUtil.checkVersiondDirectory(clientManager,fl);
+//                        SVNUtil.commit(clientManager, fl, true, "文档提交");
+//                        if(newWordLod!=null){
+//                            SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
+//                            SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
+//                        }
+//                        SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY);
                     } catch (Exception e) {
                         map.put("message", "文档提交到SVN失败："+e.getMessage());
                         return map;
@@ -1028,7 +1020,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqTask.setLast_input_workload(0);
             reqTask.setRemain_workload(totWork);
             reqTask.setMon_input_workload(0);
-            //reqWorkLoadService.updateReqWorkLoad(reqTask);
+            planDao.updateReqWorkLoad(reqTask);
         } catch (NumberFormatException e) {
             return "功能点导入失败："+e.getMessage();
         }
@@ -1044,7 +1036,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         boolean isExcel2007 = filePath.endsWith(".xlsx");
         org.apache.poi.ss.usermodel.Workbook wb = null;
         try {
-            if (isExcel2003) {//针对2003版本
+            if (isExcel2003) {
                 wb = new HSSFWorkbook(new FileInputStream(new File(filePath)));
                 int sheetNum = wb.getNumberOfSheets();
                 if (sheetNum!=3) {
@@ -1053,22 +1045,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 }
                 HSSFSheet sheet = (HSSFSheet) wb.getSheetAt(0);
                 params = parseHSSFSheetExcel(sheet);
-
-            } else if(isExcel2007) {//针对2007版本
+            } else if(isExcel2007) {
                 wb = new XSSFWorkbook(new FileInputStream(new File(filePath)));
                 int sheetNum = wb.getNumberOfSheets();
                 if (sheetNum!=3) {
                     params[0]=("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为"+sheetNum+"个Sheet！");
                     return params;
                 }
-
                 XSSFSheet sheet = (XSSFSheet) wb.getSheetAt(0);
                 params = parseXSSFSheetExcel(sheet);
             } else {
                 params[0]=("导入文件不符合要求！");
                 return params;
             }
-
         } catch (FileNotFoundException e) {
             throw new Exception(e.getMessage());
         } catch (IOException e) {
