@@ -4,52 +4,49 @@ package com.cmpay.lemon.monitor.bo;
  * @author: ty
  */
 public class ProjectStartBO {
-    private String req_inner_seq;
-    private String req_no;
-    private String req_nm;
+    private String reqInnerSeq;
+    private String reqNo;
+    private String reqNm;
     private String sendTo;
     private String copyTo;
-    private String pre_cur_period;
+    private String preCurPeriod;
     private String uploadPeriod;
 
-    public String getPre_cur_period() {
-        return pre_cur_period;
+    @Override
+    public String toString() {
+        return "ProjectStartBO{" +
+                "reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", sendTo='" + sendTo + '\'' +
+                ", copyTo='" + copyTo + '\'' +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", uploadPeriod='" + uploadPeriod + '\'' +
+                '}';
     }
 
-    public void setPre_cur_period(String pre_cur_period) {
-        this.pre_cur_period = pre_cur_period;
+    public String getReqInnerSeq() {
+        return reqInnerSeq;
     }
 
-    public String getUploadPeriod() {
-        return uploadPeriod;
+    public void setReqInnerSeq(String reqInnerSeq) {
+        this.reqInnerSeq = reqInnerSeq;
     }
 
-    public void setUploadPeriod(String uploadPeriod) {
-        this.uploadPeriod = uploadPeriod;
+    public String getReqNo() {
+        return reqNo;
     }
 
-    public String getReq_inner_seq() {
-        return req_inner_seq;
+    public void setReqNo(String reqNo) {
+        this.reqNo = reqNo;
     }
 
-    public void setReq_inner_seq(String req_inner_seq) {
-        this.req_inner_seq = req_inner_seq;
+    public String getReqNm() {
+        return reqNm;
     }
 
-    public String getReq_no() {
-        return req_no;
-    }
-
-    public void setReq_no(String req_no) {
-        this.req_no = req_no;
-    }
-
-    public String getReq_nm() {
-        return req_nm;
-    }
-
-    public void setReq_nm(String req_nm) {
-        this.req_nm = req_nm;
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
     }
 
     public String getSendTo() {
@@ -68,34 +65,37 @@ public class ProjectStartBO {
         this.copyTo = copyTo;
     }
 
-    @Override
-    public String toString() {
-        return "ProjectStartBO{" +
-                "req_inner_seq='" + req_inner_seq + '\'' +
-                ", req_no='" + req_no + '\'' +
-                ", req_nm='" + req_nm + '\'' +
-                ", sendTo='" + sendTo + '\'' +
-                ", copyTo='" + copyTo + '\'' +
-                ", pre_cur_period='" + pre_cur_period + '\'' +
-                ", uploadPeriod='" + uploadPeriod + '\'' +
-                '}';
+    public String getPreCurPeriod() {
+        return preCurPeriod;
     }
 
-    public ProjectStartBO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo) {
-        this.req_inner_seq = req_inner_seq;
-        this.req_no = req_no;
-        this.req_nm = req_nm;
+    public void setPreCurPeriod(String preCurPeriod) {
+        this.preCurPeriod = preCurPeriod;
+    }
+
+    public String getUploadPeriod() {
+        return uploadPeriod;
+    }
+
+    public void setUploadPeriod(String uploadPeriod) {
+        this.uploadPeriod = uploadPeriod;
+    }
+
+    public ProjectStartBO(String reqInnerSeq, String reqNo, String reqNm, String sendTo, String copyTo) {
+        this.reqInnerSeq = reqInnerSeq;
+        this.reqNo = reqNo;
+        this.reqNm = reqNm;
         this.sendTo = sendTo;
         this.copyTo = copyTo;
     }
 
-    public ProjectStartBO(String req_inner_seq, String req_no, String req_nm, String sendTo, String copyTo, String pre_cur_period, String uploadPeriod) {
-        this.req_inner_seq = req_inner_seq;
-        this.req_no = req_no;
-        this.req_nm = req_nm;
+    public ProjectStartBO(String reqInnerSeq, String reqNo, String reqNm, String sendTo, String copyTo, String preCurPeriod, String uploadPeriod) {
+        this.reqInnerSeq = reqInnerSeq;
+        this.reqNo = reqNo;
+        this.reqNm = reqNm;
         this.sendTo = sendTo;
         this.copyTo = copyTo;
-        this.pre_cur_period = pre_cur_period;
+        this.preCurPeriod = preCurPeriod;
         this.uploadPeriod = uploadPeriod;
     }
 

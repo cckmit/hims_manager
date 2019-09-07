@@ -29,13 +29,13 @@ public class DictionaryController {
     private DictionaryService dictionaryService;
 
     /**
-     * 根据dic_id查询字典项
+     * 根据dicId查询字典项
      *
      */
     @GetMapping("/getDicByDicId")
-    public GenericRspDTO<DictionaryRspDTO> getDicByDicId(@RequestParam("dic_id") String dic_id, GenericDTO<NoBody> req) {
+    public GenericRspDTO<DictionaryRspDTO> getDicByDicId(@RequestParam("dicId") String dicId, GenericDTO<NoBody> req) {
         DictionaryDO dictionaryDO = new DictionaryDO();
-        dictionaryDO.setDic_id(dic_id);
+        dictionaryDO.setDicId(dicId);
         DictionaryBO dictionaryBO = dictionaryService.getDicByDicId(dictionaryDO);
         List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
         DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
@@ -50,9 +50,12 @@ public class DictionaryController {
     @GetMapping("/getJdInfo")
     public GenericRspDTO<DictionaryRspDTO> getJdInfo(GenericDTO<NoBody> req) {
         DictionaryBO dictionaryBO = dictionaryService.getJdInfo(new DictionaryDO());
+        System.err.println(dictionaryBO);
         List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
+        System.err.println(dictionaryBOList);
         DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
+        System.err.println(dictionaryRspDTO.toString());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
 

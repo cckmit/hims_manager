@@ -3,63 +3,63 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IPlanDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
-        <result property="req_inner_seq" jdbcType="VARCHAR" column="req_inner_seq" />
-        <result property="req_prd_line" jdbcType="VARCHAR" column="req_prd_line" />
-        <result property="req_type" jdbcType="VARCHAR" column="req_type" />
-        <result property="req_sts" jdbcType="VARCHAR" column="req_sts" />
-        <result property="req_no" jdbcType="VARCHAR" column="req_no" />
-        <result property="req_nm" jdbcType="VARCHAR" column="req_nm" />
-        <result property="req_desc" jdbcType="VARCHAR" column="req_desc" />
-        <result property="input_res" jdbcType="INTEGER" column="input_res" />
-        <result property="dev_cycle" jdbcType="INTEGER" column="dev_cycle" />
-        <result property="exp_input" jdbcType="DOUBLE" column="exp_input" />
-        <result property="prd_finsh_tm" jdbcType="VARCHAR" column="prd_finsh_tm" />
-        <result property="act_prd_finsh_tm" jdbcType="VARCHAR" column="act_prd_finsh_tm" />
-        <result property="pre_cur_period" jdbcType="VARCHAR" column="pre_cur_period" />
-        <result property="cur_mon_target" jdbcType="VARCHAR" column="cur_mon_target" />
-        <result property="exp_prd_release_tm" jdbcType="VARCHAR" column="exp_prd_release_tm" />
-        <result property="devp_lead_dept" jdbcType="VARCHAR" column="devp_lead_dept" />
-        <result property="devp_coor_dept" jdbcType="VARCHAR" column="devp_coor_dept" />
-        <result property="req_pro_dept" jdbcType="VARCHAR" column="req_pro_dept" />
-        <result property="req_proposer" jdbcType="VARCHAR" column="req_proposer" />
-        <result property="req_mnger" jdbcType="VARCHAR" column="req_mnger" />
-        <result property="req_start_mon" jdbcType="VARCHAR" column="req_start_mon" />
-        <result property="req_impl_mon" jdbcType="VARCHAR" column="req_impl_mon" />
-        <result property="project_mng" jdbcType="VARCHAR" column="project_mng" />
-        <result property="product_mng" jdbcType="VARCHAR" column="product_mng" />
-        <result property="is_cut" jdbcType="VARCHAR" column="is_cut" />
-        <result property="pre_mon_period" jdbcType="VARCHAR" column="pre_mon_period" />
-        <result property="qa_mng" jdbcType="VARCHAR" column="qa_mng" />
-        <result property="config_mng" jdbcType="VARCHAR" column="config_mng" />
-        <result property="mon_remark" jdbcType="VARCHAR" column="mon_remark" />
-        <result property="devp_eng" jdbcType="VARCHAR" column="devp_eng" />
-        <result property="front_eng" jdbcType="VARCHAR" column="front_eng" />
-        <result property="test_eng" jdbcType="VARCHAR" column="test_eng" />
-        <result property="uat_update_tm" jdbcType="VARCHAR" column="uat_update_tm" />
-        <result property="act_uat_update_tm" jdbcType="VARCHAR" column="act_uat_update_tm" />
-        <result property="pre_tm" jdbcType="VARCHAR" column="pre_tm" />
-        <result property="test_finsh_tm" jdbcType="VARCHAR" column="test_finsh_tm" />
-        <result property="act_test_finsh_tm" jdbcType="VARCHAR" column="act_test_finsh_tm" />
-        <result property="risk_solution" jdbcType="VARCHAR" column="risk_solution" />
-        <result property="risk_feedback_tm" jdbcType="VARCHAR" column="risk_feedback_tm" />
-        <result property="end_mon_remark" jdbcType="VARCHAR" column="end_mon_remark" />
-        <result property="end_feedback_tm" jdbcType="VARCHAR" column="end_feedback_tm" />
-        <result property="total_workload" jdbcType="INTEGER" column="total_workload" />
-        <result property="lead_dept_pro" jdbcType="VARCHAR" column="lead_dept_pro" />
-        <result property="coor_dept_pro" jdbcType="VARCHAR" column="coor_dept_pro" />
-        <result property="lead_dept_workload" jdbcType="VARCHAR" column="lead_dept_workload" />
-        <result property="coor_dept_workload" jdbcType="VARCHAR" column="coor_dept_workload" />
-        <result property="input_workload" jdbcType="INTEGER" column="input_workload" />
-        <result property="last_input_workload" jdbcType="INTEGER" column="last_input_workload" />
-        <result property="remain_workload" jdbcType="INTEGER" column="remain_workload" />
-        <result property="mon_input_workload" jdbcType="INTEGER" column="mon_input_workload" />
-        <result property="is_svn_build" jdbcType="VARCHAR" column="is_svn_build" />
-        <result property="req_abnor_type" jdbcType="VARCHAR" column="req_abnor_type" />
-        <result property="creat_time" jdbcType="TIMESTAMP" column="creat_time" />
-        <result property="update_time" jdbcType="TIMESTAMP" column="update_time" />
-        <result property="creat_user" jdbcType="VARCHAR" column="creat_user" />
-        <result property="update_user" jdbcType="VARCHAR" column="update_user" />
-        <result property="mon_remark" jdbcType="VARCHAR" column="mon_remark" />
+        <result property="reqInnerSeq" jdbcType="VARCHAR" column="req_inner_seq" />
+        <result property="reqPrdLine" jdbcType="VARCHAR" column="req_prd_line" />
+        <result property="reqType" jdbcType="VARCHAR" column="req_type" />
+        <result property="reqSts" jdbcType="VARCHAR" column="req_sts" />
+        <result property="reqNo" jdbcType="VARCHAR" column="req_no" />
+        <result property="reqNm" jdbcType="VARCHAR" column="req_nm" />
+        <result property="reqDesc" jdbcType="VARCHAR" column="req_desc" />
+        <result property="inputRes" jdbcType="INTEGER" column="input_res" />
+        <result property="devCycle" jdbcType="INTEGER" column="dev_cycle" />
+        <result property="expInput" jdbcType="DOUBLE" column="exp_input" />
+        <result property="prdFinshTm" jdbcType="VARCHAR" column="prd_finsh_tm" />
+        <result property="actPrdFinshTm" jdbcType="VARCHAR" column="act_prd_finsh_tm" />
+        <result property="preCurPeriod" jdbcType="VARCHAR" column="pre_cur_period" />
+        <result property="curMonTarget" jdbcType="VARCHAR" column="cur_mon_target" />
+        <result property="expPrdReleaseTm" jdbcType="VARCHAR" column="exp_prd_release_tm" />
+        <result property="devpLeadDept" jdbcType="VARCHAR" column="devp_lead_dept" />
+        <result property="devpCoorDept" jdbcType="VARCHAR" column="devp_coor_dept" />
+        <result property="reqProDept" jdbcType="VARCHAR" column="req_pro_dept" />
+        <result property="reqProposer" jdbcType="VARCHAR" column="req_proposer" />
+        <result property="reqMnger" jdbcType="VARCHAR" column="req_mnger" />
+        <result property="reqStartMon" jdbcType="VARCHAR" column="req_start_mon" />
+        <result property="reqImplMon" jdbcType="VARCHAR" column="req_impl_mon" />
+        <result property="projectMng" jdbcType="VARCHAR" column="project_mng" />
+        <result property="productMng" jdbcType="VARCHAR" column="product_mng" />
+        <result property="isCut" jdbcType="VARCHAR" column="is_cut" />
+        <result property="preMonPeriod" jdbcType="VARCHAR" column="pre_mon_period" />
+        <result property="qaMng" jdbcType="VARCHAR" column="qa_mng" />
+        <result property="configMng" jdbcType="VARCHAR" column="config_mng" />
+        <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+        <result property="devpEng" jdbcType="VARCHAR" column="devp_eng" />
+        <result property="frontEng" jdbcType="VARCHAR" column="front_eng" />
+        <result property="testEng" jdbcType="VARCHAR" column="test_eng" />
+        <result property="uatUpdateTm" jdbcType="VARCHAR" column="uat_update_tm" />
+        <result property="actUatUpdateTm" jdbcType="VARCHAR" column="act_uat_update_tm" />
+        <result property="preTm" jdbcType="VARCHAR" column="pre_tm" />
+        <result property="testFinshTm" jdbcType="VARCHAR" column="test_finsh_tm" />
+        <result property="actTestFinshTm" jdbcType="VARCHAR" column="act_test_finsh_tm" />
+        <result property="riskSolution" jdbcType="VARCHAR" column="risk_solution" />
+        <result property="riskFeedbackTm" jdbcType="VARCHAR" column="risk_feedback_tm" />
+        <result property="endMonRemark" jdbcType="VARCHAR" column="end_mon_remark" />
+        <result property="endFeedbackTm" jdbcType="VARCHAR" column="end_feedback_tm" />
+        <result property="totalWorkload" jdbcType="INTEGER" column="total_workload" />
+        <result property="leadDeptPro" jdbcType="VARCHAR" column="lead_dept_pro" />
+        <result property="coorDeptPro" jdbcType="VARCHAR" column="coor_dept_pro" />
+        <result property="leadDeptWorkload" jdbcType="VARCHAR" column="lead_dept_workload" />
+        <result property="coorDeptWorkload" jdbcType="VARCHAR" column="coor_dept_workload" />
+        <result property="inputWorkload" jdbcType="INTEGER" column="input_workload" />
+        <result property="lastInputWorkload" jdbcType="INTEGER" column="last_input_workload" />
+        <result property="remainWorkload" jdbcType="INTEGER" column="remain_workload" />
+        <result property="monInputWorkload" jdbcType="INTEGER" column="mon_input_workload" />
+        <result property="isSvnBuild" jdbcType="VARCHAR" column="is_svn_build" />
+        <result property="reqAbnorType" jdbcType="VARCHAR" column="req_abnor_type" />
+        <result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />
+        <result property="updateTime" jdbcType="TIMESTAMP" column="update_time" />
+        <result property="creatUser" jdbcType="VARCHAR" column="creat_user" />
+        <result property="updateUser" jdbcType="VARCHAR" column="update_user" />
+        <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -510,25 +510,7 @@
         ORDER BY a.req_inner_seq asc
     </select>
 
-    <select id="getReqTaskByUK" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
-        SELECT
-        a.req_nm,a.req_no
-        FROM t_demand_info a
-        <where>
-            <if test="req_nm != null and req_nm != ''">
-                AND a.req_nm =#{req_nm}
-            </if>
-            <if test="req_no != null and req_no != ''">
-                OR a.req_no = #{req_no}
-            </if>
-        </where>
-        group by a.req_nm,a.req_no
-    </select>
 
-    <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
-        select
-        max(req_inner_seq) as req_inner_seq from t_demand_info
-    </select>
     <!-- 根据姓名查询项目成员邮箱 -->
     <select id="searchOtherUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
 		SELECT group_concat(a.email separator';') as mon_remark

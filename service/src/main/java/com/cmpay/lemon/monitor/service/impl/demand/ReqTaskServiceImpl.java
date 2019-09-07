@@ -76,34 +76,34 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i = 0; i < demandBOList.size(); i++) {
-            String reqAbnorType = demandBOList.get(i).getReq_abnor_type();
+            String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
-            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReq_inner_seq());
+            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
 
             //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
-            if (StringUtils.isNotBlank(demand.getPrd_finsh_tm()) && StringUtils.isNotBlank(demand.getUat_update_tm())
-                    && StringUtils.isNotBlank(demand.getTest_finsh_tm()) && StringUtils.isNotBlank(demand.getPre_cur_period())
-                    && StringUtils.isNotBlank(demand.getReq_sts())) {
+            if (StringUtils.isNotBlank(demand.getPrdFinshTm()) && StringUtils.isNotBlank(demand.getUatUpdateTm())
+                    && StringUtils.isNotBlank(demand.getTestFinshTm()) && StringUtils.isNotBlank(demand.getPreCurPeriod())
+                    && StringUtils.isNotBlank(demand.getReqSts())) {
                 //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
-                if (time.compareTo(demand.getPrd_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) < 30
-                        && "30".compareTo(demand.getReq_sts()) != 0 && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < 30
+                        && "30".compareTo(demand.getReqSts()) != 0 && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "需求进度滞后,";
                 }
-                if (time.compareTo(demand.getUat_update_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 30
-                        && Integer.parseInt(demand.getPre_cur_period()) < 120 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 30
+                        && Integer.parseInt(demand.getPreCurPeriod()) < 120 && "30".compareTo(demand.getReqSts()) != 0
+                        && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "开发进度滞后,";
                 }
-                if (time.compareTo(demand.getTest_finsh_tm()) > 0 && Integer.parseInt(demand.getPre_cur_period()) >= 120
-                        && Integer.parseInt(demand.getPre_cur_period()) < 140 && "30".compareTo(demand.getReq_sts()) != 0
-                        && "40".compareTo(demand.getReq_sts()) != 0) {
+                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 120
+                        && Integer.parseInt(demand.getPreCurPeriod()) < 140 && "30".compareTo(demand.getReqSts()) != 0
+                        && "40".compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "测试进度滞后";
                 }
                 if (StringUtils.isBlank(reqAbnorTypeAll)) {
                     reqAbnorTypeAll += "正常";
                 }
             } else if (reqAbnorType.indexOf("01") != -1) {
-                demandBOList.get(i).setReq_abnor_type("正常");
+                demandBOList.get(i).setReqAbnorType("正常");
                 continue;
             } else {
                 if (reqAbnorType.indexOf("03") != -1) {
@@ -119,9 +119,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
                 reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+                demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
             } else {
-                demandBOList.get(i).setReq_abnor_type(reqAbnorTypeAll);
+                demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
             }
         }
         DemandRspBO demandRspBO = new DemandRspBO();
@@ -178,14 +178,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
 
         //设置默认值
-        demandBO.getReq_type();
+        demandBO.getReqType();
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        demandBO.setReq_impl_mon(month);
-        demandBO.setReq_start_mon(month);
-        demandBO.setReq_inner_seq(reqTaskService.getNextInnerSeq());
-        demandBO.setQa_mng("刘桂娟");
-        demandBO.setConfig_mng("黄佳海");
-        demandBO.setReq_abnor_type("01");
+        demandBO.setReqImplMon(month);
+        demandBO.setReqStartMon(month);
+        demandBO.setReqInnerSeq(reqTaskService.getNextInnerSeq());
+        demandBO.setQaMng("刘桂娟");
+        demandBO.setConfigMng("黄佳海");
+        demandBO.setReqAbnorType("01");
 
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
@@ -268,12 +268,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     public void setDefaultValue(DemandBO demandBO) {
         // 计划投入数 =投入资源*开发周期/22
-        int inpoyRes = demandBO.getInput_res();
-        int devCycle = demandBO.getDev_cycle();
+        int inpoyRes = demandBO.getInputRes();
+        int devCycle = demandBO.getDevCycle();
         Double expInput = new BigDecimal(new Double(inpoyRes) * new Double(devCycle))
                 .divide(new BigDecimal(String.valueOf(22)), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
         //Double expInput = (double) (inpoyRes * devCycle / 22);
-        demandBO.setExp_input(expInput);
+        demandBO.setExpInput(expInput);
     }
 
     /**
@@ -282,12 +282,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      * @param demandBO
      */
     public void setDefaultUser(DemandBO demandBO) {
-        if (StringUtils.isBlank(demandBO.getCreat_user())) {
-            demandBO.setCreat_user(SecurityUtils.getLoginUserId());
-            demandBO.setCreat_time(new Date());
+        if (StringUtils.isBlank(demandBO.getCreatUser())) {
+            demandBO.setCreatUser(SecurityUtils.getLoginUserId());
+            demandBO.setCreatTime(new Date());
         }
-        demandBO.setUpdate_user(SecurityUtils.getLoginUserId());
-        demandBO.setUpdate_time(new Date());
+        demandBO.setUpdateUser(SecurityUtils.getLoginUserId());
+        demandBO.setUpdateTime(new Date());
     }
 
     /**
@@ -296,17 +296,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      * @param demandBO
      */
     public void setReqSts(DemandBO demandBO) {
-        if (!"30".equals(demandBO.getReq_sts()) && !"40".equals(demandBO.getReq_sts())) {
+        if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
             //修改需求状态
-            if ("10".equals(demandBO.getPre_cur_period())) {
+            if ("10".equals(demandBO.getPreCurPeriod())) {
                 //提出
-                demandBO.setReq_sts("10");
-            } else if ("180".equals(demandBO.getPre_cur_period())) {
+                demandBO.setReqSts("10");
+            } else if ("180".equals(demandBO.getPreCurPeriod())) {
                 //完成
-                demandBO.setReq_sts("50");
+                demandBO.setReqSts("50");
             } else {
                 //进行中
-                demandBO.setReq_sts("20");
+                demandBO.setReqSts("20");
             }
         }
     }
@@ -318,22 +318,22 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     public void checkReqTask(DemandBO demandBO) {
         //判断编号是否规范
-        String reqNo = demandBO.getReq_no();
+        String reqNo = demandBO.getReqNo();
         if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
             BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
         }
 
         //如果选择取消或暂停，月初备注不能为空
-        if ("30".equals(demandBO.getReq_sts()) && StringUtils.isBlank(demandBO.getMon_remark())
-                || "40".equals(demandBO.getReq_sts()) && StringUtils.isBlank(demandBO.getMon_remark())) {
+        if ("30".equals(demandBO.getReqSts()) && StringUtils.isBlank(demandBO.getMonRemark())
+                || "40".equals(demandBO.getReqSts()) && StringUtils.isBlank(demandBO.getMonRemark())) {
             BusinessException.throwBusinessException(MsgEnum.NULL_REMARK);
         }
 
         //主导部门和配合部门不能相同
-        if (StringUtils.isNotBlank(demandBO.getDevp_coor_dept())) {
-            String[] devp_coor_dept = demandBO.getDevp_coor_dept().split(",");
+        if (StringUtils.isNotBlank(demandBO.getDevpCoorDept())) {
+            String[] devp_coor_dept = demandBO.getDevpCoorDept().split(",");
             for (int i = 0; i < devp_coor_dept.length; i++) {
-                if (devp_coor_dept[i].equals(demandBO.getDevp_lead_dept())) {
+                if (devp_coor_dept[i].equals(demandBO.getDevpLeadDept())) {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_DEVP);
                 }
             }
@@ -348,7 +348,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         if (reqTask == null) {
             return "XQ00000001";
         } else {
-            String maxInnerSeq = reqTask.getReq_inner_seq();
+            String maxInnerSeq = reqTask.getReqInnerSeq();
             if (StringUtils.isBlank(maxInnerSeq)) {
                 return "XQ00000001";
             } else {
@@ -371,83 +371,83 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         List<DemandDO> insertList = new ArrayList<>();
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
-            if (StringUtils.isBlank(m.getReq_pro_dept())) {
+            if (StringUtils.isBlank(m.getReqProDept())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "归属部门不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
-            if (StringUtils.isBlank(m.getReq_nm())) {
+            if (StringUtils.isBlank(m.getReqNm())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
-            if (StringUtils.isBlank(m.getReq_desc())) {
+            if (StringUtils.isBlank(m.getReqDesc())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求描述不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
             //判断编号是否规范
-            String reqNo = m.getReq_no();
+            String reqNo = m.getReqNo();
             if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
             }
 
             DictionaryDO dictionaryDO = new DictionaryDO();
-            dictionaryDO.setDic_id("PRD_LINE");
-            dictionaryDO.setValue(m.getReq_prd_line());
+            dictionaryDO.setDicId("PRD_LINE");
+            dictionaryDO.setValue(m.getReqPrdLine());
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
             if (dic.size() == 0) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "产品线字典项不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
-            m.setReq_prd_line(dic.get(0).getName());
+            m.setReqPrdLine(dic.get(0).getName());
 
-            dictionaryDO.setUser_name(m.getReq_proposer());
+            dictionaryDO.setUserName(m.getReqProposer());
             dic = dictionaryDao.getJdInfo(dictionaryDO);
             if (dic.size() == 0) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求提出人不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
-            dictionaryDO.setUser_name(m.getReq_mnger());
+            dictionaryDO.setUserName(m.getReqMnger());
             dic = dictionaryDao.getJdInfo(dictionaryDO);
             if (dic.size() == 0) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求负责人不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
-            if (StringUtils.isNotBlank(m.getPre_cur_period())) {
-                dictionaryDO.setDic_id("REQ_PEROID");
-                dictionaryDO.setValue(m.getPre_cur_period());
+            if (StringUtils.isNotBlank(m.getPreCurPeriod())) {
+                dictionaryDO.setDicId("REQ_PEROID");
+                dictionaryDO.setValue(m.getPreCurPeriod());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
                     MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "最新进展字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
-                m.setPre_cur_period(dic.get(0).getName());
+                m.setPreCurPeriod(dic.get(0).getName());
             }
 
 
-            if (StringUtils.isNotBlank(m.getPre_mon_period())) {
-                dictionaryDO.setDic_id("REQ_PEROID");
-                dictionaryDO.setValue(m.getPre_mon_period());
+            if (StringUtils.isNotBlank(m.getPreMonPeriod())) {
+                dictionaryDO.setDicId("REQ_PEROID");
+                dictionaryDO.setValue(m.getPreMonPeriod());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
                     MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "月初需求阶段字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
-                m.setPre_mon_period(dic.get(0).getName());
+                m.setPreMonPeriod(dic.get(0).getName());
             }
-            m.setPre_cur_period(StringUtils.isBlank(m.getPre_cur_period()) ? m.getPre_mon_period() : m.getPre_cur_period());
-            m.setPre_mon_period(StringUtils.isBlank(m.getPre_mon_period()) ? m.getPre_cur_period() : m.getPre_mon_period());
+            m.setPreCurPeriod(StringUtils.isBlank(m.getPreCurPeriod()) ? m.getPreMonPeriod() : m.getPreCurPeriod());
+            m.setPreMonPeriod(StringUtils.isBlank(m.getPreMonPeriod()) ? m.getPreCurPeriod() : m.getPreMonPeriod());
 
-            if (StringUtils.isNotBlank(m.getCur_mon_target())) {
-                dictionaryDO.setDic_id("REQ_PEROID");
-                dictionaryDO.setValue(m.getCur_mon_target());
+            if (StringUtils.isNotBlank(m.getCurMonTarget())) {
+                dictionaryDO.setDicId("REQ_PEROID");
+                dictionaryDO.setValue(m.getCurMonTarget());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
                     MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "本月预计完成阶段字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
-                m.setCur_mon_target(dic.get(0).getName());
+                m.setCurMonTarget(dic.get(0).getName());
             }
 
             DemandBO tmp = new DemandBO();
@@ -459,20 +459,20 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             List<DemandDO> dem = demandDao.getReqTaskByUKImpl(m);
             if (dem.size() == 0) {
                 // 默认设置需求状态为新增
-                m.setReq_type("01");
+                m.setReqType("01");
                 // 默认设置qa人员为刘桂娟
-                m.setQa_mng("刘桂娟");
+                m.setQaMng("刘桂娟");
                 // 默认设置配置人员为黄佳海
-                m.setConfig_mng("黄佳海");
-                m.setReq_abnor_type("01");
+                m.setConfigMng("黄佳海");
+                m.setReqAbnorType("01");
                 //设置默认值
                 //插入SVN为否
-                m.setIs_svn_build("否");
+                m.setIsSvnBuild("否");
                 insertList.add(m);
             } else {
-                m.setReq_inner_seq(dem.get(0).getReq_inner_seq());
+                m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                 //设置默认值
-                m.setReq_start_mon("");
+                m.setReqStartMon("");
                 updateList.add(m);
             }
         });
@@ -480,7 +480,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         try {
             // 插入数据库
             insertList.forEach(m -> {
-                m.setReq_inner_seq(getNextInnerSeq());
+                m.setReqInnerSeq(getNextInnerSeq());
                 demandDao.insert(m);
             });
 
@@ -553,24 +553,24 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         List<DemandDO> List = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         demandDOS.forEach(m -> {
-            if (StringUtils.isBlank(m.getReq_no())) {
+            if (StringUtils.isBlank(m.getReqNo())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求编号不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
-            if (StringUtils.isBlank(m.getReq_nm())) {
+            if (StringUtils.isBlank(m.getReqNm())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
             //判断编号是否规范
-            String reqNo = m.getReq_no();
+            String reqNo = m.getReqNo();
             if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
             }
 
-            int start = m.getReq_no().indexOf("-") + 1;
-            String reqMonth = m.getReq_no().substring(start, start + 6);
-            m.setReq_start_mon(reqMonth);
+            int start = m.getReqNo().indexOf("-") + 1;
+            String reqMonth = m.getReqNo().substring(start, start + 6);
+            m.setReqStartMon(reqMonth);
             List.add(m);
         });
 
@@ -581,8 +581,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/hims/temp/Projectdoc/" + List.get(i).getReq_start_mon() + "/"
-                        + List.get(i).getReq_no() + "_" + List.get(i).getReq_nm();
+                String path = "/home/hims/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
 
                 File file1 = new File(path + "/开发技术文档/");
                 if (!file1.exists() && !file1.isDirectory()) {

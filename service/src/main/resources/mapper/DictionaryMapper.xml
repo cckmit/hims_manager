@@ -3,12 +3,12 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IDictionaryDao">
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DictionaryDO">
-        <result property="seq_id" jdbcType="BIGINT" column="seq_id" />
+        <result property="seqId" jdbcType="BIGINT" column="seq_id" />
         <result property="name" jdbcType="VARCHAR" column="name" />
         <result property="value" jdbcType="VARCHAR" column="value" />
         <result property="jp" jdbcType="VARCHAR" column="jp" />
         <result property="qp" jdbcType="VARCHAR" column="qp" />
-        <result property="dic_id" jdbcType="VARCHAR" column="dic_id" />
+        <result property="dicId" jdbcType="VARCHAR" column="dic_id" />
         <result property="remark" jdbcType="VARCHAR" column="remark" />
         <result property="sort" jdbcType="BIGINT" column="sort" />
     </resultMap>

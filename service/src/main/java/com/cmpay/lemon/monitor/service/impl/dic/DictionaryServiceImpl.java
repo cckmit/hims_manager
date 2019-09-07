@@ -25,7 +25,9 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public DictionaryBO getDicByDicId(DictionaryDO dictionaryDO) {
+
         List<DictionaryDO> dictionaryDOList = dictionaryDao.getDicByDicId(dictionaryDO);
+
         List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
         DictionaryBO dictionaryBO = new DictionaryBO();
         dictionaryBO.setDictionaryBOList(dictionaryBOList);
@@ -34,7 +36,9 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public DictionaryBO getJdInfo(DictionaryDO dictionaryDO) {
+
         List<DictionaryDO> dictionaryDOList = dictionaryDao.getJdInfo(dictionaryDO);
+
         List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
         DictionaryBO dictionaryBO = new DictionaryBO();
         dictionaryBO.setDictionaryBOList(dictionaryBOList);
