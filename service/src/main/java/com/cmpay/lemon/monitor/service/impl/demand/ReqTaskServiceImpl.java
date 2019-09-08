@@ -48,6 +48,17 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
  */
 @Service
 public class ReqTaskServiceImpl implements ReqTaskService {
+    //30 需求状态为暂停
+    private static final String REQSUSPEND ="30";
+    //40 需求状态为取消
+    private static final String REQCANCEL ="40";
+    // 30 需求定稿
+    private static final int REQCONFIRM = 30;
+    // 120 UAT版本更新
+    private static final int UPDATEUAT = 120;
+    // 140 完成UAT测试
+    private static final int FINISHUATTEST = 140;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqTaskServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
@@ -85,18 +96,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     && StringUtils.isNotBlank(demand.getTestFinshTm()) && StringUtils.isNotBlank(demand.getPreCurPeriod())
                     && StringUtils.isNotBlank(demand.getReqSts())) {
                 //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
-                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < 30
-                        && "30".compareTo(demand.getReqSts()) != 0 && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < REQCONFIRM
+                        && REQSUSPEND.compareTo(demand.getReqSts()) != 0 && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "需求进度滞后,";
                 }
-                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 30
-                        && Integer.parseInt(demand.getPreCurPeriod()) < 120 && "30".compareTo(demand.getReqSts()) != 0
-                        && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= REQCONFIRM
+                        && Integer.parseInt(demand.getPreCurPeriod()) < UPDATEUAT && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+                        && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "开发进度滞后,";
                 }
-                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 120
-                        && Integer.parseInt(demand.getPreCurPeriod()) < 140 && "30".compareTo(demand.getReqSts()) != 0
-                        && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= UPDATEUAT
+                        && Integer.parseInt(demand.getPreCurPeriod()) < FINISHUATTEST && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+                        && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "测试进度滞后";
                 }
                 if (StringUtils.isBlank(reqAbnorTypeAll)) {

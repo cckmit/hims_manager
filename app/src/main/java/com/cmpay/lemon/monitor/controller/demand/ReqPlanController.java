@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.controller.demand;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
@@ -110,6 +111,7 @@ public class ReqPlanController {
      */
     @RequestMapping("/update")
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
+        System.out.println(demandDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqPlanService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
@@ -121,11 +123,11 @@ public class ReqPlanController {
      */
     @RequestMapping("/goProjectStart")
     public GenericRspDTO<ProjectStartRspDTO> goProjectStart(@RequestBody ProjectStartReqDTO reqDTO) {
-        ProjectStartBO demandBO = reqPlanService.goProjectStart(reqDTO.getReq_inner_seq());
+        ProjectStartBO demandBO = reqPlanService.goProjectStart(reqDTO.getReqInnerSeq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
-        projectStartRspDTO.setReq_inner_seq(demandBO.getReqInnerSeq());
-        projectStartRspDTO.setReq_nm(demandBO.getReqNm());
-        projectStartRspDTO.setReq_no(demandBO.getReqNo());
+        projectStartRspDTO.setReqInnerSeq(demandBO.getReqInnerSeq());
+        projectStartRspDTO.setReqNm(demandBO.getReqNm());
+        projectStartRspDTO.setReqNo(demandBO.getReqNo());
         projectStartRspDTO.setSendTo(demandBO.getSendTo());
         projectStartRspDTO.setCopyTo(demandBO.getCopyTo());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, projectStartRspDTO);
@@ -138,7 +140,7 @@ public class ReqPlanController {
     @RequestMapping("/projectStart")
     public GenericRspDTO projectStart(@RequestBody ProjectStartReqDTO reqDTO, HttpServletRequest request) {
         // 项目启动邮件
-        reqPlanService.projectStart(new ProjectStartBO(reqDTO.getReq_inner_seq(),reqDTO.getReq_no(),reqDTO.getReq_nm(),reqDTO.getSendTo(),reqDTO.getCopyTo()),request);
+        reqPlanService.projectStart(new ProjectStartBO(reqDTO.getReqInnerSeq(),reqDTO.getReqNo(),reqDTO.getReqNm(),reqDTO.getSendTo(),reqDTO.getCopyTo()),request);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**
@@ -172,29 +174,15 @@ public class ReqPlanController {
         ProjectStartBO projectStartBO = reqPlanService.goProjectStart(reqDTO.getReqInnerSeq());
         DemandBO demandBO = reqPlanService.findById(reqDTO.getReqInnerSeq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
-        projectStartRspDTO.setReq_inner_seq(projectStartBO.getReqInnerSeq());
-        projectStartRspDTO.setPre_cur_period(demandBO.getPreCurPeriod());
-        projectStartRspDTO.setReq_nm(projectStartBO.getReqNm());
-        projectStartRspDTO.setReq_no(projectStartBO.getReqNo());
+        projectStartRspDTO.setReqInnerSeq(projectStartBO.getReqInnerSeq());
+        projectStartRspDTO.setPreCurPeriod(demandBO.getPreCurPeriod());
+        projectStartRspDTO.setReqNm(projectStartBO.getReqNm());
+        projectStartRspDTO.setReqNo(projectStartBO.getReqNo());
         projectStartRspDTO.setSendTo(projectStartBO.getSendTo());
         projectStartRspDTO.setCopyTo(projectStartBO.getCopyTo());
-        String reqPeriod = dictionaryService.findFieldName("REQ_PEROID",demandBO.getPreCurPeriod());
+        String preCurPeriod = dictionaryService.findFieldName("REQ_PEROID",demandBO.getPreCurPeriod());
         //将需求阶段赋值成下一阶段
-        if (new Integer(reqPeriod) <= 30) {
-            reqPeriod = "30";
-        }else if (new Integer(reqPeriod) <= 50) {
-            reqPeriod = "50";
-        }else if (new Integer(reqPeriod) <= 70) {
-            reqPeriod = "70";
-        }else if (new Integer(reqPeriod) <= 110) {
-            reqPeriod = "110";
-        }else if (new Integer(reqPeriod) <= 140) {
-            reqPeriod = "140";
-        }else if (new Integer(reqPeriod) <= 160) {
-            reqPeriod = "160";
-        }else if (new Integer(reqPeriod) <= 180) {
-            reqPeriod = "180";
-        }
+        String reqPeriod = reqPlanService.getReqPeriod(preCurPeriod);
         List<DictionaryBO> dictionaryBOList = dictionaryService.findUploadPeriod(reqPeriod);
         DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
@@ -207,17 +195,11 @@ public class ReqPlanController {
      * @return
      */
     @PostMapping("uploadProjrctFile")
-    public GenericRspDTO<NoBody> uploadProjrctFile(@RequestBody ProjectStartReqDTO reqDTO,HttpServletRequest request) {
-        System.out.println("需求文档上传："+reqDTO);
-        System.out.println("上传的文档信息："+FILES);
-        for (MultipartFile importfile : FILES) {
-            String fileName = importfile.getOriginalFilename();
-            System.out.println("上传的文件名："+fileName);
-        }
+    public GenericRspDTO uploadProjrctFile(@RequestBody ProjectStartReqDTO reqDTO,HttpServletRequest request) {
         ProjectStartBO ProjectStartBO = new ProjectStartBO();
         BeanConvertUtils.convert(ProjectStartBO, reqDTO);
         reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
-        return GenericRspDTO.newSuccessInstance();
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
     /**
@@ -227,10 +209,6 @@ public class ReqPlanController {
      */
     @PostMapping("/batch/import")
     public GenericRspDTO<NoBody> batchImport(@RequestParam("file") MultipartFile[] files,HttpServletRequest request, GenericDTO<NoBody> req) {
-        for (MultipartFile importfile : files) {
-            String fileName = importfile.getOriginalFilename();
-            System.out.println("文件名："+fileName);
-        }
         FILES=files;
         return GenericRspDTO.newSuccessInstance();
     }

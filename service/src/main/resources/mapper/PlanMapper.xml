@@ -556,39 +556,39 @@
     <update id="updateReqWorkLoad" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         UPDATE t_demand_info
         SET
-        req_inner_seq = #{req_inner_seq}
-        <if test="devp_lead_dept != null and devp_lead_dept != ''">
-            ,devp_lead_dept =#{devp_lead_dept }
+        req_inner_seq = #{reqInnerSeq}
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept =#{devpLeadDept }
         </if>
-        <if test="devp_coor_dept != null and devp_coor_dept != ''">
-            ,devp_coor_dept =#{devp_coor_dept }
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept }
         </if>
-        <if test="input_workload != null">
-            ,input_workload =#{input_workload }
+        <if test="inputWorkload != null">
+            ,input_workload =#{inputWorkload }
         </if>
-        <if test="total_workload != null">
-            ,total_workload =#{total_workload }
+        <if test="totalWorkload != null">
+            ,total_workload =#{totalWorkload }
         </if>
-        <if test="remain_workload != null">
-            ,remain_workload =#{remain_workload }
+        <if test="remainWorkload != null">
+            ,remain_workload =#{remainWorkload }
         </if>
-        <if test="mon_input_workload != null">
-            ,mon_input_workload =#{mon_input_workload }
+        <if test="monInputWorkload != null">
+            ,mon_input_workload =#{monInputWorkload }
         </if>
-        <if test="lead_dept_pro != null and lead_dept_pro != ''">
-            ,lead_dept_pro =#{lead_dept_pro}
-            ,coor_dept_pro =#{coor_dept_pro}
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro}
+            ,coor_dept_pro =#{coorDeptPro}
         </if>
-        <if test="lead_dept_workload != null and lead_dept_workload != ''">
-            ,lead_dept_workload =#{lead_dept_workload}
-            ,coor_dept_workload =#{coor_dept_workload}
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload}
+            ,coor_dept_workload =#{coorDeptWorkload}
         </if>
-        <if test="update_time != null ">
-            ,update_time =#{ update_time }
+        <if test="updateTime != null ">
+            ,update_time =#{ updateTime }
         </if>
-        <if test="update_user != null and update_user != ''">
-            ,update_user =#{ update_user }
+        <if test="updateUser != null and updateUser != ''">
+            ,update_user =#{ updateUser }
         </if>
-        WHERE req_inner_seq = #{req_inner_seq}
+        WHERE req_inner_seq = #{reqInnerSeq}
     </update>
 </mapper>

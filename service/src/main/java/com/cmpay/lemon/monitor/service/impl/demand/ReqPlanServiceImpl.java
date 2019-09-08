@@ -69,6 +69,27 @@ import java.util.*;
  */
 @Service
 public class ReqPlanServiceImpl implements ReqPlanService {
+    //30 需求状态为暂停
+    private static final String REQSUSPEND ="30";
+    //40 需求状态为取消
+    private static final String REQCANCEL ="40";
+    // 30 需求定稿
+    private static final int REQCONFIRM = 30;
+    // 50 技术方案定稿
+    private static final int TECHDOCCONFIRM = 50;
+    // 70 测试用例定稿
+    private static final int TESTCASECONFIRM = 70;
+    // 110 完成SIT测试
+    private static final int FINISHSITTEST = 110;
+    // 120 UAT版本更新
+    private static final int UPDATEUAT = 120;
+    // 140 完成UAT测试
+    private static final int FINISHUATTEST = 140;
+    // 160 完成预投产
+    private static final int FINISHPRETEST = 160;
+    // 180 完成产品发布
+    private static final int FINISHPRD = 180;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqPlanServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
@@ -112,18 +133,18 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     && StringUtils.isNotBlank(demand.getTestFinshTm()) && StringUtils.isNotBlank(demand.getPreCurPeriod())
                     && StringUtils.isNotBlank(demand.getReqSts())) {
                 //当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
-                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < 30
-                        && "30".compareTo(demand.getReqSts()) != 0 && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < REQCONFIRM
+                        && REQSUSPEND.compareTo(demand.getReqSts()) != 0 && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "需求进度滞后,";
                 }
-                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 30
-                        && Integer.parseInt(demand.getPreCurPeriod()) < 120 && "30".compareTo(demand.getReqSts()) != 0
-                        && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= REQCONFIRM
+                        && Integer.parseInt(demand.getPreCurPeriod()) < UPDATEUAT && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+                        && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "开发进度滞后,";
                 }
-                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= 120
-                        && Integer.parseInt(demand.getPreCurPeriod()) < 140 && "30".compareTo(demand.getReqSts()) != 0
-                        && "40".compareTo(demand.getReqSts()) != 0) {
+                if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= UPDATEUAT
+                        && Integer.parseInt(demand.getPreCurPeriod()) < FINISHUATTEST && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+                        && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
                     reqAbnorTypeAll += "测试进度滞后";
                 }
                 if (StringUtils.isBlank(reqAbnorTypeAll)) {
@@ -231,8 +252,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     @Override
     public  ProjectStartBO goProjectStart(String reqInnerSeq){
+        System.out.println("内部编号："+reqInnerSeq);
         DemandDO demandDO = demandDao.get(reqInnerSeq);
-        System.out.println("service："+demandDO.toString());
         ProjectStartDO projectStartDO = new ProjectStartDO();
         projectStartDO.setReqNm(demandDO.getReqNm());
         projectStartDO.setReqNo(demandDO.getReqNo());
@@ -857,8 +878,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqPlan.setPreCurPeriod(preCurPeriod);
             demandDao.updatePreCurPeriod(reqPlan);
         }
-        //return ajaxDoneSuccess("文档上传成功!");
-        BusinessException.throwBusinessException("文档上传成功!");
     }
 
     private String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath) {
@@ -1534,4 +1553,31 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandDao.updateExtraTm(bean);
         }
     }
+    /**
+     * 获取当前需求阶段
+     */
+    @Override
+    public String getReqPeriod(String preCurPeriod) {
+        String reqPeriod = preCurPeriod;
+        if("".equals(reqPeriod)||reqPeriod==null){
+            return "";
+        }
+        if (new Integer(reqPeriod) <= REQCONFIRM) {
+            reqPeriod = "30";
+        }else if (new Integer(reqPeriod) <= TECHDOCCONFIRM) {
+            reqPeriod = "50";
+        }else if (new Integer(reqPeriod) <= TESTCASECONFIRM) {
+            reqPeriod = "70";
+        }else if (new Integer(reqPeriod) <= FINISHSITTEST) {
+            reqPeriod = "110";
+        }else if (new Integer(reqPeriod) <= FINISHUATTEST) {
+            reqPeriod = "140";
+        }else if (new Integer(reqPeriod) <= FINISHPRETEST) {
+            reqPeriod = "160";
+        }else if (new Integer(reqPeriod) <= FINISHPRD) {
+            reqPeriod = "180";
+        }
+        return reqPeriod;
+    }
+
 }

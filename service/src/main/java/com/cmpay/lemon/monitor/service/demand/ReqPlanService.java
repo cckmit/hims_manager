@@ -91,4 +91,8 @@ public interface ReqPlanService {
      * 需求文档上传
      */
     void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files,HttpServletRequest request);
+    /**
+     * 获取当前需求阶段
+     */
+    String getReqPeriod(String preCurPeriod);
 }

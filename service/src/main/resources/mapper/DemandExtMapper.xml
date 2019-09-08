@@ -60,6 +60,7 @@
         <result property="creatUser" jdbcType="VARCHAR" column="creat_user" />
         <result property="updateUser" jdbcType="VARCHAR" column="update_user" />
         <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+        <result property="devpResMng" jdbcType="VARCHAR" column="devp_res_mng" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -898,10 +899,10 @@
         <if test="monInputWorkload != null">
             ,mon_input_workload =#{monInputWorkload }
         </if>
-        <if test="isSvnBuild != null and is_svn_build != ''">
+        <if test="isSvnBuild != null and isSvnBuild != ''">
             ,is_svn_build=#{isSvnBuild }
         </if>
-        <if test="reqAbnorType != null and req_abnor_type != ''">
+        <if test="reqAbnorType != null and reqAbnorType != ''">
             ,req_abnor_type=#{reqAbnorType }
         </if>
         <if test="creatTime != null">
@@ -910,10 +911,10 @@
         <if test="updateTime != null">
             ,update_time =#{updateTime,jdbcType=TIMESTAMP}
         </if>
-        <if test="creatUser != null and creat_user != ''">
+        <if test="creatUser != null and creatUser != ''">
             ,creat_user =#{creatUser}
         </if>
-        <if test="updateUser != null and update_user != ''">
+        <if test="updateUser != null and updateUser != ''">
             ,update_user =#{updateUser}
         </if>
         where req_inner_seq =#{reqInnerSeq }
