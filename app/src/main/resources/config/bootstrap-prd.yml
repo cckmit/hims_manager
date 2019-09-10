@@ -21,9 +21,9 @@ lemon:
   dataSources:
     primary:
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
-      username: hims
-      password: 'hims2016'
+      url: jdbc:mysql://172.16.48.55:3306/hims?useSSL=false
+      username: himsmanager
+      password: 'Root15()'
   idgen:
     redis:
       password: '*****'
