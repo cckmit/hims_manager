@@ -57,6 +57,8 @@ public class MonitorConstants {
      * 需求周反馈uri
      */
     public static final String REQMONTH_PATH = BASE_URI + "/month";
+
+    public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**
      * 字典uri
      */

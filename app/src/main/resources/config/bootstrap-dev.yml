@@ -18,7 +18,7 @@ lemon:
   dataSources:
     primary:
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
+      url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false&useUnicode=true&characterEncoding=UTF-8
       username: hims
       password: 'hims2016'
   idgen:
