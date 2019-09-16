@@ -50,6 +50,14 @@ public class MonitorConstants {
      */
     public static final String REQPLAN_PATH = BASE_URI + "/plan";
     /**
+     * 需求周反馈uri
+     */
+    public static final String REQWEEK_PATH = BASE_URI + "/week";
+    /**
+     * 需求周反馈uri
+     */
+    public static final String REQMONTH_PATH = BASE_URI + "/month";
+    /**
      * 字典uri
      */
     public static final String DICTIONARY_PATH = BASE_URI + "/dic";

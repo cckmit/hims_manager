@@ -17,7 +17,6 @@ import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 import com.cmpay.lemon.monitor.entity.ProjectStartDO;
-import com.cmpay.lemon.monitor.entity.UserPrincipal;
 import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -524,7 +523,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 return "";
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
-            String path = request.getSession().getServletContext().getRealPath("/") + SvnConstant.ProjectTemplatePath;
+            String path = SvnConstant.ProjectTemplatePath;
             File file = new File(path);
             // 导入文件夹
             SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
@@ -784,11 +783,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
         String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
-//        String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
-//        if (!StringUtils.isEmpty(checOutMsg)) {
-//            //return ajaxDoneError(checOutMsg);
-//            BusinessException.throwBusinessException("checOutMsg");
-//        }
+        String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
+        if (!StringUtils.isEmpty(checOutMsg)) {
+            //return ajaxDoneError(checOutMsg);
+            BusinessException.throwBusinessException(checOutMsg);
+        }
         // 获取阶段中文名
         String periodChName = "";
         String nowTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
@@ -946,7 +945,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             }
                         }
                         // 保存本地svn
-                        //importfile.transferTo(fl);
+                        importfile.transferTo(fl);
                         File newWordLod =null;
                         //功能点解析
                         if (fileName.contains("原子功能点评估表(内部考核)")||fileName.contains("原子功能点评估表（内部考核）")) {
@@ -971,17 +970,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             attachFiles.add(fl);
                         }
                         // 上传到SVN
-//                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
-//                        clientManager = SVNUtil.authSvn(svnPath,authManager);
-//                        clientManager.getWCClient().doCleanup(new File(loacalpath));
-//                        clientManager.getDiffClient().setIgnoreExternals(true);
-//                        SVNUtil.checkVersiondDirectory(clientManager,fl);
-//                        SVNUtil.commit(clientManager, fl, true, "文档提交");
-//                        if(newWordLod!=null){
-//                            SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
-//                            SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
-//                        }
-//                        SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY);
+                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
+                        clientManager = SVNUtil.authSvn(svnPath,authManager);
+                        clientManager.getWCClient().doCleanup(new File(loacalpath));
+                        clientManager.getDiffClient().setIgnoreExternals(true);
+                        SVNUtil.checkVersiondDirectory(clientManager,fl);
+                        SVNUtil.commit(clientManager, fl, true, "文档提交");
+                        if(newWordLod!=null){
+                            SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
+                            SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
+                        }
+                        SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY);
                     } catch (Exception e) {
                         map.put("message", "文档提交到SVN失败："+e.getMessage());
                         return map;
@@ -1254,7 +1253,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 原子功能点文档转换
      */
     public String copyWorLoadFile(String importFilePath,HttpServletRequest request,String loacalpath) {
-        String tempPath=request.getSession().getServletContext().getRealPath("/") +"/WEB-INF/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        String tempPath= "/home/hims/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
         //读取相关信息
         Map<String, Object> resMap;
         try {
