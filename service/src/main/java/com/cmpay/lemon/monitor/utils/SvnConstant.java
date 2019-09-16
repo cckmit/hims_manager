@@ -6,7 +6,7 @@ public class SvnConstant {
      * SVN路径
      */
     public static final String SvnPath = "http://10.9.10.115:18080/svn/Projectdoc/";
-    public static final String ProjectTemplatePath= "/WEB-INF/template/project_template";
+    public static final String ProjectTemplatePath= "/home/hims/template/project_template";
 
     /**
      * SVN用户名账号   
