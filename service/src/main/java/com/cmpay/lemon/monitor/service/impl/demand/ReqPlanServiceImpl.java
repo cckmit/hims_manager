@@ -1253,7 +1253,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 原子功能点文档转换
      */
     public String copyWorLoadFile(String importFilePath,HttpServletRequest request,String loacalpath) {
-        String tempPath= "/home/hims/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        String tempPath= "/home/devadm/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
         //读取相关信息
         Map<String, Object> resMap;
         try {

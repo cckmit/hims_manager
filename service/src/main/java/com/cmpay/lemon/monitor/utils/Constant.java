@@ -108,5 +108,5 @@ public interface Constant {
     /**
      * @msg 项目文档路径
      */
-    String PROJECTDOC_PATH = "/home/hims/temp/Projectdoc/";
+    String PROJECTDOC_PATH = "/home/devadm/temp/Projectdoc/";
 }

@@ -54,9 +54,13 @@ public class MonitorConstants {
      */
     public static final String REQWEEK_PATH = BASE_URI + "/week";
     /**
-     * 需求周反馈uri
+     * 需求月反馈uri
      */
     public static final String REQMONTH_PATH = BASE_URI + "/month";
+    /**
+     * 工作量管理uri
+     */
+    public static final String REQWORK_PATH = BASE_URI + "/workload";
 
     public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**
