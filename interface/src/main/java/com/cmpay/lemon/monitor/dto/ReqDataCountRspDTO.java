@@ -1,7 +1,7 @@
 package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.request.GenericDTO;
-import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
+
 
 import java.util.List;
 
@@ -10,22 +10,22 @@ import java.util.List;
  * @Description:  需求报表返回DTO
  */
 public class ReqDataCountRspDTO extends GenericDTO {
-    private List<ReqDataCountBO> reportLista;
-    private List<ReqDataCountBO> reportListb;
+    private List<ReqDataCountDTO> reportLista;
+    private List<ReqDataCountDTO> reportListb;
 
-    public List<ReqDataCountBO> getReportLista() {
+    public List<ReqDataCountDTO> getReportLista() {
         return reportLista;
     }
 
-    public void setReportLista(List<ReqDataCountBO> reportLista) {
+    public void setReportLista(List<ReqDataCountDTO> reportLista) {
         this.reportLista = reportLista;
     }
 
-    public List<ReqDataCountBO> getReportListb() {
+    public List<ReqDataCountDTO> getReportListb() {
         return reportListb;
     }
 
-    public void setReportListb(List<ReqDataCountBO> reportListb) {
+    public void setReportListb(List<ReqDataCountDTO> reportListb) {
         this.reportListb = reportListb;
     }
 }

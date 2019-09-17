@@ -1,12 +1,11 @@
 package com.cmpay.lemon.monitor.controller.reportForm;
 
 
-import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
-import com.cmpay.lemon.framework.data.NoBody;
+import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.DemandReqDTO;
+import com.cmpay.lemon.monitor.dto.ReqDataCountDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountReqDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -43,22 +43,22 @@ import java.util.List;
         System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
         List<ReqDataCountBO> reportListb = new ArrayList<>();
-        if ("1".equals(reqDataCountReqDTO.getReqReportNm())) {
             reportLista = reqDataCountService.getImpl(reqDataCountReqDTO.getReqImplMon());
             reportListb = reqDataCountService.getImplByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("2".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getComp(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getCompByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("3".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
-        }else if ("4".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
-        }
         System.err.println(reportLista);
         System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
-        reqDataCountRspDTO.setReportLista(reportLista);
-        reqDataCountRspDTO.setReportListb(reportListb);
+
+        List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
+        );
+        List<ReqDataCountDTO> reqDataCountDTOListB = new LinkedList<>();
+        reportListb.forEach(m->
+                reqDataCountDTOListB.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
+        );
+        reqDataCountRspDTO.setReportLista(reqDataCountDTOListA);
+        reqDataCountRspDTO.setReportListb(reqDataCountDTOListB);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
@@ -76,22 +76,24 @@ import java.util.List;
         System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
         List<ReqDataCountBO> reportListb = new ArrayList<>();
-        if ("1".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getImpl(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getImplByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("2".equals(reqDataCountReqDTO.getReqReportNm())) {
             reportLista = reqDataCountService.getComp(reqDataCountReqDTO.getReqImplMon());
             reportListb = reqDataCountService.getCompByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("3".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
-        }else if ("4".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
-        }
         System.err.println(reportLista);
         System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
-        reqDataCountRspDTO.setReportLista(reportLista);
-        reqDataCountRspDTO.setReportListb(reportListb);
+        List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->{
+                    System.err.println(m.getReqPrdLine());
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m));
+        }
+        );
+        System.err.println(reqDataCountDTOListA);
+        List<ReqDataCountDTO> reqDataCountDTOListB = new LinkedList<>();
+        reportListb.forEach(m->
+                reqDataCountDTOListB.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
+        );
+        reqDataCountRspDTO.setReportLista(reqDataCountDTOListA);
+        reqDataCountRspDTO.setReportListb(reqDataCountDTOListB);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
@@ -108,23 +110,18 @@ import java.util.List;
         }
         System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
-        List<ReqDataCountBO> reportListb = new ArrayList<>();
-        if ("1".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getImpl(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getImplByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("2".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getComp(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getCompByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("3".equals(reqDataCountReqDTO.getReqReportNm())) {
+
             reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
-        }else if ("4".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
-        }
+
         System.err.println(reportLista);
-        System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
-        reqDataCountRspDTO.setReportLista(reportLista);
-        reqDataCountRspDTO.setReportListb(reportListb);
+
+
+        List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
+        );
+        reqDataCountRspDTO.setReportLista(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
@@ -141,24 +138,15 @@ import java.util.List;
         }
         System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
-        List<ReqDataCountBO> reportListb = new ArrayList<>();
-        if ("1".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getImpl(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getImplByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("2".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getComp(reqDataCountReqDTO.getReqImplMon());
-            reportListb = reqDataCountService.getCompByDept(reqDataCountReqDTO.getReqImplMon());
-        }else if ("3".equals(reqDataCountReqDTO.getReqReportNm())) {
-            reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
-        }else if ("4".equals(reqDataCountReqDTO.getReqReportNm())) {
             reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
-        }
         System.err.println(reportLista);
-        System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
-        reqDataCountRspDTO.setReportLista(reportLista);
-        reqDataCountRspDTO.setReportListb(reportListb);
+        List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->{
+            reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m));
+        }
+        );
+        reqDataCountRspDTO.setReportLista(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
-
 }

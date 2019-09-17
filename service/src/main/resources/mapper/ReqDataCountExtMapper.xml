@@ -29,6 +29,18 @@
 		<result property="reqAcceptance" jdbcType="VARCHAR" column="req_acceptance" />
 		<result property="reqInaccuracyRate" jdbcType="VARCHAR" column="req_inaccuracy_rate" />
 		<result property="reqAbnormalRate" jdbcType="VARCHAR" column="req_abnormal_rate" />
+
+
+		<result property="financeDevp" jdbcType="VARCHAR" column="finance_devp" />
+		<result property="qualityDevp" jdbcType="VARCHAR" column="quality_devp" />
+		<result property="innoDevp" jdbcType="VARCHAR" column="inno_devp" />
+		<result property="elecDevp" jdbcType="VARCHAR" column="elec_devp" />
+		<result property="riskDevp" jdbcType="VARCHAR" column="risk_devp" />
+		<result property="financialDevp" jdbcType="VARCHAR" column="financial_devp" />
+		<result property="commDevp" jdbcType="VARCHAR" column="comm_devp" />
+		<result property="infoDevp" jdbcType="VARCHAR" column="info_devp" />
+		<result property="busiDevp" jdbcType="VARCHAR" column="busi_devp" />
+		<result property="goveDevp" jdbcType="VARCHAR" column="gove_devp" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		req_prd,
@@ -217,11 +229,11 @@
 	</select>
 	
 	<select id="getStageByJd" resultMap="rt">
-		SELECT * FROM 
+		SELECT * FROM
 		(SELECT
-			CASE WHEN coalesce (pre_cur_period,'') = '' 
-			THEN '无' 
-			ELSE (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID') 
+			CASE WHEN coalesce (pre_cur_period,'') = ''
+			THEN '无'
+			ELSE (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID')
 			END req_prd,
 			sum( CASE WHEN req_pro_dept = '基地财务部' THEN 1 ELSE 0 END ) finance_devp,
 			sum( CASE WHEN req_pro_dept = '产品品质部' THEN 1 ELSE 0 END ) quality_devp,
@@ -239,7 +251,7 @@
 		WHERE req_impl_mon = #{0}
 		  and req_sts not in ( '30', '40' )
 		GROUP BY req_prd
-		ORDER BY cast(pre_cur_period as UNSIGNED INTEGER))a
+		ORDER BY pre_cur_period+0 )a
 		UNION ALL
 		SELECT * FROM
 		(SELECT
