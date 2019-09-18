@@ -194,10 +194,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandBO.setReqImplMon(month);
         demandBO.setReqStartMon(month);
         demandBO.setReqInnerSeq(reqTaskService.getNextInnerSeq());
-        demandBO.setQaMng("刘桂娟");
-        demandBO.setConfigMng("黄佳海");
-        demandBO.setReqAbnorType("01");
-
+        if( JudgeUtils.isEmpty(demandBO.getQaMng())) {
+            demandBO.setQaMng("刘桂娟");
+        }
+        if( JudgeUtils.isEmpty(demandBO.getReqType())) {
+            demandBO.setReqType("01");
+        }
+        if( JudgeUtils.isEmpty(demandBO.getConfigMng())) {
+            demandBO.setConfigMng("黄佳海");
+        }if (JudgeUtils.isEmpty(demandBO.getReqAbnorType())) {
+            demandBO.setReqAbnorType("01");
+        }
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
         setReqSts(demandBO);

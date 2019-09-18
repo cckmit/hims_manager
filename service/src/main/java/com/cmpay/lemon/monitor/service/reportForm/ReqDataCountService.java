@@ -7,6 +7,7 @@ import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
 import com.cmpay.lemon.monitor.entity.ReqMngDO;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -76,4 +77,12 @@ public interface ReqDataCountService {
 
     //按开发查询
     Map selectByEng(ReqMngBO vo);
+
+    void downloadDemandTypeStatistics(String month, HttpServletResponse response);
+
+    void downloadDemandImplementationReport(String month, HttpServletResponse response);
+
+    void downloadDemandCompletionReport(String month, HttpServletResponse response);
+
+    void downloadBaseOwnershipDepartmentStatistics(String month, HttpServletResponse response);
 }

@@ -3,8 +3,10 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
+import com.cmpay.lemon.monitor.dto.DemandReqDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountReqDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountRspDTO;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -31,22 +35,14 @@ import java.util.List;
 
     @RequestMapping("/reportform1")
     public GenericRspDTO<ReqDataCountRspDTO> getReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
-        reqDataCountReqDTO.setReqReportNm("1");
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        System.err.println(month);
-       System.err.println(1);
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(2);
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
         List<ReqDataCountBO> reportListb = new ArrayList<>();
             reportLista = reqDataCountService.getImpl(reqDataCountReqDTO.getReqImplMon());
             reportListb = reqDataCountService.getImplByDept(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(reportLista);
-        System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
 
         List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
@@ -64,30 +60,20 @@ import java.util.List;
 
     @RequestMapping("/reportform2")
     public GenericRspDTO<ReqDataCountRspDTO> getReportForm2(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
-        reqDataCountReqDTO.setReqReportNm("2");
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        System.err.println(month);
-        System.err.println(1);
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(2);
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
         List<ReqDataCountBO> reportListb = new ArrayList<>();
             reportLista = reqDataCountService.getComp(reqDataCountReqDTO.getReqImplMon());
             reportListb = reqDataCountService.getCompByDept(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(reportLista);
-        System.err.println(reportListb);
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
         List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
         reportLista.forEach(m->{
-                    System.err.println(m.getReqPrdLine());
                 reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m));
         }
         );
-        System.err.println(reqDataCountDTOListA);
         List<ReqDataCountDTO> reqDataCountDTOListB = new LinkedList<>();
         reportListb.forEach(m->
                 reqDataCountDTOListB.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
@@ -99,24 +85,13 @@ import java.util.List;
 
     @RequestMapping("/reportform3")
     public GenericRspDTO<ReqDataCountRspDTO> getReportForm3(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
-        reqDataCountReqDTO.setReqReportNm("3");
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        System.err.println(month);
-        System.err.println(1);
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(2);
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
-
-            reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
-
-        System.err.println(reportLista);
+        reportLista = reqDataCountService.getReqSts(reqDataCountReqDTO.getReqImplMon());
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
-
-
         List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
         reportLista.forEach(m->
                 reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
@@ -125,28 +100,50 @@ import java.util.List;
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
+
     @RequestMapping("/reportform4")
     public GenericRspDTO<ReqDataCountRspDTO> getReportForm4(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
-        reqDataCountReqDTO.setReqReportNm("4");
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        System.err.println(month);
-        System.err.println(1);
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(2);
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         List<ReqDataCountBO> reportLista = new ArrayList<>();
-            reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
-        System.err.println(reportLista);
+        reportLista = reqDataCountService.getStageByJd(reqDataCountReqDTO.getReqImplMon());
         ReqDataCountRspDTO reqDataCountRspDTO = new ReqDataCountRspDTO();
         List<ReqDataCountDTO> reqDataCountDTOListA = new LinkedList<>();
-        reportLista.forEach(m->{
-            reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m));
-        }
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountDTO(), m))
         );
         reqDataCountRspDTO.setReportLista(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
+
+
+    @RequestMapping("/downloadreportform1")
+    public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        reqDataCountService.downloadDemandImplementationReport(month,response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+    @RequestMapping("/downloadreportform2")
+    public  GenericRspDTO<NoBody> downloadReportForm2(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        reqDataCountService.downloadDemandCompletionReport(month,response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+
+    @RequestMapping("/downloadreportform3")
+    public  GenericRspDTO<NoBody> downloadReportForm3(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        reqDataCountService.downloadDemandTypeStatistics(month,response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+
+    @RequestMapping("/downloadreportform4")
+    public  GenericRspDTO<NoBody> downloadReportForm4(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        reqDataCountService.downloadBaseOwnershipDepartmentStatistics(month,response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+
 }
