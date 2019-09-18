@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.utils;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,25 +57,20 @@ public class FileUtils {
         }
     }
 
-    private static void setHeader(String filePath, HttpServletResponse res) {
-        res.setContentType("application/octet-stream");
+    private static void setHeader(String filePath, HttpServletResponse res) throws IOException{
+        res.setContentType("application/octet-stream; charset=utf-8");
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-        res.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName);
+        res.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName );
         res.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
     }
 
     private static void doResWrite(String filePath, HttpServletResponse res) throws IOException {
         ServletOutputStream out = res.getOutputStream();
         ClassPathResource resource = new ClassPathResource(filePath);
-        InputStream inStream = resource.getInputStream();
-        byte[] b = new byte[1024];
-        int len;
-        while ((len = inStream.read(b)) > 0) {
-            out.write(b, 0, len);
-        }
-        res.flushBuffer();
+        File file = resource.getFile();
+        System.err.println(file.getName());
+        out.write(org.apache.commons.io.FileUtils.readFileToByteArray(file));
         out.close();
-        inStream.close();
     }
     /**
      * 创建目录

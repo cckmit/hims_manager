@@ -162,7 +162,7 @@ public class ReqPlanController {
      */
     @PostMapping("/template/download")
     public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
-        doWrite("static/gndDownload.xlsm", response);
+        doWrite("static/gndDownload.xlsx", response);
         return GenericRspDTO.newSuccessInstance();
     }
 
