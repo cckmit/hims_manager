@@ -119,6 +119,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        System.err.println("需求月份"+demandBO.getReqImplMon());
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
