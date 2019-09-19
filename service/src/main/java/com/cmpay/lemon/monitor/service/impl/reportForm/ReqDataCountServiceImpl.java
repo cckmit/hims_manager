@@ -561,7 +561,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		if (JudgeUtils.isNotEmpty(reportLista)) {
 			reportLista.forEach(m->{
 				BaseOwnershipDepartmentStatisticsBO baseOwnershipDepartmentStatisticsBO = new BaseOwnershipDepartmentStatisticsBO();
-				baseOwnershipDepartmentStatisticsBO.setReqPrd(m.getReqPre());
+				baseOwnershipDepartmentStatisticsBO.setReqPrd(m.getReqPrd());
 				baseOwnershipDepartmentStatisticsBO.setFinanceDevp(m.getFinanceDevp());
 				baseOwnershipDepartmentStatisticsBO.setQualityDevp(m.getQualityDevp());
 				baseOwnershipDepartmentStatisticsBO.setInnoDevp(m.getInnoDevp());
