@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
@@ -17,8 +18,8 @@ import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
+import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -385,7 +386,67 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void doBatchImport(MultipartFile file) {
-        List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
+
+        File f = null;
+        List<DemandDO> demandDOS=new ArrayList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            f=File.createTempFile("tmp", "."+suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                DemandDO demandDO = new DemandDO();
+                demandDO.setReqProDept(map.get(i).get(0).toString());
+                demandDO.setReqProposer(map.get(i).get(1).toString());
+                demandDO.setReqMnger(map.get(i).get(2).toString());
+                demandDO.setReqPrdLine(map.get(i).get(3).toString());
+                demandDO.setReqNm(map.get(i).get(4).toString());
+                demandDO.setReqDesc(map.get(i).get(5).toString());
+                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString())) {
+                    demandDO.setExpInput(Double.parseDouble(map.get(i).get(6).toString()));
+                }
+                demandDO.setIsCut(map.get(i).get(7).toString());
+                demandDO.setMonRemark(map.get(i).get(8).toString());
+                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString());
+                demandDO.setPreMonPeriod(map.get(i).get(10).toString());
+                demandDO.setCurMonTarget(map.get(i).get(11).toString());
+                demandDO.setReqInnerSeq(map.get(i).get(12).toString());
+                demandDO.setReqNo(map.get(i).get(13).toString());
+                if(!JudgeUtils.isEmpty(map.get(i).get(14).toString())) {
+                    demandDO.setInputRes(Integer.parseInt( map.get(i).get(14).toString()));
+                }
+                if(!JudgeUtils.isEmpty(map.get(i).get(15).toString())) {
+                    demandDO.setDevCycle(Integer.parseInt( map.get(i).get(15).toString()));
+                }
+                demandDO.setRiskFeedbackTm(map.get(i).get(16).toString());
+                demandDO.setPreCurPeriod(map.get(i).get(17).toString());
+                demandDO.setRiskSolution(map.get(i).get(18).toString());
+                demandDO.setPrdFinshTm(map.get(i).get(19).toString());
+                demandDO.setUatUpdateTm(map.get(i).get(20).toString());
+                demandDO.setDevpLeadDept(map.get(i).get(21).toString());
+                demandDO.setDevpCoorDept(map.get(i).get(22).toString());
+                demandDO.setProductMng(map.get(i).get(23).toString());
+                demandDO.setReqStartMon(map.get(i).get(24).toString());
+                demandDO.setReqImplMon(map.get(i).get(25).toString());
+                demandDOS.add(demandDO);
+                System.err.println(demandDO.toString());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }finally {
+            f.delete();
+        }
+      //  List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
         List<DemandDO> insertList = new ArrayList<>();
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
@@ -553,8 +614,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
             response.addHeader("Access-Control-Max-Age", "3600");
             response.setContentType("application/octet-stream; charset=utf-8");
-            System.err.println(response.getHeader(CONTENT_DISPOSITION));
-            System.err.println(response.getHeader(ACCESS_CONTROL_EXPOSE_HEADERS));
             output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
             bufferedOutPut.flush();
 
