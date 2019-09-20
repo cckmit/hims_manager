@@ -394,9 +394,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             String originalFilename = file.getOriginalFilename();
             //获取后缀名
             String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            f=File.createTempFile("tmp", "."+suffix);
+            if(suffix.equals("xls")){
+                suffix=".xls";
+            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
+                suffix=".xlsx";
+            }else {
+                BusinessException.throwBusinessException("文件类型错误");
+            }
+            f=File.createTempFile("tmp", suffix);
             file.transferTo(f);
             String filepath = f.getPath();
+            System.err.println(filepath);
             //excel转java类
             ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
@@ -585,7 +593,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             File srcfile[] = (File[]) resMap.get("srcfile");
             //压缩包名称
-            String zipPath = "/home/hims/temp/propkg/";
+            String zipPath = "/home/devadm/temp/propkg/";
             String zipName = "项目文档_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
