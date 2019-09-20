@@ -18,10 +18,14 @@ import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
@@ -208,8 +212,9 @@ public class ReqPlanController {
      * @return
      */
     @PostMapping("/batch/import")
-    public GenericRspDTO<NoBody> batchImport(@RequestParam("file") MultipartFile[] files,HttpServletRequest request, GenericDTO<NoBody> req) {
-        FILES=files;
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
+        FILES = files.toArray(new MultipartFile[files.size()]);
         return GenericRspDTO.newSuccessInstance();
     }
 }

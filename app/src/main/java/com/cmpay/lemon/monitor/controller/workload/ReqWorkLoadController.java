@@ -16,10 +16,14 @@ import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
@@ -73,6 +77,18 @@ public class ReqWorkLoadController {
     @PostMapping("/template/download")
     public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
         doWrite("static/workLoad.xlsx", response);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    /**
+     * 工作量导入
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        System.err.println(file.getName());
+        //reqTaskService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
     }
 }
