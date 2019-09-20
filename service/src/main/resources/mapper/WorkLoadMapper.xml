@@ -517,5 +517,45 @@
         </where>
         ORDER BY a.req_inner_seq asc
     </select>
-
+    <update id="updateRwlByImpl" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        <if test="totalWorkload != null ">
+            total_workload =#{totalWorkload}
+        </if>
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro}
+            ,coor_dept_pro =#{coorDeptPro}
+        </if>
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload}
+            ,coor_dept_workload =#{coorDeptWorkload}
+        </if>
+        <if test="inputWorkload != null ">
+            ,input_workload =#{inputWorkload}
+        </if>
+        <if test="lastInputWorkload != null ">
+            ,last_input_workload =#{lastInputWorkload}
+        </if>
+        <if test="remainWorkload != null ">
+            ,remain_workload =#{remainWorkload}
+        </if>
+        <if test="updateTime != null ">
+            ,update_time =#{updateTime}
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+            ,update_user =#{updateUser}
+        </if>
+        <where>
+            <if test="reqNm != null and reqNm != ''">
+                AND req_nm LIKE CONCAT('%',#{reqNm},'%')
+            </if>
+            <if test="reqNo != null and reqNo != ''">
+                AND req_no LIKE CONCAT('%',#{reqNo},'%')
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND req_impl_mon = #{reqImplMon}
+            </if>
+        </where>
+    </update>
 </mapper>

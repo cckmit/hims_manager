@@ -15,10 +15,12 @@ import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
  * @author: zhou_xiong
@@ -59,7 +61,18 @@ public class ReqWorkLoadController {
     @RequestMapping("/changeReq")
     public GenericRspDTO changeReq(@RequestBody DemandReqDTO reqDTO) {
         System.out.println(reqDTO.getReqImplMon());
-        //reqPlanService.changeReq(reqDTO.getReqImplMon());
+        reqWorkLoadService.changeReq(reqDTO.getReqImplMon());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    /**
+     * 模板下载
+     *
+     * @return
+     * @throws IOException
+     */
+    @PostMapping("/template/download")
+    public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
+        doWrite("static/workLoad.xlsx", response);
+        return GenericRspDTO.newSuccessInstance();
     }
 }

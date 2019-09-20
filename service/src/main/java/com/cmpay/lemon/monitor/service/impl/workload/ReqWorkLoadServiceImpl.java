@@ -7,7 +7,6 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IPlanDao;
 import com.cmpay.lemon.monitor.dao.IWorkLoadDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
@@ -17,6 +16,9 @@ import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
 import com.cmpay.lemon.monitor.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -126,25 +128,49 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
      * 存量变更
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changeReq(String req_impl_mon){
 //        boolean flag = this.authenticationUser();
 //        if(flag){
         try {
-            DemandDO demandDO = new DemandDO();
-            demandDO.setReqImplMon(req_impl_mon);
-            // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
-            List<DemandDO> list = workLoadDao.find(demandDO);
-            //获取下个月时间
+            //获取上个月时间
             SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
             Date month = simpleDateFormatMonth.parse(req_impl_mon);
             Calendar c = Calendar.getInstance();
             c.setTime(month);
-            c.add(Calendar.MONTH, 1);
+            c.add(Calendar.MONTH, -1);
             String last_month = simpleDateFormatMonth.format(c.getTime());
+            System.err.println("上个月"+last_month);
+
+            DemandDO demandDO = new DemandDO();
+            demandDO.setReqImplMon(last_month);
+            // 获取上个月需求阶段在技术方案定稿之后的需求
+            List<DemandDO> last_list = workLoadDao.find(demandDO);
+
             //获取登录用户ID
             String update_user = SecurityUtils.getLoginUserId();
+            DemandDO demand = new DemandDO();
+            demand.setUpdateUser("tu_yi");
+            demand.setUpdateTime(new Date());
+            demand.setReqImplMon(req_impl_mon);
 
-
+            //循环变更 实施月份为 req_impl_mon 需求
+            for (int i = 0; i < last_list.size(); i++) {
+                demand.setReqNm(last_list.get(i).getReqNm());
+                demand.setReqNo(last_list.get(i).getReqNo());
+                demand.setTotalWorkload(last_list.get(i).getTotalWorkload());
+                demand.setLeadDeptPro(last_list.get(i).getLeadDeptPro());
+                demand.setCoorDeptPro(last_list.get(i).getCoorDeptPro());
+                demand.setLeadDeptWorkload(last_list.get(i).getLeadDeptWorkload());
+                demand.setCoorDeptWorkload(last_list.get(i).getCoorDeptWorkload());
+                //已录入工作量 = 上月已录入工作量 + 本月录入工作量
+                demand.setInputWorkload(last_list.get(i).getInputWorkload() + last_list.get(i).getMonInputWorkload());
+                //剩余工作量 = 总工作量 - （上月已录入工作量 + 本月录入工作量）
+                demand.setRemainWorkload(last_list.get(i).getTotalWorkload() - demand.getInputWorkload());
+                //上月已录入工作量 = 本月录入工作量
+                demand.setLastInputWorkload(last_list.get(i).getMonInputWorkload());
+                workLoadDao.updateRwlByImpl(demand);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             //"存量需求转存失败" + e.getMessage();

@@ -8,5 +8,9 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface IWorkLoadDao extends IDemandDao {
-
+    /**
+     * 工作量存量变更
+     * @param bean Demand对象
+     */
+    void updateRwlByImpl(DemandDO bean);
 }

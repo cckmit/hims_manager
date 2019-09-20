@@ -647,6 +647,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 存量变更
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changeReq(String req_impl_mon){
 //        boolean flag = this.authenticationUser();
 //        if(flag){
