@@ -594,7 +594,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             File srcfile[] = (File[]) resMap.get("srcfile");
             //压缩包名称
             String zipPath = "/home/devadm/temp/propkg/";
-            String zipName = "项目文档_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
+            String zipName =DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
             reqTaskService.ZipFiles(srcfile, zip, true);
