@@ -558,4 +558,136 @@
             </if>
         </where>
     </update>
+    <update id="updateReqWorkLoadImport" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        req_inner_seq = #{reqInnerSeq}
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro}
+            ,coor_dept_pro =#{coorDeptPro}
+        </if>
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload}
+            ,coor_dept_workload =#{coorDeptWorkload}
+        </if>
+        <if test="reqNo != null and reqNo != ''">
+            ,req_no = #{reqNo}
+        </if>
+        <if test="reqNm != null and reqNm != ''">
+            ,req_nm = #{reqNm}
+        </if>
+        <if test="reqPrdLine != null and reqPrdLine != ''">
+            ,req_prd_line = #{reqPrdLine}
+        </if>
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept = #{devpLeadDept}
+        </if>
+        <if test="devpResMng != null and devpResMng != ''">
+            ,devp_res_mng = #{devpResMng}
+        </if>
+        <if test="totalWorkload != null ">
+            ,total_workload =#{totalWorkload }
+        </if>
+        <if test="inputWorkload != null ">
+            ,input_workload =#{inputWorkload }
+        </if>
+        <if test="monInputWorkload != null ">
+            ,mon_input_workload =#{monInputWorkload }
+        </if>
+        <if test="remainWorkload != null ">
+            ,remain_workload =#{remainWorkload }
+        </if>
+        <if test="updateTime != null ">
+            ,update_time =#{ updateTime }
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+            ,update_user =#{ updateUser }
+        </if>
+        WHERE req_inner_seq = #{reqInnerSeq}
+    </update>
+    <select id="findList" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = pre_cur_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        req_prd_line AND
+        t.DIC_ID='PRD_LINE') AS req_prd_line,
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            a.pre_cur_period &gt; 50
+            <if test="reqNm != null and reqNm != ''">
+                AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
+            </if>
+            <if test="reqNo != null and reqNo != ''">
+                AND a.req_no LIKE CONCAT('%',#{reqNo},'%')
+            </if>
+            <if test="reqType != null and reqType != ''">
+                AND a.req_type = #{reqType}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''">
+                AND a.req_start_mon = #{reqStartMon}
+            </if>
+            <if test="preCurPeriod != null and preCurPeriod != ''">
+                AND a.pre_cur_period = #{preCurPeriod}
+            </if>
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                AND a.devp_lead_dept = #{devpLeadDept}
+            </if>
+            <if test="devpCoorDept != null and devpCoorDept != ''">
+                AND a.devp_coor_dept LIKE CONCAT('%',#{devpCoorDept},'%')
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon LIKE CONCAT('%',#{reqImplMon},'%')
+            </if>
+        </where>
+        ORDER BY a.req_inner_seq asc
+    </select>
+    <update id="updateReqWorkLoad" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        req_inner_seq = #{reqInnerSeq}
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept =#{devpLeadDept }
+        </if>
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept }
+        </if>
+        <if test="inputWorkload != null">
+            ,input_workload =#{inputWorkload }
+        </if>
+        <if test="totalWorkload != null">
+            ,total_workload =#{totalWorkload }
+        </if>
+        <if test="remainWorkload != null">
+            ,remain_workload =#{remainWorkload }
+        </if>
+        <if test="monInputWorkload != null">
+            ,mon_input_workload =#{monInputWorkload }
+        </if>
+        <if test="leadDeptPro != null and leadDeptPro != ''">
+            ,lead_dept_pro =#{leadDeptPro}
+            ,coor_dept_pro =#{coorDeptPro}
+        </if>
+        <if test="leadDeptWorkload != null and leadDeptWorkload != ''">
+            ,lead_dept_workload =#{leadDeptWorkload}
+            ,coor_dept_workload =#{coorDeptWorkload}
+        </if>
+        <if test="updateTime != null ">
+            ,update_time =#{ updateTime }
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+            ,update_user =#{ updateUser }
+        </if>
+        WHERE req_inner_seq = #{reqInnerSeq}
+    </update>
+    <select id="goExportCountForDevp" resultMap="BaseResultMap" parameterType="map">
+		SELECT
+		req_inner_seq,lead_dept_pro,coor_dept_pro,mon_input_workload,devp_lead_dept,devp_coor_dept,total_workload,req_sts,pre_cur_period
+		FROM t_demand_info a
+		WHERE a.req_impl_mon LIKE CONCAT('%',#{reqImplMon},'%')
+		 and  pre_cur_period > 50
+		ORDER BY a.update_time DESC
+	</select>
 </mapper>

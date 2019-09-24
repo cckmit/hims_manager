@@ -26,6 +26,8 @@ public enum MsgEnum implements AlertCapable {
     NULL_REMARK("MON00107", "需求任务提交失败:需求状态为取消或暂停时，月初备注信息不能为空！"),
     ERROR_DEVP("MON00108", "需求任务提交失败:配合部门不能和主导部门相同！"),
     ERROR_IMPORT("MON00109", "需求任务导入失败:"),
+    ERROR_WORK_IMPORT("MON00110", "工作量导入失败:"),
+    ERROR_CUSTOM("MON00111", ""),
 
     MENU_NAME_CANNOT_NULL("MON00200", "菜单名称不能为空"),
     PARENT_MENU_CANNOT_NULL("MON00201", "上级菜单不能为空"),
