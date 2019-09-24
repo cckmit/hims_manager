@@ -12,8 +12,10 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
+import com.cmpay.lemon.monitor.dao.IDemandStateHistoryDao;
 import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.DemandStateHistoryDO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
@@ -65,6 +68,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IDemandExtDao demandDao;
     @Autowired
     private IDictionaryExtDao dictionaryDao;
+    @Autowired
+    private IDemandStateHistoryDao demandStateHistoryDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -209,8 +214,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
         setReqSts(demandBO);
+        DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
         try {
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
+            demandStateHistoryDO.setReqInnerSeq(demandDao.getMaxInnerSeq().getReqInnerSeq());
+            demandStateHistoryDO.setReqSts("提出");
+            demandStateHistoryDO.setRemarks("新建任务");
+            //获取当前操作员
+            demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+            demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+            demandStateHistoryDao.insert(demandStateHistoryDO);
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
@@ -567,8 +580,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         try {
             // 插入数据库
             insertList.forEach(m -> {
-                m.setReqInnerSeq(getNextInnerSeq());
+                //获取下一条内部编号
+                String nextInnerSeq = getNextInnerSeq();
+                m.setReqInnerSeq(nextInnerSeq);
                 demandDao.insert(m);
+                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
+                demandStateHistoryDO.setReqSts("提出");
+                demandStateHistoryDO.setRemarks("新建任务");
+                //获取当前操作员
+                demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+                demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                demandStateHistoryDao.insert(demandStateHistoryDO);
             });
 
             // 更新数据库
@@ -743,6 +766,59 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
 
         return "";
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public void updateReqSts(String reqInnerSeq, String reqSts, String reqStsRemarks) {
+        if(JudgeUtils.isEmpty(reqInnerSeq)||JudgeUtils.isEmpty(reqSts)) {
+            BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
+        }
+        DemandDO demandDO = new DemandDO();
+        demandDO.setReqInnerSeq(reqInnerSeq);
+        demandDO.setReqSts(reqSts);
+        demandDao.updateReqSts(demandDO);
+        DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+        demandStateHistoryDO.setReqInnerSeq(reqInnerSeq);
+        demandStateHistoryDO.setRemarks(reqStsRemarks);
+        reqSts = reqStsCheck(reqSts);
+        demandStateHistoryDO.setReqSts(reqSts);
+        demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+        //获取当前操作员
+        demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+        demandStateHistoryDao.insert(demandStateHistoryDO);
+    }
+
+
+
+
+    private String reqStsCheck(String reqSts) {
+        switch (reqSts){
+            case "10":{
+                reqSts="提出";
+                break;
+            }
+            case "20":{
+                reqSts="进行中";
+                break;
+            }
+            case "30":{
+                reqSts="取消";
+                break;
+            }
+            case "40":{
+                reqSts="暂停";
+                break;
+            }
+            case "50":{
+                reqSts="已完成";
+                break;
+            }
+            default:{
+                BusinessException.throwBusinessException("状态码异常");
+            }
+        }
+        return reqSts;
     }
 
 

@@ -5,7 +5,6 @@
 <generatorConfiguration>
     <classPathEntry
             location="C:\Users\MI\.gradle\caches\modules-2\files-2.1\mysql\mysql-connector-java\5.1.34\240221147d8f9e26b25625bc3c4660cfb8ac92ac\mysql-connector-java-5.1.34-sources.jar"/>
-
      <context id="mysql" targetRuntime="MyBatis3"
              defaultModelType="lemonflat">
 
@@ -24,8 +23,8 @@
             <property name="suppressAllComments" value="false"/>
         </commentGenerator>
 
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.9.10.116:3306/himsdb"
-                        userId="hims" password="hims@mca">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.9.10.16:3306/hims"
+                        userId="hims" password="hims2016">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -47,67 +46,10 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-         <table tableName="Demand" domainObjectName="DemandDO" enableCountByExample="false"
+         <table tableName="t_demand_state_history" domainObjectName="DemandStateHistoryDO" enableCountByExample="false"
                 enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-             <columnOverride property="reqInnerSeq"  column="req_inner_seq" />
-             <columnOverride property="reqPrdLine"  column="req_prd_line" />
-             <columnOverride property="reqType"  column="req_type" />
-             <columnOverride property="req_sts"  column="req_sts" />
-             <columnOverride property="req_no"  column="req_no" />
-             <columnOverride property="req_nm"  column="req_nm" />
-             <columnOverride property="req_desc"  column="req_desc" />
-             <columnOverride property="input_res"  column="input_res" />
-             <columnOverride property="dev_cycle"  column="dev_cycle" />
-             <columnOverride property="exp_input" jdbcType="DOUBLE" column="exp_input" />
-             <columnOverride property="prd_finsh_tm"  column="prd_finsh_tm" />
-             <columnOverride property="act_prd_finsh_tm"  column="act_prd_finsh_tm" />
-             <columnOverride property="pre_cur_period"  column="pre_cur_period" />
-             <columnOverride property="cur_mon_target"  column="cur_mon_target" />
-             <columnOverride property="exp_prd_release_tm"  column="exp_prd_release_tm" />
-             <columnOverride property="devp_lead_dept"  column="devp_lead_dept" />
-             <columnOverride property="devp_coor_dept"  column="devp_coor_dept" />
-             <columnOverride property="req_pro_dept"  column="req_pro_dept" />
-             <columnOverride property="req_proposer"  column="req_proposer" />
-             <columnOverride property="req_mnger"  column="req_mnger" />
-             <columnOverride property="req_start_mon"  column="req_start_mon" />
-             <columnOverride property="req_impl_mon"  column="req_impl_mon" />
-             <columnOverride property="project_mng"  column="project_mng" />
-             <columnOverride property="product_mng"  column="product_mng" />
-             <columnOverride property="is_cut"  column="is_cut" />
-             <columnOverride property="pre_mon_period"  column="pre_mon_period" />
-             <columnOverride property="qa_mng"  column="qa_mng" />
-             <columnOverride property="config_mng"  column="config_mng" />
-             <columnOverride property="mon_remark"  column="mon_remark" />
-             <columnOverride property="devp_eng"  column="devp_eng" />
-             <columnOverride property="front_eng"  column="front_eng" />
-             <columnOverride property="test_eng"  column="test_eng" />
-             <columnOverride property="uat_update_tm"  column="uat_update_tm" />
-             <columnOverride property="act_uat_update_tm"  column="act_uat_update_tm" />
-             <columnOverride property="pre_tm"  column="pre_tm" />
-             <columnOverride property="test_finsh_tm"  column="test_finsh_tm" />
-             <columnOverride property="act_test_finsh_tm"  column="act_test_finsh_tm" />
-             <columnOverride property="risk_solution"  column="risk_solution" />
-             <columnOverride property="risk_feedback_tm"  column="risk_feedback_tm" />
-             <columnOverride property="end_mon_remark"  column="end_mon_remark" />
-             <columnOverride property="end_feedback_tm"  column="end_feedback_tm" />
-             <columnOverride property="total_workload"  column="total_workload" />
-             <columnOverride property="lead_dept_pro"  column="lead_dept_pro" />
-             <columnOverride property="coor_dept_pro"  column="coor_dept_pro" />
-             <columnOverride property="lead_dept_workload"  column="lead_dept_workload" />
-             <columnOverride property="coor_dept_workload"  column="coor_dept_workload" />
-             <columnOverride property="input_workload"  column="input_workload" />
-             <columnOverride property="last_input_workload"  column="last_input_workload" />
-             <columnOverride property="remain_workload"  column="remain_workload" />
-             <columnOverride property="mon_input_workload"  column="mon_input_workload" />
-             <columnOverride property="is_svn_build"  column="is_svn_build" />
-             <columnOverride property="req_abnor_type"  column="req_abnor_type" />
-             <columnOverride property="creat_time"  column="creat_time" />
-             <columnOverride property="update_time"  column="update_time" />
-             <columnOverride property="creat_user"  column="creat_user" />
-             <columnOverride property="update_user"  column="update_user" />
          </table>
-
 
     </context>
 </generatorConfiguration>

@@ -6,7 +6,6 @@ import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.DemandReqDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountReqDTO;
 import com.cmpay.lemon.monitor.dto.ReqDataCountRspDTO;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,28 +118,42 @@ import java.util.List;
 
     @RequestMapping("/downloadreportform1")
     public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        System.err.println(reqDataCountReqDTO.getReqImplMon());
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        reqDataCountService.downloadDemandImplementationReport(month,response);
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+           reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadDemandImplementationReport(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
     @RequestMapping("/downloadreportform2")
     public  GenericRspDTO<NoBody> downloadReportForm2(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        System.err.println(reqDataCountReqDTO.getReqImplMon());
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        reqDataCountService.downloadDemandCompletionReport(month,response);
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadDemandCompletionReport(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 
     @RequestMapping("/downloadreportform3")
     public  GenericRspDTO<NoBody> downloadReportForm3(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        reqDataCountService.downloadDemandTypeStatistics(month,response);
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadDemandTypeStatistics(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 
     @RequestMapping("/downloadreportform4")
     public  GenericRspDTO<NoBody> downloadReportForm4(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        reqDataCountService.downloadBaseOwnershipDepartmentStatistics(month,response);
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadBaseOwnershipDepartmentStatistics(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 

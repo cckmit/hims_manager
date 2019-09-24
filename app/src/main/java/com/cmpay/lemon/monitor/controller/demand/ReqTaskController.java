@@ -10,6 +10,7 @@ import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.DemandDTO;
 import com.cmpay.lemon.monitor.dto.DemandReqDTO;
 import com.cmpay.lemon.monitor.dto.DemandRspDTO;
+import com.cmpay.lemon.monitor.dto.UpdateReqStsDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -20,8 +21,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
-
+import java.io.IOException;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
@@ -90,6 +90,22 @@ public class ReqTaskController {
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqTaskService.update(demandBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /**
+     * 更新需求信息--需求状态
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("/updateReqSts")
+    public GenericRspDTO updateReqSts(@RequestBody UpdateReqStsDTO updateReqStsDTO) {
+        String getReqInnerSeq = updateReqStsDTO.getReqInnerSeq();
+        String reqSts = updateReqStsDTO.getReqSts();
+        String reqStsRemarks = updateReqStsDTO.getReqStsRemarks();
+        reqTaskService.updateReqSts(getReqInnerSeq,reqSts,reqStsRemarks);
+
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 

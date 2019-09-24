@@ -5,10 +5,10 @@ import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author: zhou_xiong
@@ -114,5 +114,5 @@ public interface ReqTaskService {
     String ZipFiles(File[] srcfile, File zip, boolean flag);
 
 
-
+    void updateReqSts(String reqNo, String reqSts, String reqStsRemarks);
 }

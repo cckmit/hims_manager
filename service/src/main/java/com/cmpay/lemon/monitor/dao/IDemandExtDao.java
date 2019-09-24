@@ -45,4 +45,6 @@ public interface IDemandExtDao extends IDemandDao {
     void updateExtraTm(DemandDO bean);
 
     void updatePreCurPeriod(DemandDO demand);
+
+    void updateReqSts(DemandDO demandDO);
 }

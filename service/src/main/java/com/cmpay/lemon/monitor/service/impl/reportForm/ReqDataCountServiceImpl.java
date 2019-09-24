@@ -1,22 +1,18 @@
 package com.cmpay.lemon.monitor.service.impl.reportForm;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
-import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
 import com.cmpay.lemon.monitor.entity.ReqMngDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.DateUtil;
-
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -448,8 +444,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 						demandImplementationReportBO.setDevpLeadDept(m.getDevpLeadDept());
 						demandImplementationReportBO.setReqDevp(m.getReqDevp());
 						demandImplementationReportBO.setReqOper(m.getReqOper());
-						demandImplementationReportBO.setReqPrd(m.getReqPre());
-						demandImplementationReportBO.setReqPre(m.getReqPrd());
+						demandImplementationReportBO.setReqPrd(m.getReqPrd());
+						demandImplementationReportBO.setReqPre(m.getReqPre());
 						demandImplementationReportBO.setReqTest(m.getReqTest());
 						demandImplementationReportBO.setTotal(m.getTotal());
 						demandImplementationReportBOList.add(demandImplementationReportBO);
@@ -463,8 +459,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 						demandImplementationReportBO.setDevpLeadDept("合计");
 						demandImplementationReportBO.setReqDevp(m.getReqDevp());
 						demandImplementationReportBO.setReqOper(m.getReqOper());
-						demandImplementationReportBO.setReqPrd(m.getReqPre());
-						demandImplementationReportBO.setReqPre(m.getReqPrd());
+						demandImplementationReportBO.setReqPrd(m.getReqPrd());
+						demandImplementationReportBO.setReqPre(m.getReqPre());
 						demandImplementationReportBO.setReqTest(m.getReqTest());
 						demandImplementationReportBO.setTotal(m.getTotal());
 						demandImplementationReportBOList.add(demandImplementationReportBO);

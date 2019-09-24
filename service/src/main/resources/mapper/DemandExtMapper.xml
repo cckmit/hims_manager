@@ -253,6 +253,9 @@
         #{creatUser},
         #{updateUser})
     </insert>
+    <update id="updateReqSts" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        update t_demand_info set req_sts =#{reqSts }  where req_inner_seq =#{reqInnerSeq }
+    </update>
 
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
         update t_demand_info
@@ -1007,4 +1010,7 @@
         </if>
         WHERE req_inner_seq = #{reqInnerSeq}
     </update>
+
+
+
 </mapper>
