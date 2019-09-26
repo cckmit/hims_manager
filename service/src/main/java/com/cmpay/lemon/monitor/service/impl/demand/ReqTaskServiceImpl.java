@@ -11,17 +11,16 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.dao.IDemandExtDao;
-import com.cmpay.lemon.monitor.dao.IDemandStateHistoryDao;
-import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.DemandStateHistoryDO;
-import com.cmpay.lemon.monitor.entity.DictionaryDO;
+import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
+import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
+import com.cmpay.lemon.monitor.dao.*;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
+import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +69,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IDictionaryExtDao dictionaryDao;
     @Autowired
     private IDemandStateHistoryDao demandStateHistoryDao;
+    @Autowired
+    private IDemandJiraDao demandJiraDao;
+    @Autowired
+    private IJiraDepartmentDao jiraDepartmentDao;
+
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -224,10 +228,38 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
             demandStateHistoryDao.insert(demandStateHistoryDO);
+
+            CreateIssueResponseBO createIssueResponseBO = addJira(demandBO);
+            DemandJiraDO demandJiraDO = new DemandJiraDO();
+            demandJiraDO.setCreatTime(LocalDateTime.now());
+            demandJiraDO.setCreatUser(SecurityUtils.getLoginName());
+            demandJiraDO.setJiraId(createIssueResponseBO.getId());
+            demandJiraDO.setJiraKey(createIssueResponseBO.getKey());
+            demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
+            demandJiraDao.insert(demandJiraDO);
         } catch (Exception e) {
+            e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
     }
+
+    private CreateIssueResponseBO addJira(DemandBO demandBO) {
+        CreateIssueRequestBO createIssueRequestBO = new CreateIssueRequestBO();
+        createIssueRequestBO.setSummary(demandBO.getReqNm());
+        createIssueRequestBO.setDescription(demandBO.getReqDesc());
+        createIssueRequestBO.setIssueType(10110);
+        createIssueRequestBO.setProject(11221);
+        createIssueRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
+        createIssueRequestBO.setDescription(demandBO.getReqDesc());
+        //获取部门管理
+        JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
+        System.err.println(demandBO.getReqInnerSeq());
+        createIssueRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
+        JiraUtil jiraUtil = new JiraUtil();
+        CreateIssueResponseBO createIssueResponseBO = jiraUtil.CreateIssue(createIssueRequestBO);
+        return createIssueResponseBO;
+    }
+
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
@@ -649,7 +681,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             bufferedOutPut.flush();
 
             // 删除文件
-//            zip.delete();
+            zip.delete();
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);

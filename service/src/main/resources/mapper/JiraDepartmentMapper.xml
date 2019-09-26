@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IJiraDepartmentDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.JiraDepartmentDO" >
+        <id column="departmentNm" property="departmentnm" jdbcType="VARCHAR" />
+        <result column="departmentID" property="departmentid" jdbcType="VARCHAR" />
+        <result column="managerNm" property="managernm" jdbcType="VARCHAR" />
+        <result column="managerJiraNm" property="managerjiranm" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        departmentNm, departmentID, managerNm, managerJiraNm
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_jira_department
+        where departmentNm = #{departmentnm,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_jira_department
+        where departmentNm = #{departmentnm,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.JiraDepartmentDO" >
+        insert into t_jira_department
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="departmentnm != null" >
+                departmentNm,
+            </if>
+            <if test="departmentid != null" >
+                departmentID,
+            </if>
+            <if test="managernm != null" >
+                managerNm,
+            </if>
+            <if test="managerjiranm != null" >
+                managerJiraNm,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="departmentnm != null" >
+                #{departmentnm,jdbcType=VARCHAR},
+            </if>
+            <if test="departmentid != null" >
+                #{departmentid,jdbcType=VARCHAR},
+            </if>
+            <if test="managernm != null" >
+                #{managernm,jdbcType=VARCHAR},
+            </if>
+            <if test="managerjiranm != null" >
+                #{managerjiranm,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.JiraDepartmentDO" >
+        update t_jira_department
+        <set >
+            <if test="departmentid != null" >
+                departmentID = #{departmentid,jdbcType=VARCHAR},
+            </if>
+            <if test="managernm != null" >
+                managerNm = #{managernm,jdbcType=VARCHAR},
+            </if>
+            <if test="managerjiranm != null" >
+                managerJiraNm = #{managerjiranm,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where departmentNm = #{departmentnm,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.JiraDepartmentDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_jira_department
+        <where >
+            <if test="departmentnm != null" >
+                and departmentNm = #{departmentnm,jdbcType=VARCHAR}
+            </if>
+            <if test="departmentid != null" >
+                and departmentID = #{departmentid,jdbcType=VARCHAR}
+            </if>
+            <if test="managernm != null" >
+                and managerNm = #{managernm,jdbcType=VARCHAR}
+            </if>
+            <if test="managerjiranm != null" >
+                and managerJiraNm = #{managerjiranm,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
