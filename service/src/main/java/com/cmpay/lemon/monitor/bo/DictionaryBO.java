@@ -21,6 +21,14 @@ public class DictionaryBO {
     private String userName;
     private String userMail;
     private Date creatTime;
+    /**
+     * 部门名称
+     */
+    private String deptName;
+    /**
+     * 部门占比
+     */
+    private String deptRate;
 
     private List<DictionaryBO> dictionaryBOList;
 
@@ -140,6 +148,22 @@ public class DictionaryBO {
         this.dictionaryBOList = dictionaryBOList;
     }
 
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public String getDeptRate() {
+        return deptRate;
+    }
+
+    public void setDeptRate(String deptRate) {
+        this.deptRate = deptRate;
+    }
+
     @Override
     public String toString() {
         return "DictionaryBO{" +
@@ -156,6 +180,8 @@ public class DictionaryBO {
                 ", userName='" + userName + '\'' +
                 ", userMail='" + userMail + '\'' +
                 ", creatTime=" + creatTime +
+                ", deptName='" + deptName + '\'' +
+                ", deptRate='" + deptRate + '\'' +
                 ", dictionaryBOList=" + dictionaryBOList +
                 '}';
     }

@@ -690,4 +690,13 @@
 		 and  pre_cur_period > 50
 		ORDER BY a.update_time DESC
 	</select>
+    <select id="getReqWorkLoad" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = pre_cur_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        WHERE a.req_inner_seq = #{reqInnerSeq}
+    </select>
 </mapper>

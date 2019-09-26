@@ -42,6 +42,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -400,6 +401,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     @Override
     public Map<String, String> checkDeptRate(int totWork, String deptInfo, DemandBO demand) {
         deptInfo = deptInfo.replaceAll("：", ":").replaceAll("；", ";");
+        System.err.println(deptInfo);
         Map<String, String> map = new HashMap<>();
         if (deptInfo.indexOf(":") < 0) {
             map.put("message", "【工作量占比(配合部门投入占比)】格式有误，正确格式为：【银行合作研发部：80%;移动业务研发部：20%】，  请修改后重新导入！");
@@ -417,6 +419,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             String perRate = deptrates[i];
             if (StringUtils.isNotEmpty(perRate)) {
                 String[] detailRate = perRate.split(":");
+                System.err.println("detailRate"+detailRate);
                 if (detailRate.length != 2) {
                     map.put("message", "【工作量占比(配合部门投入占比)】格式有误，正确格式为：【银行合作研发部：80%;移动业务研发部：20%】，  请修改后重新导入！");
                     return map;
@@ -452,6 +455,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 }
             }
         }
+        System.err.println(totalRate);
         if (totalRate.compareTo(new BigDecimal(100.0)) != 0) {
             // 返回值 -1 小于 0 等于 1 大于
             map.put("message", "【工作量占比(配合部门投入占比)】合计应等于100%，  请修改后重新导入！");
@@ -568,9 +572,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 String filePath = path + fileName;
                 ReqWorkLoadExcelUtil util = new ReqWorkLoadExcelUtil();
                 String createFile = util.createExcel(filePath, list, null,headerNames,type);
-
-                response.setHeader("Content-Disposition", "attachment; filename="
-                        + new String(fileName.getBytes(com.cmpay.lemon.monitor.entity.Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
                 //告诉浏览器允许所有的域访问
                 //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
                 //resp.addHeader("Access-Control-Allow-Origin", "*");
@@ -593,6 +594,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
                 response.addHeader("Access-Control-Max-Age", "3600");
                 response.setContentType("application/octet-stream; charset=utf-8");
+                response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName);
                 try {
                     os = response.getOutputStream();
                     os.write(org.apache.commons.io.FileUtils.readFileToByteArray(new File(filePath)));
@@ -609,7 +611,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     }
                 }
                 // 删除文件
-                //new File(createFile).delete();
+                new File(createFile).delete();
             } catch (UnsupportedEncodingException e) {
                 BusinessException.throwBusinessException("各部门工作量月统计汇总报表导出失败");
             } catch (Exception e) {
@@ -750,5 +752,64 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 break;
         }
         return list;
+    }
+    @Override
+    public Map<String,String> checkDeptRate1(DemandBO demand){
+        String ReqInnerSeq = demand.getReqInnerSeq();
+        String deptInfo = demand.getLeadDeptPro() + demand.getCoorDeptPro();
+        int totWorkload = demand.getTotalWorkload();
+        String coorDept = demand.getDevpCoorDept();
+        int input_workload =demand.getInputWorkload();
+        DemandDO demandDO = workLoadDao.getReqWorkLoad(ReqInnerSeq);
+        demandDO.setDevpCoorDept(coorDept);
+        demandDO.setInputWorkload(input_workload);
+        DemandBO demandBO = new DemandBO();
+        BeanConvertUtils.convert(demandBO, demandDO);
+        Map<String, String> map = new HashMap<String, String>();
+        int workLoad = 0;
+        try {
+            workLoad = totWorkload;
+        } catch (Exception e) {
+            map.put("message", "【总工作量】必须是整数！");
+            return map;
+        }
+        if (workLoad == 0){
+            map.put("message", "【总工作量】不能为零！");
+            return map;
+        }
+        if (totWorkload < input_workload){
+            map.put("message", "【总工作量】不能小于已录入工作量！");
+            return map;
+        }
+        map = checkDeptRate(workLoad, deptInfo, demandBO);
+        return map;
+    }
+    @Override
+    public void update(DemandBO bean) {
+        DemandBO demand=reqTaskService.findById(bean.getReqInnerSeq());
+        //主导部门占比
+        String leadDeptPro = bean.getLeadDeptPro();
+        if (StringUtils.isEmpty(leadDeptPro)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "主导部门占比有误请检查！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        bean.setLeadDeptPro(leadDeptPro);
+        //配合部门占比
+        String coorDeptPro = bean.getCoorDeptPro();
+//        if(coorDeptPro!=null){
+//            if (coorDeptNmArr.length != coorDeptRateArr.length) {
+//                return ajaxDoneError("配合部门占比有误请检查！");
+//            } else {
+//                for (int i = 0; i < coorDeptNmArr.length; i++) {
+//                    coorDeptPro = coorDeptPro + coorDeptNmArr[i] + ":" + coorDeptRateArr[i] + "%;";
+//                }
+//            }
+//        }
+        bean.setCoorDeptPro(coorDeptPro);
+
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, bean);
+        workLoadDao.updateReqWorkLoad(demandDO);
     }
 }

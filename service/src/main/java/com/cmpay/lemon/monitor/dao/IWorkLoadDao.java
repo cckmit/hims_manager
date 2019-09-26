@@ -36,4 +36,5 @@ public interface IWorkLoadDao extends IDemandDao {
      */
     void updateReqWorkLoad(DemandDO bean);
     List<DemandDO> goExportCountForDevp(DemandDO bean);
+    DemandDO getReqWorkLoad(String req_inner_seq);
 }

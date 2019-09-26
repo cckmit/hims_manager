@@ -25,6 +25,15 @@ public class DictionaryDTO {
     private String userMail;
     private Date creatTime;
 
+    /**
+     * 部门名称
+     */
+    private String deptName;
+    /**
+     * 部门占比
+     */
+    private String deptRate;
+
     public DictionaryDTO() {
     }
 
@@ -132,6 +141,22 @@ public class DictionaryDTO {
         this.creatTime = creatTime;
     }
 
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public void setDeptName(String deptName) {
+        this.deptName = deptName;
+    }
+
+    public String getDeptRate() {
+        return deptRate;
+    }
+
+    public void setDeptRate(String deptRate) {
+        this.deptRate = deptRate;
+    }
+
     @Override
     public String toString() {
         return "DictionaryDTO{" +
@@ -148,6 +173,8 @@ public class DictionaryDTO {
                 ", userName='" + userName + '\'' +
                 ", userMail='" + userMail + '\'' +
                 ", creatTime=" + creatTime +
+                ", deptName='" + deptName + '\'' +
+                ", deptRate='" + deptRate + '\'' +
                 '}';
     }
 }

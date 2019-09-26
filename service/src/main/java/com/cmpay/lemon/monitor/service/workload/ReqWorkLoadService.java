@@ -43,6 +43,7 @@ public interface ReqWorkLoadService {
      * @return
      */
     Map<String,String> checkDeptRate(int totWork,String deptInfo,DemandBO demand);
+    Map<String,String> checkDeptRate1(DemandBO demand);
 
     /**
      * 工作量文档下载
@@ -54,4 +55,5 @@ public interface ReqWorkLoadService {
     void exportExcel(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type, String file_nm);
     void updateReqWorkLoad(DemandBO bean);
     DemandBO getWorkLoad(DemandBO demand);
+    void update(DemandBO bean);
 }
