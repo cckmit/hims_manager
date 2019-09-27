@@ -600,13 +600,13 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     os.write(org.apache.commons.io.FileUtils.readFileToByteArray(new File(filePath)));
                     os.flush();
                 } catch (IOException e) {
-                    throw new ServiceException(e);
+                    throw e;
                 } finally {
                     if (os != null) {
                         try {
                             os.close();
                         } catch (IOException e) {
-                            throw new ServiceException(e);
+                            throw e;
                         }
                     }
                 }
@@ -807,7 +807,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 //            }
 //        }
         bean.setCoorDeptPro(coorDeptPro);
-
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, bean);
         workLoadDao.updateReqWorkLoad(demandDO);
