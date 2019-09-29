@@ -2,7 +2,7 @@
  * @ClassName DemandStateHistoryDO
  * @Description 
  * @version 1.0
- * @Date 2019-09-24 09:49:16
+ * @Date 2019-09-29 14:11:41
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -21,6 +21,10 @@ public class DemandStateHistoryDO extends BaseDO {
      * @Fields reqInnerSeq 需求内部号
      */
     private String reqInnerSeq;
+    /**
+     * @Fields reqNm 需求名称
+     */
+    private String reqNm;
     /**
      * @Fields reqSts 需求状态
      */
@@ -52,6 +56,14 @@ public class DemandStateHistoryDO extends BaseDO {
 
     public void setReqInnerSeq(String reqInnerSeq) {
         this.reqInnerSeq = reqInnerSeq;
+    }
+
+    public String getReqNm() {
+        return reqNm;
+    }
+
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
     }
 
     public String getReqSts() {

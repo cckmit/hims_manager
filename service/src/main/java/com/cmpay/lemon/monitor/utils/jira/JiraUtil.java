@@ -19,7 +19,7 @@ public class JiraUtil {
     // post 请求
     private final String CREATEISSUEURL= "http://10.9.10.117:28080/rest/api/2/issue";
 
-    public CreateIssueResponseBO CreateIssue(  CreateIssueRequestBO createIssueRequest) {
+    public Response CreateIssue(CreateIssueRequestBO createIssueRequest) {
         System.out.println(createIssueRequest.toString());
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
@@ -30,6 +30,6 @@ public class JiraUtil {
       //  int statusCode = response.getStatusCode();
         CreateIssueResponseBO as = response.getBody().as(CreateIssueResponseBO.class);
 
-        return as;
+        return response;
     }
 }

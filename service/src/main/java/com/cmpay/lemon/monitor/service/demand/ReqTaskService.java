@@ -114,5 +114,5 @@ public interface ReqTaskService {
     String ZipFiles(File[] srcfile, File zip, boolean flag);
 
 
-    void updateReqSts(String reqNo, String reqSts, String reqStsRemarks);
+    void updateReqSts(String reqNo, String reqSts, String reqStsRemarks,String reqNm);
 }

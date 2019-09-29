@@ -209,7 +209,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		impl.forEach(m->
 				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountBO(), m))
 		);
-		System.out.println(reqDataCountBOS.toString());
+
 		return reqDataCountBOS;
 	}
 
@@ -219,7 +219,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		reqDataCountDao.getImplByDept(reqImplMon).forEach(m->
 				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountBO(), m))
 		);
-		System.out.println(reqDataCountBOS.toString());
 		return reqDataCountBOS;
 	}
 

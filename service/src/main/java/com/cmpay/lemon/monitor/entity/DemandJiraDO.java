@@ -2,7 +2,7 @@
  * @ClassName DemandJiraDO
  * @Description 
  * @version 1.0
- * @Date 2019-09-25 16:34:06
+ * @Date 2019-09-29 10:20:16
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -14,33 +14,33 @@ import java.time.LocalDateTime;
 @DataObject
 public class DemandJiraDO extends BaseDO {
     /**
-     * @Fields jiraId jiraId
-     */
-    private String jiraId;
-    /**
      * @Fields reqInnerSeq 需求内部号
      */
     private String reqInnerSeq;
+    /**
+     * @Fields reqNm 需求名称
+     */
+    private String reqNm;
+    /**
+     * @Fields jiraId jiraId
+     */
+    private String jiraId;
     /**
      * @Fields jiraKey jiraKey
      */
     private String jiraKey;
     /**
-     * @Fields creatUser 操作人
+     * @Fields createState 创建状态
      */
-    private String creatUser;
+    private String createState;
     /**
-     * @Fields creatTime 操作时间
+     * @Fields failCause 失败原因
+     */
+    private String failCause;
+    /**
+     * @Fields creatTime 创建时间
      */
     private LocalDateTime creatTime;
-
-    public String getJiraId() {
-        return jiraId;
-    }
-
-    public void setJiraId(String jiraId) {
-        this.jiraId = jiraId;
-    }
 
     public String getReqInnerSeq() {
         return reqInnerSeq;
@@ -48,6 +48,22 @@ public class DemandJiraDO extends BaseDO {
 
     public void setReqInnerSeq(String reqInnerSeq) {
         this.reqInnerSeq = reqInnerSeq;
+    }
+
+    public String getReqNm() {
+        return reqNm;
+    }
+
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
+    }
+
+    public String getJiraId() {
+        return jiraId;
+    }
+
+    public void setJiraId(String jiraId) {
+        this.jiraId = jiraId;
     }
 
     public String getJiraKey() {
@@ -58,12 +74,20 @@ public class DemandJiraDO extends BaseDO {
         this.jiraKey = jiraKey;
     }
 
-    public String getCreatUser() {
-        return creatUser;
+    public String getCreateState() {
+        return createState;
     }
 
-    public void setCreatUser(String creatUser) {
-        this.creatUser = creatUser;
+    public void setCreateState(String createState) {
+        this.createState = createState;
+    }
+
+    public String getFailCause() {
+        return failCause;
+    }
+
+    public void setFailCause(String failCause) {
+        this.failCause = failCause;
     }
 
     public LocalDateTime getCreatTime() {

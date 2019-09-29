@@ -3,9 +3,7 @@ package com.cmpay.lemon.monitor.service.reportForm;
 
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.bo.ReqMngBO;
-import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
-import com.cmpay.lemon.monitor.entity.ReqMngDO;
-import org.springframework.stereotype.Service;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;

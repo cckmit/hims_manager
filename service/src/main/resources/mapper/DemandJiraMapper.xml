@@ -3,60 +3,74 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IDemandJiraDao" >
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandJiraDO" >
-        <id column="jira_id" property="jiraId" jdbcType="VARCHAR" />
-        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <id column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="jira_id" property="jiraId" jdbcType="VARCHAR" />
         <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
-        <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
+        <result column="create_state" property="createState" jdbcType="VARCHAR" />
+        <result column="fail_cause" property="failCause" jdbcType="VARCHAR" />
         <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jira_id, req_inner_seq, jira_key, creat_user, creat_time
+        req_inner_seq, req_nm, jira_id, jira_key, create_state, fail_cause, creat_time
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select 
         <include refid="Base_Column_List" />
         from t_demand_jira
-        where jira_id = #{jiraId,jdbcType=VARCHAR}
+        where req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
     </select>
 
     <delete id="delete" parameterType="java.lang.String" >
         delete from t_demand_jira
-        where jira_id = #{jiraId,jdbcType=VARCHAR}
+        where req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
     </delete>
 
     <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDO" >
         insert into t_demand_jira
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="jiraId != null" >
-                jira_id,
-            </if>
             <if test="reqInnerSeq != null" >
                 req_inner_seq,
+            </if>
+            <if test="reqNm != null" >
+                req_nm,
+            </if>
+            <if test="jiraId != null" >
+                jira_id,
             </if>
             <if test="jiraKey != null" >
                 jira_key,
             </if>
-            <if test="creatUser != null" >
-                creat_user,
+            <if test="createState != null" >
+                create_state,
+            </if>
+            <if test="failCause != null" >
+                fail_cause,
             </if>
             <if test="creatTime != null" >
                 creat_time,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="jiraId != null" >
-                #{jiraId,jdbcType=VARCHAR},
-            </if>
             <if test="reqInnerSeq != null" >
                 #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraId != null" >
+                #{jiraId,jdbcType=VARCHAR},
             </if>
             <if test="jiraKey != null" >
                 #{jiraKey,jdbcType=VARCHAR},
             </if>
-            <if test="creatUser != null" >
-                #{creatUser,jdbcType=VARCHAR},
+            <if test="createState != null" >
+                #{createState,jdbcType=VARCHAR},
+            </if>
+            <if test="failCause != null" >
+                #{failCause,jdbcType=VARCHAR},
             </if>
             <if test="creatTime != null" >
                 #{creatTime,jdbcType=VARCHAR},
@@ -67,20 +81,26 @@
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDO" >
         update t_demand_jira
         <set >
-            <if test="reqInnerSeq != null" >
-                req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR},
+            <if test="reqNm != null" >
+                req_nm = #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraId != null" >
+                jira_id = #{jiraId,jdbcType=VARCHAR},
             </if>
             <if test="jiraKey != null" >
                 jira_key = #{jiraKey,jdbcType=VARCHAR},
             </if>
-            <if test="creatUser != null" >
-                creat_user = #{creatUser,jdbcType=VARCHAR},
+            <if test="createState != null" >
+                create_state = #{createState,jdbcType=VARCHAR},
+            </if>
+            <if test="failCause != null" >
+                fail_cause = #{failCause,jdbcType=VARCHAR},
             </if>
             <if test="creatTime != null" >
                 creat_time = #{creatTime,jdbcType=VARCHAR},
             </if>
         </set>
-        where jira_id = #{jiraId,jdbcType=VARCHAR}
+        where req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDO" >
@@ -88,17 +108,23 @@
         <include refid="Base_Column_List" />
         from t_demand_jira
         <where >
-            <if test="jiraId != null" >
-                and jira_id = #{jiraId,jdbcType=VARCHAR}
-            </if>
             <if test="reqInnerSeq != null" >
                 and req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNm != null" >
+                and req_nm = #{reqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraId != null" >
+                and jira_id = #{jiraId,jdbcType=VARCHAR}
             </if>
             <if test="jiraKey != null" >
                 and jira_key = #{jiraKey,jdbcType=VARCHAR}
             </if>
-            <if test="creatUser != null" >
-                and creat_user = #{creatUser,jdbcType=VARCHAR}
+            <if test="createState != null" >
+                and create_state = #{createState,jdbcType=VARCHAR}
+            </if>
+            <if test="failCause != null" >
+                and fail_cause = #{failCause,jdbcType=VARCHAR}
             </if>
             <if test="creatTime != null" >
                 and creat_time = #{creatTime,jdbcType=VARCHAR}

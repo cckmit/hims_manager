@@ -11,16 +11,16 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
 import com.cmpay.lemon.monitor.dao.*;
-import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.DemandStateHistoryDO;
+import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
-import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +79,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     @Autowired
     private ReqTaskService reqTaskService;
+
+    @Autowired
+    private JiraOperationService jiraOperationService;
 
     @Override
     public DemandBO findById(String req_inner_seq) {
@@ -220,6 +223,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         setReqSts(demandBO);
         DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
         try {
+            //登记需求表
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
             demandStateHistoryDO.setReqInnerSeq(demandDao.getMaxInnerSeq().getReqInnerSeq());
             demandStateHistoryDO.setReqSts("提出");
@@ -227,37 +231,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //获取当前操作员
             demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+            //登记需求状态历史表
             demandStateHistoryDao.insert(demandStateHistoryDO);
-
-            CreateIssueResponseBO createIssueResponseBO = addJira(demandBO);
-            DemandJiraDO demandJiraDO = new DemandJiraDO();
-            demandJiraDO.setCreatTime(LocalDateTime.now());
-            demandJiraDO.setCreatUser(SecurityUtils.getLoginName());
-            demandJiraDO.setJiraId(createIssueResponseBO.getId());
-            demandJiraDO.setJiraKey(createIssueResponseBO.getKey());
-            demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
-            demandJiraDao.insert(demandJiraDO);
+            //异步登记jira
+            jiraOperationService.createEpic(demandBO);
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
-    }
-
-    private CreateIssueResponseBO addJira(DemandBO demandBO) {
-        CreateIssueRequestBO createIssueRequestBO = new CreateIssueRequestBO();
-        createIssueRequestBO.setSummary(demandBO.getReqNm());
-        createIssueRequestBO.setDescription(demandBO.getReqDesc());
-        createIssueRequestBO.setIssueType(10110);
-        createIssueRequestBO.setProject(11221);
-        createIssueRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
-        createIssueRequestBO.setDescription(demandBO.getReqDesc());
-        //获取部门管理
-        JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
-        System.err.println(demandBO.getReqInnerSeq());
-        createIssueRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
-        JiraUtil jiraUtil = new JiraUtil();
-        CreateIssueResponseBO createIssueResponseBO = jiraUtil.CreateIssue(createIssueRequestBO);
-        return createIssueResponseBO;
     }
 
 
@@ -276,6 +257,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void deleteBatch(List<String> ids) {
         try {
             ids.forEach(demandDao::delete);
+            ids.forEach(demandJiraDao::delete);
         } catch (Exception e) {
             LOGGER.error("delete error:", e);
             BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
@@ -449,7 +431,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             f=File.createTempFile("tmp", suffix);
             file.transferTo(f);
             String filepath = f.getPath();
-            System.err.println(filepath);
             //excel转java类
             ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
@@ -488,7 +469,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandDO.setReqStartMon(map.get(i).get(24).toString());
                 demandDO.setReqImplMon(map.get(i).get(25).toString());
                 demandDOS.add(demandDO);
-                System.err.println(demandDO.toString());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -499,7 +479,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }finally {
             f.delete();
         }
-      //  List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
+        //  List<DemandDO> demandDOS = importExcel(file, 0, 1, DemandDO.class);
         List<DemandDO> insertList = new ArrayList<>();
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
@@ -620,6 +600,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
                 demandStateHistoryDO.setReqSts("提出");
                 demandStateHistoryDO.setRemarks("新建任务");
+                demandStateHistoryDO.setReqNm(m.getReqNm());
                 //获取当前操作员
                 demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
@@ -635,6 +616,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             LOGGER.error("需求记录导入失败", e);
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
+
+        jiraOperationService.batchCreateEpic(demandDOS);
+
     }
 
     @Override
@@ -802,7 +786,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updateReqSts(String reqInnerSeq, String reqSts, String reqStsRemarks) {
+    public void updateReqSts(String reqInnerSeq, String reqSts, String reqStsRemarks,String reqNm) {
         if(JudgeUtils.isEmpty(reqInnerSeq)||JudgeUtils.isEmpty(reqSts)) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
@@ -811,6 +795,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandDO.setReqSts(reqSts);
         demandDao.updateReqSts(demandDO);
         DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+        demandStateHistoryDO.setReqNm(reqNm);
         demandStateHistoryDO.setReqInnerSeq(reqInnerSeq);
         demandStateHistoryDO.setRemarks(reqStsRemarks);
         reqSts = reqStsCheck(reqSts);

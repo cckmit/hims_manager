@@ -2,7 +2,7 @@
  * @ClassName JiraDepartmentDO
  * @Description 
  * @version 1.0
- * @Date 2019-09-26 17:08:37
+ * @Date 2019-09-29 10:11:21
  */
 package com.cmpay.lemon.monitor.entity;
 

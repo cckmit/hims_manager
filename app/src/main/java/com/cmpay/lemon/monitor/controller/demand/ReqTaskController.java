@@ -104,7 +104,8 @@ public class ReqTaskController {
         String getReqInnerSeq = updateReqStsDTO.getReqInnerSeq();
         String reqSts = updateReqStsDTO.getReqSts();
         String reqStsRemarks = updateReqStsDTO.getReqStsRemarks();
-        reqTaskService.updateReqSts(getReqInnerSeq,reqSts,reqStsRemarks);
+        String reqNm = updateReqStsDTO.getReqNm();
+        reqTaskService.updateReqSts(getReqInnerSeq,reqSts,reqStsRemarks,reqNm);
 
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }

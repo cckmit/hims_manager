@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
         <result column="req_sts" property="reqSts" jdbcType="VARCHAR" />
         <result column="remarks" property="remarks" jdbcType="VARCHAR" />
         <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
@@ -12,7 +13,7 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_inner_seq, req_sts, remarks, creat_user, creat_time
+        id, req_inner_seq, req_nm, req_sts, remarks, creat_user, creat_time
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -36,6 +37,9 @@
             <if test="reqInnerSeq != null" >
                 req_inner_seq,
             </if>
+            <if test="reqNm != null" >
+                req_nm,
+            </if>
             <if test="reqSts != null" >
                 req_sts,
             </if>
@@ -55,6 +59,9 @@
             </if>
             <if test="reqInnerSeq != null" >
                 #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                #{reqNm,jdbcType=VARCHAR},
             </if>
             <if test="reqSts != null" >
                 #{reqSts,jdbcType=VARCHAR},
@@ -76,6 +83,9 @@
         <set >
             <if test="reqInnerSeq != null" >
                 req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                req_nm = #{reqNm,jdbcType=VARCHAR},
             </if>
             <if test="reqSts != null" >
                 req_sts = #{reqSts,jdbcType=VARCHAR},
@@ -103,6 +113,9 @@
             </if>
             <if test="reqInnerSeq != null" >
                 and req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNm != null" >
+                and req_nm = #{reqNm,jdbcType=VARCHAR}
             </if>
             <if test="reqSts != null" >
                 and req_sts = #{reqSts,jdbcType=VARCHAR}
