@@ -37,4 +37,9 @@ public interface IWorkLoadDao extends IDemandDao {
     void updateReqWorkLoad(DemandDO bean);
     List<DemandDO> goExportCountForDevp(DemandDO bean);
     DemandDO getReqWorkLoad(String req_inner_seq);
+    /**
+     * 按需求编号需求名称查找
+     * @param demand 需求对象
+     */
+    List<DemandDO> getReqTaskByNameAndUK(DemandDO demand);
 }

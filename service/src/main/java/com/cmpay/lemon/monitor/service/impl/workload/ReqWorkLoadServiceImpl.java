@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -790,24 +792,161 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         String leadDeptPro = bean.getLeadDeptPro();
         if (StringUtils.isEmpty(leadDeptPro)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "主导部门占比有误请检查！");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "主导部门占比有误请检查！");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         bean.setLeadDeptPro(leadDeptPro);
         //配合部门占比
         String coorDeptPro = bean.getCoorDeptPro();
-//        if(coorDeptPro!=null){
-//            if (coorDeptNmArr.length != coorDeptRateArr.length) {
-//                return ajaxDoneError("配合部门占比有误请检查！");
-//            } else {
-//                for (int i = 0; i < coorDeptNmArr.length; i++) {
-//                    coorDeptPro = coorDeptPro + coorDeptNmArr[i] + ":" + coorDeptRateArr[i] + "%;";
-//                }
-//            }
-//        }
         bean.setCoorDeptPro(coorDeptPro);
+		// 合法性校验以及自动补充数据
+		int totWork = bean.getTotalWorkload();
+		if (totWork == 0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "【总工作量】不能为零！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		if (totWork < bean.getInputWorkload()){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "【总工作量】不能小于已录入工作量！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+        String deptInfo = bean.getLeadDeptPro() + bean.getCoorDeptPro();
+        Map<String, String> map = checkDeptRate(totWork, deptInfo, bean);
+        String msg = map.get("message");
+        if (!StringUtils.isBlank(msg)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + msg );
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (bean.getRemainWorkload() < bean.getMonInputWorkload()) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "本月录入工作量不能大于剩余工作量！" );
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        bean.setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
+        bean.setCoorDeptWorkload(map.get("coorDpetWorkLoad"));
+        bean.setRemainWorkload(Integer.parseInt(map.get("remainWordkLoad")));
+        //页面需求实施月份
+        String req_impl_mon_page = demand.getReqImplMon();
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, bean);
-        workLoadDao.updateReqWorkLoad(demandDO);
+        List<DemandDO> list = workLoadDao.getReqTaskByNameAndUK(demandDO);
+        //存放比当前页面实时月份大的实体
+        try {
+        List<DemandDO> reqImplMonList = new ArrayList<>();
+        DateFormat df = new SimpleDateFormat("yyyy-MM");
+        Date dt1 = df.parse(req_impl_mon_page);
+        Date dt2 = null;
+        for (int i = 0; i < list.size(); i++){
+            //实施月份
+            String req_impl_mon = list.get(i).getReqImplMon();
+            //总工作量
+            int total_workload = list.get(i).getTotalWorkload();
+            //需求状态
+            int pre_cur_period = Integer.parseInt(list.get(i).getPreCurPeriod());
+            String req_sts = list.get(i).getReqSts();
+            if (StringUtils.isNotBlank(req_impl_mon_page) && req_impl_mon_page.equals(req_impl_mon)){
+                continue;
+            }else if (StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon)) && total_workload == 0 && pre_cur_period > 50 && !("30".equals(req_sts))){
+                //存放最小实施日期的对象
+                DemandDO headmost = new DemandDO();
+                for (int j = 0;j < list.size();j++){
+                    dt2 = df.parse(list.get(j).getReqImplMon());
+                    if (list.get(j).getTotalWorkload() == 0 && Integer.parseInt(list.get(j).getPreCurPeriod()) > 50 && !("30".equals(req_sts)) && dt2.getTime() < dt1.getTime() ){
+                        dt1 = dt2;
+                        headmost = list.get(j);
+                    }
+                }
+                if (StringUtils.isNotBlank(headmost.getReqImplMon())){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "请先填写该需求实施月份为"+headmost.getReqImplMon()+"的【总工作量】！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+            if(StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon))){
+                for (int j = 0;j < list.size();j++){
+                    dt2 = df.parse(list.get(j).getReqImplMon());
+                    if (dt2.getTime() > dt1.getTime()){
+                        reqImplMonList.add(list.get(j));
+                    }
+                }
+            }
+        }
+        //已录入工作量
+        int input_workload = bean.getMonInputWorkload();
+        for(int i=0; i < list.size(); i++){
+            //实施月份
+            String req_impl_mon = list.get(i).getReqImplMon();
+            dt2 = df.parse(req_impl_mon);
+            if ( dt2.getTime() < dt1.getTime() ){
+                //已录入工作量
+                input_workload += list.get(i).getMonInputWorkload();
+            }
+        }
+            if (reqImplMonList.size() >= 2){
+                //存放最小实施日期的对象
+                DemandDO headmost = new DemandDO();
+                for (int j = 1; j < reqImplMonList.size(); j++){
+                    Date reqImplMonDate1 = df.parse(reqImplMonList.get(0).getReqImplMon());
+                    Date reqImplMonDate2 = df.parse(reqImplMonList.get(j).getReqImplMon());
+                    if (reqImplMonDate1.getTime() > reqImplMonDate2.getTime()){
+                        reqImplMonDate1 = reqImplMonDate2;
+                        headmost = reqImplMonList.get(j);
+                    }else{
+                        headmost = reqImplMonList.get(0);
+                    }
+                }
+                if (headmost != null){
+                    //总工作量
+                    headmost.setTotalWorkload(totWork);
+                    headmost.setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
+                    headmost.setCoorDeptWorkload(map.get("coorDpetWorkLoad"));
+                    headmost.setLeadDeptPro(leadDeptPro);
+                    headmost.setCoorDeptPro(coorDeptPro);
+                    //剩余工作量
+                    headmost.setRemainWorkload(totWork - input_workload);
+                    //已录入工作量
+                    headmost.setInputWorkload(input_workload);
+                    workLoadDao.updateReqWorkLoad(headmost);
+                }
+            }else if (reqImplMonList.size() == 1){
+                //总工作量
+                reqImplMonList.get(0).setTotalWorkload(totWork);
+                reqImplMonList.get(0).setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
+                reqImplMonList.get(0).setCoorDeptWorkload(map.get("coorDpetWorkLoad"));
+                reqImplMonList.get(0).setLeadDeptPro(leadDeptPro);
+                reqImplMonList.get(0).setCoorDeptPro(coorDeptPro);
+                //剩余工作量
+                reqImplMonList.get(0).setRemainWorkload(totWork - input_workload);
+                //已录入工作量
+                reqImplMonList.get(0).setInputWorkload(input_workload);
+                workLoadDao.updateReqWorkLoad(reqImplMonList.get(0));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        // 默认值设置
+        setDefaultValue(bean);
+        DemandDO deman = new DemandDO();
+        BeanConvertUtils.convert(deman, bean);
+        try {
+            workLoadDao.updateReqWorkLoad(deman);
+
+        } catch (Exception e) {
+            BusinessException.throwBusinessException("工作量提交失败！");
+        }
+
+    }
+
+    /**
+     * 设置默认值（操作人，操作时间）
+     * @param bean
+     */
+    private void setDefaultValue(DemandBO bean) {
+        String currentUser =  SecurityUtils.getLoginUserId();
+        bean.setUpdateUser(currentUser);
+        bean.setUpdateTime(new Date());
+
     }
 }
