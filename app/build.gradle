@@ -11,7 +11,7 @@ dependencies {
 
 bootRepackage {
     enabled = true
-    mainClass = 'com.cmpay.lemon.monitor.MonitorApplication'
+    mainClass = 'com.cmpay.lemon.monitor.HimsManagerApplication'
 }
 
 jar {
