@@ -1,8 +1,6 @@
 package com.cmpay.lemon.monitor.utils.jira;
 
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
-
 import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.given;
@@ -28,8 +26,10 @@ public class JiraUtil {
                 .post(CREATEISSUEURL);
         //返回状态码
       //  int statusCode = response.getStatusCode();
-        CreateIssueResponseBO as = response.getBody().as(CreateIssueResponseBO.class);
-
+        //返回jira项目信息
+        /*if(response.getStatusCode()==201) {
+            CreateIssueResponseBO as = response.getBody().as(CreateIssueResponseBO.class);
+        }*/
         return response;
     }
 }

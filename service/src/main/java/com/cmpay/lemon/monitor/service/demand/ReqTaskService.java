@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service.demand;
 
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -24,6 +25,13 @@ public interface ReqTaskService {
      */
     DemandBO findById(String req_inner_seq);
 
+    /**
+     * 通过id数组查找记录
+     *
+     * @param ids
+     * @return
+     */
+    List<DemandDO> findById(List<String> ids);
     /**
      * 分页查询
      *
@@ -115,4 +123,6 @@ public interface ReqTaskService {
 
 
     void updateReqSts(String reqNo, String reqSts, String reqStsRemarks,String reqNm);
+
+    String reqStsCheck(String reqSts);
 }

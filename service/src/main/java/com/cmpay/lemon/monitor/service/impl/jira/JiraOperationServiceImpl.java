@@ -32,6 +32,11 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void createEpic(DemandBO demandBO)   {
+        //jira关联表中已有，并且状态为成功
+        DemandJiraDO demandJiraDO1 = demandJiraDao.get(demandBO.getReqInnerSeq());
+        if(JudgeUtils.isNotNull(demandJiraDO1)&&demandJiraDO1.getCreateState().equals("success")){
+            return;
+        }
         CreateIssueRequestBO createIssueRequestBO = new CreateIssueRequestBO();
         createIssueRequestBO.setSummary(demandBO.getReqNm());
         createIssueRequestBO.setDescription(demandBO.getReqDesc());
@@ -40,7 +45,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         createIssueRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
         createIssueRequestBO.setDescription(demandBO.getReqDesc());
         createIssueRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
-        //获取部门管理
+        //获取部门管理人员
         JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
         if(JudgeUtils.isNull(jiraDepartmentDO)){
             DemandJiraDO demandJiraDO = new DemandJiraDO();
@@ -64,15 +69,27 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
             demandJiraDO.setReqNm(demandBO.getReqNm());
             demandJiraDO.setCreateState("success");
-            demandJiraDao.insert(demandJiraDO);
+            demandJiraDO.setFailCause("");
+            //若是jira关联表已存在该项目，则更新
+            DemandJiraDO demandJiraDO2 = demandJiraDao.get(demandJiraDO.getReqInnerSeq());
+            if(JudgeUtils.isNull(demandJiraDO2)){
+                demandJiraDao.insert(demandJiraDO);
+            }else{
+                demandJiraDao.update(demandJiraDO);
+            }
         }else{
             DemandJiraDO demandJiraDO = new DemandJiraDO();
             demandJiraDO.setCreatTime(LocalDateTime.now());
             demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
             demandJiraDO.setReqNm(demandBO.getReqNm());
             demandJiraDO.setCreateState("fail");
-            demandJiraDO.setFailCause(response.getBody().toString());
-            demandJiraDao.insert(demandJiraDO);
+            demandJiraDO.setFailCause(response.getBody().print());
+            DemandJiraDO demandJiraDO2 = demandJiraDao.get(demandJiraDO.getReqInnerSeq());
+            if(JudgeUtils.isNull(demandJiraDO2)){
+                demandJiraDao.insert(demandJiraDO);
+            }else{
+                demandJiraDao.update(demandJiraDO);
+            }
         }
     }
 
@@ -82,7 +99,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     public void batchCreateEpic(List<DemandDO> demandDOList) {
         demandDOList.forEach(m->{
             DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), m);
-            createEpic(demandBO);
+            this.createEpic(demandBO);
         });
     }
 }

@@ -4,19 +4,18 @@ import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
+import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
-import com.cmpay.lemon.monitor.dao.IDemandExtDao;
-import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
-import com.cmpay.lemon.monitor.dao.IPlanDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
-import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
-import com.cmpay.lemon.monitor.entity.ProjectStartDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -25,7 +24,6 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.utils.*;
 import org.apache.commons.lang.time.DateUtils;
-import com.cmpay.lemon.framework.security.SecurityUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -41,7 +39,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import com.cmpay.lemon.common.utils.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.tmatesoft.svn.core.SVNDepth;
 import org.tmatesoft.svn.core.SVNException;
@@ -51,7 +48,6 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,6 +56,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -98,7 +95,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private IOperationProductionDao operationProductionDao;
     @Autowired
     private DictionaryService dictionaryService;
-
+    @Autowired
+    private IDemandJiraDao demandJiraDao;
+    @Autowired
+    private IDemandStateHistoryDao demandStateHistoryDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -106,6 +106,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private ReqPlanService reqPlanService;
     @Autowired
     private ReqTaskService reqTaskService;
+
 
     @Override
     public DemandBO findById(String req_inner_seq) {
@@ -694,8 +695,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 vo.setReqImplMon(demand.getReqImplMon());
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
                 if (dem.size() == 0) {
+                    String reqInnerSeq = demand.getReqInnerSeq();
                     demand.setReqInnerSeq(getNextInnerSeq());
                     demandDao.insertStockReq(demand);
+                    SyncJira(demand, reqInnerSeq);
+
                 }else {
                     demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);
@@ -713,6 +717,27 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 //            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PRIVILEGE);
 //        }
     }
+
+    private void SyncJira(DemandDO demand, String reqInnerSeq) {
+        DemandJiraDO demandJiraDO = demandJiraDao.get(reqInnerSeq);
+        if(JudgeUtils.isNotNull(demandJiraDO)){
+            demandJiraDO.setReqInnerSeq(demand.getReqInnerSeq());
+            demandJiraDao.insert(demandJiraDO);
+        }
+        DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+        demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+        String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
+        demandStateHistoryDO.setReqSts(reqSts);
+        demandStateHistoryDO.setRemarks("存量变更录入");
+        demandStateHistoryDO.setReqNm(demand.getReqNm());
+        //获取当前操作员
+        demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+        demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+        //登记需求状态历史表
+        demandStateHistoryDao.insert(demandStateHistoryDO);
+    }
+
+
     /**
      * 用户身份验证
      */

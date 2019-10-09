@@ -13,6 +13,7 @@ import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.DemandJiraDO;
 import com.cmpay.lemon.monitor.entity.DemandStateHistoryDO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -94,6 +95,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     }
 
     @Override
+    public List<DemandDO> findById(List<String> ids) {
+        LinkedList<DemandDO> demandBOList = new LinkedList<>();
+        ids.forEach(m->{
+            DemandDO demandDO = demandDao.get(m);
+            if(JudgeUtils.isNotNull(demandDO)) {
+                demandBOList.add(demandDO);
+            }
+        });
+        return demandBOList;
+    }
+
+    @Override
     public DemandRspBO find(DemandBO demandBO) {
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
@@ -148,6 +161,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
             }
         }
+        demandBOList.forEach(m->{
+            DemandJiraDO demandJiraDO = demandJiraDao.get(m.getReqInnerSeq());
+            if(demandJiraDO!=null){
+                m.setJiraKey(demandJiraDO.getJiraKey());
+            }
+        });
+
         DemandRspBO demandRspBO = new DemandRspBO();
         demandRspBO.setDemandBOList(demandBOList);
         demandRspBO.setPageInfo(pageInfo);
@@ -228,6 +248,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandStateHistoryDO.setReqInnerSeq(demandDao.getMaxInnerSeq().getReqInnerSeq());
             demandStateHistoryDO.setReqSts("提出");
             demandStateHistoryDO.setRemarks("新建任务");
+            demandStateHistoryDO.setReqNm(demandBO.getReqNm());
             //获取当前操作员
             demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
@@ -808,8 +829,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
 
 
-
-    private String reqStsCheck(String reqSts) {
+    @Override
+    public String reqStsCheck(String reqSts) {
         switch (reqSts){
             case "10":{
                 reqSts="提出";

@@ -1,7 +1,6 @@
 package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.request.GenericDTO;
-import feign.Param;
 
 import java.util.Date;
 
@@ -70,6 +69,9 @@ public class DemandDTO extends GenericDTO {
     private String coorDeptWorkload;
     //是否建立svn目录
     private String isSvnBuild;
+    //jira任务编号  jiraKey
+    private String jiraKey;
+
 
     private String proId;
     private String projectStartTm;
@@ -726,6 +728,14 @@ public class DemandDTO extends GenericDTO {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getJiraKey() {
+        return jiraKey;
+    }
+
+    public void setJiraKey(String jiraKey) {
+        this.jiraKey = jiraKey;
     }
 
     @Override

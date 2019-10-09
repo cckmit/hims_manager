@@ -108,7 +108,7 @@ public class CreateIssueRequestBO {
                 "        \n" +
                 "        \"customfield_10917\":\""+this.getReqInnerSeq()+"\",\n" +
                 "        \n" +
-                "        \"description\":\""+this.getDescription()+"\",\n" +
+                "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +
                 "        \"customfield_10612\":{\n" +
                 "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +

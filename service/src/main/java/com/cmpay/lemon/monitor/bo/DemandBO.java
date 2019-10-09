@@ -68,6 +68,9 @@ public class DemandBO {
     private String coorDeptWorkload;
     //是否建立svn目录
     private String isSvnBuild;
+    //jira任务编号  jiraKey
+    private String jiraKey;
+
 
     private String proId;
     private String projectStartTm;
@@ -701,6 +704,14 @@ public class DemandBO {
         this.pageSize = pageSize;
     }
 
+    public String getJiraKey() {
+        return jiraKey;
+    }
+
+    public void setJiraKey(String jiraKey) {
+        this.jiraKey = jiraKey;
+    }
+
     @Override
     public String toString() {
         return "DemandBO{" +
@@ -756,6 +767,7 @@ public class DemandBO {
                 ", leadDeptWorkload='" + leadDeptWorkload + '\'' +
                 ", coorDeptWorkload='" + coorDeptWorkload + '\'' +
                 ", isSvnBuild='" + isSvnBuild + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
                 ", proId='" + proId + '\'' +
                 ", projectStartTm='" + projectStartTm + '\'' +
                 ", actPrdUploadTm='" + actPrdUploadTm + '\'' +

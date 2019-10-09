@@ -11,8 +11,10 @@ import com.cmpay.lemon.monitor.dto.DemandDTO;
 import com.cmpay.lemon.monitor.dto.DemandReqDTO;
 import com.cmpay.lemon.monitor.dto.DemandRspDTO;
 import com.cmpay.lemon.monitor.dto.UpdateReqStsDTO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
@@ -34,7 +37,8 @@ public class ReqTaskController {
 
     @Autowired
     private ReqTaskService reqTaskService;
-
+    @Autowired
+    private JiraOperationService jiraOperationService;
     /**
      * 分页需求列表
      *
@@ -122,6 +126,13 @@ public class ReqTaskController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
+    @PostMapping("/createJiraEpic")
+    public GenericRspDTO createJiraEpic(@RequestBody DemandReqDTO reqDTO) {
+        List<String> ids = reqDTO.getIds();
+        List<DemandDO> byId = reqTaskService.findById(ids);
+        jiraOperationService.batchCreateEpic(byId);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
     /**
      * 模板下载
      *
