@@ -28,6 +28,7 @@ public enum MsgEnum implements AlertCapable {
     ERROR_IMPORT("MON00109", "需求任务导入失败:"),
     ERROR_WORK_IMPORT("MON00110", "工作量导入失败:"),
     ERROR_CUSTOM("MON00111", ""),
+    ERROR_WORK_UPDATE("MON00112", "工作量更新失败:"),
 
     MENU_NAME_CANNOT_NULL("MON00200", "菜单名称不能为空"),
     PARENT_MENU_CANNOT_NULL("MON00201", "上级菜单不能为空"),

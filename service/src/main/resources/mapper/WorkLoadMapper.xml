@@ -699,4 +699,18 @@
         FROM t_demand_info a
         WHERE a.req_inner_seq = #{reqInnerSeq}
     </select>
+    <select id="getReqTaskByNameAndUK" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        where a.pre_cur_period &gt; 50
+        and	(
+        <if test="reqNm != null and reqNm != ''">
+            a.req_nm =#{reqNm}
+        </if>
+        <if test="reqNo != null and reqNo != ''">
+            OR a.req_no = #{reqNo}
+        </if>
+        )
+    </select>
 </mapper>
