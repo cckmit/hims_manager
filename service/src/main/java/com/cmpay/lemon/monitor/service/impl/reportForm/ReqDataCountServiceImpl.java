@@ -5,17 +5,25 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.framework.page.PageInfo;
+import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
+import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
 import com.cmpay.lemon.monitor.entity.ReqMngDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
+import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
+import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +40,30 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Transactional(rollbackFor = Exception.class)
 @Service
 public class ReqDataCountServiceImpl implements ReqDataCountService {
+	//30 需求状态为暂停
+	private static final String REQSUSPEND ="30";
+	//40 需求状态为取消
+	private static final String REQCANCEL ="40";
+	// 30 需求定稿
+	private static final int REQCONFIRM = 30;
+	// 50 技术方案定稿
+	private static final int TECHDOCCONFIRM = 50;
+	// 70 测试用例定稿
+	private static final int TESTCASECONFIRM = 70;
+	// 110 完成SIT测试
+	private static final int FINISHSITTEST = 110;
+	// 120 UAT版本更新
+	private static final int UPDATEUAT = 120;
+	// 140 完成UAT测试
+	private static final int FINISHUATTEST = 140;
+	// 160 完成预投产
+	private static final int FINISHPRETEST = 160;
+	// 180 完成产品发布
+	private static final int FINISHPRD = 180;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ReqPlanServiceImpl.class);
+	@Autowired
+	private IDemandExtDao demandDao;
 	@Autowired
 	private IReqDataCountDao reqDataCountDao;
 
@@ -263,8 +294,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
 	@Override
 	public List<ReqDataCountBO> selectDetl(ReqMngBO vo) {
-		RowBounds rb = new RowBounds(vo.getStartIndex(), vo.getPageSize());
-		List<ReqDataCountDO> lst = reqDataCountDao.selectDetl(BeanUtils.copyPropertiesReturnDest(new ReqMngDO(), vo),BeanUtils.copyPropertiesReturnDest(new ReqMngDO(), rb));
+		List<ReqDataCountDO> lst = reqDataCountDao.selectDetl(BeanUtils.copyPropertiesReturnDest(new ReqMngDO(), vo));
 		String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
 		for (int i =0; i < lst.size();i++){
 			String reqAbnorType=lst.get(i).getReqUnusual();
@@ -587,6 +617,75 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		} catch (IOException e) {
 			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
 		}
+	}
+	@Override
+	public DemandRspBO findDemand(DemandBO demandBO) {
+		String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
+		System.err.println("需求月份"+demandBO.getReqImplMon());
+		PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
+		List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
+
+		for (int i = 0; i < demandBOList.size(); i++) {
+			String reqAbnorType = demandBOList.get(i).getReqAbnorType();
+			String reqAbnorTypeAll = "";
+			DemandBO demand = reqPlanService.findById(demandBOList.get(i).getReqInnerSeq());
+
+			//当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
+			if (com.cmpay.lemon.common.utils.StringUtils.isNotBlank(demand.getPrdFinshTm()) && com.cmpay.lemon.common.utils.StringUtils.isNotBlank(demand.getUatUpdateTm())
+					&& com.cmpay.lemon.common.utils.StringUtils.isNotBlank(demand.getTestFinshTm()) && com.cmpay.lemon.common.utils.StringUtils.isNotBlank(demand.getPreCurPeriod())
+					&& com.cmpay.lemon.common.utils.StringUtils.isNotBlank(demand.getReqSts())) {
+				//当前时间大于预计时间，并且所处阶段小于30,并且需求状态不为暂停或取消（30，40）,则该需求进度异常
+				if (time.compareTo(demand.getPrdFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) < REQCONFIRM
+						&& REQSUSPEND.compareTo(demand.getReqSts()) != 0 && REQCANCEL.compareTo(demand.getReqSts()) != 0) {
+					reqAbnorTypeAll += "需求进度滞后,";
+				}
+				if (time.compareTo(demand.getUatUpdateTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= REQCONFIRM
+						&& Integer.parseInt(demand.getPreCurPeriod()) < UPDATEUAT && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+						&& REQCANCEL.compareTo(demand.getReqSts()) != 0) {
+					reqAbnorTypeAll += "开发进度滞后,";
+				}
+				if (time.compareTo(demand.getTestFinshTm()) > 0 && Integer.parseInt(demand.getPreCurPeriod()) >= UPDATEUAT
+						&& Integer.parseInt(demand.getPreCurPeriod()) < FINISHUATTEST && REQSUSPEND.compareTo(demand.getReqSts()) != 0
+						&& REQCANCEL.compareTo(demand.getReqSts()) != 0) {
+					reqAbnorTypeAll += "测试进度滞后";
+				}
+				if (com.cmpay.lemon.common.utils.StringUtils.isBlank(reqAbnorTypeAll)) {
+					reqAbnorTypeAll += "正常";
+				}
+			} else if (reqAbnorType.indexOf("01") != -1) {
+				demandBOList.get(i).setReqAbnorType("正常");
+				continue;
+			} else {
+				if (reqAbnorType.indexOf("03") != -1) {
+					reqAbnorTypeAll += "需求进度滞后,";
+				}
+				if (reqAbnorType.indexOf("04") != -1) {
+					reqAbnorTypeAll += "开发进度滞后,";
+				}
+				if (reqAbnorType.indexOf("05") != -1) {
+					reqAbnorTypeAll += "测试进度滞后";
+				}
+			}
+
+			if (reqAbnorTypeAll.length() >= 1 && ',' == reqAbnorTypeAll.charAt(reqAbnorTypeAll.length() - 1)) {
+				reqAbnorTypeAll = reqAbnorTypeAll.substring(0, reqAbnorTypeAll.length() - 1);
+				demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
+			} else {
+				demandBOList.get(i).setReqAbnorType(reqAbnorTypeAll);
+			}
+		}
+		DemandRspBO demandRspBO = new DemandRspBO();
+		demandRspBO.setDemandBOList(demandBOList);
+		demandRspBO.setPageInfo(pageInfo);
+		return demandRspBO;
+	}
+
+	private PageInfo<DemandBO>  getPageInfo(DemandBO demandBO) {
+		DemandDO demandDO = new DemandDO();
+		BeanConvertUtils.convert(demandDO, demandBO);
+		PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
+				() -> BeanConvertUtils.convertList(reqDataCountDao.find(demandDO), DemandBO.class));
+		return pageInfo;
 	}
 }
 

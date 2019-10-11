@@ -42,6 +42,67 @@
 		<result property="busiDevp" jdbcType="VARCHAR" column="busi_devp" />
 		<result property="goveDevp" jdbcType="VARCHAR" column="gove_devp" />
 	</resultMap>
+
+	<resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
+		<result property="reqInnerSeq" jdbcType="VARCHAR" column="req_inner_seq" />
+		<result property="reqPrdLine" jdbcType="VARCHAR" column="req_prd_line" />
+		<result property="reqType" jdbcType="VARCHAR" column="req_type" />
+		<result property="reqSts" jdbcType="VARCHAR" column="req_sts" />
+		<result property="reqNo" jdbcType="VARCHAR" column="req_no" />
+		<result property="reqNm" jdbcType="VARCHAR" column="req_nm" />
+		<result property="reqDesc" jdbcType="VARCHAR" column="req_desc" />
+		<result property="inputRes" jdbcType="INTEGER" column="input_res" />
+		<result property="devCycle" jdbcType="INTEGER" column="dev_cycle" />
+		<result property="expInput" jdbcType="DOUBLE" column="exp_input" />
+		<result property="prdFinshTm" jdbcType="VARCHAR" column="prd_finsh_tm" />
+		<result property="actPrdFinshTm" jdbcType="VARCHAR" column="act_prd_finsh_tm" />
+		<result property="preCurPeriod" jdbcType="VARCHAR" column="pre_cur_period" />
+		<result property="curMonTarget" jdbcType="VARCHAR" column="cur_mon_target" />
+		<result property="expPrdReleaseTm" jdbcType="VARCHAR" column="exp_prd_release_tm" />
+		<result property="devpLeadDept" jdbcType="VARCHAR" column="devp_lead_dept" />
+		<result property="devpCoorDept" jdbcType="VARCHAR" column="devp_coor_dept" />
+		<result property="reqProDept" jdbcType="VARCHAR" column="req_pro_dept" />
+		<result property="reqProposer" jdbcType="VARCHAR" column="req_proposer" />
+		<result property="reqMnger" jdbcType="VARCHAR" column="req_mnger" />
+		<result property="reqStartMon" jdbcType="VARCHAR" column="req_start_mon" />
+		<result property="reqImplMon" jdbcType="VARCHAR" column="req_impl_mon" />
+		<result property="projectMng" jdbcType="VARCHAR" column="project_mng" />
+		<result property="productMng" jdbcType="VARCHAR" column="product_mng" />
+		<result property="isCut" jdbcType="VARCHAR" column="is_cut" />
+		<result property="preMonPeriod" jdbcType="VARCHAR" column="pre_mon_period" />
+		<result property="qaMng" jdbcType="VARCHAR" column="qa_mng" />
+		<result property="configMng" jdbcType="VARCHAR" column="config_mng" />
+		<result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+		<result property="devpEng" jdbcType="VARCHAR" column="devp_eng" />
+		<result property="frontEng" jdbcType="VARCHAR" column="front_eng" />
+		<result property="testEng" jdbcType="VARCHAR" column="test_eng" />
+		<result property="uatUpdateTm" jdbcType="VARCHAR" column="uat_update_tm" />
+		<result property="actUatUpdateTm" jdbcType="VARCHAR" column="act_uat_update_tm" />
+		<result property="preTm" jdbcType="VARCHAR" column="pre_tm" />
+		<result property="testFinshTm" jdbcType="VARCHAR" column="test_finsh_tm" />
+		<result property="actTestFinshTm" jdbcType="VARCHAR" column="act_test_finsh_tm" />
+		<result property="riskSolution" jdbcType="VARCHAR" column="risk_solution" />
+		<result property="riskFeedbackTm" jdbcType="VARCHAR" column="risk_feedback_tm" />
+		<result property="endMonRemark" jdbcType="VARCHAR" column="end_mon_remark" />
+		<result property="endFeedbackTm" jdbcType="VARCHAR" column="end_feedback_tm" />
+		<result property="totalWorkload" jdbcType="INTEGER" column="total_workload" />
+		<result property="leadDeptPro" jdbcType="VARCHAR" column="lead_dept_pro" />
+		<result property="coorDeptPro" jdbcType="VARCHAR" column="coor_dept_pro" />
+		<result property="leadDeptWorkload" jdbcType="VARCHAR" column="lead_dept_workload" />
+		<result property="coorDeptWorkload" jdbcType="VARCHAR" column="coor_dept_workload" />
+		<result property="inputWorkload" jdbcType="INTEGER" column="input_workload" />
+		<result property="lastInputWorkload" jdbcType="INTEGER" column="last_input_workload" />
+		<result property="remainWorkload" jdbcType="INTEGER" column="remain_workload" />
+		<result property="monInputWorkload" jdbcType="INTEGER" column="mon_input_workload" />
+		<result property="isSvnBuild" jdbcType="VARCHAR" column="is_svn_build" />
+		<result property="reqAbnorType" jdbcType="VARCHAR" column="req_abnor_type" />
+		<result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />
+		<result property="updateTime" jdbcType="TIMESTAMP" column="update_time" />
+		<result property="creatUser" jdbcType="VARCHAR" column="creat_user" />
+		<result property="updateUser" jdbcType="VARCHAR" column="update_user" />
+		<result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		req_prd,
 		req_devp,
@@ -67,6 +128,66 @@
 		req_replace,
 		req_jump
 	</sql>
+
+	<sql id="Base_Column_List1" >
+        req_inner_seq ,
+		req_prd_line ,
+		req_type ,
+		req_sts ,
+		req_no ,
+		req_nm ,
+		req_desc ,
+		input_res ,
+		dev_cycle ,
+		exp_input ,
+		prd_finsh_tm ,
+		act_prd_finsh_tm ,
+		pre_cur_period ,
+		cur_mon_target ,
+		exp_prd_release_tm ,
+		devp_lead_dept,
+		devp_coor_dept,
+		req_pro_dept,
+		req_proposer,
+		req_mnger,
+		devp_res_mng ,
+		req_start_mon ,
+		req_impl_mon ,
+		project_mng ,
+		product_mng ,
+		is_cut ,
+		pre_mon_period ,
+		qa_mng ,
+		config_mng ,
+		mon_remark ,
+		devp_eng ,
+		front_eng ,
+		test_eng ,
+		uat_update_tm ,
+		act_uat_update_tm ,
+		pre_tm ,
+		test_finsh_tm ,
+		act_test_finsh_tm ,
+		risk_solution ,
+		risk_feedback_tm ,
+		end_mon_remark ,
+		end_feedback_tm ,
+		total_workload ,
+		lead_dept_pro ,
+		coor_dept_pro ,
+		lead_dept_workload ,
+		coor_dept_workload ,
+		input_workload ,
+		last_input_workload ,
+		remain_workload ,
+		mon_input_workload ,
+		is_svn_build,
+		req_abnor_type,
+		creat_time ,
+		update_time ,
+		creat_user ,
+		update_user
+    </sql>
 
 	<sql id="recJoins">
 	</sql>
@@ -283,42 +404,42 @@
 			   req_abnor_type req_unusual
 	 	from t_demand_info
 	 	<where>
-			<if test="req_impl_mon != null and req_impl_mon != ''">
+			<if test="reqImplMon != null and reqImplMon != ''">
 				AND req_impl_mon =#{reqImplMon}
 			</if>
-			<if test="devp_lead_dept != null and devp_lead_dept != ''">
+			<if test="devpLeadDept != null and devpLeadDept != ''">
 				AND devp_lead_dept = #{devpLeadDept}
 			</if>
-			<if test="product_mng != null and product_mng != ''">
-				AND product_mng LIKE "%"#{productMng}"%"
+			<if test="productMng != null and productMng != ''">
+				AND product_mng LIKE CONCAT('%',#{product_mng},'%')
 			</if>
-			<if test="test_eng != null and test_eng != ''">
-				AND test_eng LIKE "%"#{testEng}"%"
+			<if test="testEng != null and testEng != ''">
+				AND test_eng LIKE CONCAT('%',#{testEng},'%')
 			</if>
-			<if test="devp_eng != null and devp_eng != ''">
-				AND (devp_eng LIKE "%"#{devpEng}"%" or project_mng LIKE "%"#{devpEng}"%")
+			<if test="devpEng != null and devpEng != ''">
+				AND (devp_eng LIKE CONCAT('%',#{devpEng},'%') or project_mng LIKE CONCAT('%',#{devpEng},'%') )
 			</if>
-			<if test='pre_cur_period == "1"'>
+			<if test='preCurPeriod == "1"'>
 				AND pre_cur_period IN ( '10', '20', '30' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "2"'>
+			<if test='preCurPeriod == "2"'>
 				AND pre_cur_period IN ( '40', '50', '80', '90', '100', '110' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "3"'>
+			<if test='preCurPeriod == "3"'>
 				AND pre_cur_period IN ( '60', '70', '120', '130', '140' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "4"'>
+			<if test='preCurPeriod == "4"'>
 				AND pre_cur_period IN ( '150', '160', '170' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "5"'>
+			<if test='preCurPeriod == "5"'>
 				AND pre_cur_period = '180' and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "6" and req_abnor_type != null and req_abnor_type != ""'>
+			<if test='preCurPeriod == "6" and reqAbnorType != null and reqAbnorType != ""'>
 				AND ( uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period
 				AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%04%' ) )
 			</if>
-			<if test='pre_cur_period == "6" and (req_abnor_type == null or req_abnor_type == "")'>
+			<if test='preCurPeriod == "6" and (reqAbnorType == null or reqAbnorType == "")'>
 				AND ( ( (prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
 				OR (uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
 				OR (test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
@@ -326,39 +447,132 @@
 				AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ))
 			</if>
-			<if test='pre_cur_period == "7"'>
+			<if test='preCurPeriod == "7"'>
 				AND req_sts = '30'
 			</if>
-			<if test='pre_cur_period == "8"'>
+			<if test='preCurPeriod == "8"'>
 				AND req_sts = '40'
 			</if>
-			<if test='pre_cur_period == "9"'>
+			<if test='preCurPeriod == "9"'>
 				AND pre_cur_period IN ( '10' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "10"'>
+			<if test='preCurPeriod == "10"'>
 				AND pre_cur_period IN ( '20' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "11"'>
+			<if test='preCurPeriod == "11"'>
 				AND pre_cur_period IN ( '30' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "12"'>
+			<if test='preCurPeriod == "12"'>
 				AND pre_cur_period IN ( '150' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "13"'>
+			<if test='preCurPeriod == "13"'>
 				AND ( prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')   AND 30 > pre_cur_period
 				AND req_sts not in ('30','40') AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
 			</if>
-			<if test='pre_cur_period == "14"'>
+			<if test='preCurPeriod == "14"'>
 				AND --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "15"'>
+			<if test='preCurPeriod == "15"'>
 				AND pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "16"'>
+			<if test='preCurPeriod == "16"'>
 				AND --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' )
 			</if>
-			<if test='pre_cur_period == "17"'>
+			<if test='preCurPeriod == "17"'>
+				AND ( test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
+				AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%05%' ) )
+			</if>
+		</where>
+	</select>
+
+	<select id="find" resultMap="BaseResultMap" parameterType="map">
+		select req_inner_seq,
+		req_no,
+		req_nm,
+		pre_cur_period,
+		devp_lead_dept,
+		exp_prd_release_tm,
+		req_abnor_type
+		from t_demand_info
+		<where>
+			<if test="reqImplMon != null and reqImplMon != ''">
+				AND req_impl_mon =#{reqImplMon}
+			</if>
+			<if test="devpLeadDept != null and devpLeadDept != ''">
+				AND devp_lead_dept = #{devpLeadDept}
+			</if>
+			<if test="productMng != null and productMng != ''">
+				AND product_mng LIKE CONCAT('%',#{product_mng},'%')
+			</if>
+			<if test="testEng != null and testEng != ''">
+				AND test_eng LIKE CONCAT('%',#{testEng},'%')
+			</if>
+			<if test="devpEng != null and devpEng != ''">
+				AND (devp_eng LIKE CONCAT('%',#{devpEng},'%') or project_mng LIKE CONCAT('%',#{devpEng},'%') )
+			</if>
+			<if test='preCurPeriod == "1"'>
+				AND pre_cur_period IN ( '10', '20', '30' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "2"'>
+				AND pre_cur_period IN ( '40', '50', '80', '90', '100', '110' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "3"'>
+				AND pre_cur_period IN ( '60', '70', '120', '130', '140' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "4"'>
+				AND pre_cur_period IN ( '150', '160', '170' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "5"'>
+				AND pre_cur_period = '180' and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "6" and reqAbnorType != null and reqAbnorType != ""'>
+				AND ( uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period
+				AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%04%' ) )
+			</if>
+			<if test='preCurPeriod == "6" and (reqAbnorType == null or reqAbnorType == "")'>
+				AND ( ( (prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
+				OR (uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
+				OR (test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
+				AND req_sts not in ('30','40')
+				AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ))
+			</if>
+			<if test='preCurPeriod == "7"'>
+				AND req_sts = '30'
+			</if>
+			<if test='preCurPeriod == "8"'>
+				AND req_sts = '40'
+			</if>
+			<if test='preCurPeriod == "9"'>
+				AND pre_cur_period IN ( '10' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "10"'>
+				AND pre_cur_period IN ( '20' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "11"'>
+				AND pre_cur_period IN ( '30' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "12"'>
+				AND pre_cur_period IN ( '150' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "13"'>
+				AND ( prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')   AND 30 > pre_cur_period
+				AND req_sts not in ('30','40') AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
+			</if>
+			<if test='preCurPeriod == "14"'>
+				AND --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "15"'>
+				AND pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "16"'>
+				AND --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' )
+			</if>
+			<if test='preCurPeriod == "17"'>
 				AND ( test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
 				AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%05%' ) )
@@ -462,12 +676,12 @@
 			sum( CASE WHEN pre_cur_period IN ( '60', '70', '120', '130', '140' ) and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_test,
 			sum( CASE WHEN pre_cur_period IN ( '150', '160', '170' ) and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_pre,
 			sum( CASE WHEN pre_cur_period = '180' and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_oper,
-			<if test="req_abnor_type != null and req_abnor_type != ''">
+			<if test="reqAbnorType != null and reqAbnorType != ''">
 				sum( CASE WHEN ( uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period
 				AND req_sts not in ('30','40')  AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%04%' ) ) THEN 1 ELSE 0 END ) req_abnormal,
 			</if>
-			<if test="req_abnor_type == null or req_abnor_type == ''">
+			<if test="reqAbnorType == null or reqAbnorType == ''">
 				sum( CASE WHEN ( ( (prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
 				OR (uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
 				OR (test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
@@ -480,14 +694,14 @@
 		FROM
 			t_demand_info
 		<where>
-			<if test="req_impl_mon != null and req_impl_mon != ''">
+			<if test="reqImplMon != null and reqImplMon != ''">
 				AND req_impl_mon =#{reqImplMon}
 			</if>
-			<if test="devp_lead_dept != null and devp_lead_dept != ''">
+			<if test="devpLeadDept != null and devpLeadDept != ''">
 				AND devp_lead_dept = #{devpLeadDept}
 			</if>
-			<if test="devp_eng != null and devp_eng != ''">
-				AND (devp_eng LIKE "%"#{devpEng}"%" or project_mng LIKE "%"#{devpEng}"%")
+			<if test="devpEng != null and devpEng != ''">
+				AND (devp_eng LIKE CONCAT('%',#{devpEng},'%') or project_mng LIKE CONCAT('%',#{devpEng},'%'))
 			</if>
 		</where>
 	</select>
