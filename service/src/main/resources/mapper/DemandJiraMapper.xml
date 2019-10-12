@@ -7,13 +7,17 @@
         <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
         <result column="jira_id" property="jiraId" jdbcType="VARCHAR" />
         <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="issue_type" property="issueType" jdbcType="VARCHAR" />
+        <result column="assignment_department" property="assignmentDepartment" jdbcType="VARCHAR" />
         <result column="create_state" property="createState" jdbcType="VARCHAR" />
-        <result column="fail_cause" property="failCause" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
         <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+        <result column="relevance_epic" property="relevanceEpic" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        req_inner_seq, req_nm, jira_id, jira_key, create_state, fail_cause, creat_time
+        req_inner_seq, req_nm, jira_id, jira_key, issue_type, assignment_department, create_state, 
+        remarks, creat_time, relevance_epic
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -43,14 +47,23 @@
             <if test="jiraKey != null" >
                 jira_key,
             </if>
+            <if test="issueType != null" >
+                issue_type,
+            </if>
+            <if test="assignmentDepartment != null" >
+                assignment_department,
+            </if>
             <if test="createState != null" >
                 create_state,
             </if>
-            <if test="failCause != null" >
-                fail_cause,
+            <if test="remarks != null" >
+                remarks,
             </if>
             <if test="creatTime != null" >
                 creat_time,
+            </if>
+            <if test="relevanceEpic != null" >
+                relevance_epic,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -66,14 +79,23 @@
             <if test="jiraKey != null" >
                 #{jiraKey,jdbcType=VARCHAR},
             </if>
+            <if test="issueType != null" >
+                #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="assignmentDepartment != null" >
+                #{assignmentDepartment,jdbcType=VARCHAR},
+            </if>
             <if test="createState != null" >
                 #{createState,jdbcType=VARCHAR},
             </if>
-            <if test="failCause != null" >
-                #{failCause,jdbcType=VARCHAR},
+            <if test="remarks != null" >
+                #{remarks,jdbcType=VARCHAR},
             </if>
             <if test="creatTime != null" >
                 #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="relevanceEpic != null" >
+                #{relevanceEpic,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -90,14 +112,23 @@
             <if test="jiraKey != null" >
                 jira_key = #{jiraKey,jdbcType=VARCHAR},
             </if>
+            <if test="issueType != null" >
+                issue_type = #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="assignmentDepartment != null" >
+                assignment_department = #{assignmentDepartment,jdbcType=VARCHAR},
+            </if>
             <if test="createState != null" >
                 create_state = #{createState,jdbcType=VARCHAR},
             </if>
-            <if test="failCause != null" >
-                fail_cause = #{failCause,jdbcType=VARCHAR},
+            <if test="remarks != null" >
+                remarks = #{remarks,jdbcType=VARCHAR},
             </if>
             <if test="creatTime != null" >
                 creat_time = #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="relevanceEpic != null" >
+                relevance_epic = #{relevanceEpic,jdbcType=VARCHAR},
             </if>
         </set>
         where req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
@@ -120,14 +151,23 @@
             <if test="jiraKey != null" >
                 and jira_key = #{jiraKey,jdbcType=VARCHAR}
             </if>
+            <if test="issueType != null" >
+                and issue_type = #{issueType,jdbcType=VARCHAR}
+            </if>
+            <if test="assignmentDepartment != null" >
+                and assignment_department = #{assignmentDepartment,jdbcType=VARCHAR}
+            </if>
             <if test="createState != null" >
                 and create_state = #{createState,jdbcType=VARCHAR}
             </if>
-            <if test="failCause != null" >
-                and fail_cause = #{failCause,jdbcType=VARCHAR}
+            <if test="remarks != null" >
+                and remarks = #{remarks,jdbcType=VARCHAR}
             </if>
             <if test="creatTime != null" >
                 and creat_time = #{creatTime,jdbcType=VARCHAR}
+            </if>
+            <if test="relevanceEpic != null" >
+                and relevance_epic = #{relevanceEpic,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

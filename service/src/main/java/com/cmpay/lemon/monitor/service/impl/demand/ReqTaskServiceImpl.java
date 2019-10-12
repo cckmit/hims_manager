@@ -96,14 +96,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     public List<DemandDO> findById(List<String> ids) {
-        LinkedList<DemandDO> demandBOList = new LinkedList<>();
+        LinkedList<DemandDO> demandDOList = new LinkedList<>();
         ids.forEach(m->{
             DemandDO demandDO = demandDao.get(m);
             if(JudgeUtils.isNotNull(demandDO)) {
-                demandBOList.add(demandDO);
+                demandDOList.add(demandDO);
             }
         });
-        return demandBOList;
+        return demandDOList;
     }
 
     @Override
@@ -249,6 +249,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandStateHistoryDO.setReqSts("提出");
             demandStateHistoryDO.setRemarks("新建任务");
             demandStateHistoryDO.setReqNm(demandBO.getReqNm());
+            demandStateHistoryDO.setReqNo(demandBO.getReqNo());
             //获取当前操作员
             demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
@@ -807,7 +808,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updateReqSts(String reqInnerSeq, String reqSts, String reqStsRemarks,String reqNm) {
+    public void updateReqSts(String reqInnerSeq, String reqNo,String reqSts, String reqStsRemarks,String reqNm) {
         if(JudgeUtils.isEmpty(reqInnerSeq)||JudgeUtils.isEmpty(reqSts)) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
@@ -821,6 +822,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setRemarks(reqStsRemarks);
         reqSts = reqStsCheck(reqSts);
         demandStateHistoryDO.setReqSts(reqSts);
+        demandStateHistoryDO.setReqNo(reqNo);
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
         //获取当前操作员
         demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());

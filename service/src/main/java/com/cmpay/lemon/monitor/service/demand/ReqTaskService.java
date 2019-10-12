@@ -122,7 +122,7 @@ public interface ReqTaskService {
     String ZipFiles(File[] srcfile, File zip, boolean flag);
 
 
-    void updateReqSts(String reqNo, String reqSts, String reqStsRemarks,String reqNm);
+    void updateReqSts(String reqInnerSeq,String reqNo, String reqSts, String reqStsRemarks,String reqNm);
 
     String reqStsCheck(String reqSts);
 }

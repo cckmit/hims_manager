@@ -6,6 +6,7 @@ public class UpdateReqStsDTO {
     String reqInnerSeq;
     String reqSts;
     String reqNm;
+    String reqNo;
 
     public String getReqStsRemarks() {
         return reqStsRemarks;
@@ -37,5 +38,13 @@ public class UpdateReqStsDTO {
 
     public void setReqNm(String reqNm) {
         this.reqNm = reqNm;
+    }
+
+    public String getReqNo() {
+        return reqNo;
+    }
+
+    public void setReqNo(String reqNo) {
+        this.reqNo = reqNo;
     }
 }

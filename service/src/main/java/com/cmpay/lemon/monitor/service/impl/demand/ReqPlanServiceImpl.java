@@ -720,15 +720,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     private void SyncJira(DemandDO demand, String reqInnerSeq) {
         DemandJiraDO demandJiraDO = demandJiraDao.get(reqInnerSeq);
+        //若已存在对应jira任务，则更新jira关联表
         if(JudgeUtils.isNotNull(demandJiraDO)){
             demandJiraDO.setReqInnerSeq(demand.getReqInnerSeq());
+            demandJiraDO.setCreatTime(LocalDateTime.now());
             demandJiraDao.insert(demandJiraDO);
         }
+        //更新需求状态历史表
         DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
         demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
         String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
         demandStateHistoryDO.setReqSts(reqSts);
         demandStateHistoryDO.setRemarks("存量变更录入");
+        demandStateHistoryDO.setReqNo(demand.getReqNo());
         demandStateHistoryDO.setReqNm(demand.getReqNm());
         //获取当前操作员
         demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());

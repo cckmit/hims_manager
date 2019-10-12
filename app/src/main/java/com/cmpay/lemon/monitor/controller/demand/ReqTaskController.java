@@ -47,7 +47,6 @@ public class ReqTaskController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
-
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
@@ -105,11 +104,12 @@ public class ReqTaskController {
      */
     @RequestMapping("/updateReqSts")
     public GenericRspDTO updateReqSts(@RequestBody UpdateReqStsDTO updateReqStsDTO) {
-        String getReqInnerSeq = updateReqStsDTO.getReqInnerSeq();
+        String reqInnerSeq = updateReqStsDTO.getReqInnerSeq();
         String reqSts = updateReqStsDTO.getReqSts();
         String reqStsRemarks = updateReqStsDTO.getReqStsRemarks();
         String reqNm = updateReqStsDTO.getReqNm();
-        reqTaskService.updateReqSts(getReqInnerSeq,reqSts,reqStsRemarks,reqNm);
+        String reqNo = updateReqStsDTO.getReqNo();
+        reqTaskService.updateReqSts(reqInnerSeq,reqNo,reqSts,reqStsRemarks,reqNm);
 
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -129,8 +129,8 @@ public class ReqTaskController {
     @PostMapping("/createJiraEpic")
     public GenericRspDTO createJiraEpic(@RequestBody DemandReqDTO reqDTO) {
         List<String> ids = reqDTO.getIds();
-        List<DemandDO> byId = reqTaskService.findById(ids);
-        jiraOperationService.batchCreateEpic(byId);
+        List<DemandDO> demandDOList = reqTaskService.findById(ids);
+        jiraOperationService.batchCreateEpic(demandDOList);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**

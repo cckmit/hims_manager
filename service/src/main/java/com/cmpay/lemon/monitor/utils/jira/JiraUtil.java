@@ -15,7 +15,7 @@ public class JiraUtil {
     // header ContentTypeValue
     private final String CONTENTTYPEVALUE = "application/json";
     // post 请求
-    private final String CREATEISSUEURL= "http://10.9.10.117:28080/rest/api/2/issue";
+    private final String CREATEISSUEURL= "http://10.9.10.117:18080/rest/api/2/issue";
 
     public Response CreateIssue(CreateIssueRequestBO createIssueRequest) {
         System.out.println(createIssueRequest.toString());

@@ -11,4 +11,6 @@ public interface JiraOperationService {
 
     void batchCreateEpic(List<DemandDO> demandDOList);
 
+    void createMasterTask(DemandBO demandBO);
+
 }
