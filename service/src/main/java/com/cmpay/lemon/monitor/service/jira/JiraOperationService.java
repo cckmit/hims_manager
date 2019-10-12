@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.jira;
 
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.DemandJiraDO;
 
 import java.util.List;
 
@@ -11,6 +12,6 @@ public interface JiraOperationService {
 
     void batchCreateEpic(List<DemandDO> demandDOList);
 
-    void createMasterTask(DemandBO demandBO);
+    void createMasterTask(DemandBO demandBO, DemandJiraDO demandJiraDO1);
 
 }

@@ -7,9 +7,11 @@ import com.cmpay.lemon.monitor.bo.jira.CreateIssueEpicRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueMainTaskRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
 import com.cmpay.lemon.monitor.dao.IDemandJiraDao;
+import com.cmpay.lemon.monitor.dao.IDemandJiraDevelopMasterTaskDao;
 import com.cmpay.lemon.monitor.dao.IJiraDepartmentDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.DemandJiraDO;
+import com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO;
 import com.cmpay.lemon.monitor.entity.JiraDepartmentDO;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
@@ -31,6 +33,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     IJiraDepartmentDao jiraDepartmentDao;
     @Autowired
     IDemandJiraDao demandJiraDao;
+    @Autowired
+    IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     //jira项目类型 和包项目
     final static  Integer PROJECTTYPE_CMPAY=10009;
 
@@ -39,21 +43,24 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     final static  Integer ISSUETYPE_DEVELOPMAINTASK=10005;
     //测试主任务
     final static  Integer ISSUETYPE_TESTMAINTASK=10006;
+    //开发主任务
+    final static  String DEVELOPMAINTASK="开发主任务";
+    //开发主任务
+    final static  String TESTMAINTASK="测试主任务";
+    @Async
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void createEpic(DemandBO demandBO)   {
         //jira关联表中已有，并且状态为成功
         DemandJiraDO demandJiraDO1 = demandJiraDao.get(demandBO.getReqInnerSeq());
         if(JudgeUtils.isNotNull(demandJiraDO1)&&demandJiraDO1.getCreateState().equals("success")){
-            //todo 创建开发主任务
-            this.createMasterTask(demandBO);
-            //todo 创建测试主任务
+            this.createMasterTask(demandBO,demandJiraDO1);
             return;
         }
         CreateIssueEpicRequestBO createIssueEpicRequestBO = new CreateIssueEpicRequestBO();
         createIssueEpicRequestBO.setSummary(demandBO.getReqNm());
         createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
-        //设置项目为和包项目，问题类型EPIC
+        //设置项目为和包项目，问题类型开发主任务
         createIssueEpicRequestBO.setIssueType(ISSUETYPE_EPIC);
         createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY);
         createIssueEpicRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
@@ -73,8 +80,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             return;
         }
         createIssueEpicRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
-        JiraUtil jiraUtil = new JiraUtil();
-        Response response = jiraUtil.CreateIssue(createIssueEpicRequestBO);
+        Response response = JiraUtil.CreateIssue(createIssueEpicRequestBO);
         if(response.getStatusCode()==201) {
             CreateIssueResponseBO createIssueResponseBO = response.getBody().as(CreateIssueResponseBO.class);
             DemandJiraDO demandJiraDO = new DemandJiraDO();
@@ -86,6 +92,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             demandJiraDO.setAssignmentDepartment(demandBO.getDevpLeadDept());
             demandJiraDO.setIssueType("Epic");
             demandJiraDO.setCreateState("success");
+            demandJiraDO.setRemarks("");
             //若是jira关联表已存在该项目，则更新
             DemandJiraDO demandJiraDO2 = demandJiraDao.get(demandJiraDO.getReqInnerSeq());
             if(JudgeUtils.isNull(demandJiraDO2)){
@@ -93,9 +100,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             }else{
                 demandJiraDao.update(demandJiraDO);
             }
-            //todo 创建开发主任务
-            this.createMasterTask(demandBO);
-            //todo 创建测试主任务
+            this.createMasterTask(demandBO, demandJiraDO);
 
         }else{
             DemandJiraDO demandJiraDO = new DemandJiraDO();
@@ -113,56 +118,84 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
     }
 
-    private void CreateMainTask(String devpCoorDept, DemandBO demandBO, DemandJiraDO epicDemandJiraDO) {
+    @Async
+    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    public void CreateJiraMasterTask(String devpCoorDept, DemandBO demandBO, DemandJiraDO epicDemandJiraDO, String taskType) {
+        DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO1 = demandJiraDevelopMasterTaskDao.get(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept+"_"+taskType);
+        if(JudgeUtils.isNotNull(demandJiraDevelopMasterTaskDO1)&&demandJiraDevelopMasterTaskDO1.getCreateState().equals("success")){
+            return;
+        }
+        //获取部门管理人员
+        JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(devpCoorDept);
+        //未获得部门管理人员则为配置jira对应数据错误
+        if(JudgeUtils.isNull(jiraDepartmentDO)){
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
 
+            demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
+            demandJiraDevelopMasterTaskDO.setMasterTaskKey(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept+"_"+taskType);
+            demandJiraDevelopMasterTaskDO.setReqNm(demandBO.getReqNm());
+            demandJiraDevelopMasterTaskDO.setCreateState("fail");
+            demandJiraDevelopMasterTaskDO.setRemarks("主导部门错误");
+            demandJiraDevelopMasterTaskDao.insert(demandJiraDevelopMasterTaskDO);
+            return;
+        }
         CreateIssueMainTaskRequestBO createMainTaskRequestBO = new CreateIssueMainTaskRequestBO();
         createMainTaskRequestBO.setSummary(demandBO.getReqNm());
         createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
-        //设置项目为和包项目，问题类型EPIC
-        createMainTaskRequestBO.setIssueType(ISSUETYPE_DEVELOPMAINTASK);
+        //设置项目为和包项目，问题类型主任务
+        if(taskType.equals(DEVELOPMAINTASK)){
+            createMainTaskRequestBO.setIssueType(ISSUETYPE_DEVELOPMAINTASK);
+        }else{
+            createMainTaskRequestBO.setIssueType(ISSUETYPE_TESTMAINTASK);
+        }
+
         createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY);
         createMainTaskRequestBO.setDevpLeadDept(devpCoorDept);
         createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
         createMainTaskRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
-        JiraUtil jiraUtil = new JiraUtil();
-        Response response = jiraUtil.CreateIssue(createMainTaskRequestBO);
+        createMainTaskRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
+        Response response = JiraUtil.CreateIssue(createMainTaskRequestBO);
         if(response.getStatusCode()==201) {
             CreateIssueResponseBO createIssueResponseBO = response.getBody().as(CreateIssueResponseBO.class);
-            DemandJiraDO demandJiraDO = new DemandJiraDO();
-            demandJiraDO.setCreatTime(LocalDateTime.now());
-            demandJiraDO.setJiraId(createIssueResponseBO.getId());
-            demandJiraDO.setJiraKey(createIssueResponseBO.getKey());
-            demandJiraDO.setReqInnerSeq(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept);
-            demandJiraDO.setReqNm(demandBO.getReqNm());
-            demandJiraDO.setAssignmentDepartment(demandBO.getDevpLeadDept());
-            demandJiraDO.setIssueType("开发主任务");
-            demandJiraDO.setCreateState("success");
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
+            demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
+            demandJiraDevelopMasterTaskDO.setJiraId(createIssueResponseBO.getId());
+            demandJiraDevelopMasterTaskDO.setJiraKey(createIssueResponseBO.getKey());
+            demandJiraDevelopMasterTaskDO.setMasterTaskKey(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept+"_"+taskType);
+            demandJiraDevelopMasterTaskDO.setReqNm(demandBO.getReqNm());
+            demandJiraDevelopMasterTaskDO.setAssignmentDepartment(devpCoorDept);
+            demandJiraDevelopMasterTaskDO.setIssueType(taskType);
+            demandJiraDevelopMasterTaskDO.setCreateState("success");
+            demandJiraDevelopMasterTaskDO.setRemarks("");
             //设置关联Epic
-            demandJiraDO.setRelevanceEpic(epicDemandJiraDO.getJiraKey());
+            demandJiraDevelopMasterTaskDO.setRelevanceEpic(epicDemandJiraDO.getJiraKey());
             //若是jira关联表已存在该项目，则更新
-            DemandJiraDO demandJiraDO2 = demandJiraDao.get(demandJiraDO.getReqInnerSeq());
-            if (JudgeUtils.isNull(demandJiraDO2)) {
-                demandJiraDao.insert(demandJiraDO);
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO2 = demandJiraDevelopMasterTaskDao.get(demandJiraDevelopMasterTaskDO.getMasterTaskKey());
+            if (JudgeUtils.isNull(demandJiraDevelopMasterTaskDO2)) {
+                demandJiraDevelopMasterTaskDao.insert(demandJiraDevelopMasterTaskDO);
             } else {
-                demandJiraDao.update(demandJiraDO);
+                demandJiraDevelopMasterTaskDao.update(demandJiraDevelopMasterTaskDO);
             }
         }else{
-            DemandJiraDO demandJiraDO = new DemandJiraDO();
-            demandJiraDO.setCreatTime(LocalDateTime.now());
-            demandJiraDO.setReqInnerSeq(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept);
-            demandJiraDO.setReqNm(demandBO.getReqNm());
-            demandJiraDO.setCreateState("fail");
-            demandJiraDO.setRemarks(response.getBody().print());
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
+            demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
+            demandJiraDevelopMasterTaskDO.setAssignmentDepartment(devpCoorDept);
+            demandJiraDevelopMasterTaskDO.setMasterTaskKey(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept+"_"+taskType);
+            demandJiraDevelopMasterTaskDO.setReqNm(demandBO.getReqNm());
+            demandJiraDevelopMasterTaskDO.setCreateState("fail");
+            demandJiraDevelopMasterTaskDO.setRemarks(response.getBody().print());
             //设置关联Epic
-            demandJiraDO.setRelevanceEpic(epicDemandJiraDO.getJiraKey());
-            DemandJiraDO demandJiraDO2 = demandJiraDao.get(demandJiraDO.getReqInnerSeq());
-            if(JudgeUtils.isNull(demandJiraDO2)){
-                demandJiraDao.insert(demandJiraDO);
-            }else{
-                demandJiraDao.update(demandJiraDO);
+            demandJiraDevelopMasterTaskDO.setRelevanceEpic(epicDemandJiraDO.getJiraKey());
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO2 = demandJiraDevelopMasterTaskDao.get(demandJiraDevelopMasterTaskDO.getMasterTaskKey());
+            if (JudgeUtils.isNull(demandJiraDevelopMasterTaskDO2)) {
+                demandJiraDevelopMasterTaskDao.insert(demandJiraDevelopMasterTaskDO);
+            } else {
+                demandJiraDevelopMasterTaskDao.update(demandJiraDevelopMasterTaskDO);
             }
         }
     }
+
+
 
     @Async
     @Override
@@ -175,16 +208,21 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     }
 
     @Override
-    public void createMasterTask(DemandBO demandBO) {
+    public void createMasterTask(DemandBO demandBO, DemandJiraDO demandJiraDO) {
         //创建开发部门链表
         List<String> developmentDepartmenList = new ArrayList<>();
-        developmentDepartmenList.add(demandBO.getDevpLeadDept());
-        String[] split = demandBO.getDevpCoorDept().split(",");
         //若有开发配合部门
-        if(JudgeUtils.isNotEmpty(split)) {
+        if(demandBO.getDevpCoorDept()!=null&&demandBO.getDevpCoorDept()!="") {
+            String[] split = demandBO.getDevpCoorDept().split(",");
             Arrays.stream(split).forEach(arr -> developmentDepartmenList.add(arr));
         }
-        System.err.println(developmentDepartmenList);
-
+        //添加开发主导部门
+        developmentDepartmenList.add(demandBO.getDevpLeadDept());
+        developmentDepartmenList.forEach(m->{
+            this.CreateJiraMasterTask(m,demandBO,demandJiraDO,DEVELOPMAINTASK);
+        });
+        this.CreateJiraMasterTask("产品测试部",demandBO,demandJiraDO,TESTMAINTASK);
     }
+
+
 }

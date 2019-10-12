@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandJiraDevelopMasterTaskDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO" >
+        <id column="master_task_key" property="masterTaskKey" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="jira_id" property="jiraId" jdbcType="VARCHAR" />
+        <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="issue_type" property="issueType" jdbcType="VARCHAR" />
+        <result column="assignment_department" property="assignmentDepartment" jdbcType="VARCHAR" />
+        <result column="create_state" property="createState" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+        <result column="relevance_epic" property="relevanceEpic" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        master_task_key, req_nm, jira_id, jira_key, issue_type, assignment_department, create_state, 
+        remarks, creat_time, relevance_epic
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_jira_develop_master_task
+        where master_task_key = #{masterTaskKey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_demand_jira_develop_master_task
+        where master_task_key = #{masterTaskKey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO" >
+        insert into t_demand_jira_develop_master_task
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="masterTaskKey != null" >
+                master_task_key,
+            </if>
+            <if test="reqNm != null" >
+                req_nm,
+            </if>
+            <if test="jiraId != null" >
+                jira_id,
+            </if>
+            <if test="jiraKey != null" >
+                jira_key,
+            </if>
+            <if test="issueType != null" >
+                issue_type,
+            </if>
+            <if test="assignmentDepartment != null" >
+                assignment_department,
+            </if>
+            <if test="createState != null" >
+                create_state,
+            </if>
+            <if test="remarks != null" >
+                remarks,
+            </if>
+            <if test="creatTime != null" >
+                creat_time,
+            </if>
+            <if test="relevanceEpic != null" >
+                relevance_epic,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="masterTaskKey != null" >
+                #{masterTaskKey,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraId != null" >
+                #{jiraId,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraKey != null" >
+                #{jiraKey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueType != null" >
+                #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="assignmentDepartment != null" >
+                #{assignmentDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="createState != null" >
+                #{createState,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null" >
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="creatTime != null" >
+                #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="relevanceEpic != null" >
+                #{relevanceEpic,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO" >
+        update t_demand_jira_develop_master_task
+        <set >
+            <if test="reqNm != null" >
+                req_nm = #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraId != null" >
+                jira_id = #{jiraId,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraKey != null" >
+                jira_key = #{jiraKey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueType != null" >
+                issue_type = #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="assignmentDepartment != null" >
+                assignment_department = #{assignmentDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="createState != null" >
+                create_state = #{createState,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null" >
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="creatTime != null" >
+                creat_time = #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="relevanceEpic != null" >
+                relevance_epic = #{relevanceEpic,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where master_task_key = #{masterTaskKey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_jira_develop_master_task
+        <where >
+            <if test="masterTaskKey != null" >
+                and master_task_key = #{masterTaskKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNm != null" >
+                and req_nm = #{reqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraId != null" >
+                and jira_id = #{jiraId,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraKey != null" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueType != null" >
+                and issue_type = #{issueType,jdbcType=VARCHAR}
+            </if>
+            <if test="assignmentDepartment != null" >
+                and assignment_department = #{assignmentDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="createState != null" >
+                and create_state = #{createState,jdbcType=VARCHAR}
+            </if>
+            <if test="remarks != null" >
+                and remarks = #{remarks,jdbcType=VARCHAR}
+            </if>
+            <if test="creatTime != null" >
+                and creat_time = #{creatTime,jdbcType=VARCHAR}
+            </if>
+            <if test="relevanceEpic != null" >
+                and relevance_epic = #{relevanceEpic,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

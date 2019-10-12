@@ -7,17 +7,17 @@ import static io.restassured.RestAssured.given;
 
 public class JiraUtil {
     // header Authorization
-    private final String AUTHORIZATION = "Authorization";
+    private final static String AUTHORIZATION = "Authorization";
     //Authorization value
-    private final String AUTHORIZATIONVALUE = "Basic YWRtaW46SGlzdW5wYXlAMjAxOQ==";
+    private final static String AUTHORIZATIONVALUE = "Basic YWRtaW46SGlzdW5wYXlAMjAxOQ==";
     // header ContentType
-    private final String CONTENTTYPE = "Content-Type";
+    private final  static String CONTENTTYPE = "Content-Type";
     // header ContentTypeValue
-    private final String CONTENTTYPEVALUE = "application/json";
+    private final static String CONTENTTYPEVALUE = "application/json";
     // post 请求
-    private final String CREATEISSUEURL= "http://10.9.10.117:18080/rest/api/2/issue";
+    private final static String CREATEISSUEURL= "http://10.9.10.117:18080/rest/api/2/issue";
 
-    public Response CreateIssue(CreateIssueRequestBO createIssueRequest) {
+    public static Response CreateIssue(CreateIssueRequestBO createIssueRequest) {
         System.out.println(createIssueRequest.toString());
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
