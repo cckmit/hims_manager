@@ -95,6 +95,15 @@ public class DemandReqDTO extends PageableRspDTO {
      * 页面大小
      */
     private int pageSize;
+    private String orderDirection;
+
+    public String getOrderDirection() {
+        return orderDirection;
+    }
+
+    public void setOrderDirection(String orderDirection) {
+        this.orderDirection = orderDirection;
+    }
 
     @Override
     public int getPageNum() {

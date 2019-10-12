@@ -14,6 +14,9 @@ import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author: zhou_xiong
  * 需求周反馈
@@ -65,6 +68,10 @@ public class ReqWeekController {
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
         System.out.println(demandDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = df.format(date);
+        demandBO.setRiskFeedbackTm(time);
         reqPlanService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }

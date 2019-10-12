@@ -107,6 +107,11 @@ public class ReqPlanController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
+    @RequestMapping("/rebooting")
+    public GenericRspDTO rebooting(@RequestBody DemandReqDTO reqDTO) {
+        reqPlanService.rebooting(reqDTO.getIds());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
     /**
      * 更新需求信息
      *

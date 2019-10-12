@@ -46,6 +46,10 @@ public class MonitorConstants {
      */
     public static final String REQTASK_PATH = BASE_URI + "/task";
     /**
+     * 需求管理uri
+     */
+    public static final String REQINDEX_PATH = BASE_URI + "/index2";
+    /**
      * 需求计划uri
      */
     public static final String REQPLAN_PATH = BASE_URI + "/plan";

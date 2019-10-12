@@ -88,6 +88,10 @@ public interface ReqPlanService {
      */
     void changeReq(String req_impl_mon);
     /**
+     * 需求重新启动
+     */
+    void rebooting(List<String> ids);
+    /**
      * 需求文档上传
      */
     void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files,HttpServletRequest request);

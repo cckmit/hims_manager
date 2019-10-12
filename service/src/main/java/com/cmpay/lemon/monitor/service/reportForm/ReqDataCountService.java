@@ -1,6 +1,8 @@
 package com.cmpay.lemon.monitor.service.reportForm;
 
 
+import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.bo.ReqMngBO;
 
@@ -83,4 +85,5 @@ public interface ReqDataCountService {
     void downloadDemandCompletionReport(String month, HttpServletResponse response);
 
     void downloadBaseOwnershipDepartmentStatistics(String month, HttpServletResponse response);
+    DemandRspBO findDemand(DemandBO demandBO);
 }

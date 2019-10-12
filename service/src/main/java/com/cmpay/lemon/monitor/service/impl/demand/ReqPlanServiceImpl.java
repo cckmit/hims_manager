@@ -215,6 +215,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public void delete(String req_inner_seq) {
         try {
             demandDao.delete(req_inner_seq);
+            demandJiraDao.delete(req_inner_seq);
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
         }
@@ -718,6 +719,78 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 //        }
     }
 
+    /**
+     * 需求重新启动
+     * @param  ids 需求内部编号
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void rebooting(List<String> ids){
+        try {
+            //获取当前月时间
+            Date date = new Date();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
+            String month = df.format(date);
+            System.err.println("当前月份："+month);
+            //获取登录用户ID
+            String update_user = SecurityUtils.getLoginUserId();
+            for (int i = 0; i < ids.size(); i++) {
+                //根据内部编号查询需求信息
+                DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
+                System.err.println("需求状态：="+demand.getReqSts());
+                //判断需求是否为取消，暂停需求，不是则跳过
+                if(!REQSUSPEND.equals(demand.getReqSts())&&!REQCANCEL.equals(demand.getReqSts())){
+                    System.err.println("此需求不是异常需求");
+                    continue;
+                }
+                //需求状态变为进行中
+                demand.setReqSts("20");
+                // 需求类型变为存量
+                demand.setReqType("02");
+                // 需求实施月份，变更为当前月
+                demand.setReqImplMon(month);
+                // 月初阶段等于需求当前阶段
+                demand.setPreMonPeriod(demand.getPreCurPeriod());
+                //月初备注置空
+                demand.setMonRemark("");
+                //月底备注置空
+                demand.setEndMonRemark("");
+                demand.setEndFeedbackTm("");
+                // 工作量已录入总量
+                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                demand.setInputWorkload(inputWorkLoad);
+                demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
+                // 本月录入，计入上月录入
+                demand.setLastInputWorkload(demand.getMonInputWorkload());
+                // 本月录入0
+                demand.setMonInputWorkload(0);
+                // 更新人，更新时间
+                demand.setUpdateUser(update_user);
+                demand.setUpdateTime(new Date());
+
+                DemandDO vo = new DemandDO();
+                vo.setReqNm(demand.getReqNm());
+                vo.setReqNo(demand.getReqNo());
+                vo.setReqImplMon(demand.getReqImplMon());
+                //判断该需求是否当前月已存在
+                List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
+                //如果当前月需求不存在，则新增，否则更新需求信息
+                if (dem.size() == 0) {
+                    String reqInnerSeq = demand.getReqInnerSeq();
+                    demand.setReqInnerSeq(getNextInnerSeq());
+                    demandDao.insertStockReq(demand);
+                    SyncJira(demand, reqInnerSeq);
+                } else {
+                    demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+                    demandDao.updateStockReq(demand);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("需求查询启动：" + e.getMessage());
+            BusinessException.throwBusinessException("异常需求查询启动失败:" + e.getMessage());
+        }
+    }
     private void SyncJira(DemandDO demand, String reqInnerSeq) {
         DemandJiraDO demandJiraDO = demandJiraDao.get(reqInnerSeq);
         //若已存在对应jira任务，则更新jira关联表
