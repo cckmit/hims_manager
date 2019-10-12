@@ -101,6 +101,7 @@
 		<result property="creatUser" jdbcType="VARCHAR" column="creat_user" />
 		<result property="updateUser" jdbcType="VARCHAR" column="update_user" />
 		<result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
+		<result property="devpResMng" jdbcType="VARCHAR" column="devp_res_mng" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -488,13 +489,8 @@
 	</select>
 
 	<select id="find" resultMap="BaseResultMap" parameterType="map">
-		select req_inner_seq,
-		req_no,
-		req_nm,
-		pre_cur_period,
-		devp_lead_dept,
-		exp_prd_release_tm,
-		req_abnor_type
+		select
+		<include refid="Base_Column_List1" />
 		from t_demand_info
 		<where>
 			<if test="reqImplMon != null and reqImplMon != ''">
