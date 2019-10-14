@@ -104,7 +104,7 @@ public interface Constant {
     /**
      * @msg 导出路径
      */
-    String IMPORT_PATH = "/home/hims/temp/import/";
+    String IMPORT_PATH = "/home/devadm/temp/import/";
     /**
      * @msg 项目文档路径
      */

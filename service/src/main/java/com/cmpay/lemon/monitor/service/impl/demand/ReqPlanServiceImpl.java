@@ -1017,6 +1017,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String importFilePath = null;
         Map<String, Object> map = new HashMap<String, Object>();
         Vector<File> attachFiles = new Vector<File>();
+        System.err.println(files);
+        System.err.println(files[0].getSize());
         if (files != null && files[0].getSize() != 0) {
             // 处理多文件上传
             File fl = null;
@@ -1037,6 +1039,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                         }
                         // 文件保存路径
                         importFilePath = loacalpath + fileName;
+                        System.err.println(importFilePath);
                         // 转存文件
                         fl = new File(importFilePath);
                         attachFileNames = fl.getAbsolutePath().split(";");
@@ -1048,6 +1051,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                                 attachFileNames[i].replace("\\", "/");
                             }
                         }
+                        System.err.println(fl);
                         // 保存本地svn
                         importfile.transferTo(fl);
                         File newWordLod =null;

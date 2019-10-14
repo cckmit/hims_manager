@@ -219,7 +219,6 @@ public class ReqPlanController {
     @PostMapping("/batch/import")
     public GenericRspDTO<NoBody> batchImport(@RequestParam("file") MultipartFile[] files,HttpServletRequest request, GenericDTO<NoBody> req) {
         FILES=files;
-        System.err.println("文件上传"+FILES[0].getSize());
         return GenericRspDTO.newSuccessInstance();
     }
 }
