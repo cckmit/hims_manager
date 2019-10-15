@@ -40,7 +40,6 @@ public class ReqPlanController {
     private ReqPlanService reqPlanService;
     @Autowired
     private DictionaryService dictionaryService;
-    private static  MultipartFile[] FILES = null;
 
     /**
      * 分页需求列表
@@ -205,9 +204,9 @@ public class ReqPlanController {
      */
     @PostMapping("uploadProjrctFile")
     public GenericRspDTO uploadProjrctFile(@RequestBody ProjectStartReqDTO reqDTO,HttpServletRequest request) {
-        ProjectStartBO ProjectStartBO = new ProjectStartBO();
-        BeanConvertUtils.convert(ProjectStartBO, reqDTO);
-        reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
+//        ProjectStartBO ProjectStartBO = new ProjectStartBO();
+//        BeanConvertUtils.convert(ProjectStartBO, reqDTO);
+//        reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
@@ -217,8 +216,27 @@ public class ReqPlanController {
      * @return
      */
     @PostMapping("/batch/import")
-    public GenericRspDTO<NoBody> batchImport(@RequestParam("file") MultipartFile[] files,HttpServletRequest request, GenericDTO<NoBody> req) {
-        FILES=files;
-        return GenericRspDTO.newSuccessInstance();
+    public GenericRspDTO batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
+        MultipartFile[] FILES = files.toArray(new MultipartFile[files.size()]);
+        System.err.println(FILES[0].getSize());
+        System.err.println(FILES[0].getOriginalFilename());
+        String uploadPeriod = request.getParameter("uploadPeriod");
+        String innerReqSeq = request.getParameter("reqInnerSeq");
+        String reqNo = request.getParameter("reqNo");
+        String reqNm = request.getParameter("reqNm");
+        String preCurPeriod = request.getParameter("preCurPeriod");
+        String copyTo = request.getParameter("copyTo");
+        System.err.println(uploadPeriod + "===" + innerReqSeq+"=="+reqNo+"="+reqNm+"="+preCurPeriod+"="+copyTo);
+        ProjectStartBO ProjectStartBO = new ProjectStartBO();
+        ProjectStartBO.setReqInnerSeq(request.getParameter("reqInnerSeq"));
+        ProjectStartBO.setReqNm(request.getParameter("reqNm"));
+        ProjectStartBO.setReqNo(request.getParameter("reqNo"));
+        ProjectStartBO.setSendTo(request.getParameter("sendTo"));
+        ProjectStartBO.setCopyTo(request.getParameter("copyTo"));
+        ProjectStartBO.setPreCurPeriod(request.getParameter("preCurPeriod"));
+        ProjectStartBO.setUploadPeriod(request.getParameter("uploadPeriod"));
+        reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 }
