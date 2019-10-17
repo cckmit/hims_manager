@@ -1,87 +1,48 @@
-/*
- * @ClassName CenterDO
- * @Description 
- * @version 1.0
- * @Date 2019-07-25 11:01:18
- */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.dto;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
-import com.cmpay.framework.data.BaseDO;
-import com.cmpay.lemon.framework.annotation.DataObject;
+import com.cmpay.framework.data.response.PageableRspDTO;
 
-import java.sql.Timestamp;
 import java.sql.Date;
 
-@DataObject
-public class ProductionDO extends BaseDO {
-    @Excel(name = "投产编号")
+/**
+ * @author: zhou_xiong
+ */
+public class ProductionConditionReqDTO extends PageableRspDTO {
     private String proNumber;
-    @Excel(name = "需求名称及内容简述")
     private String proNeed;
-    @Excel(name = "投产类型")
     private String proType;
+    private Date proDate;
     private Date proDateStart;
     private Date proDateEnd;
-    @Excel(name = "计划投产日期")
-    private Date proDate;
-    @Excel(name = "申请部门")
     private String applicationDept;
-    @Excel(name = "投产申请人")
     private String proApplicant;
-    @Excel(name = "申请人联系方式")
     private String applicantTel;
-    @Excel(name = "产品所属模块")
     private String proModule;
-    @Excel(name = "业务需求提出人")
     private String businessPrincipal;
-    @Excel(name = "基地负责人")
     private String basePrincipal;
-    @Excel(name = "产品经理")
     private String proManager;
-    @Excel(name = "需求状态")
     private String proStatus;
-    @Excel(name = "是否更新数据库数据")
     private String isUpDatabase;
-    @Excel(name = "是否更新数据库（表）结构（包含DDL语句）")
     private String isUpStructure;
-    @Excel(name = "投产后是否需要运维监控")
     private String proOperation;
-    @Excel(name = "是否涉及证书")
     private String isRefCerificate;
-    @Excel(name = "是否预投产验证")
     private String isAdvanceProduction;
-    @Excel(name = "不能预投产验证原因")
     private String notAdvanceReason;
-    @Excel(name = "预投产验证结果")
     private String proAdvanceResult;
-    @Excel(name = "验证人")
-    private String identifier;
-    @Excel(name = "验证人联系方式")
-    private String identifierTel;
-    @Excel(name = "验证复核人")
-    private String proChecker;
-    @Excel(name = "验证复核人联系方式")
-    private String checkerTel;
-    @Excel(name = "生产验证方式")
-    private String validation;
-    @Excel(name = "开发负责人")
-    private String developmentLeader;
-    @Excel(name = "审批人")
-    private String approver;
-    @Excel(name = "版本更新操作人")
-    private String updateOperator;
-    @Excel(name = "备注")
-    private String remark;
-    @Excel(name = "不能走正常投产原因")
-    private String unusualReasonPhrase;
-    @Excel(name = "当天不投产的影响")
     private String notProductionImpact;
+    private String identifier;
+    private String identifierTel;
+    private String proChecker;
+    private String checkerTel;
+    private String validation;
+    private String developmentLeader;
+    private String approver;
+    private String updateOperator;
+    private String remark;
+    private String unusualReasonPhrase;
     private String urgentReasonPhrase;
     private String productionDeploymentResult;
     private String isOperationProduction;
-    private String mailLeader;//开发负责人邮箱
-    private String svntabName;//SVN表名称
     /*
      * 紧急更新
      */
@@ -91,6 +52,9 @@ public class ProductionDO extends BaseDO {
     private String influenceUseReason;
     private String influenceUseInf;
     private String operatingTime;
+
+    private String proOperator;
+    private String operationType;
     /*
      * 审核邮件
      */
@@ -102,18 +66,35 @@ public class ProductionDO extends BaseDO {
     private String deptName;
     private String deptManagerName;
     private String developmentDept;
-    /**
-     * 投产包
-     */
-    private String proPkgStatus;
-    private Timestamp proPkgTime;
-    private String proPkgName;
-    /**
-     * 是否有回退方案
-     */
-    private String isFallback;
 
-    public ProductionDO() {
+    private String proPkgStatus;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+
+    @Override
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    @Override
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    @Override
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
     public String getProNumber() {
@@ -140,6 +121,14 @@ public class ProductionDO extends BaseDO {
         this.proType = proType;
     }
 
+    public Date getProDate() {
+        return proDate;
+    }
+
+    public void setProDate(Date proDate) {
+        this.proDate = proDate;
+    }
+
     public Date getProDateStart() {
         return proDateStart;
     }
@@ -154,14 +143,6 @@ public class ProductionDO extends BaseDO {
 
     public void setProDateEnd(Date proDateEnd) {
         this.proDateEnd = proDateEnd;
-    }
-
-    public Date getProDate() {
-        return proDate;
-    }
-
-    public void setProDate(Date proDate) {
-        this.proDate = proDate;
     }
 
     public String getApplicationDept() {
@@ -396,22 +377,6 @@ public class ProductionDO extends BaseDO {
         this.isOperationProduction = isOperationProduction;
     }
 
-    public String getMailLeader() {
-        return mailLeader;
-    }
-
-    public void setMailLeader(String mailLeader) {
-        this.mailLeader = mailLeader;
-    }
-
-    public String getSvntabName() {
-        return svntabName;
-    }
-
-    public void setSvntabName(String svntabName) {
-        this.svntabName = svntabName;
-    }
-
     public String getCompletionUpdate() {
         return completionUpdate;
     }
@@ -458,6 +423,22 @@ public class ProductionDO extends BaseDO {
 
     public void setOperatingTime(String operatingTime) {
         this.operatingTime = operatingTime;
+    }
+
+    public String getProOperator() {
+        return proOperator;
+    }
+
+    public void setProOperator(String proOperator) {
+        this.proOperator = proOperator;
+    }
+
+    public String getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
     }
 
     public String getMailRecipient() {
@@ -508,85 +489,4 @@ public class ProductionDO extends BaseDO {
         this.proPkgStatus = proPkgStatus;
     }
 
-    public Timestamp getProPkgTime() {
-        return proPkgTime;
-    }
-
-    public void setProPkgTime(Timestamp proPkgTime) {
-        this.proPkgTime = proPkgTime;
-    }
-
-    public String getProPkgName() {
-        return proPkgName;
-    }
-
-    public void setProPkgName(String proPkgName) {
-        this.proPkgName = proPkgName;
-    }
-
-    public String getIsFallback() {
-        return isFallback;
-    }
-
-    public void setIsFallback(String isFallback) {
-        this.isFallback = isFallback;
-    }
-
-    @Override
-    public String toString() {
-        return "ProductionDO{" +
-                "proNumber='" + proNumber + '\'' +
-                ", proNeed='" + proNeed + '\'' +
-                ", proType='" + proType + '\'' +
-                ", proDateStart=" + proDateStart +
-                ", proDateEnd=" + proDateEnd +
-                ", proDate=" + proDate +
-                ", applicationDept='" + applicationDept + '\'' +
-                ", proApplicant='" + proApplicant + '\'' +
-                ", applicantTel='" + applicantTel + '\'' +
-                ", proModule='" + proModule + '\'' +
-                ", businessPrincipal='" + businessPrincipal + '\'' +
-                ", basePrincipal='" + basePrincipal + '\'' +
-                ", proManager='" + proManager + '\'' +
-                ", proStatus='" + proStatus + '\'' +
-                ", isUpDatabase='" + isUpDatabase + '\'' +
-                ", isUpStructure='" + isUpStructure + '\'' +
-                ", proOperation='" + proOperation + '\'' +
-                ", isRefCerificate='" + isRefCerificate + '\'' +
-                ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
-                ", notAdvanceReason='" + notAdvanceReason + '\'' +
-                ", proAdvanceResult='" + proAdvanceResult + '\'' +
-                ", notProductionImpact='" + notProductionImpact + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", identifierTel='" + identifierTel + '\'' +
-                ", proChecker='" + proChecker + '\'' +
-                ", checkerTel='" + checkerTel + '\'' +
-                ", validation='" + validation + '\'' +
-                ", developmentLeader='" + developmentLeader + '\'' +
-                ", approver='" + approver + '\'' +
-                ", updateOperator='" + updateOperator + '\'' +
-                ", remark='" + remark + '\'' +
-                ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
-                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
-                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
-                ", isOperationProduction='" + isOperationProduction + '\'' +
-                ", mailLeader='" + mailLeader + '\'' +
-                ", svntabName='" + svntabName + '\'' +
-                ", completionUpdate='" + completionUpdate + '\'' +
-                ", earlyImplementation='" + earlyImplementation + '\'' +
-                ", influenceUse='" + influenceUse + '\'' +
-                ", influenceUseReason='" + influenceUseReason + '\'' +
-                ", influenceUseInf='" + influenceUseInf + '\'' +
-                ", operatingTime='" + operatingTime + '\'' +
-                ", mailRecipient='" + mailRecipient + '\'' +
-                ", mailCopyPerson='" + mailCopyPerson + '\'' +
-                ", deptName='" + deptName + '\'' +
-                ", deptManagerName='" + deptManagerName + '\'' +
-                ", developmentDept='" + developmentDept + '\'' +
-                ", proPkgStatus='" + proPkgStatus + '\'' +
-                ", proPkgTime=" + proPkgTime +
-                ", proPkgName='" + proPkgName + '\'' +
-                ", isFallback='" + isFallback + '\'' +
-                '}';
-    }
 }

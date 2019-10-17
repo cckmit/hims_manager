@@ -66,6 +66,11 @@ public class MonitorConstants {
      */
     public static final String REQWORK_PATH = BASE_URI + "/workload";
 
+    /**
+     * 投产查询管理uri
+     */
+    public static final String Production_PATH = BASE_URI + "/production";
+
     public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**
      * 字典uri

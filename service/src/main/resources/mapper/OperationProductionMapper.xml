@@ -1,13 +1,174 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cmpay.lemon.monitor.dao.IOperationProductionDao">
-   <resultMap id="mm" type="com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO">
+
+    <resultMap id="rm" type="com.cmpay.lemon.monitor.entity.ProductionDO">
+        <result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>
+        <result property="proNeed"         jdbcType="VARCHAR"      column="pro_need"/>
+        <result property="proType"         jdbcType="VARCHAR"      column="pro_type"/>
+        <result property="proDate"  jdbcType="DATE"      column="pro_date"/>
+        <result property="proDateStart"  jdbcType="DATE"      column="pro_date_start"/>
+        <result property="proDateEnd"  jdbcType="DATE"      column="pro_date_end"/>
+        <result property="applicationDept"  jdbcType="VARCHAR"      column="application_dept"/>
+        <result property="proApplicant"  jdbcType="VARCHAR"      column="pro_applicant"/>
+        <result property="applicantTel"       jdbcType="VARCHAR"      column="applicant_tel"/>
+        <result property="proModule"       jdbcType="VARCHAR"      column="pro_module"/>
+        <result property="businessPrincipal"       jdbcType="VARCHAR"      column="business_principal"/>
+        <result property="basePrincipal"   jdbcType="VARCHAR"      column="base_principal"/>
+        <result property="proManager"   jdbcType="VARCHAR"      column="pro_manager"/>
+        <result property="proStatus"   jdbcType="VARCHAR"      column="pro_status"/>
+        <result property="isUpDatabase"   jdbcType="VARCHAR"      column="is_up_database"/>
+        <result property="isUpStructure"   jdbcType="VARCHAR"      column="is_up_structure"/>
+        <result property="proOperation"   jdbcType="VARCHAR"      column="pro_operation"/>
+        <result property="isRefCerificate"   jdbcType="VARCHAR"      column="is_ref_cerificate"/>
+        <result property="isAdvanceProduction"   jdbcType="VARCHAR"      column="is_advance_production"/>
+        <result property="notAdvanceReason"   jdbcType="VARCHAR"      column="not_advance_reason"/>
+        <result property="proAdvanceResult"   jdbcType="VARCHAR"      column="pro_advance_result"/>
+        <result property="notProductionImpact"   jdbcType="VARCHAR"      column="not_production_impact"/>
+        <result property="identifier"   jdbcType="VARCHAR"      column="identifier"/>
+        <result property="identifierTel"   jdbcType="VARCHAR"      column="identifier_tel"/>
+        <result property="proChecker"   jdbcType="VARCHAR"      column="pro_checker"/>
+        <result property="checkerTel"   jdbcType="VARCHAR"      column="checker_tel"/>
+        <result property="validation"   jdbcType="VARCHAR"      column="validation"/>
+        <result property="developmentLeader"   jdbcType="VARCHAR"      column="development_leader"/>
+        <result property="approver"   jdbcType="VARCHAR"      column="approver"/>
+        <result property="updateOperator"   jdbcType="VARCHAR"      column="update_operator"/>
+        <result property="remark"   jdbcType="VARCHAR"      column="remark"/>
+        <result property="unusualReasonPhrase"   jdbcType="VARCHAR"      column="unusual_reason_phrase"/>
+        <result property="urgentReasonPhrase"   jdbcType="VARCHAR"      column="urgent_reason_phrase"/>
+        <result property="completionUpdate"   jdbcType="VARCHAR"      column="completion_update"/>
+        <result property="earlyImplementation"   jdbcType="VARCHAR"      column="early_implementation"/>
+        <result property="influenceUse"   jdbcType="VARCHAR"      column="influence_use"/>
+        <result property="influenceUseReason"   jdbcType="VARCHAR"      column="influence_use_reason"/>
+        <result property="influenceUseInf"   jdbcType="VARCHAR"      column="influence_use_inf"/>
+        <result property="operatingTime"   jdbcType="VARCHAR"      column="operating_time"/>
+        <result property="productionDeploymentResult"   jdbcType="VARCHAR"      column="production_deployment_result"/>
+        <result property="isOperationProduction"   jdbcType="VARCHAR"      column="is_operation_production"/>
+        <result property="mailRecipient"   jdbcType="VARCHAR"      column="mail_recipient"/>
+        <result property="mailCopyPerson"   jdbcType="VARCHAR"      column="mail_copy_person"/>
+        <result property="deptName"   jdbcType="VARCHAR"      column="dept_name"/>
+        <result property="deptManagerName"   jdbcType="VARCHAR"      column="dept_manager_name"/>
+        <result property="proPkgStatus" jdbcType="VARCHAR" column="pro_pkg_status"/>
+        <result property="proPkgTime" jdbcType="TIMESTAMP" column="pro_pkg_time"/>
+        <result property="proPkgName" jdbcType="VARCHAR" column="pro_pkg_name"/>
+        <result property="mailLeader" jdbcType="VARCHAR" column="mail_leader" />
+        <result property="svntabName" jdbcType="VARCHAR" column="svntab_name" />
+    </resultMap>
+
+    <!--<resultMap id="pm" type="com.hisun.persistence.beans.ProductionBean">-->
+        <!--<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>-->
+        <!--<result property="proStatus"   jdbcType="VARCHAR"      column="pro_status"/>-->
+    <!--</resultMap>-->
+
+    <resultMap id="mm" type="com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO">
         <result property="mail_group_id"         jdbcType="VARCHAR"      column="mail_group_id"/>
         <result property="mail_group_name"         jdbcType="VARCHAR"      column="mail_group_name"/>
         <result property="mail_user"         jdbcType="VARCHAR"      column="mail_user"/>
         <result property="mail_group_desc"  jdbcType="VARCHAR"      column="mail_group_desc"/>
         <result property="group_time"  jdbcType="DATE"      column="group_time"/>
-   </resultMap>
+    </resultMap>
+
+    <!--<resultMap id="pbm" type="com.hisun.persistence.beans.ProblemBean">-->
+        <!--<result property="problemSerialNumber"         jdbcType="VARCHAR"      column="problem_serial_number"/>-->
+        <!--<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>-->
+        <!--<result property="problemDetail"         jdbcType="VARCHAR"      column="problem_detail"/>-->
+        <!--<result property="problemTime"  jdbcType="TIMESTAMP"      column="problem_time"/>-->
+    <!--</resultMap>-->
+
+    <!--<resultMap id="sm" type="com.hisun.persistence.beans.ScheduleBean">-->
+        <!--<result property="seqId"         jdbcType="VARCHAR"      column="seq_id"/>-->
+        <!--<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>-->
+        <!--<result property="proOperator"         jdbcType="VARCHAR"      column="pro_operator"/>-->
+        <!--<result property="operationType"  jdbcType="VARCHAR"      column="operation_type"/>-->
+        <!--<result property="scheduleTime"  jdbcType="TIMESTAMP"      column="schedule_time"/>-->
+        <!--<result property="preOperation"  jdbcType="VARCHAR"      column="pre_operation"/>-->
+        <!--<result property="afterOperation"  jdbcType="VARCHAR"      column="after_operation"/>-->
+
+
+        <!--<result property="operRequestContent"  jdbcType="VARCHAR"      column="after_operation"/>-->
+        <!--<result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>-->
+        <!--<result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>-->
+        <!--<result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>-->
+        <!--<result property="operStatus"  jdbcType="VARCHAR"      column="oper_status"/>-->
+        <!--<result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>-->
+        <!--<result property="identifier"  jdbcType="VARCHAR"      column="identifier"/>-->
+        <!--<result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>-->
+    <!--</resultMap>-->
+
+    <!--<resultMap id="mf" type="com.hisun.persistence.beans.MailFlowBean">-->
+        <!--<result property="mailSerialNumber"         jdbcType="VARCHAR"      column="mail_serial_number"/>-->
+        <!--<result property="mailSubject"         jdbcType="VARCHAR"      column="mail_subject"/>-->
+        <!--<result property="mailSender"         jdbcType="VARCHAR"      column="mail_sender"/>-->
+        <!--<result property="mailReceiver"  jdbcType="VARCHAR"      column="mail_receiver"/>-->
+        <!--<result property="mailAnnex"  jdbcType="VARCHAR"      column="mail_annex"/>-->
+        <!--<result property="mailSendContent"  jdbcType="VARCHAR"      column="mail_send_content"/>-->
+        <!--<result property="groupTime"  jdbcType="DATE"      column="group_time"/>-->
+        <!--<result property="employeeEmail"   jdbcType="VARCHAR"      column="email"/>-->
+        <!--<result property="emailPassword"   jdbcType="VARCHAR"      column="email_password"/>-->
+        <!--<result property="employeeName"  jdbcType="VARCHAR"      column="user_name"/>-->
+    <!--</resultMap>-->
+
+
+
+    <!--<resultMap id="tm" type="com.hisun.persistence.beans.SubTaskBean">-->
+        <!--<result property="relationId"           jdbcType="VARCHAR"      column="SEQ_ID"/>-->
+        <!--<result property="taskId"               jdbcType="VARCHAR"      column="TASK_ID"/>-->
+        <!--<result property="subTaskId"            jdbcType="VARCHAR"      column="SUB_TASK_ID"/>-->
+        <!--<result property="productTypeId"        jdbcType="VARCHAR"      column="PRODUCT_TYPE_ID"/>-->
+        <!--<result property="productTypeName"      jdbcType="VARCHAR"      column="PRODUCT_TYPE_NAME"/>-->
+        <!--<result property="taskName"             jdbcType="VARCHAR"      column="TASK_NAME"/>-->
+        <!--<result property="taskDescription"      jdbcType="VARCHAR"      column="TASK_DESCRIPTION"/>-->
+        <!--<result property="baseCharge"           jdbcType="VARCHAR"      column="BASE_CHARGE"/>-->
+        <!--<result property="gaoyCharge"           jdbcType="VARCHAR"      column="GAOY_CHARGE"/>-->
+        <!--<result property="chargeDeptId"         jdbcType="VARCHAR"      column="CHARGE_DEPT_ID"/>-->
+        <!--<result property="chargeDeptName"       jdbcType="VARCHAR"      column="CHARGE_DEPT_NAME"/>-->
+        <!--<result property="cycleCategory"        jdbcType="VARCHAR"      column="CYCLE_CATEGORY"/>-->
+        <!--<result property="cycleCategoryName"    jdbcType="VARCHAR"      column="CYCLE_CATEGORY_NAME"/>-->
+        <!--<result property="completePercent"      jdbcType="FLOAT"        column="COMPLETE_PERCENT"/>-->
+        <!--<result property="statusId"             jdbcType="VARCHAR"      column="STATUS_ID"/>-->
+        <!--<result property="statusName"           jdbcType="VARCHAR"      column="STATUS_NAME"/>-->
+        <!--<result property="proposedDate"         jdbcType="TIMESTAMP"    column="PROPOSED_DATE"/>-->
+        <!--<result property="createDate"           jdbcType="TIMESTAMP"    column="CREATE_DATE"/>-->
+        <!--<result property="completeDate"         jdbcType="TIMESTAMP"    column="COMPLETE_DATE"/>-->
+        <!--<result property="proManager"           jdbcType="VARCHAR"      column="PRO_MANAGER"/>-->
+        <!--<result property="reqType"              jdbcType="VARCHAR"      column="REQ_TYPE"/>-->
+        <!--<result property="reqTypeName"        	jdbcType="VARCHAR"      column="REQ_TYPE_NAME"/>-->
+        <!--<result property="rmdNo"                jdbcType="VARCHAR"      column="RMD_NO"/>-->
+        <!--<result property="crNo"                 jdbcType="VARCHAR"      column="CR_NO"/>-->
+        <!--<result property="preUpdDate"           jdbcType="TIMESTAMP"    column="PRE_UPD_DATE"/>-->
+        <!--<result property="updateTime"           jdbcType="TIMESTAMP"    column="UPDATE_TIME"/>-->
+        <!--<result property="proCategory"          jdbcType="TIMESTAMP"    column="PRO_CATEGORY"/>-->
+        <!--<result property="thirdSysKey"          jdbcType="TIMESTAMP"    column="THIRD_SYS_KEY"/>-->
+        <!--<result property="auditFlag"            jdbcType="VARCHAR"      column="AUDIT_FLAG"/>-->
+        <!--<result property="auditFlagName"        jdbcType="VARCHAR"      column="AUDIT_FLAG_NAME"/>-->
+        <!--<result property="taskPercent"          jdbcType="FLOAT"        column="TASK_PERCENT"/>-->
+        <!--<result property="auditRemark"          jdbcType="VARCHAR"     	column="AUDIT_REMARK"/>-->
+        <!--<result property="bsfSysKey"          	jdbcType="VARCHAR"     	column="BSF_SYS_KEY"/>-->
+        <!--<result property="rmdSysKey"          	jdbcType="VARCHAR"     	column="RMD_SYS_KEY"/>-->
+        <!--&lt;!&ndash; 需求来源 &ndash;&gt;-->
+        <!--<result property="demandSourceId"             jdbcType="VARCHAR"      column="DEMAND_SOURCE_ID"/>-->
+        <!--<result property="demandSource"             jdbcType="VARCHAR"      column="DEMAND_SOURCE"/>-->
+        <!--<result property="cdemandSource"             jdbcType="VARCHAR"      column="CDEMAND_SOURCE"/>-->
+        <!--<result property="productLine"             jdbcType="VARCHAR"      column="PRODUCT_LINE"/>-->
+
+
+        <!--<result property="monthBeginFeedbackResult"		jdbcType="VARCHAR"		column="MONTH_BEGIN_FEEDBACK_RESULT"/>-->
+        <!--<result property="monthBeginFeedbackRemark"		jdbcType="VARCHAR"      column="MONTH_BEGIN_FEEDBACK_REMARK"/>-->
+        <!--<result property="monthBeginCompletePercent"   	jdbcType="FLOAT"      	column="MONTH_BEGIN_COMPLETE_PERCENT"/>-->
+        <!--<result property="monthBeginStatusId"   		jdbcType="VARCHAR"      column="MONTH_BEGIN_STATUS_ID"/>-->
+        <!--<result property="monthEndFeedbackResult"   	jdbcType="VARCHAR"      column="MONTH_END_FEEDBACK_RESULT"/>-->
+        <!--<result property="monthEndFeedbackRemark"   	jdbcType="VARCHAR"      column="MONTH_END_FEEDBACK_REMARK"/>-->
+        <!--<result property="monthEndCompletePercent"   	jdbcType="FLOAT"      	column="MONTH_END_COMPLETE_PERCENT"/>-->
+        <!--<result property="monthEndStatusId"   			jdbcType="VARCHAR"      column="MONTH_END_STATUS_ID"/>-->
+        <!--<result property="sourceMonthPerson"   			jdbcType="DOUBLE"      column="SOURCE_MONTH_PERSON"/>-->
+        <!--<result property="workloadDayPerson"   			jdbcType="DOUBLE"      column="WORKLOAD_DAY_PERSON"/>-->
+
+        <!--<result property="actualDate"           jdbcType="TIMESTAMP"    column="ACTUAL_DATE"/>-->
+        <!--<result property="crStatusId"          	jdbcType="VARCHAR"     	column="CR_STATUS_ID"/>-->
+        <!--<result property="crStatusName"          	jdbcType="VARCHAR"     	column="CR_STATUS_NAME"/>-->
+        <!--<result property="actualPeople"          	jdbcType="VARCHAR"     	column="actual_people"/>-->
+    <!--</resultMap>-->
+
     <sql id="Base_Column_List">
        pro_number ,pro_need ,pro_type ,pro_date,application_dept,pro_applicant,applicant_tel,pro_module,business_principal ,base_principal,
        pro_manager,pro_status ,is_up_database ,is_up_structure, pro_operation ,is_ref_cerificate ,is_advance_production , not_advance_reason ,
@@ -16,9 +177,9 @@
 	   influence_use_reason,influence_use_inf,operating_time,production_deployment_result,is_operation_production,mail_recipient,mail_copy_person,
 	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name
     </sql>
-    
-    
-     <sql id="Base_Column_List_One">
+
+
+    <sql id="Base_Column_List_One">
         SUB_TASK_ID,
         PROPOSED_DATE,
         CREATE_DATE,
@@ -48,13 +209,13 @@
         actual_date
     </sql>
 
-
-	<select id="findMailGroupBeanDetail" resultMap="mm" parameterType="string">
+    <select id="findMailGroupBeanDetail" resultMap="mm" parameterType="string">
     	SELECT
     	mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time
     	FROM t_mail_group t1
     	WHERE mail_group_id = #{mail_group_id}
     </select>
+
     <insert id="addMailFlow"  parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
     	insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)
     	values(
@@ -67,4 +228,609 @@
     		#{flow_time}
     		)
     </insert>
+
+    <select id="findPageBreakByCondition" resultMap="rm" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  t_production_records t1
+        WHERE 1=1
+        <if test="proNumber != null and proNumber != ''">
+            and pro_number LIKE CONCAT('%',#{proNumber},'%')
+        </if>
+        <if test="isOperationProduction != null and isOperationProduction != ''">
+            and is_operation_production = #{isOperationProduction}
+        </if>
+        <if test="isAdvanceProduction != null and isAdvanceProduction != ''">
+            and is_advance_production = #{isAdvanceProduction}
+        </if>
+        <if test="proApplicant != null and proApplicant != ''">
+            and pro_applicant LIKE CONCAT('%',#{proApplicant},'%')
+        </if>
+        <if test="proType != null and proType != ''">
+            and pro_type = #{proType}
+        </if>
+        <if test="proDateStart != null and proDateEnd != null  ">
+            and pro_date between #{proDateStart} and #{proDateEnd}
+        </if>
+        <if test="proDate != null ">
+            and pro_date = #{proDate}
+        </if>
+        <if test="proAdvanceResult != null and proAdvanceResult != ''">
+            and pro_advance_result = #{proAdvanceResult}
+        </if>
+        <if test="proStatus != null and proStatus != ''">
+            and pro_status = #{proStatus}
+        </if>
+        <if test="productionDeploymentResult != null and productionDeploymentResult != ''">
+            and production_deployment_result = #{productionDeploymentResult}
+        </if>
+        <if test="proPkgStatus != null and proPkgStatus != ''">
+            and pro_pkg_status = #{proPkgStatus}
+        </if>
+        <if test="developmentDept != null and developmentDept != ''">
+            and development_leader in (SELECT user_name FROM t_permi_dept t1   LEFT JOIN t_permi_user t2 ON t1.dept_id=t2.dept_id
+            WHERE t1.dept_name=#{developmentDept})
+        </if>
+        order by pro_date desc
+    </select>
+
+    <!--<select id="findSubTaskBean" parameterType="string" resultMap="tm">-->
+        <!--SELECT (SELECT DEPT_NAME-->
+        <!--FROM t_permi_dept t-->
+        <!--WHERE t.DEPT_ID = a.CHARGE_DEPT_ID) AS CHARGE_DEPT_NAME,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.PRODUCT_TYPE_ID-->
+        <!--AND t.DIC_ID = 'PRODUCT_TYPE_NAME') AS PRODUCT_TYPE_NAME,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.CYCLE_CATEGORY-->
+        <!--AND t.DIC_ID = 'CYCLE_CATEGORY') AS CYCLE_CATEGORY_NAME,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.STATUS_ID-->
+        <!--AND t.DIC_ID = 'STATUS_ID') AS STATUS_NAME,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.REQ_TYPE-->
+        <!--AND t.DIC_ID = 'REQ_TYPE') AS REQ_TYPE_NAME,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.DEMAND_SOURCE-->
+        <!--AND t.DIC_ID='DEMAND_SOURCES') AS DEMAND_SOURCE,-->
+        <!--(SELECT VALUE-->
+        <!--FROM t_permi_dic_data t-->
+        <!--WHERE t.NAME = a.PRODUCT_LINE-->
+        <!--AND t.DIC_ID='PRODUCT_LINE ') AS PRODUCT_LINE,-->
+        <!--a.CDEMAND_SOURCE AS CDEMAND_SOURCE,-->
+        <!--<include refid="Base_Column_List_One"/>-->
+        <!--FROM t_assess_task_sub a-->
+        <!--WHERE a.rmd_no =#{pro_number}-->
+        <!--LIMIT 1-->
+    <!--</select>-->
+
+
+    <!--<insert id="insertProduction"  parameterType="com.hisun.persistence.beans.ProductionBean">-->
+        <!--insert into  t_production_records(<include refid="Base_Column_List"/>)-->
+        <!--values(#{pro_number},-->
+        <!--#{pro_need},-->
+        <!--#{pro_type},-->
+        <!--#{pro_date},-->
+        <!--#{application_dept},-->
+        <!--#{pro_applicant},-->
+        <!--#{applicant_tel},-->
+        <!--#{pro_module},-->
+        <!--#{business_principal},-->
+        <!--#{base_principal},-->
+        <!--#{pro_manager},-->
+        <!--#{pro_status},-->
+        <!--#{is_up_database},-->
+        <!--#{is_up_structure},-->
+        <!--#{pro_operation},-->
+        <!--#{is_ref_cerificate},-->
+        <!--#{is_advance_production},-->
+        <!--#{not_advance_reason},-->
+        <!--#{pro_advance_result},-->
+        <!--#{not_production_impact},-->
+        <!--#{identifier},-->
+        <!--#{identifier_tel},-->
+        <!--#{pro_checker},-->
+        <!--#{checker_tel},-->
+        <!--#{validation},-->
+        <!--#{development_leader},-->
+        <!--#{approver},-->
+        <!--#{update_operator},-->
+        <!--#{remark},-->
+        <!--#{unusual_reason_phrase},-->
+        <!--#{urgent_reason_phrase},-->
+        <!--#{completion_update},-->
+        <!--#{early_implementation},-->
+        <!--#{influence_use},-->
+        <!--#{influence_use_reason},-->
+        <!--#{influence_use_inf},-->
+        <!--#{operating_time},-->
+        <!--#{production_deployment_result},-->
+        <!--#{is_operation_production},-->
+        <!--#{mail_recipient},-->
+        <!--#{mail_copy_person},-->
+        <!--'待上传',-->
+        <!--NULL,-->
+        <!--NULL,#{mail_leader},#{svntab_name}-->
+        <!--)-->
+    <!--</insert>-->
+
+    <!--<insert id="insertSchedule"  parameterType="com.hisun.persistence.beans.ScheduleBean">-->
+    	<!--insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,operation_reason)-->
+    	<!--values(-->
+    	    <!--#{pro_number},-->
+    		<!--#{pro_operator},-->
+    		<!--#{operation_type},-->
+    		<!--#{pre_operation},-->
+    		<!--#{after_operation},-->
+    		<!--#{operation_reason}-->
+    		<!--)-->
+    <!--</insert>-->
+
+    <!--<select id="findProAllExcelList" resultMap="sm" parameterType="com.hisun.web.vo.OperationApplicationConditionVO">-->
+        <!--SELECT oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector,-->
+        <!--oper_applicant,identifier,development_leader,svntab_name,oper_application_reason,analysis-->
+        <!--from  t_operational_application_detail t1-->
+        <!--WHERE 1=1-->
+        <!--<if test="oper_request_content != null and oper_request_content != ''">-->
+            <!--and oper_request_content like "%"#{oper_request_content}"%"-->
+        <!--</if>-->
+        <!--<if test="po_date_start != null and po_date_start != '' and po_date_end != null and po_date_end != '' ">-->
+            <!--and propose_date between #{po_date_start} and #{po_date_end}-->
+        <!--</if>-->
+        <!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
+            <!--and sys_oper_type = #{sys_oper_type}-->
+        <!--</if>-->
+        <!--<if test="oper_status != null and oper_status != ''">-->
+            <!--and oper_status = #{oper_status}-->
+        <!--</if>-->
+        <!--<if test="oper_applicant != null and oper_applicant != ''">-->
+            <!--and oper_applicant like "%"#{oper_applicant}"%"-->
+        <!--</if>-->
+        <!--order by propose_date desc-->
+    <!--</select>-->
+
+    <!--<select id="findExportAllList" resultMap="rm" parameterType="com.hisun.web.vo.OperationApplicationConditionVO">-->
+        <!--SELECT pro_number, pro_need, pro_type, pro_date, application_dept,  application_dept, pro_applicant, applicant_tel,-->
+
+        <!--pro_module, business_principal, base_principal, pro_manager, pro_status, is_up_database, is_up_structure, pro_operation,-->
+
+        <!--is_ref_cerificate, is_advance_production, not_advance_reason, pro_advance_result, identifier, identifier_tel, pro_checker,-->
+
+        <!--checker_tel, validation,  development_leader, approver,  update_operator,  remark, urgent_reason_phrase, not_production_impact-->
+
+        <!--from  t_production_records t1-->
+
+        <!--WHERE 1=1-->
+
+        <!--<if test="po_date_start != null and po_date_start != '' and po_date_end != null and po_date_end != '' ">-->
+            <!--and pro_date between #{po_date_start} and #{po_date_end}-->
+        <!--</if>-->
+
+        <!--order by pro_date desc-->
+
+    <!--</select>-->
+
+    <!--<insert id="insertMailFlow"  parameterType="com.hisun.persistence.beans.MailFlowBean">-->
+    	<!--insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)-->
+    	<!--values(-->
+    	    <!--#{mail_serial_number},-->
+    		<!--#{mail_subject},-->
+    		<!--#{mail_sender},-->
+    		<!--#{mail_receiver},-->
+    		<!--#{mail_annex},-->
+    		<!--#{mail_send_content},-->
+    		<!--#{flow_time}-->
+    		<!--)-->
+    <!--</insert>-->
+
+
+    <!--<insert id="insertMailGroup"  parameterType="com.hisun.persistence.beans.MailGroupBean">-->
+    	<!--insert into  t_mail_group(mail_group_name,mail_user,mail_group_desc)-->
+    	<!--values(-->
+    	    <!--#{mail_group_name},-->
+    		<!--#{mail_user},-->
+    		<!--#{mail_group_desc}-->
+    		<!--)-->
+    <!--</insert>-->
+
+    <!--<insert id="insertProblemInfo"  parameterType="com.hisun.persistence.beans.ProblemBean">-->
+    	<!--insert into  t_production_problem(pro_number,problem_detail)-->
+    	<!--values(-->
+    	    <!--#{pro_number},-->
+    		<!--#{problem_detail}-->
+    		<!--)-->
+    <!--</insert>-->
+
+    <!--<update id="updateProblem" parameterType="com.hisun.persistence.beans.ProblemBean">-->
+        <!--UPDATE t_production_problem-->
+        <!--SET-->
+        <!--<if test="problem_detail != null and problem_detail != ''">-->
+            <!--problem_detail = #{problem_detail}-->
+        <!--</if>-->
+        <!--WHERE problem_serial_number = #{problem_serial_number}-->
+    <!--</update>-->
+
+    <!--<select id="findBaseProductionInfo" resultMap="rm" parameterType="string">-->
+        <!--SELECT-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--from  t_production_records t1-->
+        <!--WHERE-->
+        <!--pro_number =#{pro_number}-->
+    <!--</select>-->
+
+    <!--<select id="findDeptManager" resultMap="rm" parameterType="string">-->
+    	<!--SELECT-->
+    		<!--dept_name,dept_manager_name-->
+    	<!--from  t_permi_dept t1-->
+    	<!--WHERE-->
+            <!--dept_name = #{dept_name}-->
+    <!--</select>-->
+
+    <!--<select id="findDeptManagerByUser" resultMap="rm" parameterType="string">-->
+    	<!--SELECT t1.dept_name,t1.dept_manager_name-->
+         <!--FROM t_permi_dept t1   LEFT JOIN t_permi_user t2 ON t1.dept_id=t2.dept_id-->
+         <!--WHERE t2.user_name=#{user_name}-->
+    <!--</select>-->
+
+    <!--<select id="findProblemInfo" resultMap="pbm" parameterType="string">-->
+    	<!--SELECT-->
+    		<!--problem_serial_number,pro_number,problem_detail,problem_time-->
+    	<!--from  t_production_problem t1-->
+    	<!--WHERE-->
+            <!--pro_number like "%"#{pro_number}"%"-->
+    <!--</select>-->
+
+    <!--<delete id="deleteProblemInfo" parameterType="string">-->
+    <!--delete from t_production_problem-->
+    <!--where problem_serial_number=#{problem_serial_number}-->
+    <!--</delete>-->
+
+    <!--<select id="findPageBreakBySchedule" resultMap="sm" parameterType="map">-->
+        <!--SELECT-->
+        <!--seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason-->
+        <!--from  t_production_schedule t1-->
+        <!--WHERE 1=1-->
+        <!--<if test="pro_number != null and pro_number != ''">-->
+            <!--and pro_number like "%"#{pro_number}"%"-->
+        <!--</if>-->
+        <!--<if test="pro_operator != null and pro_operator != ''">-->
+            <!--and pro_operator like "%"#{pro_operator}"%"-->
+        <!--</if>-->
+        <!--order by schedule_time desc-->
+    <!--</select>-->
+
+
+    <!--<select id="findOperationExcelList" resultMap="sm" parameterType="int">-->
+    	<!--SELECT-->
+    	<!--seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason-->
+    	<!--from  t_production_schedule-->
+    	<!--WHERE  seq_id = #{seq_id}-->
+    <!--</select>-->
+
+    <!--<select id="findProExcelList" resultMap="sm" parameterType="string">-->
+	    	<!--SELECT  oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector-->
+	    	<!--oper_applicant,identifier,development_leader,svntab_name,oper_application_reason,analysis-->
+	    	 <!--FROM t_operational_application_detail where oper_number = #{seq_id}-->
+	    <!--</select>-->
+
+    <!--<select id="findScheduleNumberByCondition" resultType="int" parameterType="map">-->
+        <!--SELECT COUNT(1) FROM t_production_schedule-->
+        <!--WHERE 1=1-->
+        <!--<if test="pro_number != null and pro_number != ''">-->
+            <!--and pro_number like "%"#{pro_number}"%"-->
+        <!--</if>-->
+        <!--<if test="pro_operator != null and pro_operator != ''">-->
+            <!--and pro_operator like "%"#{pro_operator}"%"-->
+        <!--</if>-->
+    <!--</select>-->
+
+
+    <!---->
+
+    <!--<select id="findProNumber" resultMap="pm">-->
+    	<!--SELECT pro_number,pro_status-->
+    	<!--from  t_production_records t1-->
+    <!--</select>-->
+
+    <!--<select id="findExportExcelList" resultMap="rm" parameterType="string">-->
+        <!--SELECT-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--FROM t_production_records t1-->
+        <!--WHERE pro_number = #{pro_number}-->
+    <!--</select>-->
+
+    <select id="findExportExcelListByDate" resultMap="rm" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_production_records t1
+        WHERE  1=1
+        <if test="proDateStart != null  and proDateEnd != null ">
+            and pro_date between #{proDateStart} and #{proDateEnd}
+        </if>
+        <if test="proType != null and proType != '' ">
+            and pro_type = #{proType}
+        </if>
+        <if test="isOperationProduction != null and isOperationProduction != '' ">
+            and is_operation_production = #{isOperationProduction}
+        </if>
+        <if test="proStatus != null and proStatus != '' ">
+            and pro_status = #{proStatus}
+        </if>
+    </select>
+
+    <select id="findProductionBean" resultMap="rm" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_production_records t1
+        WHERE pro_number = #{proNumber}
+    </select>
+    <!--<select id="findProductionBean1" resultMap="rm" parameterType="string">-->
+        <!--SELECT-->
+        <!--<include refid="Base_Column_List"/>-->
+        <!--FROM t_production_records t1-->
+        <!--WHERE pro_number = #{pro_number} and pro_status !='投产取消'-->
+    <!--</select>-->
+
+    <!--<select id="findMailGroupBean" resultMap="mm" parameterType="map">-->
+        <!--SELECT-->
+        <!--mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time-->
+        <!--FROM t_mail_group t1-->
+        <!--WHERE 1=1-->
+        <!--<if test="mail_group_name != null and mail_group_name != ''">-->
+            <!--and mail_group_name like "%"#{mail_group_name}"%"-->
+        <!--</if>-->
+    <!--</select>-->
+
+
+    <!--<select id="findMailGroupNumberByCondition" resultType="int" parameterType="map">-->
+        <!--SELECT COUNT(1) FROM t_mail_group-->
+        <!--WHERE 1=1-->
+        <!--<if test="mail_group_name != null and mail_group_name != ''">-->
+            <!--and mail_group_name like "%"#{mail_group_name}"%"-->
+        <!--</if>-->
+    <!--</select>-->
+
+    <!--<select id="findNumberByCondition" resultType="int" parameterType="map">-->
+        <!--SELECT COUNT(1) FROM t_production_records-->
+        <!--WHERE 1=1-->
+        <!--<if test="pro_number != null and pro_number != ''">-->
+            <!--and pro_number like "%"#{pro_number}"%"-->
+        <!--</if>-->
+        <!--<if test="is_operation_production != null and is_operation_production != ''">-->
+            <!--and is_operation_production = #{is_operation_production}-->
+        <!--</if>-->
+        <!--<if test="is_advance_production != null and is_advance_production != ''">-->
+            <!--and is_advance_production = #{is_advance_production}-->
+        <!--</if>-->
+        <!--<if test="pro_applicant != null and pro_applicant != ''">-->
+            <!--and pro_applicant = #{pro_applicant}-->
+        <!--</if>-->
+        <!--<if test="pro_type != null and pro_type != ''">-->
+            <!--and pro_type = #{pro_type}-->
+        <!--</if>-->
+        <!--<if test="pro_date_start != null and pro_date_start != '' and pro_date_end != null and pro_date_end != '' ">-->
+            <!--and pro_date between #{pro_date_start} and #{pro_date_end}-->
+        <!--</if>-->
+        <!--<if test="pro_date != null and pro_date != ''">-->
+            <!--and pro_date = #{pro_date}-->
+        <!--</if>-->
+        <!--<if test="pro_status != null and pro_status != ''">-->
+            <!--and pro_status = #{pro_status}-->
+        <!--</if>-->
+        <!--<if test="pro_advance_result != null and pro_advance_result != ''">-->
+            <!--and pro_advance_result = #{pro_advance_result}-->
+        <!--</if>-->
+        <!--<if test="production_deployment_result != null and production_deployment_result != ''">-->
+            <!--and production_deployment_result = #{production_deployment_result}-->
+        <!--</if>-->
+        <!--<if test="development_dept != null and development_dept != ''">-->
+            <!--and development_leader in (SELECT user_name FROM t_permi_dept t1   LEFT JOIN t_permi_user t2 ON t1.dept_id=t2.dept_id-->
+            <!--WHERE t1.dept_name=#{development_dept})-->
+        <!--</if>-->
+    <!--</select>-->
+
+    <!--<select id="searchUserEmail"   resultMap="mf" parameterType="map">-->
+    <!--SELECT user_name,email,email_password FROM t_permi_user WHERE user_name=#{employeeName};-->
+    <!--</select>-->
+
+    <!--<update id="updateMailGroup" parameterType="com.hisun.persistence.beans.MailGroupBean">-->
+        <!--UPDATE t_mail_group-->
+        <!--<trim prefix="set" suffixOverrides=",">-->
+            <!--<if test="mail_group_name != null and mail_group_name != ''">-->
+                <!--mail_group_name = #{mail_group_name},-->
+            <!--</if>-->
+            <!--<if test="mail_user != null and mail_user != ''">-->
+                <!--mail_user = #{mail_user},-->
+            <!--</if>-->
+            <!--<if test="mail_group_desc != null and mail_group_desc != ''">-->
+                <!--mail_group_desc = #{mail_group_desc},-->
+            <!--</if>-->
+        <!--</trim>-->
+        <!--WHERE mail_group_id = #{mail_group_id}-->
+    <!--</update>-->
+
+    <!--<update id="updateProduction" parameterType="com.hisun.persistence.beans.ProductionBean">-->
+        <!--UPDATE t_production_records-->
+        <!--SET-->
+        <!--<if test="pro_pkg_time != null and pro_pkg_time != ''">-->
+            <!--pro_pkg_time = #{pro_pkg_time},-->
+        <!--</if>-->
+        <!--<if test="pro_pkg_name != null and pro_pkg_name != ''">-->
+            <!--pro_pkg_name = #{pro_pkg_name},-->
+        <!--</if>-->
+        <!--<if test="pro_pkg_status != null and pro_pkg_status !=''">-->
+            <!--pro_pkg_status = #{pro_pkg_status},-->
+        <!--</if>-->
+        <!--<if test="pro_advance_result != null and pro_advance_result != ''">-->
+            <!--pro_advance_result=#{pro_advance_result},-->
+        <!--</if>-->
+        <!--<if test="production_deployment_result != null and production_deployment_result != ''">-->
+            <!--production_deployment_result=#{production_deployment_result},-->
+        <!--</if>-->
+        <!--<if test="pro_status != null and pro_status != ''">-->
+            <!--pro_status = #{pro_status}-->
+        <!--</if>-->
+        <!--WHERE pro_number = #{pro_number}-->
+    <!--</update>-->
+
+    <!--<update id="updateAllProduction" parameterType="com.hisun.persistence.beans.ProductionBean">-->
+        <!--UPDATE t_production_records-->
+        <!--SET-->
+        <!--<if test="pro_need != null and pro_need != ''">-->
+            <!--pro_need  = #{pro_need},-->
+        <!--</if>-->
+        <!--<if test="pro_type != null and pro_type != ''">-->
+            <!--pro_type =#{pro_type},-->
+        <!--</if>-->
+        <!--<if test="pro_date != null and pro_date != ''">-->
+            <!--pro_date=#{pro_date},-->
+        <!--</if>-->
+        <!--<if test="application_dept != null and application_dept != ''">-->
+            <!--application_dept=#{application_dept},-->
+        <!--</if>-->
+        <!--<if test="pro_applicant != null and pro_applicant != ''">-->
+            <!--pro_applicant=#{pro_applicant},-->
+        <!--</if>-->
+        <!--<if test="applicant_tel != null and applicant_tel != ''">-->
+            <!--applicant_tel=#{applicant_tel},-->
+        <!--</if>-->
+        <!--<if test="pro_module != null and pro_module != ''">-->
+            <!--pro_module=#{pro_module},-->
+        <!--</if>-->
+        <!--<if test="business_principal != null and business_principal != ''">-->
+            <!--business_principal=#{business_principal},-->
+        <!--</if>-->
+        <!--<if test="base_principal != null and base_principal != ''">-->
+            <!--base_principal=#{base_principal},-->
+        <!--</if>-->
+        <!--<if test="pro_manager != null and pro_manager != ''">-->
+            <!--pro_manager=#{pro_manager},-->
+        <!--</if>-->
+        <!--<if test="is_up_database != null and is_up_database != ''">-->
+            <!--is_up_database=#{is_up_database},-->
+        <!--</if>-->
+        <!--<if test="is_up_structure != null and is_up_structure != ''">-->
+            <!--is_up_structure=#{is_up_structure},-->
+        <!--</if>-->
+        <!--<if test="pro_operation != null and pro_operation != ''">-->
+            <!--pro_operation=#{pro_operation},-->
+        <!--</if>-->
+        <!--<if test="is_ref_cerificate != null and is_ref_cerificate != ''">-->
+            <!--is_ref_cerificate=#{is_ref_cerificate},-->
+        <!--</if>-->
+        <!--<if test="is_advance_production != null and is_advance_production != ''">-->
+            <!--is_advance_production=#{is_advance_production},-->
+        <!--</if>-->
+        <!--<if test="not_advance_reason != null and not_advance_reason != ''">-->
+            <!--not_advance_reason=#{not_advance_reason},-->
+        <!--</if>-->
+        <!--<if test="pro_advance_result != null and pro_advance_result != ''">-->
+            <!--pro_advance_result=#{pro_advance_result},-->
+        <!--</if>-->
+        <!--<if test="not_production_impact != null and not_production_impact != ''">-->
+            <!--not_production_impact=#{not_production_impact},-->
+        <!--</if>-->
+        <!--<if test="identifier != null and identifier != ''">-->
+            <!--identifier=#{identifier},-->
+        <!--</if>-->
+        <!--<if test="identifier_tel != null and identifier_tel != ''">-->
+            <!--identifier_tel=#{identifier_tel},-->
+        <!--</if>-->
+        <!--<if test="pro_checker != null and pro_checker != ''">-->
+            <!--pro_checker=#{pro_checker},-->
+        <!--</if>-->
+        <!--<if test="checker_tel != null and checker_tel != ''">-->
+            <!--checker_tel=#{checker_tel},-->
+        <!--</if>-->
+        <!--<if test="validation != null and validation != ''">-->
+            <!--validation=#{validation},-->
+        <!--</if>-->
+        <!--<if test="development_leader != null and development_leader != ''">-->
+            <!--development_leader=#{development_leader},-->
+        <!--</if>-->
+        <!--<if test="approver != null and approver != ''">-->
+            <!--approver=#{approver},-->
+        <!--</if>-->
+        <!--<if test="update_operator != null and update_operator != ''">-->
+            <!--update_operator=#{update_operator},-->
+        <!--</if>-->
+        <!--<if test="remark != null and remark != ''">-->
+            <!--remark=#{remark},-->
+        <!--</if>-->
+        <!--<if test="unusual_reason_phrase != null and unusual_reason_phrase != ''">-->
+            <!--unusual_reason_phrase=#{unusual_reason_phrase},-->
+        <!--</if>-->
+        <!--<if test="urgent_reason_phrase != null and urgent_reason_phrase != ''">-->
+            <!--urgent_reason_phrase=#{urgent_reason_phrase},-->
+        <!--</if>-->
+        <!--<if test="completion_update != null and completion_update != ''">-->
+            <!--completion_update=#{completion_update},-->
+        <!--</if>-->
+        <!--<if test="early_implementation != null and early_implementation != ''">-->
+            <!--early_implementation=#{early_implementation},-->
+        <!--</if>-->
+        <!--<if test="influence_use != null and influence_use != ''">-->
+            <!--influence_use=#{influence_use},-->
+        <!--</if>-->
+        <!--<if test="influence_use_reason != null and influence_use_reason != ''">-->
+            <!--influence_use_reason=#{influence_use_reason},-->
+        <!--</if>-->
+        <!--<if test="influence_use_inf != null and influence_use_inf != ''">-->
+            <!--influence_use_inf=#{influence_use_inf},-->
+        <!--</if>-->
+        <!--<if test="operating_time != null and operating_time != ''">-->
+            <!--operating_time=#{operating_time},-->
+        <!--</if>-->
+        <!--<if test="production_deployment_result != null and production_deployment_result != ''">-->
+            <!--production_deployment_result=#{production_deployment_result},-->
+        <!--</if>-->
+        <!--<if test="mail_recipient != null and mail_recipient != ''">-->
+            <!--mail_recipient=#{mail_recipient},-->
+        <!--</if>-->
+        <!--<if test="mail_copy_person != null and mail_copy_person != ''">-->
+            <!--mail_copy_person = #{mail_copy_person},-->
+        <!--</if>-->
+        <!--<if test="is_operation_production != null">-->
+            <!--is_operation_production=#{is_operation_production},-->
+        <!--</if>-->
+        <!--<if test="mail_leader != null and mail_leader != ''">-->
+            <!--mail_leader = #{mail_leader},-->
+        <!--</if>-->
+        <!--<if test="svntab_name != null">-->
+            <!--svntab_name = #{svntab_name},-->
+        <!--</if>-->
+        <!--<if test="pro_status != null and pro_status != ''">-->
+            <!--pro_status = #{pro_status}-->
+        <!--</if>-->
+
+        <!--WHERE pro_number = #{pro_number}-->
+    <!--</update>-->
+    <!--<delete id="deleteMailGroup" parameterType="string">-->
+    <!--delete from t_mail_group-->
+    <!--where mail_group_id=#{mail_group_id}-->
+    <!--</delete>-->
+
+    <!--&lt;!&ndash; 根据人员姓名查询各部门经理邮箱 &ndash;&gt;-->
+    <!--<select id="findManagerMailByUserName" resultType="java.lang.String">-->
+        <!--SELECT GROUP_CONCAT(DISTINCT t3.email separator ';') AS email-->
+        <!--FROM t_permi_dept t1-->
+        <!--LEFT JOIN t_permi_user t2 ON t1.dept_id = t2.dept_id-->
+        <!--LEFT JOIN t_permi_user t3 ON t1.dept_manager_name = t3.user_name-->
+        <!--WHERE t3.is_enabled = TRUE AND t2.user_name IN-->
+        <!--<foreach collection="list" index="index" item="item" open="(" close=")" separator=",">-->
+            <!--#{item}-->
+        <!--</foreach>-->
+    <!--</select>-->
+
+    <!--<select id="findDayStatus"  parameterType="string" resultMap="pm">-->
+	<!--select pro_number from  t_production_records-->
+	   <!--where pro_status in ("投产待部署","部署完成待验证","投产验证完成")-->
+	   <!--and  date_format(records_time,'%Y-%m-%d')=#{cur_date}-->
+	<!--</select>-->
+
 </mapper>
