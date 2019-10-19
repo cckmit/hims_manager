@@ -95,18 +95,18 @@
         <!--<result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>-->
     <!--</resultMap>-->
 
-    <!--<resultMap id="mf" type="com.hisun.persistence.beans.MailFlowBean">-->
-        <!--<result property="mailSerialNumber"         jdbcType="VARCHAR"      column="mail_serial_number"/>-->
-        <!--<result property="mailSubject"         jdbcType="VARCHAR"      column="mail_subject"/>-->
-        <!--<result property="mailSender"         jdbcType="VARCHAR"      column="mail_sender"/>-->
-        <!--<result property="mailReceiver"  jdbcType="VARCHAR"      column="mail_receiver"/>-->
-        <!--<result property="mailAnnex"  jdbcType="VARCHAR"      column="mail_annex"/>-->
-        <!--<result property="mailSendContent"  jdbcType="VARCHAR"      column="mail_send_content"/>-->
-        <!--<result property="groupTime"  jdbcType="DATE"      column="group_time"/>-->
-        <!--<result property="employeeEmail"   jdbcType="VARCHAR"      column="email"/>-->
-        <!--<result property="emailPassword"   jdbcType="VARCHAR"      column="email_password"/>-->
-        <!--<result property="employeeName"  jdbcType="VARCHAR"      column="user_name"/>-->
-    <!--</resultMap>-->
+    <resultMap id="mf" type="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
+        <result property="mailSerialNumber"         jdbcType="VARCHAR"      column="mail_serial_number"/>
+        <result property="mailSubject"         jdbcType="VARCHAR"      column="mail_subject"/>
+        <result property="mailSender"         jdbcType="VARCHAR"      column="mail_sender"/>
+        <result property="mailReceiver"  jdbcType="VARCHAR"      column="mail_receiver"/>
+        <result property="mailAnnex"  jdbcType="VARCHAR"      column="mail_annex"/>
+        <result property="mailSendContent"  jdbcType="VARCHAR"      column="mail_send_content"/>
+        <result property="groupTime"  jdbcType="DATE"      column="group_time"/>
+        <result property="employeeEmail"   jdbcType="VARCHAR"      column="email"/>
+        <result property="emailPassword"   jdbcType="VARCHAR"      column="email_password"/>
+        <result property="employeeName"  jdbcType="VARCHAR"      column="user_name"/>
+    </resultMap>
 
 
 
@@ -359,17 +359,17 @@
         <!--)-->
     <!--</insert>-->
 
-    <!--<insert id="insertSchedule"  parameterType="com.hisun.persistence.beans.ScheduleBean">-->
-    	<!--insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,operation_reason)-->
-    	<!--values(-->
-    	    <!--#{pro_number},-->
-    		<!--#{pro_operator},-->
-    		<!--#{operation_type},-->
-    		<!--#{pre_operation},-->
-    		<!--#{after_operation},-->
-    		<!--#{operation_reason}-->
-    		<!--)-->
-    <!--</insert>-->
+    <insert id="insertSchedule"  parameterType="com.cmpay.lemon.monitor.entity.ScheduleDO">
+    	insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,operation_reason)
+    	values(
+    	    #{proNumber},
+    		#{proOperator},
+    		#{operationType},
+    		#{preOperation},
+    		#{afterOperation},
+    		#{operationReason}
+    		)
+    </insert>
 
     <!--<select id="findProAllExcelList" resultMap="sm" parameterType="com.hisun.web.vo.OperationApplicationConditionVO">-->
         <!--SELECT oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector,-->
@@ -537,12 +537,12 @@
     	<!--from  t_production_records t1-->
     <!--</select>-->
 
-    <!--<select id="findExportExcelList" resultMap="rm" parameterType="string">-->
-        <!--SELECT-->
-        <!--<include refid="Base_Column_List"/>-->
-        <!--FROM t_production_records t1-->
-        <!--WHERE pro_number = #{pro_number}-->
-    <!--</select>-->
+    <select id="findExportExcelList" resultMap="rm" parameterType="string">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_production_records t1
+        WHERE pro_number = #{proNumber}
+    </select>
 
     <select id="findExportExcelListByDate" resultMap="rm" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
         SELECT
@@ -634,9 +634,9 @@
         <!--</if>-->
     <!--</select>-->
 
-    <!--<select id="searchUserEmail"   resultMap="mf" parameterType="map">-->
-    <!--SELECT user_name,email,email_password FROM t_permi_user WHERE user_name=#{employeeName};-->
-    <!--</select>-->
+    <select id="searchUserEmail"   resultMap="mf" parameterType="map">
+    SELECT user_name,email,email_password FROM t_permi_user WHERE user_name=#{employeeName};
+    </select>
 
     <!--<update id="updateMailGroup" parameterType="com.hisun.persistence.beans.MailGroupBean">-->
         <!--UPDATE t_mail_group-->
@@ -654,29 +654,29 @@
         <!--WHERE mail_group_id = #{mail_group_id}-->
     <!--</update>-->
 
-    <!--<update id="updateProduction" parameterType="com.hisun.persistence.beans.ProductionBean">-->
-        <!--UPDATE t_production_records-->
-        <!--SET-->
-        <!--<if test="pro_pkg_time != null and pro_pkg_time != ''">-->
-            <!--pro_pkg_time = #{pro_pkg_time},-->
-        <!--</if>-->
-        <!--<if test="pro_pkg_name != null and pro_pkg_name != ''">-->
-            <!--pro_pkg_name = #{pro_pkg_name},-->
-        <!--</if>-->
-        <!--<if test="pro_pkg_status != null and pro_pkg_status !=''">-->
-            <!--pro_pkg_status = #{pro_pkg_status},-->
-        <!--</if>-->
-        <!--<if test="pro_advance_result != null and pro_advance_result != ''">-->
-            <!--pro_advance_result=#{pro_advance_result},-->
-        <!--</if>-->
-        <!--<if test="production_deployment_result != null and production_deployment_result != ''">-->
-            <!--production_deployment_result=#{production_deployment_result},-->
-        <!--</if>-->
-        <!--<if test="pro_status != null and pro_status != ''">-->
-            <!--pro_status = #{pro_status}-->
-        <!--</if>-->
-        <!--WHERE pro_number = #{pro_number}-->
-    <!--</update>-->
+    <update id="updateProduction" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        UPDATE t_production_records
+        SET
+        <if test="proPkgTime != null">
+            pro_pkg_time = #{proPkgTime},
+        </if>
+        <if test="proPkgName != null and proPkgName != ''">
+            pro_pkg_name = #{proPkgName},
+        </if>
+        <if test="proPkgStatus != null and proPkgStatus !=''">
+            pro_pkg_status = #{proPkgStatus},
+        </if>
+        <if test="proAdvanceResult != null and proAdvanceResult != ''">
+            pro_advance_result=#{proAdvanceResult},
+        </if>
+        <if test="productionDeploymentResult != null and productionDeploymentResult != ''">
+            production_deployment_result=#{productionDeploymentResult},
+        </if>
+        <if test="proStatus != null and proStatus != ''">
+            pro_status = #{proStatus}
+        </if>
+        WHERE pro_number = #{proNumber}
+    </update>
 
     <!--<update id="updateAllProduction" parameterType="com.hisun.persistence.beans.ProductionBean">-->
         <!--UPDATE t_production_records-->

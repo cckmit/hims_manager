@@ -8,6 +8,8 @@ package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.framework.dao.BaseDao;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
+import com.cmpay.lemon.monitor.entity.ScheduleDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 import org.apache.ibatis.annotations.Mapper;
@@ -33,4 +35,15 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     List<ProductionDO> findExportExcelListByDate(ProductionDO productionBean);
     // 查询一条投产记录的详情
     ProductionDO findProductionBean(String pro_number);
+    //修改投产状态
+    void updateProduction(ProductionDO bean);
+
+    //插入投产流水记录
+    void insertSchedule(ScheduleDO bean);
+
+    //查询邮箱密码
+    MailFlowDO searchUserEmail(MailFlowConditionDO vo);
+
+    // 投产纪录导出列表查询
+    ProductionDO findExportExcelList(String pro_number);
 }

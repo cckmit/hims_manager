@@ -116,6 +116,11 @@ public class ProductionDO extends BaseDO {
     public ProductionDO() {
     }
 
+    public ProductionDO(String proNumber, String proStatus) {
+        this.proNumber = proNumber;
+        this.proStatus = proStatus;
+    }
+
     public String getProNumber() {
         return proNumber;
     }

@@ -93,6 +93,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
         return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
     }
+    @Override
+    public DemandDO findById1(String req_inner_seq) {
+        DemandDO demandDO = demandDao.get(req_inner_seq);
+        return demandDO;
+    }
 
     @Override
     public List<DemandDO> findById(List<String> ids) {

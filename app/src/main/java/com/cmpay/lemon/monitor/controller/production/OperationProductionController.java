@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.controller.production;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
@@ -64,8 +65,9 @@ public class OperationProductionController {
         OperationProductionService.exportExcel(request,response,productionBO);
     }
     @RequestMapping("/updateAllProduction")
-    public void updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
         System.err.println(taskIdStr);
         OperationProductionService.updateAllProduction(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
     }
 }

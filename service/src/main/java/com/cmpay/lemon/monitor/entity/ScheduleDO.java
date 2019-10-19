@@ -41,22 +41,49 @@ public class ScheduleDO extends AbstractDO {
     private String notProductionImpact;
     private String urgentReasonPhrase;
 
+    public ScheduleDO(int seqId, String proNumber, String proOperator, String operationType, Date scheduleTime, String preOperation, String afterOperation, String operationReason, String proType, String isOperationProduction, String operRequestContent, String proposeDate, String isRefSql, String sysOperType, String operStatus, String applicationSector, String operApplicant, String identifier, String developmentLeader, String svntabName, String analysis, String operApplicationReason, String notProductionImpact, String urgentReasonPhrase) {
+        this.seqId = seqId;
+        this.proNumber = proNumber;
+        this.proOperator = proOperator;
+        this.operationType = operationType;
+        this.scheduleTime = scheduleTime;
+        this.preOperation = preOperation;
+        this.afterOperation = afterOperation;
+        this.operationReason = operationReason;
+        this.proType = proType;
+        this.isOperationProduction = isOperationProduction;
+        this.operRequestContent = operRequestContent;
+        this.proposeDate = proposeDate;
+        this.isRefSql = isRefSql;
+        this.sysOperType = sysOperType;
+        this.operStatus = operStatus;
+        this.applicationSector = applicationSector;
+        this.operApplicant = operApplicant;
+        this.identifier = identifier;
+        this.developmentLeader = developmentLeader;
+        this.svntabName = svntabName;
+        this.analysis = analysis;
+        this.operApplicationReason = operApplicationReason;
+        this.notProductionImpact = notProductionImpact;
+        this.urgentReasonPhrase = urgentReasonPhrase;
+    }
+
     public ScheduleDO() {
     }
     public ScheduleDO(String proOperator) {
-        proOperator = proOperator;
+        this.proOperator = proOperator;
     }
 
 
     public ScheduleDO( String proNumber, String proOperator,
                          String operationType,String preOperation,
                          String afterOperation, String operationReason) {
-        proNumber = proNumber;
-        proOperator = proOperator;
-        operationType = operationType;
-        preOperation = preOperation;
-        afterOperation = afterOperation;
-        operationReason = operationReason;
+        this.proNumber = proNumber;
+        this.proOperator = proOperator;
+        this.operationType = operationType;
+        this.preOperation = preOperation;
+        this.afterOperation = afterOperation;
+        this.operationReason = operationReason;
     }
 
 
@@ -64,15 +91,14 @@ public class ScheduleDO extends AbstractDO {
     public ScheduleDO(int seqId, String proNumber, String proOperator,
                         String operationType, Date scheduleTime, String preOperation,
                         String afterOperation, String operationReason) {
-        super();
-        seqId = seqId;
-        proNumber = proNumber;
-        proOperator = proOperator;
-        operationType = operationType;
-        scheduleTime = scheduleTime;
-        preOperation = preOperation;
-        afterOperation = afterOperation;
-        operationReason = operationReason;
+        this.seqId = seqId;
+        this.proNumber = proNumber;
+        this.proOperator = proOperator;
+        this.operationType = operationType;
+        this.scheduleTime = scheduleTime;
+        this.preOperation = preOperation;
+        this.afterOperation = afterOperation;
+        this.operationReason = operationReason;
 
     }
 
@@ -81,15 +107,15 @@ public class ScheduleDO extends AbstractDO {
     public ScheduleDO(String proNumber, String proOperator,
                         String operationType, Date scheduleTime, String preOperation,
                         String afterOperation, String operationReason) {
-        super();
-        proNumber = proNumber;
-        proOperator = proOperator;
-        operationType = operationType;
-        scheduleTime = scheduleTime;
-        preOperation = preOperation;
-        afterOperation = afterOperation;
-        operationReason = operationReason;
+        this.proNumber = proNumber;
+        this.proOperator = proOperator;
+        this.operationType = operationType;
+        this.scheduleTime = scheduleTime;
+        this.preOperation = preOperation;
+        this.afterOperation = afterOperation;
+        this.operationReason = operationReason;
     }
+
     @Override
     public Serializable getId() {
         return null;

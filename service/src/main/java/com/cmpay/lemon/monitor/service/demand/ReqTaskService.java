@@ -24,7 +24,7 @@ public interface ReqTaskService {
      * @return
      */
     DemandBO findById(String req_inner_seq);
-
+    DemandDO findById1(String req_inner_seq);
     /**
      * 通过id数组查找记录
      *
