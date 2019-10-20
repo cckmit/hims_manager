@@ -310,54 +310,54 @@
     <!--</select>-->
 
 
-    <!--<insert id="insertProduction"  parameterType="com.hisun.persistence.beans.ProductionBean">-->
-        <!--insert into  t_production_records(<include refid="Base_Column_List"/>)-->
-        <!--values(#{pro_number},-->
-        <!--#{pro_need},-->
-        <!--#{pro_type},-->
-        <!--#{pro_date},-->
-        <!--#{application_dept},-->
-        <!--#{pro_applicant},-->
-        <!--#{applicant_tel},-->
-        <!--#{pro_module},-->
-        <!--#{business_principal},-->
-        <!--#{base_principal},-->
-        <!--#{pro_manager},-->
-        <!--#{pro_status},-->
-        <!--#{is_up_database},-->
-        <!--#{is_up_structure},-->
-        <!--#{pro_operation},-->
-        <!--#{is_ref_cerificate},-->
-        <!--#{is_advance_production},-->
-        <!--#{not_advance_reason},-->
-        <!--#{pro_advance_result},-->
-        <!--#{not_production_impact},-->
-        <!--#{identifier},-->
-        <!--#{identifier_tel},-->
-        <!--#{pro_checker},-->
-        <!--#{checker_tel},-->
-        <!--#{validation},-->
-        <!--#{development_leader},-->
-        <!--#{approver},-->
-        <!--#{update_operator},-->
-        <!--#{remark},-->
-        <!--#{unusual_reason_phrase},-->
-        <!--#{urgent_reason_phrase},-->
-        <!--#{completion_update},-->
-        <!--#{early_implementation},-->
-        <!--#{influence_use},-->
-        <!--#{influence_use_reason},-->
-        <!--#{influence_use_inf},-->
-        <!--#{operating_time},-->
-        <!--#{production_deployment_result},-->
-        <!--#{is_operation_production},-->
-        <!--#{mail_recipient},-->
-        <!--#{mail_copy_person},-->
-        <!--'待上传',-->
-        <!--NULL,-->
-        <!--NULL,#{mail_leader},#{svntab_name}-->
-        <!--)-->
-    <!--</insert>-->
+    <insert id="insertProduction"  parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        insert into  t_production_records(<include refid="Base_Column_List"/>)
+        values(#{proNumber},
+        #{proNeed},
+        #{proType},
+        #{proDate},
+        #{applicationDept},
+        #{proApplicant},
+        #{applicantTel},
+        #{proModule},
+        #{businessPrincipal},
+        #{basePrincipal},
+        #{proManager},
+        #{proStatus},
+        #{isUpDatabase},
+        #{isUpStructure},
+        #{proOperation},
+        #{isRefCerificate},
+        #{isAdvanceProduction},
+        #{notAdvanceReason},
+        #{proAdvanceResult},
+        #{notProductionImpact},
+        #{identifier},
+        #{identifierTel},
+        #{proChecker},
+        #{checkerTel},
+        #{validation},
+        #{developmentLeader},
+        #{approver},
+        #{updateOperator},
+        #{remark},
+        #{unusualReasonPhrase},
+        #{urgentReasonPhrase},
+        #{completionUpdate},
+        #{earlyImplementation},
+        #{influenceUse},
+        #{influenceUseReason},
+        #{influenceUseInf},
+        #{operatingTime},
+        #{productionDeploymentResult},
+        #{isOperationProduction},
+        #{mailRecipient},
+        #{mailCopyPerson},
+        '待上传',
+        NULL,
+        NULL,#{mailLeader},#{svntabName}
+        )
+    </insert>
 
     <insert id="insertSchedule"  parameterType="com.cmpay.lemon.monitor.entity.ScheduleDO">
     	insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,operation_reason)
@@ -415,18 +415,18 @@
 
     <!--</select>-->
 
-    <!--<insert id="insertMailFlow"  parameterType="com.hisun.persistence.beans.MailFlowBean">-->
-    	<!--insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)-->
-    	<!--values(-->
-    	    <!--#{mail_serial_number},-->
-    		<!--#{mail_subject},-->
-    		<!--#{mail_sender},-->
-    		<!--#{mail_receiver},-->
-    		<!--#{mail_annex},-->
-    		<!--#{mail_send_content},-->
-    		<!--#{flow_time}-->
-    		<!--)-->
-    <!--</insert>-->
+    <insert id="insertMailFlow"  parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailFlowBean">
+    	insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)
+    	values(
+    	    #{mail_serial_number},
+    		#{mail_subject},
+    		#{mail_sender},
+    		#{mail_receiver},
+    		#{mail_annex},
+    		#{mail_send_content},
+    		#{flow_time}
+    		)
+    </insert>
 
 
     <!--<insert id="insertMailGroup"  parameterType="com.hisun.persistence.beans.MailGroupBean">-->
@@ -678,159 +678,160 @@
         WHERE pro_number = #{proNumber}
     </update>
 
-    <!--<update id="updateAllProduction" parameterType="com.hisun.persistence.beans.ProductionBean">-->
-        <!--UPDATE t_production_records-->
-        <!--SET-->
-        <!--<if test="pro_need != null and pro_need != ''">-->
-            <!--pro_need  = #{pro_need},-->
-        <!--</if>-->
-        <!--<if test="pro_type != null and pro_type != ''">-->
-            <!--pro_type =#{pro_type},-->
-        <!--</if>-->
-        <!--<if test="pro_date != null and pro_date != ''">-->
-            <!--pro_date=#{pro_date},-->
-        <!--</if>-->
-        <!--<if test="application_dept != null and application_dept != ''">-->
-            <!--application_dept=#{application_dept},-->
-        <!--</if>-->
-        <!--<if test="pro_applicant != null and pro_applicant != ''">-->
-            <!--pro_applicant=#{pro_applicant},-->
-        <!--</if>-->
-        <!--<if test="applicant_tel != null and applicant_tel != ''">-->
-            <!--applicant_tel=#{applicant_tel},-->
-        <!--</if>-->
-        <!--<if test="pro_module != null and pro_module != ''">-->
-            <!--pro_module=#{pro_module},-->
-        <!--</if>-->
-        <!--<if test="business_principal != null and business_principal != ''">-->
-            <!--business_principal=#{business_principal},-->
-        <!--</if>-->
-        <!--<if test="base_principal != null and base_principal != ''">-->
-            <!--base_principal=#{base_principal},-->
-        <!--</if>-->
-        <!--<if test="pro_manager != null and pro_manager != ''">-->
-            <!--pro_manager=#{pro_manager},-->
-        <!--</if>-->
-        <!--<if test="is_up_database != null and is_up_database != ''">-->
-            <!--is_up_database=#{is_up_database},-->
-        <!--</if>-->
-        <!--<if test="is_up_structure != null and is_up_structure != ''">-->
-            <!--is_up_structure=#{is_up_structure},-->
-        <!--</if>-->
-        <!--<if test="pro_operation != null and pro_operation != ''">-->
-            <!--pro_operation=#{pro_operation},-->
-        <!--</if>-->
-        <!--<if test="is_ref_cerificate != null and is_ref_cerificate != ''">-->
-            <!--is_ref_cerificate=#{is_ref_cerificate},-->
-        <!--</if>-->
-        <!--<if test="is_advance_production != null and is_advance_production != ''">-->
-            <!--is_advance_production=#{is_advance_production},-->
-        <!--</if>-->
-        <!--<if test="not_advance_reason != null and not_advance_reason != ''">-->
-            <!--not_advance_reason=#{not_advance_reason},-->
-        <!--</if>-->
-        <!--<if test="pro_advance_result != null and pro_advance_result != ''">-->
-            <!--pro_advance_result=#{pro_advance_result},-->
-        <!--</if>-->
-        <!--<if test="not_production_impact != null and not_production_impact != ''">-->
-            <!--not_production_impact=#{not_production_impact},-->
-        <!--</if>-->
-        <!--<if test="identifier != null and identifier != ''">-->
-            <!--identifier=#{identifier},-->
-        <!--</if>-->
-        <!--<if test="identifier_tel != null and identifier_tel != ''">-->
-            <!--identifier_tel=#{identifier_tel},-->
-        <!--</if>-->
-        <!--<if test="pro_checker != null and pro_checker != ''">-->
-            <!--pro_checker=#{pro_checker},-->
-        <!--</if>-->
-        <!--<if test="checker_tel != null and checker_tel != ''">-->
-            <!--checker_tel=#{checker_tel},-->
-        <!--</if>-->
-        <!--<if test="validation != null and validation != ''">-->
-            <!--validation=#{validation},-->
-        <!--</if>-->
-        <!--<if test="development_leader != null and development_leader != ''">-->
-            <!--development_leader=#{development_leader},-->
-        <!--</if>-->
-        <!--<if test="approver != null and approver != ''">-->
-            <!--approver=#{approver},-->
-        <!--</if>-->
-        <!--<if test="update_operator != null and update_operator != ''">-->
-            <!--update_operator=#{update_operator},-->
-        <!--</if>-->
-        <!--<if test="remark != null and remark != ''">-->
-            <!--remark=#{remark},-->
-        <!--</if>-->
-        <!--<if test="unusual_reason_phrase != null and unusual_reason_phrase != ''">-->
-            <!--unusual_reason_phrase=#{unusual_reason_phrase},-->
-        <!--</if>-->
-        <!--<if test="urgent_reason_phrase != null and urgent_reason_phrase != ''">-->
-            <!--urgent_reason_phrase=#{urgent_reason_phrase},-->
-        <!--</if>-->
-        <!--<if test="completion_update != null and completion_update != ''">-->
-            <!--completion_update=#{completion_update},-->
-        <!--</if>-->
-        <!--<if test="early_implementation != null and early_implementation != ''">-->
-            <!--early_implementation=#{early_implementation},-->
-        <!--</if>-->
-        <!--<if test="influence_use != null and influence_use != ''">-->
-            <!--influence_use=#{influence_use},-->
-        <!--</if>-->
-        <!--<if test="influence_use_reason != null and influence_use_reason != ''">-->
-            <!--influence_use_reason=#{influence_use_reason},-->
-        <!--</if>-->
-        <!--<if test="influence_use_inf != null and influence_use_inf != ''">-->
-            <!--influence_use_inf=#{influence_use_inf},-->
-        <!--</if>-->
-        <!--<if test="operating_time != null and operating_time != ''">-->
-            <!--operating_time=#{operating_time},-->
-        <!--</if>-->
-        <!--<if test="production_deployment_result != null and production_deployment_result != ''">-->
-            <!--production_deployment_result=#{production_deployment_result},-->
-        <!--</if>-->
-        <!--<if test="mail_recipient != null and mail_recipient != ''">-->
-            <!--mail_recipient=#{mail_recipient},-->
-        <!--</if>-->
-        <!--<if test="mail_copy_person != null and mail_copy_person != ''">-->
-            <!--mail_copy_person = #{mail_copy_person},-->
-        <!--</if>-->
-        <!--<if test="is_operation_production != null">-->
-            <!--is_operation_production=#{is_operation_production},-->
-        <!--</if>-->
-        <!--<if test="mail_leader != null and mail_leader != ''">-->
-            <!--mail_leader = #{mail_leader},-->
-        <!--</if>-->
-        <!--<if test="svntab_name != null">-->
-            <!--svntab_name = #{svntab_name},-->
-        <!--</if>-->
-        <!--<if test="pro_status != null and pro_status != ''">-->
-            <!--pro_status = #{pro_status}-->
-        <!--</if>-->
+    <update id="updateAllProduction" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        UPDATE t_production_records
+        SET
+        <if test="proNeed != null and proNeed != ''">
+            pro_need  = #{proNeed},
+        </if>
+        <if test="proType != null and proType != ''">
+            pro_type =#{proType},
+        </if>
+        <if test="proDate != null and proDate != ''">
+            pro_date=#{proDate},
+        </if>
+        <if test="applicationDept != null and applicationDept != ''">
+            application_dept=#{applicationDept},
+        </if>
+        <if test="proApplicant != null and proApplicant != ''">
+            pro_applicant=#{proApplicant},
+        </if>
+        <if test="applicantTel != null and applicantTel != ''">
+            applicant_tel=#{applicantTel},
+        </if>
+        <if test="proModule != null and proModule != ''">
+            pro_module=#{proModule},
+        </if>
+        <if test="businessPrincipal != null and businessPrincipal != ''">
+            business_principal=#{businessPrincipal},
+        </if>
+        <if test="basePrincipal != null and basePrincipal != ''">
+            base_principal=#{basePrincipal},
+        </if>
+        <if test="proManager != null and proManager != ''">
+            pro_manager=#{proManager},
+        </if>
+        <if test="isUpDatabase != null and isUpDatabase != ''">
+            is_up_database=#{isUpDatabase},
+        </if>
+        <if test="isUpStructure != null and isUpStructure != ''">
+            is_up_structure=#{isUpStructure},
+        </if>
+        <if test="proOperation != null and proOperation != ''">
+            pro_operation=#{proOperation},
+        </if>
+        <if test="isRefCerificate != null and isRefCerificate != ''">
+            is_ref_cerificate=#{isRefCerificate},
+        </if>
+        <if test="isAdvanceProduction != null and isAdvanceProduction != ''">
+            is_advance_production=#{isAdvanceProduction},
+        </if>
+        <if test="notAdvanceReason != null and notAdvanceReason != ''">
+            not_advance_reason=#{notAdvanceReason},
+        </if>
+        <if test="proAdvanceResult != null and proAdvanceResult != ''">
+            pro_advance_result=#{proAdvanceResult},
+        </if>
+        <if test="notProductionImpact != null and notProductionImpact != ''">
+            not_production_impact=#{notProductionImpact},
+        </if>
+        <if test="identifier != null and identifier != ''">
+            identifier=#{identifier},
+        </if>
+        <if test="identifierTel != null and identifierTel != ''">
+            identifier_tel=#{identifierTel},
+        </if>
+        <if test="proChecker != null and proChecker != ''">
+            pro_checker=#{proChecker},
+        </if>
+        <if test="checkerTel != null and checkerTel != ''">
+            checker_tel=#{checkerTel},
+        </if>
+        <if test="validation != null and validation != ''">
+            validation=#{validation},
+        </if>
+        <if test="developmentLeader != null and developmentLeader != ''">
+            development_leader=#{developmentLeader},
+        </if>
+        <if test="approver != null and approver != ''">
+            approver=#{approver},
+        </if>
+        <if test="updateOperator != null and updateOperator != ''">
+            update_operator=#{updateOperator},
+        </if>
+        <if test="remark != null and remark != ''">
+            remark=#{remark},
+        </if>
+        <if test="unusualReasonPhrase != null and unusualReasonPhrase != ''">
+            unusual_reason_phrase=#{unusualReasonPhrase},
+        </if>
+        <if test="urgentReasonPhrase != null and urgentReasonPhrase != ''">
+            urgent_reason_phrase=#{urgentReasonPhrase},
+        </if>
+        <if test="completionUpdate != null and completionUpdate != ''">
+            completion_update=#{completionUpdate},
+        </if>
+        <if test="earlyImplementation != null and earlyImplementation != ''">
+            early_implementation=#{earlyImplementation},
+        </if>
+        <if test="influenceUse != null and influenceUse != ''">
+            influence_use=#{influenceUse},
+        </if>
+        <if test="influenceUseReason != null and influenceUseReason != ''">
+            influence_use_reason=#{influenceUseReason},
+        </if>
+        <if test="influenceUseInf != null and influenceUseInf != ''">
+            influence_use_inf=#{influenceUseInf},
+        </if>
+        <if test="operatingTime != null and operatingTime != ''">
+            operating_time=#{operatingTime},
+        </if>
+        <if test="productionDeploymentResult != null and productionDeploymentResult != ''">
+            production_deployment_result=#{productionDeploymentResult},
+        </if>
+        <if test="mailRecipient != null and mailRecipient != ''">
+            mail_recipient=#{mailRecipient},
+        </if>
+        <if test="mailCopyPerson != null and mailCopyPerson != ''">
+            mail_copy_person = #{mailCopyPerson},
+        </if>
+        <if test="isOperationProduction != null">
+            is_operation_production=#{isOperationProduction},
+        </if>
+        <if test="mailLeader != null and mailLeader != ''">
+            mail_leader = #{mailLeader},
+        </if>
+        <if test="svntabName != null">
+            svntab_name = #{svntabName},
+        </if>
+        <if test="proStatus != null and proStatus != ''">
+            pro_status = #{proStatus}
+        </if>
 
-        <!--WHERE pro_number = #{pro_number}-->
-    <!--</update>-->
+        WHERE pro_number = #{proNumber}
+    </update>
     <!--<delete id="deleteMailGroup" parameterType="string">-->
     <!--delete from t_mail_group-->
     <!--where mail_group_id=#{mail_group_id}-->
     <!--</delete>-->
 
-    <!--&lt;!&ndash; 根据人员姓名查询各部门经理邮箱 &ndash;&gt;-->
-    <!--<select id="findManagerMailByUserName" resultType="java.lang.String">-->
-        <!--SELECT GROUP_CONCAT(DISTINCT t3.email separator ';') AS email-->
-        <!--FROM t_permi_dept t1-->
-        <!--LEFT JOIN t_permi_user t2 ON t1.dept_id = t2.dept_id-->
-        <!--LEFT JOIN t_permi_user t3 ON t1.dept_manager_name = t3.user_name-->
-        <!--WHERE t3.is_enabled = TRUE AND t2.user_name IN-->
-        <!--<foreach collection="list" index="index" item="item" open="(" close=")" separator=",">-->
-            <!--#{item}-->
-        <!--</foreach>-->
-    <!--</select>-->
+    <!-- 根据人员姓名查询各部门经理邮箱 -->
+    <select id="findManagerMailByUserName" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(DISTINCT t3.email separator ';') AS email
+        FROM t_permi_dept t1
+        LEFT JOIN t_permi_user t2 ON t1.dept_id = t2.dept_id
+        LEFT JOIN t_permi_user t3 ON t1.dept_manager_name = t3.user_name
+        WHERE t3.is_enabled = TRUE AND t2.user_name IN
+        <foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 
     <!--<select id="findDayStatus"  parameterType="string" resultMap="pm">-->
 	<!--select pro_number from  t_production_records-->
 	   <!--where pro_status in ("投产待部署","部署完成待验证","投产验证完成")-->
 	   <!--and  date_format(records_time,'%Y-%m-%d')=#{cur_date}-->
 	<!--</select>-->
+
 
 </mapper>

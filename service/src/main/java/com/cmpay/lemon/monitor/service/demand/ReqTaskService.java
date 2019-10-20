@@ -125,4 +125,6 @@ public interface ReqTaskService {
     void updateReqSts(String reqInnerSeq,String reqNo, String reqSts, String reqStsRemarks,String reqNm);
 
     String reqStsCheck(String reqSts);
+
+    void updatePreCurPeriod(DemandBO demand);
 }

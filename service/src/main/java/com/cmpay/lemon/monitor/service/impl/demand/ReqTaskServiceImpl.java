@@ -867,5 +867,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         return reqSts;
     }
 
+    @Override
+    public void updatePreCurPeriod(DemandBO demand) {
+        DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demand);
+        demandDao.updatePreCurPeriod(demandDO);
+
+
+    }
+
 
 }

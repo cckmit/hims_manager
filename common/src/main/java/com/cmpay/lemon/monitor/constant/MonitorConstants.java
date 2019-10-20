@@ -73,6 +73,10 @@ public class MonitorConstants {
 
     public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**
+     * 投产时间管理Uri
+     */
+    public static final String PRODUCTTIME=BASE_URI + "/productTime";
+    /**
      * 字典uri
      */
     public static final String DICTIONARY_PATH = BASE_URI + "/dic";

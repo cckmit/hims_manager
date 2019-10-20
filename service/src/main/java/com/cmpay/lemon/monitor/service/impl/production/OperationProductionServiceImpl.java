@@ -13,10 +13,7 @@ import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
-import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
+import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
@@ -47,6 +44,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationProductionServiceImpl.class);
     @Autowired
     private IOperationProductionDao IOperationProductionDao;
+    @Autowired
+    private IProductionPicDao productionPicDao;
     @Autowired
     private ReqTaskService reqTaskService;
     @Override
@@ -520,6 +519,107 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return ;//ajaxDoneSuccess("批量操作成功");
     }
 
+    @Override
+    public String findManagerMailByUserName(List<String> userNames) {
+        return IOperationProductionDao.findManagerMailByUserName(userNames);
+    }
+
+    @Override
+    public void addMailFlow(MailFlowBean bean) {
+        IOperationProductionDao.insertMailFlow(bean);
+    }
+
+    @Override
+    public File exportUnusualExcel(HttpServletResponse response,
+                                   List<ProductionBO> list)  {
+        String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        response.reset();
+        Properties p;
+        try {
+            p = PropertiesUtils.loadProperties("set.properties");
+
+            String path = p.getProperty("excel_down_dir").endsWith("/")?p.getProperty("excel_down_dir"):p.getProperty("excel_down_dir")+"/";
+            String filePath = path + fileName;
+//			String filePath = "/Users/zouxin/Source/basefile/hims/productRecord/" + fileName;
+            ExcelUnusualListUtil util = new ExcelUnusualListUtil();
+
+            util.createExcel(filePath, list,null);
+
+
+//			response.setHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(Constant.CHARSET_GB2312), "UTF-8"));
+//			response.setContentType("application/octet-stream; charset=utf-8");
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    @Override
+    public File exportUrgentExcel(HttpServletResponse response,
+                                  List<ProductionBO> list){
+        String fileName = "救火更新申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        response.reset();
+        Properties p;
+        try {
+            p = PropertiesUtils.loadProperties("set.properties");
+
+            String path = p.getProperty("excel_down_dir").endsWith("/")?p.getProperty("excel_down_dir"):p.getProperty("excel_down_dir")+"/";
+            String filePath = path + fileName;
+            ExcelUrgentListUtil util = new ExcelUrgentListUtil();
+
+            util.createExcel(filePath, list,null);
+
+
+//			response.setHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
+//			response.setContentType("application/octet-stream; charset=utf-8");
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+
+    }
+
+    @Override
+    public ProductionBO searchProdutionDetail(String proNumber) {
+        ProductionBO productionBO=null;
+        ProductionDO productionBean = IOperationProductionDao.findProductionBean(proNumber);
+        if(productionBean!=null) {
+            System.err.println(productionBean.toString());
+            productionBO= BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
+        }
+        return productionBO;
+    }
+
+    @Override
+    public void updateAllProduction(ProductionBO bean) {
+        IOperationProductionDao.updateAllProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
+    }
+
+    @Override
+    public void addScheduleBean(ScheduleDO scheduleBean) {
+        IOperationProductionDao.insertSchedule(scheduleBean);
+    }
+
+    @Override
+    public void addProduction(ProductionBO bean) {
+        IOperationProductionDao.insertProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
+    }
+
+    @Override
+    public void addProductionPicBean(ProductionPicDO productionPicDO) {
+
+        productionPicDao.insert(productionPicDO);
+    }
+
+
     public File sendExportExcel_Result(List<ProductionDO> list){
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
@@ -537,4 +637,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         return file;
     }
+
+
 }

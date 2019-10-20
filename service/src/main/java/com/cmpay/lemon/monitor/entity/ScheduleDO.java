@@ -1,10 +1,8 @@
 package com.cmpay.lemon.monitor.entity;
 
-
 import com.cmpay.lemon.framework.annotation.DataObject;
 import java.io.Serializable;
 import java.sql.Date;
-
 /**
  * 投产状态变更记录
  */
@@ -21,23 +19,18 @@ public class ScheduleDO extends AbstractDO {
     private String operationReason;
     private String proType;
     private String isOperationProduction;
-
     private String operRequestContent;
     private String proposeDate;
     private String isRefSql;
     private String sysOperType;
     private String operStatus;
     private String applicationSector;
-
     private String operApplicant;
     private String identifier;
     private String developmentLeader;
     private String svntabName ;
-
     private String analysis;
     private String operApplicationReason;
-
-
     private String notProductionImpact;
     private String urgentReasonPhrase;
 

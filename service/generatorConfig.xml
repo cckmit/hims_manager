@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-         <table tableName="t_demand_jira_develop_master_task" domainObjectName="DemandJiraDevelopMasterTaskDO" enableCountByExample="false"
+         <table tableName="t_production_picture" domainObjectName="productionPicDO" enableCountByExample="false"
                 enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
          </table>

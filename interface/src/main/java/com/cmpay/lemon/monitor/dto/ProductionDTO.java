@@ -4,7 +4,6 @@ import com.cmpay.framework.data.request.GenericDTO;
 
 import java.sql.Timestamp;
 import java.sql.Date;
-
 /**
  * @author: zhou_xiong
  */

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionTimeDao">
+    <resultMap id="rm" type="com.cmpay.lemon.monitor.entity.ProductionTimeD0">
+        <result property="id" jdbcType="INTEGER" column="pro_id"/>
+        <result property="desc" jdbcType="VARCHAR" column="pro_desc"/>
+        <result property="time" jdbcType="VARCHAR" column="pro_time"/>
+    </resultMap>
+
+    <!-- 查询所有投产时间设置详细信息 -->
+    <select id="findProductTimeList" resultMap="rm">
+        SELECT pro_id,pro_desc,pro_time FROM `t_production_time`
+    </select>
+
+    <!-- 通过标示查询投产时间信息 -->
+    <select id="findProductTimeByID" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT pro_time FROM `t_production_time` WHERE pro_id = #{id}
+    </select>
+
+    <!-- 通过标示查询投产时间详细信息 -->
+    <select id="findProductTimeBeanByID" parameterType="java.lang.Integer" resultMap="rm">
+        SELECT pro_id,pro_desc,pro_time FROM `t_production_time` WHERE pro_id = #{id}
+    </select>
+
+    <!-- 更新投产时间信息 -->
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProductionTimeD0">
+        UPDATE t_production_time
+        <set>
+            <if test="desc != null">
+                pro_desc = #{desc},
+            </if>
+            <if test="time != null">
+                pro_time = #{time}
+            </if>
+        </set>
+        WHERE pro_id = #{id}
+    </update>
+
+</mapper>
