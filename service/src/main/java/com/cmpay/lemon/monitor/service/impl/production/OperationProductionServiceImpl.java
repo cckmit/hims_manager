@@ -530,25 +530,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public File exportUnusualExcel(HttpServletResponse response,
+    public File exportUnusualExcel(
                                    List<ProductionBO> list)  {
         String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
-        response.reset();
-        Properties p;
         try {
-            p = PropertiesUtils.loadProperties("set.properties");
-
-            String path = p.getProperty("excel_down_dir").endsWith("/")?p.getProperty("excel_down_dir"):p.getProperty("excel_down_dir")+"/";
+            //todo 写死路径
+            String path="D:\\home\\devadm\\temp\\import";
             String filePath = path + fileName;
-//			String filePath = "/Users/zouxin/Source/basefile/hims/productRecord/" + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
-
             util.createExcel(filePath, list,null);
-
-
-//			response.setHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(Constant.CHARSET_GB2312), "UTF-8"));
-//			response.setContentType("application/octet-stream; charset=utf-8");
             file=new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
@@ -559,24 +550,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public File exportUrgentExcel(HttpServletResponse response,
-                                  List<ProductionBO> list){
+    public File exportUrgentExcel(List<ProductionBO> list){
         String fileName = "救火更新申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
-        response.reset();
-        Properties p;
         try {
-            p = PropertiesUtils.loadProperties("set.properties");
-
-            String path = p.getProperty("excel_down_dir").endsWith("/")?p.getProperty("excel_down_dir"):p.getProperty("excel_down_dir")+"/";
+            //todo 写死路径
+            String path="D:\\home\\devadm\\temp\\import";
             String filePath = path + fileName;
             ExcelUrgentListUtil util = new ExcelUrgentListUtil();
-
             util.createExcel(filePath, list,null);
-
-
-//			response.setHeader("Content-Disposition", "attachment; filename=" + new String(fileName.getBytes(Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
-//			response.setContentType("application/octet-stream; charset=utf-8");
             file=new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
@@ -623,7 +605,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File sendExportExcel_Result(List<ProductionDO> list){
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
-        Properties p;
         try {
             String path = "C:\\home\\devadm\\temp\\propkg";
             String filePath = path + fileName;

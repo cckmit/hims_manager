@@ -61,11 +61,11 @@
     <!--</resultMap>-->
 
     <resultMap id="mm" type="com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO">
-        <result property="mail_group_id"         jdbcType="VARCHAR"      column="mail_group_id"/>
-        <result property="mail_group_name"         jdbcType="VARCHAR"      column="mail_group_name"/>
-        <result property="mail_user"         jdbcType="VARCHAR"      column="mail_user"/>
-        <result property="mail_group_desc"  jdbcType="VARCHAR"      column="mail_group_desc"/>
-        <result property="group_time"  jdbcType="DATE"      column="group_time"/>
+        <result property="mailGroupId"         jdbcType="VARCHAR"      column="mail_group_id"/>
+        <result property="mailGroupName"         jdbcType="VARCHAR"      column="mail_group_name"/>
+        <result property="mailUser"         jdbcType="VARCHAR"      column="mail_user"/>
+        <result property="mailGroupDesc"  jdbcType="VARCHAR"      column="mail_group_desc"/>
+        <result property="groupTime"  jdbcType="DATE"      column="group_time"/>
     </resultMap>
 
     <!--<resultMap id="pbm" type="com.hisun.persistence.beans.ProblemBean">-->
@@ -213,7 +213,7 @@
     	SELECT
     	mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time
     	FROM t_mail_group t1
-    	WHERE mail_group_id = #{mail_group_id}
+    	WHERE mail_group_id = #{mailGroupId}
     </select>
 
     <insert id="addMailFlow"  parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
@@ -687,7 +687,7 @@
         <if test="proType != null and proType != ''">
             pro_type =#{proType},
         </if>
-        <if test="proDate != null and proDate != ''">
+        <if test="proDate != null">
             pro_date=#{proDate},
         </if>
         <if test="applicationDept != null and applicationDept != ''">

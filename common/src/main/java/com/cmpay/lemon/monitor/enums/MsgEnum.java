@@ -8,6 +8,7 @@ import com.cmpay.lemon.common.utils.StringUtils;
  */
 public enum MsgEnum implements AlertCapable {
     SUCCESS("MON00000", "交易成功"),
+    CUSTOMSUCCESS("MON00000", ""),
     LOGIN_DATA_BIND_FAILED("MON00001", "登录数据解析失败"),
     LOGIN_ACCOUNT_OR_PASSWORD_ERROR("MON00002", "账户或密码错误"),
     LOGIN_SESSION_EXPIRE("MON00003", "session已失效，请重新登录"),

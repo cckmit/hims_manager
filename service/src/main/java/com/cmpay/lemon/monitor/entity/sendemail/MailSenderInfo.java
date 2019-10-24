@@ -7,10 +7,10 @@ import java.util.Vector;
 
 public class MailSenderInfo {      
     // 发送邮件的服务器的IP和端口      
-    private String mailServerHost;      
+    private String mailServerHost = "smtp.qiye.163.com" ;
     private String mailServerPort = "25";      
     // 邮件发送者的地址      
-    private String fromAddress;      
+    private String fromAddress = "code_review@hisuntech.com";
     // 邮件接收者的地址      
     private String[] toAddress;  
     //邮箱抄送者的地址

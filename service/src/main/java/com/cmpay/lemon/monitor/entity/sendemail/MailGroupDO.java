@@ -14,69 +14,69 @@ import java.util.Date;
 
 @DataObject
 public class MailGroupDO extends AbstractDO {
-    private String mail_group_id;
-    private String mail_group_name;
-    private String mail_user;
-    private String mail_group_desc;
-    private Date group_time;
+    private String mailGroupId;
+    private String mailGroupName;
+    private String mailUser;
+    private String mailGroupDesc;
+    private Date groupTime;
 
     public MailGroupDO() {
     }
 
     public MailGroupDO(String mailGroupName,
                          String mailUser, String mailGroupDesc) {
-        mail_group_name = mailGroupName;
-        mail_user = mailUser;
-        mail_group_desc = mailGroupDesc;
+        this.mailGroupName = mailGroupName;
+        this.mailUser = mailUser;
+        this. mailGroupDesc = mailGroupDesc;
     }
 
     public MailGroupDO(String mailGroupId, String mailGroupName,
                          String mailUser, String mailGroupDesc) {
         super();
-        mail_group_id = mailGroupId;
-        mail_group_name = mailGroupName;
-        mail_user = mailUser;
-        mail_group_desc = mailGroupDesc;
+        this.mailGroupId = mailGroupId;
+        this.mailGroupName = mailGroupName;
+        this.mailUser = mailUser;
+        this.mailGroupDesc = mailGroupDesc;
     }
 
-    public String getMail_group_id() {
-        return mail_group_id;
+    public String getMailGroupId() {
+        return mailGroupId;
     }
 
-    public void setMail_group_id(String mailGroupId) {
-        mail_group_id = mailGroupId;
+    public void setMailGroupId(String mailGroupId) {
+        this.mailGroupId = mailGroupId;
     }
 
-    public String getMail_group_name() {
-        return mail_group_name;
+    public String getMailGroupName() {
+        return mailGroupName;
     }
 
-    public void setMail_group_name(String mailGroupName) {
-        mail_group_name = mailGroupName;
+    public void setMailGroupName(String mailGroupName) {
+        this.mailGroupName = mailGroupName;
     }
 
-    public String getMail_user() {
-        return mail_user;
+    public String getMailUser() {
+        return mailUser;
     }
 
-    public void setMail_user(String mailUser) {
-        mail_user = mailUser;
+    public void setMailUser(String mailUser) {
+        this.mailUser = mailUser;
     }
 
-    public String getMail_group_desc() {
-        return mail_group_desc;
+    public String getMailGroupDesc() {
+        return mailGroupDesc;
     }
 
-    public void setMail_group_desc(String mailGroupDesc) {
-        mail_group_desc = mailGroupDesc;
+    public void setMailGroupDesc(String mailGroupDesc) {
+        this.mailGroupDesc = mailGroupDesc;
     }
 
-    public Date getGroup_time() {
-        return group_time;
+    public Date getGroupTime() {
+        return groupTime;
     }
 
-    public void setGroup_time(Date groupTime) {
-        group_time = groupTime;
+    public void setGroupTime(Date groupTime) {
+        this.groupTime = groupTime;
     }
 
     @Override

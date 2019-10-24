@@ -35,10 +35,10 @@ public interface OperationProductionService {
     void addMailFlow(MailFlowBean bnb);
 
     // 导出非投产日正常投产申请表EXCEL
-    File exportUnusualExcel(HttpServletResponse response,List<ProductionBO> list);
+    File exportUnusualExcel(List<ProductionBO> list);
 
     // 导出紧急更新申请表EXCEL
-    File exportUrgentExcel(HttpServletResponse response,List<ProductionBO> list);
+    File exportUrgentExcel(List<ProductionBO> list);
     // 查询一条投产记录的详情
     ProductionBO searchProdutionDetail(String proNumber);
 

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 
 
 public class ProductionInputReqDTO {
+        private Boolean attachment;
         private String proNumber;
         private String proNeed;
         private String proType;
@@ -548,5 +549,13 @@ public class ProductionInputReqDTO {
         public void setIsFallback(String isFallback) {
             this.isFallback = isFallback;
         }
+
+    public Boolean getAttachment() {
+        return attachment;
     }
+
+    public void setAttachment(Boolean attachment) {
+        this.attachment = attachment;
+    }
+}
 

@@ -1,5 +1,4 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -9,8 +8,10 @@ import java.util.Properties;
  */
 public class SendEmailConfig {
 	private String env;
+
+	//todo 先改成发给自己
 	//private String devMail="liu_chang@hisuntech.com";
-	private String devMail="liu_chang@hisuntech.com";
+	private String devMail="wu_lr@hisuntech.com";
 	public static final String SEND_MAIL = "sendmail.properties";
 	/**
 	 * 
@@ -32,13 +33,15 @@ public class SendEmailConfig {
 	}
 	
 	public SendEmailConfig(){
-		Properties p;
+		//以前是从配置文件获取,重构没有引入配置文件
+		this.env="DEV";
+		/*Properties p;
 		try {
 			p = PropertiesUtils.loadProperties("set.properties");
 			this.env = p.getProperty("mail_env");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	};
 	/**
 	 * 

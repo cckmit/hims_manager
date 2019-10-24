@@ -112,7 +112,7 @@ public class SimpleMailSender {
                 Address from = new InternetAddress(mailInfo.getFromAddress());
                 mailMessage.setFrom(from);
                 // 设置接收者邮箱
-                Address[] toMails = excludeFailMails( mailInfo.getToAddress(), failMails);
+                Address[] toMails = excludeFailMails(mailInfo.getToAddress(), failMails);
                 mailMessage.setRecipients(Message.RecipientType.TO, toMails);
                 // 设置抄送者邮箱
                 if (mailInfo.getCcs() != null && mailInfo.getCcs().length > 0) {
@@ -124,7 +124,6 @@ public class SimpleMailSender {
                 mailMessage.setSentDate(new Date());
                 // 设置邮箱内容及其文件
                 setMailContent(mailMessage, mailInfo);
-
                 // 发送邮件
                 Transport transport = sendMailSession.getTransport("smtp");
                 transport.connect(MAIL_HOST, USER, PASSWORD);
@@ -132,7 +131,7 @@ public class SimpleMailSender {
                 transport.close();
                 return true;
             } catch (Exception e) {
-                //System.out.println("邮件发送失败错误原因："+e.toString());
+                e.printStackTrace();
                 String errorMessage = e.getCause().toString();
                 String[] errors = errorMessage.split(":");
                 logger.error("邮件发送失败:" + errors.toString());

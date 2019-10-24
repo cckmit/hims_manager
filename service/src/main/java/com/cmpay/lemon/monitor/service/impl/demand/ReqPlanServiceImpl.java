@@ -401,7 +401,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         //测试部邮箱(田群、吴暇、谭杰、张勇、左娟)
         MailGroupDO mailBean = operationProductionDao.findMailGroupBeanDetail("4");
-        testDevpEmail += mailBean.getMail_user();
+        testDevpEmail += mailBean.getMailUser();
         resMap.put("proMemberEmail", proMemberEmail);
         resMap.put("testDevpEmail", testDevpEmail);
         resMap.put("devpEmail", devpEmail);
