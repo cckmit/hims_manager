@@ -9,6 +9,7 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.MailGroupBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.dao.*;
@@ -602,7 +603,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public List<MailGroupDO> searchMailGroupList() {
+    public List<MailGroupBO> searchMailGroupList() {
 
 
 

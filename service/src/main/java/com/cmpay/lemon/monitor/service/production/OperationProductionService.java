@@ -1,12 +1,12 @@
 package com.cmpay.lemon.monitor.service.production;
 
 
+import com.cmpay.lemon.monitor.bo.MailGroupBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowBean;
-import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,5 +52,5 @@ public interface OperationProductionService {
     /** 保存图片基本信息*/
     void addProductionPicBean(ProductionPicDO productionPicDO);
 
-    List<MailGroupDO> searchMailGroupList();
+    List<MailGroupBO> searchMailGroupList();
 }
