@@ -38,7 +38,7 @@ import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 /**
- * @author: zhou_xiong
+ * 投产管理：查询及状态变更
  */
 @Service
 public class OperationProductionServiceImpl implements OperationProductionService {
@@ -284,7 +284,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setPassword(Constant.P_EMAIL_PSWD);
                 mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
 
-                String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
@@ -336,7 +337,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                //String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -425,7 +427,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                //String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();

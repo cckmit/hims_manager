@@ -219,13 +219,13 @@
     <insert id="addMailFlow"  parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
     	insert into  t_mail_flow(mail_serial_number,mail_subject,mail_sender,mail_receiver,mail_annex,mail_send_content,flow_time)
     	values(
-    	    #{mail_serial_number},
-    		#{mail_subject},
-    		#{mail_sender},
-    		#{mail_receiver},
-    		#{mail_annex},
-    		#{mail_send_content},
-    		#{flow_time}
+    	    #{mailSerialNumber},
+    		#{mailSubject},
+    		#{mailSender},
+    		#{mailReceiver},
+    		#{mailAnnex},
+    		#{mailSendContent},
+    		#{flowTime}
     		)
     </insert>
 
