@@ -62,7 +62,7 @@ public class OperationProductionController {
             reqDTO.setProDate(reqDTO.getProDateEnd());
         }
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), reqDTO);
-        ProductionRspBO productionRspBO = OperationProductionService.find(productionBO);
+        ProductionRspBO productionRspBO = operationProductionService.find(productionBO);
         ProductionConditionRspDTO rspDTO = new ProductionConditionRspDTO();
         rspDTO.setProductionList(BeanConvertUtils.convertList(productionRspBO.getProductionList(), ProductionDTO.class));
         rspDTO.setPageNum(productionRspBO.getPageInfo().getPageNum());
