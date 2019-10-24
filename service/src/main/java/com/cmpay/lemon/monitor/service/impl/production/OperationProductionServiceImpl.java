@@ -43,7 +43,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 public class OperationProductionServiceImpl implements OperationProductionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationProductionServiceImpl.class);
     @Autowired
-    private IOperationProductionDao IOperationProductionDao;
+    private IOperationProductionDao operationProductionDao;
     @Autowired
     private IProductionPicDao productionPicDao;
     @Autowired
@@ -62,14 +62,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProductionDO productionDO = new ProductionDO();
         BeanConvertUtils.convert(productionDO, productionBO);
         PageInfo<ProductionBO> pageInfo = PageUtils.pageQueryWithCount(productionBO.getPageNum(), productionBO.getPageSize(),
-                () -> BeanConvertUtils.convertList(IOperationProductionDao.findPageBreakByCondition(productionDO), ProductionBO.class));
+                () -> BeanConvertUtils.convertList(operationProductionDao.findPageBreakByCondition(productionDO), ProductionBO.class));
         return pageInfo;
     }
     @Override
     public void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO){
         ProductionDO productionDO = new ProductionDO();
         BeanConvertUtils.convert(productionDO, productionBO);
-        List<ProductionDO> list = IOperationProductionDao.findExportExcelListByDate(productionDO);
+        List<ProductionDO> list = operationProductionDao.findExportExcelListByDate(productionDO);
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ProductionDO.class, list);
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
@@ -110,7 +110,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             for(int i=2;i<pro_number_list.length;i++){
-                ProductionDO beanCheck=IOperationProductionDao.findProductionBean(pro_number_list[i]);
+                ProductionDO beanCheck=operationProductionDao.findProductionBean(pro_number_list[i]);
                 if(!(beanCheck.getProStatus().equals("投产提出") || (beanCheck.getProStatus().equals("投产待部署") && beanCheck.getProType().equals("救火更新")))){
                     //return ajaxDoneError("当前投产状态的投产信息不可修改!");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -123,15 +123,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产预投产已部署，不可重复操作!");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
-                ProductionDO bean=IOperationProductionDao.findProductionBean(pro_number_list[i]);
+                ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
                 System.err.println(bean);
                 bean.setProductionDeploymentResult("已部署");
-                IOperationProductionDao.updateProduction(bean);
+                operationProductionDao.updateProduction(bean);
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getProStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "预投产已部署", sBean.getPreOperation(), sBean.getPreOperation(), "预投产已提前部署");
                 System.err.println(schedule);
-                IOperationProductionDao.insertSchedule(schedule);
+                operationProductionDao.insertSchedule(schedule);
             }
             return;
         }
@@ -142,7 +142,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             for(int i=2;i<pro_number_list.length;i++){
-                ProductionDO beanCheck=IOperationProductionDao.findProductionBean(pro_number_list[i]);
+                ProductionDO beanCheck=operationProductionDao.findProductionBean(pro_number_list[i]);
                 if(!currentUser.equals(beanCheck.getProManager()) && !currentUser.equals(beanCheck.getProApplicant()) && !currentUser.equals(beanCheck.getDevelopmentLeader())){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责该投产的产品经理,申请人以及开发负责人才能验证通过!");
@@ -159,13 +159,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
 
-                ProductionDO bean=IOperationProductionDao.findProductionBean(pro_number_list[i]);
+                ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
                 bean.setProAdvanceResult("通过");
-                IOperationProductionDao.updateProduction(bean);
+                operationProductionDao.updateProduction(bean);
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getProStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "预投产验证通过", sBean.getPreOperation(), sBean.getPreOperation(), "预投产验证已通过");
-                IOperationProductionDao.insertSchedule(schedule);
+                operationProductionDao.insertSchedule(schedule);
                 //是否预投产验证为“是”时，预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
                 if (bean.getIsAdvanceProduction().equals("是") && bean.getProAdvanceResult().equals("通过")) {
                     DemandDO demand = reqTaskService.findById1(bean.getProNumber());
@@ -242,10 +242,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         scheduleBean.setAfterOperation(pro_status_after);
         scheduleBean.setOperationType(pro_status_after);
         for (int i = 2; i < pro_number_list.length; ++i) {
-            String status = IOperationProductionDao.findProductionBean(pro_number_list[i]).getProStatus();
+            String status = operationProductionDao.findProductionBean(pro_number_list[i]).getProStatus();
             if (pro_status_after.equals("投产取消")) {
-                String applicant = IOperationProductionDao.findProductionBean(pro_number_list[i]).getProApplicant();
-                String pro_manager = IOperationProductionDao.findProductionBean(pro_number_list[i]).getProManager();
+                String applicant = operationProductionDao.findProductionBean(pro_number_list[i]).getProApplicant();
+                String pro_manager = operationProductionDao.findProductionBean(pro_number_list[i]).getProManager();
                 if ((!(currentUser.equals(applicant))) && (!(currentUser.equals(pro_manager)))) {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("您不是投产申请人或者负责该投产的产品经理!");
@@ -254,7 +254,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         for (int j = 2; j < pro_number_list.length; ++j) {
-            String status = IOperationProductionDao.findProductionBean(pro_number_list[j]).getProStatus();
+            String status = operationProductionDao.findProductionBean(pro_number_list[j]).getProStatus();
             scheduleBean.setProNumber(pro_number_list[j]);
             scheduleBean.setPreOperation(status);
 
@@ -264,9 +264,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     (pro_status_after.equals("投产打回")) || (pro_status_after.equals("投产回退")) || (pro_status_after.equals("投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
-                mfva.setEmployeeName(IOperationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
-                MailFlowDO mfba = IOperationProductionDao.searchUserEmail(mfva);
-                ProductionDO bean = IOperationProductionDao.findProductionBean(pro_number_list[j]);
+                mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
+                MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
+                ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[j]);
                 System.err.println(mfba.getEmployeeName()+"=="+mfba.getEmployeeEmail());
                 MailFlowDO bnb = new MailFlowDO("投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
@@ -303,23 +303,23 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 SimpleMailSender sms = new SimpleMailSender();
                 isSend = sms.sendHtmlMail(mailInfo);
 
-                IOperationProductionDao.addMailFlow(bnb);
+                operationProductionDao.addMailFlow(bnb);
             }
 
-            ProductionDO productionBean = IOperationProductionDao.findProductionBean(pro_number_list[j]);
+            ProductionDO productionBean = operationProductionDao.findProductionBean(pro_number_list[j]);
 
             if ((((!(productionBean.getProType().equals("正常投产"))) || (!(productionBean.getIsOperationProduction().equals("是"))))) && (productionBean.getProStatus().equals("部署完成待验证")))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
-                mfva.setEmployeeName(IOperationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
-                MailFlowDO mfba = IOperationProductionDao.searchUserEmail(mfva);
+                mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
+                MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
 
                 MailFlowConditionDO mfwa = new MailFlowConditionDO();
-                mfwa.setEmployeeName(IOperationProductionDao.findProductionBean(pro_number_list[j]).getIdentifier());
-                MailFlowDO mfaa = IOperationProductionDao.searchUserEmail(mfwa);
+                mfwa.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getIdentifier());
+                MailFlowDO mfaa = operationProductionDao.searchUserEmail(mfwa);
 
                 List<ProductionDO> bean=new ArrayList<ProductionDO>();
-                bean.add(IOperationProductionDao.findExportExcelList(pro_number_list[j]));
+                bean.add(operationProductionDao.findExportExcelList(pro_number_list[j]));
                 File file = sendExportExcel_Result(bean);
 
                 MailFlowDO bnb = new MailFlowDO("投产部署完成待验证结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail() + ";" + mfaa.getEmployeeEmail(), file.getName(), "");
@@ -395,7 +395,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 SimpleMailSender sms = new SimpleMailSender();
                 isSend = sms.sendHtmlMail(mailInfo);
 
-                IOperationProductionDao.addMailFlow(bnb);
+                operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
                     file.delete();
                 }
@@ -403,7 +403,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             if ((((!(productionBean.getProType().equals("正常投产"))) || (!(productionBean.getIsOperationProduction().equals("是"))))) && (productionBean.getProStatus().equals("投产验证完成")))
             {
                 List bean = new ArrayList();
-                bean.add(IOperationProductionDao.findExportExcelList(pro_number_list[j]));
+                bean.add(operationProductionDao.findExportExcelList(pro_number_list[j]));
                 File file = sendExportExcel_Result( bean);
 
                 MailFlowDO bnb = new MailFlowDO("投产申请结果反馈", "code_review@hisuntech.com", productionBean.getMailRecipient(), file.getName(), "");
@@ -485,13 +485,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 SimpleMailSender sms = new SimpleMailSender();
                 isSend = sms.sendHtmlMail(mailInfo);
 
-                IOperationProductionDao.addMailFlow(bnb);
+                operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
                     file.delete();
                 }
             }
-            IOperationProductionDao.insertSchedule(scheduleBean);
-            IOperationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
+            operationProductionDao.insertSchedule(scheduleBean);
+            operationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
 
             DemandDO demand = reqTaskService.findById1(pro_number_list[j]);
             if (!JudgeUtils.isNull(demand)) {
@@ -521,12 +521,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public String findManagerMailByUserName(List<String> userNames) {
-        return IOperationProductionDao.findManagerMailByUserName(userNames);
+        return operationProductionDao.findManagerMailByUserName(userNames);
     }
 
     @Override
     public void addMailFlow(MailFlowBean bean) {
-        IOperationProductionDao.insertMailFlow(bean);
+        operationProductionDao.insertMailFlow(bean);
     }
 
     @Override
@@ -572,7 +572,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public ProductionBO searchProdutionDetail(String proNumber) {
         ProductionBO productionBO=null;
-        ProductionDO productionBean = IOperationProductionDao.findProductionBean(proNumber);
+        ProductionDO productionBean = operationProductionDao.findProductionBean(proNumber);
         if(productionBean!=null) {
             System.err.println(productionBean.toString());
             productionBO= BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
@@ -582,23 +582,31 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public void updateAllProduction(ProductionBO bean) {
-        IOperationProductionDao.updateAllProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
+        operationProductionDao.updateAllProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
     }
 
     @Override
     public void addScheduleBean(ScheduleDO scheduleBean) {
-        IOperationProductionDao.insertSchedule(scheduleBean);
+        operationProductionDao.insertSchedule(scheduleBean);
     }
 
     @Override
     public void addProduction(ProductionBO bean) {
-        IOperationProductionDao.insertProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
+        operationProductionDao.insertProduction(BeanUtils.copyPropertiesReturnDest(new ProductionDO(), bean));
     }
 
     @Override
     public void addProductionPicBean(ProductionPicDO productionPicDO) {
 
         productionPicDao.insert(productionPicDO);
+    }
+
+    @Override
+    public List<MailGroupDO> searchMailGroupList() {
+
+
+
+        return null ;
     }
 
 

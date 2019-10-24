@@ -1,12 +1,14 @@
 package com.cmpay.lemon.monitor.controller.production;
 
 
+import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.MailGroupBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -41,7 +43,7 @@ import java.util.Vector;
 @RequestMapping(value = MonitorConstants.Production_PATH)
 public class OperationProductionController {
     @Autowired
-    private OperationProductionService OperationProductionService;
+    private OperationProductionService operationProductionService;
 
     @Autowired
     private ReqTaskService reqTaskService;
@@ -75,21 +77,20 @@ public class OperationProductionController {
     public void exportExcel(@RequestBody ProductionConditionReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response) {
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), reqDTO);
         System.err.println(productionBO);
-        OperationProductionService.exportExcel(request,response,productionBO);
+        operationProductionService.exportExcel(request,response,productionBO);
     }
     @RequestMapping("/updateAllProduction")
     public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
         System.err.println(taskIdStr);
-        OperationProductionService.updateAllProduction(request,response,taskIdStr);
+        operationProductionService.updateAllProduction(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
 
-    //导入
-    @RequestMapping("/productionInputest")
-    public void productionInput(@RequestBody ProductionInputReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response){
-        System.err.println(reqDTO.toString());
+    //获取邮件组
+    @RequestMapping("/mailGroupSearch")
+    public void productionInput(@RequestBody GenericDTO<NoBody> req , HttpServletRequest request, HttpServletResponse response){
+        List<MailGroupBO> lst =operationProductionService.searchMailGroupList();
         System.err.println(111);
-
     }
 
 
@@ -267,7 +268,7 @@ public class OperationProductionController {
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = bean.getMailLeader()+";"+OperationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com";
+            String receiver_mail = bean.getMailLeader()+";"+operationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com";
             //todo 收件人需要添加两人必选先注释 先用自己的邮件代替
             //+";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
@@ -284,7 +285,7 @@ public class OperationProductionController {
             // 这个类主要来发送邮件
             SimpleMailSender sms = new SimpleMailSender();
             isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            OperationProductionService.addMailFlow(bnb);
+            operationProductionService.addMailFlow(bnb);
         }
         //正常投产；投产日投产；不投产验证
         if (bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是") && bean.getIsAdvanceProduction().equals("否")) {
@@ -297,7 +298,7 @@ public class OperationProductionController {
             receiver_users.add(bean.getProManager());
             //添加开发负责人部门经理邮箱地址
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = OperationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false);
+            String receiver_mail = operationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false);
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //投产信息记录邮箱
@@ -309,13 +310,13 @@ public class OperationProductionController {
             // 这个类主要来发送邮件
             SimpleMailSender sms = new SimpleMailSender();
             isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            OperationProductionService.addMailFlow(new MailFlowBean("【预投产不验证申请】", Constant.P_EMAIL_NAME, receiver_mail, ""));
+            operationProductionService.addMailFlow(new MailFlowBean("【预投产不验证申请】", Constant.P_EMAIL_NAME, receiver_mail, ""));
         }
         //非投产日正常投产
         if (bean.getIsOperationProduction() != null && bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("否")) {
             List<ProductionBO> unusuaList = new ArrayList<ProductionBO>();
             unusuaList.add(bean);
-            File unusualFile = OperationProductionService.exportUnusualExcel( unusuaList);
+            File unusualFile = operationProductionService.exportUnusualExcel( unusuaList);
             // 附件
             Vector<File> filesv = new Vector<File>();
             // 添加附件信息
@@ -344,14 +345,14 @@ public class OperationProductionController {
                 receiver_users.add(bean.getDevelopmentLeader());
             }
             //相关人员邮件
-            String receiver_mail = OperationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
+            String receiver_mail = operationProductionService.findManagerMailByUserName(receiver_users) + ";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
             System.err.println("相关人员邮件"+receiver_mail);
             //系统配置邮件、救火更新收件人邮件
             //收件人去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             System.err.println("相关人员邮件去重后"+receiver_mail);
             //抄送人邮箱
-            String copy_mail = OperationProductionService.findManagerMailByUserName(copy_users) + ";" + config.getAbnormalMailCopy();
+            String copy_mail = operationProductionService.findManagerMailByUserName(copy_users) + ";" + config.getAbnormalMailCopy();
             if (bean.getMailCopyPerson() != null && !bean.getMailCopyPerson().equals("")) {
                 copy_mail += ";" + bean.getMailCopyPerson();
             }
@@ -371,7 +372,7 @@ public class OperationProductionController {
             // 这个类主要来发送邮件
             SimpleMailSender sms = new SimpleMailSender();
             isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            OperationProductionService.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), "wu_lr@hisuntech.com"));
+            operationProductionService.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), "wu_lr@hisuntech.com"));
             if (unusualFile.isFile() && unusualFile.exists()) {
                 unusualFile.delete();
             }
@@ -397,7 +398,7 @@ public class OperationProductionController {
             copy_users.add("余宽");
             // 附件
             Vector<File> files = new Vector<File>();
-            File file_fire = OperationProductionService.exportUrgentExcel(list);
+            File file_fire = operationProductionService.exportUrgentExcel(list);
             // 添加救火附件
             if (!file.isEmpty()) {
                 files = this.setVectorFile(file,files,bean);
@@ -422,12 +423,12 @@ public class OperationProductionController {
             }
             //去重
             System.err.println("救火更新去重前："+base_receiver_mail);
-            base_receiver_mail=base_receiver_mail +";"+ OperationProductionService.findManagerMailByUserName(receiver_users);
+            base_receiver_mail=base_receiver_mail +";"+ operationProductionService.findManagerMailByUserName(receiver_users);
             System.err.println(base_receiver_mail);
             String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
             System.err.println("救火更新去重后："+receiver_mail);
             // 抄送人邮箱
-            String copy_mail = OperationProductionService.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
+            String copy_mail = operationProductionService.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
             System.err.println("救火更新抄送人："+copy_mail);
             if (bean.getMailCopyPerson() != null && !bean.getMailCopyPerson().equals("")) {
                 copy_mail += ";" + bean.getMailCopyPerson();
@@ -448,7 +449,7 @@ public class OperationProductionController {
             // 这个类主要来发送邮件
             SimpleMailSender sms = new SimpleMailSender();
             isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            OperationProductionService.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
+            operationProductionService.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
             }
@@ -457,14 +458,14 @@ public class OperationProductionController {
 
 
         // 将其原先的lis循环查找相同pro_number编号的投产信息 更新为查找一条记录是否存在
-        ProductionBO productionBean = OperationProductionService.searchProdutionDetail(bean.getProNumber());
+        ProductionBO productionBean = operationProductionService.searchProdutionDetail(bean.getProNumber());
         bean.setProductionDeploymentResult("未部署");
         if (productionBean != null) {
-            OperationProductionService.updateAllProduction(bean);
+            operationProductionService.updateAllProduction(bean);
 
             //生成流水记录
             ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), SecurityUtils.getLoginName(), "重新录入", productionBean.getProStatus(), bean.getProStatus(), "无");
-            OperationProductionService.addScheduleBean(scheduleBean);
+            operationProductionService.addScheduleBean(scheduleBean);
             //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
             if (bean.getIsAdvanceProduction().equals("否")) {
                 DemandBO vo = new DemandBO();
@@ -485,10 +486,10 @@ public class OperationProductionController {
             return GenericRspDTO.newInstance(MsgEnum.ERROR_IMPORT);
         }
 
-        OperationProductionService.addProduction(bean);
+        operationProductionService.addProduction(bean);
         //生成流水记录
         ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  SecurityUtils.getLoginName(), "录入", "", "投产提出", "无");
-        OperationProductionService.addScheduleBean(scheduleBean);
+        operationProductionService.addScheduleBean(scheduleBean);
         //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
         if (bean.getIsAdvanceProduction().equals("否")) {
             DemandBO vo = new DemandBO();
@@ -519,7 +520,7 @@ public class OperationProductionController {
         try {
             if (!tmp_file.exists()) {
                 file.transferTo(new File(path + File.separator + bean.getProNumber() + "_" + fileName));
-                OperationProductionService.addProductionPicBean(new ProductionPicDO(bean.getProNumber(), fileName, path));
+                operationProductionService.addProductionPicBean(new ProductionPicDO(bean.getProNumber(), fileName, path));
             } else {
                 file.transferTo(new File(path + File.separator + bean.getProNumber() + "_" + fileName));
             }
