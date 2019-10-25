@@ -58,4 +58,5 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
 
     void insertProduction(ProductionDO bean);
 
+    List<MailGroupDO> findMailGroup(MailGroupDO mailGroupDO);
 }

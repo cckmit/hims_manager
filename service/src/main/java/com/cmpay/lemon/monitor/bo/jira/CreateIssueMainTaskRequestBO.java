@@ -20,6 +20,10 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
     */
     private int issueType;
     /**
+     * 关联EpicKey
+     */
+    private String EpicKey;
+    /**
      * 内部需求编号
      */
     private String reqInnerSeq;
@@ -39,6 +43,15 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
      * 经办人
      */
     private String  Manager;
+
+    public String getEpicKey() {
+        return EpicKey;
+    }
+
+    public void setEpicKey(String epicKey) {
+        EpicKey = epicKey;
+    }
+
     public void setSummary(String summary) {
         this.summary = summary;
     }
@@ -95,23 +108,50 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
 
     @Override
     public String toString() {
-        return "{\n" +
-                "    \"fields\":{\n" +
-                "        \"summary\":\""+this.getSummary()+"\",\n" +
-                "        \"issuetype\":{\n" +
-                "            \"id\":\""+this.getIssueType()+"\"\n" +
-                "        },\n" +
-                "        \"project\":{\n" +
-                "            \"id\":\""+this.getProject()+"\"\n" +
-                "        },\n" +
-                "        \n" +
-                "        \n" +
-                "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
-                "        \n" +
-                "         \"assignee\": {\n" +
-                "         \t\"name\":\""+this.getManager()+"\"\n" +
-                "         }\n" +
-                "\t}\n" +
-                "}";
+        if(this.devpLeadDept.equals("产品测试部")){
+            return "{\n" +
+                    "    \"fields\":{\n" +
+                    "        \"summary\":\""+this.getSummary()+"\",\n" +
+                    "        \"issuetype\":{\n" +
+                    "            \"id\":\""+this.getIssueType()+"\"\n" +
+                    "        },\n" +
+                    "        \"project\":{\n" +
+                    "            \"id\":\""+this.getProject()+"\"\n" +
+                    "        },\n" +
+                    "         \"customfield_10101\": \""+this.getEpicKey()+"\",\n" +
+                    "        \n" +
+                    "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
+                    "        \n" +
+                    "         \"assignee\": {\n" +
+                    "         \t\"name\":\""+this.getManager()+"\"\n" +
+                    "         }\n" +
+                    "\t}\n" +
+                    "}";
+        }else{
+            return "{\n" +
+                    "    \"fields\":{\n" +
+                    "        \"summary\":\""+this.getSummary()+"\",\n" +
+                    "        \"issuetype\":{\n" +
+                    "            \"id\":\""+this.getIssueType()+"\"\n" +
+                    "        },\n" +
+                    "        \"project\":{\n" +
+                    "            \"id\":\""+this.getProject()+"\"\n" +
+                    "        },\n" +
+                    "        \"customfield_10185\": {\n" +
+                    "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
+                    "        },\n" +
+                    "         \"customfield_10101\": \""+this.getEpicKey()+"\",\n" +
+                    "        \n" +
+                    "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
+                    "        \n" +
+                    "         \"assignee\": {\n" +
+                    "         \t\"name\":\""+this.getManager()+"\"\n" +
+                    "         }\n" +
+                    "\t}\n" +
+                    "}";
+        }
+
+
     }
+
 }

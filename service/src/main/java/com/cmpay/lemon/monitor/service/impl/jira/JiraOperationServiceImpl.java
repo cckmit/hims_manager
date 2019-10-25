@@ -140,6 +140,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             return;
         }
         CreateIssueMainTaskRequestBO createMainTaskRequestBO = new CreateIssueMainTaskRequestBO();
+        createMainTaskRequestBO.setEpicKey(epicDemandJiraDO.getJiraKey());
         createMainTaskRequestBO.setSummary(demandBO.getReqNm());
         createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
         //设置项目为和包项目，问题类型主任务

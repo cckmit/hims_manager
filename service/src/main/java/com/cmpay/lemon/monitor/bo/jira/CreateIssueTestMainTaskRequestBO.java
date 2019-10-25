@@ -10,7 +10,7 @@ package com.cmpay.lemon.monitor.bo.jira;
  * @author bejson.com (i@bejson.com)
  * @website http://www.bejson.com/java2pojo/
  */
-public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
+public class CreateIssueTestMainTaskRequestBO extends CreateIssueRequestBO {
     /**
      * 问题名
      */
@@ -19,6 +19,10 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
     * 问题类型
     */
     private int issueType;
+    /**
+     * 关联EpicKey
+     */
+    private String EpicKey;
     /**
      * 内部需求编号
      */
@@ -39,6 +43,15 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
      * 经办人
      */
     private String  Manager;
+
+    public String getEpicKey() {
+        return EpicKey;
+    }
+
+    public void setEpicKey(String epicKey) {
+        EpicKey = epicKey;
+    }
+
     public void setSummary(String summary) {
         this.summary = summary;
     }
@@ -95,7 +108,6 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
 
     @Override
     public String toString() {
-
         return "{\n" +
                 "    \"fields\":{\n" +
                 "        \"summary\":\""+this.getSummary()+"\",\n" +
@@ -105,22 +117,14 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
                 "        \"project\":{\n" +
                 "            \"id\":\""+this.getProject()+"\"\n" +
                 "        },\n" +
-                "        \"customfield_10103\": \""+this.getSummary()+"\",\n" +
-                "        \n" +
-                "        \"customfield_10181\":\""+this.getReqInnerSeq()+"\",\n" +
+                "         \"customfield_10101\": \""+this.getEpicKey()+"\",\n" +
                 "        \n" +
                 "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +
-                "        \"customfield_10182\":{\n" +
-                "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
-                "        },\n" +
                 "         \"assignee\": {\n" +
                 "         \t\"name\":\""+this.getManager()+"\"\n" +
                 "         }\n" +
                 "\t}\n" +
                 "}";
     }
-
-
-
 }

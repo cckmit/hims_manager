@@ -576,15 +576,15 @@
         <!--WHERE pro_number = #{pro_number} and pro_status !='投产取消'-->
     <!--</select>-->
 
-    <!--<select id="findMailGroupBean" resultMap="mm" parameterType="map">-->
-        <!--SELECT-->
-        <!--mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time-->
-        <!--FROM t_mail_group t1-->
-        <!--WHERE 1=1-->
-        <!--<if test="mail_group_name != null and mail_group_name != ''">-->
-            <!--and mail_group_name like "%"#{mail_group_name}"%"-->
-        <!--</if>-->
-    <!--</select>-->
+    <select id="findMailGroup" resultMap="mm" parameterType="map">
+        SELECT
+        mail_group_id,mail_group_name,mail_user,mail_group_desc,group_time
+        FROM t_mail_group t1
+        WHERE 1=1
+        <if test="mailGroupName != null and mailGroupName != ''">
+            and mail_group_name like  CONCAT('%',#{mailGroupName},'%')
+        </if>
+    </select>
 
 
     <!--<select id="findMailGroupNumberByCondition" resultType="int" parameterType="map">-->

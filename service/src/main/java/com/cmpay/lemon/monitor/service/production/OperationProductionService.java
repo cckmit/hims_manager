@@ -52,5 +52,5 @@ public interface OperationProductionService {
     /** 保存图片基本信息*/
     void addProductionPicBean(ProductionPicDO productionPicDO);
 
-    List<MailGroupBO> searchMailGroupList();
+    List<MailGroupBO> searchMailGroupList(MailGroupBO mailGroupBO);
 }

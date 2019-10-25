@@ -603,11 +603,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public List<MailGroupBO> searchMailGroupList() {
-
-
-
-        return null ;
+    public List<MailGroupBO> searchMailGroupList(MailGroupBO mailGroupBO) {
+        MailGroupDO mailGroupDO = BeanUtils.copyPropertiesReturnDest(new MailGroupDO(), mailGroupBO);
+        List<MailGroupBO> mailGroupBOS = new LinkedList<>();
+        List<MailGroupDO> mailGroupDOS = operationProductionDao.findMailGroup(mailGroupDO);
+        mailGroupDOS.forEach(m->{
+            mailGroupBOS.add(BeanUtils.copyPropertiesReturnDest(new MailGroupBO(),m));
+        });
+        return mailGroupBOS;
     }
 
 

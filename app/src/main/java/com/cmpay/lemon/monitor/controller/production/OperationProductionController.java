@@ -1,7 +1,6 @@
 package com.cmpay.lemon.monitor.controller.production;
 
 
-import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -12,10 +11,7 @@ import com.cmpay.lemon.monitor.bo.MailGroupBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.ProductionConditionReqDTO;
-import com.cmpay.lemon.monitor.dto.ProductionConditionRspDTO;
-import com.cmpay.lemon.monitor.dto.ProductionDTO;
-import com.cmpay.lemon.monitor.dto.ProductionInputReqDTO;
+import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
@@ -88,16 +84,18 @@ public class OperationProductionController {
 
     //获取邮件组
     @RequestMapping("/mailGroupSearch")
-    public void productionInput(@RequestBody GenericDTO<NoBody> req , HttpServletRequest request, HttpServletResponse response){
-        List<MailGroupBO> lst =operationProductionService.searchMailGroupList();
-        System.err.println(111);
+    public GenericRspDTO<MailGroupSearchRspDTO> productionInput( @RequestBody MailGroupSearchReqDTO req , HttpServletRequest request, HttpServletResponse response){
+        MailGroupBO mailGroupBO = BeanUtils.copyPropertiesReturnDest(new MailGroupBO(), req);
+        MailGroupSearchRspDTO mailGroupSearchRspDTO = new MailGroupSearchRspDTO();
+        List<MailGroupBO> lst =operationProductionService.searchMailGroupList(mailGroupBO);
+        mailGroupSearchRspDTO.setMailGroupBOList(lst);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS,mailGroupSearchRspDTO);
     }
 
 
     //保存全部投产记录
     @RequestMapping(value = "/productionInput", method = RequestMethod.POST)
     public GenericRspDTO<NoBody>  productionInput( ProductionInputReqDTO reqDTO,HttpServletRequest request)  {
-
         MultipartFile file=null;
         String isApproveProduct1 = request.getParameter("isApproveProduct");
         Boolean isApproveProduct=false;
@@ -331,9 +329,6 @@ public class OperationProductionController {
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             //添加部门经理邮箱地址
-            //todo 先去掉写死
-             //copy_users.add(bean.getApplicationDept());
-            System.err.println("申请人部门经理邮箱"+bean.getProApplicant());
             copy_users.add(bean.getProApplicant());
             boolean is_advance_production = true;
             // 是否投产验证
@@ -363,9 +358,6 @@ public class OperationProductionController {
             bean.setMailCopyPerson(copy_mail);
             mailInfo.setToAddress(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
-            System.err.println("收件人"+ mailInfo.getToAddress()[0]);
-            System.err.println("抄送人人数"+ mailInfo.getCcs().length);
-            System.err.println("抄送人第一个"+ mailInfo.getCcs()[0]);
             mailInfo.setSubject("【正常投产(非投产日)审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             //拼接邮件内容
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
@@ -392,10 +384,8 @@ public class OperationProductionController {
 
             // 添加申请人
             receiver_users.add(bean.getProApplicant());
-            //todo
             // 添加部门经理 抄送
-            //copy_users.add(bean.getApplicationDept());
-            copy_users.add("余宽");
+            copy_users.add(bean.getProApplicant());
             // 附件
             Vector<File> files = new Vector<File>();
             File file_fire = operationProductionService.exportUrgentExcel(list);
@@ -410,16 +400,12 @@ public class OperationProductionController {
             System.err.println("救火更新收件人"+base_receiver_mail);
             if (bean.getIsAdvanceProduction().equals("是")) {
                 base_receiver_mail +=  config.getFireMailTo(true);
-                System.err.println("救火更新收件人2"+base_receiver_mail);
             } else {
-                // todo 注释 写死
-                // 添加产品经理
-                //receiver_users.add(bean.getProManager());
-                // 添加开发负责人
-               // receiver_users.add(bean.getDevelopmentLeader());
+                receiver_users.add(bean.getProManager());
+                receiver_users.add(bean.getDevelopmentLeader());
                 System.err.println(bean.getProManager()+"      产品经理开发负责人       "+bean.getDevelopmentLeader());
-                receiver_users.add("江琼");
-                base_receiver_mail += ";" + bean.getMailLeader() + ";" + config.getFireMailTo(false);
+                System.err.println("救火更新去重前1："+base_receiver_mail);
+                base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
             //去重
             System.err.println("救火更新去重前："+base_receiver_mail);
