@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.controller.production;
 
 
+import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -11,7 +12,10 @@ import com.cmpay.lemon.monitor.bo.MailGroupBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.*;
+import com.cmpay.lemon.monitor.dto.ProductionConditionReqDTO;
+import com.cmpay.lemon.monitor.dto.ProductionConditionRspDTO;
+import com.cmpay.lemon.monitor.dto.ProductionDTO;
+import com.cmpay.lemon.monitor.dto.ProductionInputReqDTO;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
@@ -80,6 +84,30 @@ public class OperationProductionController {
         System.err.println(taskIdStr);
         operationProductionService.updateAllProduction(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
+    }
+    // 投产清单通报
+    @RequestMapping("/sendGoExport")
+    public GenericRspDTO<NoBody> sendGoExport(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        System.err.println(taskIdStr);
+        operationProductionService.sendGoExport(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    // 投产结果通报
+    @RequestMapping("/sendGoExportResult")
+    public GenericRspDTO<NoBody> sendGoExportResult(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        System.err.println(taskIdStr);
+        operationProductionService.sendGoExportResult(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    // 投产包检查
+    @RequestMapping("/proPkgCheck")
+    public GenericRspDTO proPkgCheck(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        System.err.println(taskIdStr);
+        String result = operationProductionService.proPkgCheck(request,response,taskIdStr);
+        MsgEnum.SUCCESS.setMsgInfo("");
+        MsgEnum.SUCCESS.setMsgInfo(result);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
     //获取邮件组
