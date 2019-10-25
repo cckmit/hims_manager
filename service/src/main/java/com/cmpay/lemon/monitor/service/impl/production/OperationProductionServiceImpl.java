@@ -14,13 +14,13 @@ import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
-import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.DateUtil;
-import com.cmpay.lemon.monitor.utils.SendExcelOperationResultProductionUtil;
+import com.cmpay.lemon.monitor.utils.*;
+import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -633,6 +634,501 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         return file;
     }
+    public File sendExportExcel_out(List<ProductionDO> list){
+        String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        try {
+            String path = "C:\\home\\devadm\\temp\\propkg";
+            String filePath = path + fileName;
+            SendExcelOperationProductionUtil util = new SendExcelOperationProductionUtil();
+            util.createExcel(filePath, list,null);
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    //根据日期获取礼拜
+    public static String testDate(String newtime) {
+        String dayNames[] = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+        Calendar c = Calendar.getInstance();// 获得一个日历的实例
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            c.setTime(sdf.parse(newtime));
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return dayNames[c.get(Calendar.DAY_OF_WEEK)-1];
+    }
+    //投产清单通报
+    @Override
+    public void sendGoExport(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list[0].equals("1")){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写必填信息!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(pro_number_list.length==2){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        List<ProductionDO> list=new ArrayList<ProductionDO>();
+        StringBuffer sbfStr = new StringBuffer();
+        for(int i=2;i<pro_number_list.length;i++){
+            ProductionDO bean=operationProductionDao.findExportExcelList(pro_number_list[i]);
+            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if(!bean.getProStatus().equals("投产待部署") && !bean.getProStatus().equals("投产提出")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产提出或者待部署状态投产发送!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+//			bean.setUpdate_operator("郑景楠、尹均辉 ");
+            bean.setUpdateOperator(pro_number_list[0]);
+            operationProductionDao.updateAllProduction(bean);
+            list.add(bean);
+            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
+                if(sbfStr.length()<1){
+                    sbfStr.append(bean.getMailLeader());
+                }else{
+                    sbfStr.append(";"+bean.getMailLeader());
+                }
+            }
+        }
+        File file=sendExportExcel_out(list);
+        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("1");
+        MailSenderInfo mailInfo = new MailSenderInfo();
+        // 设置邮件服务器类型
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        //设置端口号
+        mailInfo.setMailServerPort("25");
+        //设置是否验证
+        mailInfo.setValidate(true);
+        //设置用户名、密码、发送人地址
+        mailInfo.setUserName(Constant.P_EMAIL_NAME);
+        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        /**
+         * 附件
+         */
+        Vector<File> files = new Vector<File>() ;
+        files.add(file) ;
+        mailInfo.setFile(files) ;
+        /**
+         * 收件人邮箱
+         */
+        String[] mailToAddressDemo = null;
+        if(sbfStr !=null && sbfStr.length()>0){
+            mailToAddressDemo = ("wang_lu@justinmobile.com;hu_yi@justinmobile.com;fu_yz@justinmobile.com;"+sbfStr.toString()+";"+mp.getMailUser()).split(";");
+        }else{
+            mailToAddressDemo = ("wang_lu@justinmobile.com;hu_yi@justinmobile.com;fu_yz@justinmobile.com;"+mp.getMailUser()).split(";");
+        }
+
+        //收件人去重复
+        List<String> result = new ArrayList<String>();
+        boolean flag;
+        for(int i=0;i<mailToAddressDemo.length;i++){
+            flag = false;
+            for(int j=0;j<result.size();j++){
+                if(mailToAddressDemo[i].equals(result.get(j))){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                result.add(mailToAddressDemo[i]);
+            }
+        }
+        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        mailInfo.setToAddress(mailToAddress);
+        mailInfo.setSubject("【投产清单通报】");
+        //记录邮箱信息
+        MailFlowDO bn=new MailFlowDO("投产清单通报",Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, "" ,"");
+        //组织发送内容
+        StringBuffer sb=new StringBuffer();
+        sb.append("<table border ='1' style='width:3000px;border-collapse: collapse;background-color: white;'>");
+        sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th>");
+        sb.append("<th>申请部门</th><th>投产申请人</th><th>申请人联系方式</th><th>产品所属模块</th><th>业务需求提出人</th>");
+        sb.append("<th>基地负责人</th><th>产品经理</th><th>投产状态</th><th>是否更新数据库数据</th><th>是否更新数据库(表)结构</th>");
+        sb.append("<th>投产后是否需要运维监控</th><th>是否涉及证书</th><th>是否预投产验证</th><th>不能预投产验证原因</th><th>预投产验证结果</th>");
+        sb.append("<th>验证人</th><th>验证人联系方式</th><th>验证复核人</th><th>验证复核人联系方式</th><th>生产验证方式</th>");
+        sb.append("<th>开发负责人</th><th>审批人</th><th>版本更新操作人</th><th>备注 (影响范围,其它补充说明)</th></tr>");
+        for(int i=2;i<pro_number_list.length;i++){
+
+            ProductionDO bean=operationProductionDao.findExportExcelList(pro_number_list[i]);
+            String proNumber = bean.getProNumber();
+            if(bean.getProNumber().startsWith("REQ")){
+                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
+            }
+            sb.append("<tr><td>"+proNumber+"</td>");//投产编号
+            sb.append("<td >"+bean.getProNeed()+"</td>");//需求名称及内容简述
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProType()+"</td>");//投产类型
+            // 日期转换
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(bean.getProDate()!=null)
+                sb.append("<td style='white-space: nowrap;'>"+sdf.format(bean.getProDate())+"</td>");//计划投产日期
+            sb.append("<td style='white-space: nowrap;'>"+bean.getApplicationDept()+"</td>");//申请部门
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProApplicant()+"</td>");//投产申请人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getApplicantTel()+"</td>");//申请人联系方式
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProModule()+"</td>");//产品所属模块
+            sb.append("<td style='white-space: nowrap;'>"+bean.getBusinessPrincipal()+"</td>");//业务需求提出人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getBasePrincipal()+"</td>");//基地负责人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProManager()+"</td>");//产品经理
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProStatus()+"</td>");//投产状态
+            sb.append("<td >"+bean.getIsUpDatabase()+"</td>");//是否更新数据库数据
+            sb.append("<td >"+bean.getIsUpStructure()+"</td>");//是否更新数据库(表)结构
+            sb.append("<td >"+bean.getProOperation()+"</td>");//投产后是否需要运维监控
+            sb.append("<td >"+bean.getIsRefCerificate()+"</td>");//是否涉及证书
+            sb.append("<td >"+bean.getIsAdvanceProduction()+"</td>");//是否预投产验证
+            if(bean.getNotAdvanceReason()!=null && !bean.getNotAdvanceReason().equals("")){
+                sb.append("<td >"+bean.getNotAdvanceReason()+"</td>");//不能预投产验证原因
+            }else{
+                sb.append("<td ></td>");//预投产验证结果
+            }
+            if(bean.getProAdvanceResult()!=null && !bean.getProAdvanceResult().equals("")){
+                sb.append("<td >"+bean.getProAdvanceResult()+"</td>");//预投产验证结果
+            }else{
+                sb.append("<td ></td>");//预投产验证结果
+            }
+            sb.append("<td style='white-space: nowrap;'>"+bean.getIdentifier()+"</td>");//验证人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getIdentifierTel()+"</td>");//验证人联系方式
+            sb.append("<td style='white-space: nowrap;'>"+bean.getProChecker()+"</td>");//验证复核人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getCheckerTel()+"</td>");//验证复核人联系方式
+            sb.append("<td style='white-space: nowrap;'>"+bean.getValidation()+"</td>");//生产验证方式
+            sb.append("<td style='white-space: nowrap;'>"+bean.getDevelopmentLeader()+"</td>");//开发负责人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getApprover()+"</td>");//审批人
+            sb.append("<td style='white-space: nowrap;'>"+bean.getUpdateOperator()+"</td>");
+            sb.append("<td style='width:100px;'>"+bean.getRemark()+"</td></tr>");//备注(更新原因及影响范围详细说明)
+        }
+        sb.append("</table>");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String format = simpleDateFormat.format(new Date());
+        String testDate = testDate(format);
+        String change = "计划";
+        if(testDate.equals("星期三") || testDate.equals("星期四") || testDate.equals("星期五")){
+            change = "最终";
+        }
+        mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是"+change+"本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +
+                "本周产品投产更新牵头负责人是"+pro_number_list[1]+",请各生产验证负责人将验证结果反馈给"+pro_number_list[1]+"。无特殊原因，投产后验证工作需在投产当晚完成，请知晓。<br/>如有任何问题请及时反馈与沟通。<br/>"+sb.toString());
+        SimpleMailSender sms = new SimpleMailSender();
+        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        if(isSend){
+            operationProductionDao.addMailFlow(bn);
+            if(file.isFile() && file.exists()){
+                file.delete();
+            }
+        }else{
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        return ;//ajaxDoneSuccess("邮件发送成功！");
+    }
+    // 投产结果通报
+    @Override
+    public void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        String[] pro_number_list=taskIdStr.split("~");
+        List<ProductionDO> list=new ArrayList<ProductionDO>();
+        StringBuffer sbfStr = new StringBuffer();
+        for(int i=0;i<pro_number_list.length;i++){
+            ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
+            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if(!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择部署完成待验证或者投产验证完成的投产状态发送!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            list.add(bean);
+            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
+                if(sbfStr.length()<1){
+                    sbfStr.append(bean.getMailLeader());
+                }else{
+                    sbfStr.append(";"+bean.getMailLeader());
+                }
+            }
+        }
+        File file=sendExportExcel_Result(list);
+        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
+
+        MailSenderInfo mailInfo = new MailSenderInfo();
+        // 设置邮件服务器类型
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        //设置端口号
+        mailInfo.setMailServerPort("25");
+        //设置是否验证
+        mailInfo.setValidate(true);
+        //设置用户名、密码、发送人地址
+        mailInfo.setUserName(Constant.P_EMAIL_NAME);
+        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        /**
+         * 附件
+         */
+        Vector<File> files = new Vector<File>() ;
+        files.add(file) ;
+        mailInfo.setFile(files) ;
+        /**
+         * 收件人邮箱
+         */
+        String[] mailToAddressDemo = null;
+        if(sbfStr !=null && sbfStr.length()>0){
+            mailToAddressDemo = (sbfStr.toString()+";"+mp.getMailUser()).split(";");
+        }else{
+            mailToAddressDemo = mp.getMailUser().split(";");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        mailInfo.setSubject("【投产结果通报】"+sdf.format(new Date())+"产品需求投产验证结果");
+        //收件人去重复
+        List<String> result = new ArrayList<String>();
+        boolean flag;
+        for(int i=0;i<mailToAddressDemo.length;i++){
+            flag = false;
+            for(int j=0;j<result.size();j++){
+                if(mailToAddressDemo[i].equals(result.get(j))){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                result.add(mailToAddressDemo[i]);
+            }
+        }
+        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        mailInfo.setToAddress(mailToAddress);
+        //记录邮箱信息
+        MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
+        //添加发送内容
+        StringBuffer sb=new StringBuffer();
+        sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+        sb.append("<tr><th>投产编号</th><th>产品名称</th><th>需求名称及内容简述</th><th>基地负责人</th>");
+        sb.append("<th>产品经理</th><th>生产验证方式</th><th>验证结果</th></tr>");
+        for (ProductionDO bean : list) {
+            String proNumber = bean.getProNumber();
+            if(bean.getProNumber().startsWith("REQ")){
+                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
+            }
+            sb.append("<td >"+proNumber+"</td>");//投产编号
+            sb.append("<td >"+bean.getProModule()+"</td>");//产品名称
+            sb.append("<td >"+bean.getProNeed()+"</td>");//需求名称及内容简述
+            sb.append("<td >"+bean.getBasePrincipal()+"</td>");//基地负责人
+            sb.append("<td >"+bean.getProManager()+"</td>");//产品经理
+            sb.append("<td >"+bean.getValidation()+"</td>");//生产验证方式
+            //验证结果
+            if(bean.getValidation().equals("当晚验证")){
+                if(bean.getProStatus().equals("投产验证完成")){
+                    sb.append("<td >验证通过</td></tr>");//验证结果
+                }else{
+                    sb.append("<td >验证未通过</td></tr>");//验证结果
+                }
+            }
+            if(bean.getValidation().equals("隔日验证")){
+                if(bean.getProStatus().equals("投产验证完成")){
+                    sb.append("<td >验证通过</td></tr>");//验证结果
+                }else{
+                    sb.append("<td >隔日验证</td></tr>");//验证结果
+                }
+            }
+            if(bean.getValidation().equals("待业务触发验证")){
+                sb.append("<td >待业务触发验证</td></tr>");//验证结果
+            }
+
+        }
+        sb.append("</table>");
+        mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！"+sb.toString());
+        // 这个类主要来发送邮件
+        SimpleMailSender sms = new SimpleMailSender();
+        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        operationProductionDao.addMailFlow(bn);
+        if(isSend){
+            if(file.isFile() && file.exists()){
+                file.delete();
+            }
+        }
+
+        MailGroupDO mpb=operationProductionDao.findMailGroupBeanDetail("3");
+        mp.setMailUser(mpb.getMailUser());
+        List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
+        for(int i=0;i<list.size();i++){
+            pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
+        }
+        //获取登录用户名
+        String currentUser =  SecurityUtils.getLoginName();
+        File file2=exportExcel_Nei(list, pblist, currentUser);
+        //记录邮箱信息
+        MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
+        //String[] mailToAddresss = mp.getMailUser().split(";");
+        String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        mailInfo.setToAddress(mailToAddresss);
+        /**
+         * 附件
+         */
+        Vector<File> file1 = new Vector<File>() ;
+        file1.add(file2) ;
+        mailInfo.setFile(file1) ;
+        mailInfo.setSubject("【每周投产通报"+sdf.format(new Date())+"】");
+        mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情请参见附件<br/><br/>");
+        boolean isSends=sms.sendHtmlMail(mailInfo);// 发送html格式
+        if(isSends){
+            operationProductionDao.addMailFlow(bfn);
+            if(file2.isFile() && file2.exists()){
+                file2.delete();
+            }
+        }else{
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        return ;//ajaxDoneSuccess("邮件发送成功!");
+    }
+    public File exportExcel_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
+        String fileName = "每周投产通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        try {
+            String path = "C:\\home\\devadm\\temp\\propkg";
+            String filePath = path + fileName;
+            SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
+            util.createExcel(filePath, list,null,proBeanList,userName);
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    // 投产包检查
+    @Override
+    public String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        if(taskIdStr==null||taskIdStr=="") {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择需要检查的投产记录!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        String[] pro_list = taskIdStr.split("~");
+        String result="";
+        String s1 = "";
+        String s2 = "";
+        try {
+            StringBuffer command=new StringBuffer();
+            ProductionDO bean = null;
+            if (pro_list.length>0) {
+                command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
+                for(String s:pro_list){
+                    bean = operationProductionDao.findProductionBean(s);
+                    if (bean.getProPkgStatus().equals("待上传"))
+                        s1+=s+",";
+                    else
+                        command.append("cp ~/tomcat/webapps/hims/upload/propkg/"+s+"/"+bean.getProPkgName()
+                                +" ~/tomcat/webapps/hims/hckeck/ver/\n");
+                }
+                if(!s1.equals("")){
+                    s1 = s1.substring(0, s1.length()-1);
+                    s1 = s1 +"投产包未上传";
+                }
+                command.append("sh c_cross.sh");
+                //s2 = execCommand(command.toString());
+
+                Map<String,String> map = execCommand(command.toString());
+                String succFlag=map.get("succFlag");
+
+                if ("1".equals(succFlag))
+                    s2="检查通过";
+                else
+                    s2=map.get("result");
+
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        if (s1.equals("")) {
+            result = s2;
+        }
+        if (!s1.equals("")&&s2.equals("检查通过")) {
+            result = s1;
+        }
+        if (!s1.equals("")&&!s2.equals("检查通过")){
+            result = s1+"</br>"+s2;
+        }
+        return result;
+    }
+    public Map execCommand(String command){
+
+        Map<String,String> map=new HashMap<String, String>();
+        JSch jsch = new JSch();
+        Session session = null;
+        Channel channel = null;
+
+        String succFlag="0";
+        String result="检查失败";
+
+        try{
+            session = jsch.getSession("hims", "10.9.10.116", 22);
+            session.setPassword("hims@mca");
+            Properties config = new Properties();
+            config.put("StrictHostKeyChecking", "no");
+            session.setConfig(config);
+            session.connect();
+            channel = session.openChannel("exec");
+            ((ChannelExec) channel).setCommand(command);
+            channel.setInputStream(null);
+            ((ChannelExec) channel).setErrStream(System.err);
+            channel.connect();
+            InputStream in = channel.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "GB18030"));
+
+            /**
+             * 与版本管理约定：
+             *      投产检查脚本（内部考核系统）请按如下约定处理：
+             成功只输出一行：  0
+             失败输出两行： 第一行为：1  ，第二行为失败信息
+             提醒信息输出2行：第一行为：2  ，第二行为提醒信息（系统默认检查通过，仅是提醒）
+             *
+             */
+            String temp=reader.readLine();
+
+            if ("0".equals(temp)){  //成功
+                succFlag="1";
+                result="检查通过";
+            }else{
+                if("1".equals(temp)){ 	//成功，但有警告
+                    succFlag="1";
+                    result="检查通过,但有警告:";
+                }
+                if("2".equals(temp)){	//失败
+                    succFlag="0";
+                    result="检查失败";
+                }
+
+                while((temp=reader.readLine())!=null){
+                    result += temp + "</br>";
+                }
 
 
+            }
+        } catch (JSchException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            channel.disconnect();
+            session.disconnect();
+        }
+        map.put("succFlag", succFlag);
+        map.put("result", result);
+        return map;
+    }
 }

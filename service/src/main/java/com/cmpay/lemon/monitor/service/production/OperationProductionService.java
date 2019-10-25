@@ -28,7 +28,9 @@ public interface OperationProductionService {
     void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO);
 
     void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
-
+    void sendGoExport(HttpServletRequest request, HttpServletResponse response, String str);
+    void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String str);
+    String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String str);
 
     /** 根据人员姓名查询各部门经理邮箱*/
     String findManagerMailByUserName(List<String> userNames);

@@ -68,12 +68,12 @@
         <result property="groupTime"  jdbcType="DATE"      column="group_time"/>
     </resultMap>
 
-    <!--<resultMap id="pbm" type="com.hisun.persistence.beans.ProblemBean">-->
-        <!--<result property="problemSerialNumber"         jdbcType="VARCHAR"      column="problem_serial_number"/>-->
-        <!--<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>-->
-        <!--<result property="problemDetail"         jdbcType="VARCHAR"      column="problem_detail"/>-->
-        <!--<result property="problemTime"  jdbcType="TIMESTAMP"      column="problem_time"/>-->
-    <!--</resultMap>-->
+    <resultMap id="pbm" type="com.cmpay.lemon.monitor.entity.ProblemDO">
+        <result property="problemSerialNumber"         jdbcType="VARCHAR"      column="problem_serial_number"/>
+        <result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>
+        <result property="problemDetail"         jdbcType="VARCHAR"      column="problem_detail"/>
+        <result property="problemTime"  jdbcType="TIMESTAMP"      column="problem_time"/>
+    </resultMap>
 
     <!--<resultMap id="sm" type="com.hisun.persistence.beans.ScheduleBean">-->
         <!--<result property="seqId"         jdbcType="VARCHAR"      column="seq_id"/>-->
@@ -477,13 +477,13 @@
          <!--WHERE t2.user_name=#{user_name}-->
     <!--</select>-->
 
-    <!--<select id="findProblemInfo" resultMap="pbm" parameterType="string">-->
-    	<!--SELECT-->
-    		<!--problem_serial_number,pro_number,problem_detail,problem_time-->
-    	<!--from  t_production_problem t1-->
-    	<!--WHERE-->
-            <!--pro_number like "%"#{pro_number}"%"-->
-    <!--</select>-->
+    <select id="findProblemInfo" resultMap="pbm" parameterType="string">
+    	SELECT
+    		problem_serial_number,pro_number,problem_detail,problem_time
+    	from  t_production_problem t1
+    	WHERE
+            pro_number LIKE CONCAT('%',#{proNumber},'%')
+    </select>
 
     <!--<delete id="deleteProblemInfo" parameterType="string">-->
     <!--delete from t_production_problem-->

@@ -7,6 +7,7 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.framework.dao.BaseDao;
+import com.cmpay.lemon.monitor.entity.ProblemDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowBean;
@@ -57,6 +58,8 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     void updateAllProduction(ProductionDO bean);
 
     void insertProduction(ProductionDO bean);
+    //查询投产问题
+    List<ProblemDO> findProblemInfo(String pro_number);
 
     List<MailGroupDO> findMailGroup(MailGroupDO mailGroupDO);
 }
