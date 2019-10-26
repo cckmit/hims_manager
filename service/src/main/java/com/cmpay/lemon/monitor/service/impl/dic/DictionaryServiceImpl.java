@@ -65,4 +65,11 @@ public class DictionaryServiceImpl implements DictionaryService {
         List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(lst, DictionaryBO.class);
         return dictionaryBOList;
     }
+
+    @Override
+    public List<DictionaryBO> getcpInfo(DictionaryDO dictionaryDO) {
+        List<DictionaryDO> lst =  dictionaryDao.findProManager();
+        List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(lst, DictionaryBO.class);
+        return dictionaryBOList;
+    }
 }

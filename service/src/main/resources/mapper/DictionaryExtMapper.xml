@@ -18,6 +18,11 @@
         <result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />
     </resultMap>
 
+    <resultMap id="rm4" type="com.cmpay.lemon.monitor.entity.DictionaryDO">
+        <result property="name"        jdbcType="VARCHAR"      column="user_name"/>
+        <result property="value"       jdbcType="VARCHAR"      column="user_id"/>
+    </resultMap>
+
     <sql id="Base_Column_List" >
         seq_id,
         name,
@@ -74,5 +79,9 @@
     <select id="findUploadPeriod" resultMap="BaseResultMap" parameterType="string">
        SELECT NAME AS VALUE,VALUE AS NAME FROM t_permi_dic_data
            WHERE DIC_ID='REQ_PEROID' AND   NAME &lt;=  CAST(#{reqPeriod} as SIGNED     ) AND NAME IN ('30','50','110','70','140','160','180')
+    </select>
+
+    <select id="findProManager" resultMap="rm4">
+        select distinct u.user_name,u.user_id from  t_permi_user_role r right JOIN t_permi_user u on r.user_id=u.user_id where  role_id='201401010002' order  by  u.user_name asc
     </select>
 </mapper>

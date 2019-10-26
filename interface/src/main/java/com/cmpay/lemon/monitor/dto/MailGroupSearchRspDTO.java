@@ -1,20 +1,19 @@
 package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.response.PageableRspDTO;
-import com.cmpay.lemon.monitor.bo.MailGroupBO;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MailGroupSearchRspDTO extends PageableRspDTO {
 
-    private List<MailGroupBO> mailGroupList = new ArrayList<>();
+    private List<MailGroupDTO> mailGroupList = new ArrayList<>();
 
-    public List<MailGroupBO> getMailGroupList() {
+    public List<MailGroupDTO> getMailGroupList() {
         return mailGroupList;
     }
 
-    public void setMailGroupBOList(List<MailGroupBO> mailGroupList) {
+    public void setMailGroupBOList(List<MailGroupDTO> mailGroupList) {
         this.mailGroupList = mailGroupList;
     }
 }

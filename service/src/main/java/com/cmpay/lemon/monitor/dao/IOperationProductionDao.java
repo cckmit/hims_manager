@@ -62,4 +62,5 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     List<ProblemDO> findProblemInfo(String pro_number);
 
     List<MailGroupDO> findMailGroup(MailGroupDO mailGroupDO);
+
 }
