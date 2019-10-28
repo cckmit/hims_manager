@@ -6,12 +6,10 @@
  */
 package com.cmpay.lemon.monitor.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
-import cn.afterturn.easypoi.excel.annotation.Excel;
 
-
-import java.io.Serializable;
 import java.util.Date;
 
 @DataObject
@@ -68,8 +66,9 @@ public class DemandDO extends BaseDO {
     private String reqStartMon;
     @Excel(name = "需求实施月份")
     private String reqImplMon;
-
+    @Excel(name = "需求类型")
     private String reqType;
+    @Excel(name = "需求状态")
     private String reqSts;
     private String actPrdFinshTm;
     private String devpResMng;
@@ -83,6 +82,7 @@ public class DemandDO extends BaseDO {
     private String preTm;
     private String testFinshTm;
     private String actTestFinshTm;
+    @Excel(name = "月底反馈")
     private String endMonRemark;
     private String endFeedbackTm;
     private int totalWorkload;
