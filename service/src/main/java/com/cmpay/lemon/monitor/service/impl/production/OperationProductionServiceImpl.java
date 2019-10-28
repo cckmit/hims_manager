@@ -671,7 +671,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         try {
-            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProductionUtil util = new SendExcelOperationResultProductionUtil();
             util.createExcel(filePath, list,null);
@@ -687,7 +688,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         try {
-            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationProductionUtil util = new SendExcelOperationProductionUtil();
             util.createExcel(filePath, list,null);
@@ -1047,7 +1049,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "每周投产通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         try {
-            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
             util.createExcel(filePath, list,null,proBeanList,userName);
@@ -1204,8 +1207,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         OutputStream os = null;
         response.reset();
         try {
-            //String path = "/home/devadm/temp/propkg/";
-            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createExcel(filePath, list,null);
