@@ -546,7 +546,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file=null;
         try {
             //todo 写死路径
-            String path="D:\\home\\devadm\\temp\\import";
+            //String path="D:\\home\\devadm\\temp\\import";
+            String path = "/home/devadm/temp/import/";
             String filePath = path + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
             util.createExcel(filePath, list,null);
@@ -565,7 +566,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file=null;
         try {
             //todo 写死路径
-            String path="D:\\home\\devadm\\temp\\import";
+            //String path="D:\\home\\devadm\\temp\\import";
+            String path = "/home/devadm/temp/import/";
             String filePath = path + fileName;
             ExcelUrgentListUtil util = new ExcelUrgentListUtil();
             util.createExcel(filePath, list,null);
@@ -1144,8 +1146,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
         //todo 先改成本机写死路径
         //String path = "/Users/zouxin/Desktop/tmpFile";
-        String path="D:\\home\\devadm\\temp\\import";
-//			String path = "/home/hims/upload/product";
+        //String path="D:\\home\\devadm\\temp\\import";
+        String path = "/home/devadm/temp/import/";
         String fileName = file.getOriginalFilename();
         File tmp_file = new File(path + File.separator + bean.getProNumber() + "_" + fileName);
         try {
