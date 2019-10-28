@@ -56,4 +56,17 @@ public class DictionaryController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
 
+    /**
+     * 查询产品经理
+     *
+     */
+    @GetMapping("/getcpInfo")
+    public GenericRspDTO<DictionaryRspDTO> getcpInfo(GenericDTO<NoBody> req) {
+        List<DictionaryBO> dictionaryBOS = dictionaryService.getcpInfo(new DictionaryDO());
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOS, DictionaryDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
+    }
+
+
 }

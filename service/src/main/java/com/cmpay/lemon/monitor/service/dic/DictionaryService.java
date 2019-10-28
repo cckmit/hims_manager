@@ -25,4 +25,6 @@ public interface DictionaryService {
     DictionaryBO getJdInfo(DictionaryDO dictionaryDO);
     String findFieldName(String fieldId, String fieldValue);
     public List<DictionaryBO> findUploadPeriod(String reqPeriod);
+
+    public List<DictionaryBO> getcpInfo(DictionaryDO dictionaryDO);
 }

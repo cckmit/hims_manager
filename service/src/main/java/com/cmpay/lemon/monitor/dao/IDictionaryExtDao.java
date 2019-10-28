@@ -26,4 +26,6 @@ public interface IDictionaryExtDao extends IDictionaryDao {
     String findDepartId(String departName);
 
     List<DictionaryDO> findUploadPeriod(String reqPeriod);
+
+    List<DictionaryDO> findProManager();
 }
