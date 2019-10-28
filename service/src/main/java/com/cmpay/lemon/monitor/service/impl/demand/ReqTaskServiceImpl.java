@@ -512,15 +512,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
             if (StringUtils.isBlank(m.getReqProDept())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "归属部门不能为空");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("归属部门不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             if (StringUtils.isBlank(m.getReqNm())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求名称不能为空");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             if (StringUtils.isBlank(m.getReqDesc())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求描述不能为空");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("需求描述不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
@@ -535,7 +535,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             dictionaryDO.setValue(m.getReqPrdLine());
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "产品线字典项不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("产品线字典项不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             m.setReqPrdLine(dic.get(0).getName());
@@ -543,14 +543,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             dictionaryDO.setUserName(m.getReqProposer());
             dic = dictionaryDao.getJdInfo(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求提出人不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("需求提出人不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
             dictionaryDO.setUserName(m.getReqMnger());
             dic = dictionaryDao.getJdInfo(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "需求负责人不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("需求负责人不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
@@ -559,7 +559,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 dictionaryDO.setValue(m.getPreCurPeriod());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
-                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "最新进展字典项不存在");
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("最新进展字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
                 m.setPreCurPeriod(dic.get(0).getName());
@@ -571,7 +571,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 dictionaryDO.setValue(m.getPreMonPeriod());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
-                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "月初需求阶段字典项不存在");
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("月初需求阶段字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
                 m.setPreMonPeriod(dic.get(0).getName());
@@ -584,7 +584,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 dictionaryDO.setValue(m.getCurMonTarget());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
-                    MsgEnum.ERROR_IMPORT.setMsgInfo(MsgEnum.ERROR_IMPORT.getMsgInfo() + "本月预计完成阶段字典项不存在");
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("本月预计完成阶段字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
                 m.setCurMonTarget(dic.get(0).getName());
