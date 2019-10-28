@@ -7,15 +7,9 @@ import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.security.SecurityUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.MailGroupBO;
-import com.cmpay.lemon.monitor.bo.ProductionBO;
-import com.cmpay.lemon.monitor.bo.ProductionRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.ProductionConditionReqDTO;
-import com.cmpay.lemon.monitor.dto.ProductionConditionRspDTO;
-import com.cmpay.lemon.monitor.dto.ProductionDTO;
-import com.cmpay.lemon.monitor.dto.ProductionInputReqDTO;
+import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
@@ -72,6 +66,22 @@ public class OperationProductionController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
+    @RequestMapping("/audit")
+    public GenericRspDTO<ScheduleRspDTO> audit(@RequestBody ScheduleReqDTO reqDTO) {
+        ScheduleBO scheduleBO = BeanUtils.copyPropertiesReturnDest(new ScheduleBO(), reqDTO);
+        ScheduleRspBO productionRspBO = operationProductionService.find1(scheduleBO);
+        ScheduleRspDTO rspDTO = new ScheduleRspDTO();
+        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(productionRspBO.getScheduleList(), ScheduleDTO.class));
+        rspDTO.setPageNum(productionRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(productionRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(productionRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(productionRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    @RequestMapping("/doProductionDetailDownload")
+    public void doProductionDetailDownload(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response)throws Exception{
+        operationProductionService.doProductionDetailDownload(request,response,taskIdStr);
+    }
     // 基地工作量导出
     @RequestMapping("/productionOut")
     public void exportExcel(@RequestBody ProductionConditionReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response) {

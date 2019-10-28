@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.lemon.framework.annotation.DataObject;
 import java.io.Serializable;
 import java.sql.Date;
@@ -8,14 +9,20 @@ import java.sql.Date;
  */
 @DataObject
 public class ScheduleDO extends AbstractDO {
-
+    @Excel(name = "序号")
     private int seqId;
+    @Excel(name = "投产编号")
     private String proNumber;
+    @Excel(name = "操作人")
     private String proOperator;
     private String operationType;
+    @Excel(name = "操作时间")
     private Date scheduleTime;
+    @Excel(name = "操作前投产状态")
     private String preOperation;
+    @Excel(name = "操作后投产状态")
     private String afterOperation;
+    @Excel(name = "操作类型变更原因")
     private String operationReason;
     private String proType;
     private String isOperationProduction;

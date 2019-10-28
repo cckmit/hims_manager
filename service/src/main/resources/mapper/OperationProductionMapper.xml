@@ -75,25 +75,23 @@
         <result property="problemTime"  jdbcType="TIMESTAMP"      column="problem_time"/>
     </resultMap>
 
-    <!--<resultMap id="sm" type="com.hisun.persistence.beans.ScheduleBean">-->
-        <!--<result property="seqId"         jdbcType="VARCHAR"      column="seq_id"/>-->
-        <!--<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>-->
-        <!--<result property="proOperator"         jdbcType="VARCHAR"      column="pro_operator"/>-->
-        <!--<result property="operationType"  jdbcType="VARCHAR"      column="operation_type"/>-->
-        <!--<result property="scheduleTime"  jdbcType="TIMESTAMP"      column="schedule_time"/>-->
-        <!--<result property="preOperation"  jdbcType="VARCHAR"      column="pre_operation"/>-->
-        <!--<result property="afterOperation"  jdbcType="VARCHAR"      column="after_operation"/>-->
-
-
-        <!--<result property="operRequestContent"  jdbcType="VARCHAR"      column="after_operation"/>-->
-        <!--<result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>-->
-        <!--<result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>-->
-        <!--<result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>-->
-        <!--<result property="operStatus"  jdbcType="VARCHAR"      column="oper_status"/>-->
-        <!--<result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>-->
-        <!--<result property="identifier"  jdbcType="VARCHAR"      column="identifier"/>-->
-        <!--<result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>-->
-    <!--</resultMap>-->
+    <resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
+        <result property="seqId"         jdbcType="VARCHAR"      column="seq_id"/>
+        <result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>
+        <result property="proOperator"         jdbcType="VARCHAR"      column="pro_operator"/>
+        <result property="operationType"  jdbcType="VARCHAR"      column="operation_type"/>
+        <result property="scheduleTime"  jdbcType="TIMESTAMP"      column="schedule_time"/>
+        <result property="preOperation"  jdbcType="VARCHAR"      column="pre_operation"/>
+        <result property="afterOperation"  jdbcType="VARCHAR"      column="after_operation"/>
+        <result property="operRequestContent"  jdbcType="VARCHAR"      column="after_operation"/>
+        <result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>
+        <result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>
+        <result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>
+        <result property="operStatus"  jdbcType="VARCHAR"      column="oper_status"/>
+        <result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>
+        <result property="identifier"  jdbcType="VARCHAR"      column="identifier"/>
+        <result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>
+    </resultMap>
 
     <resultMap id="mf" type="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
         <result property="mailSerialNumber"         jdbcType="VARCHAR"      column="mail_serial_number"/>
@@ -490,27 +488,27 @@
     <!--where problem_serial_number=#{problem_serial_number}-->
     <!--</delete>-->
 
-    <!--<select id="findPageBreakBySchedule" resultMap="sm" parameterType="map">-->
-        <!--SELECT-->
-        <!--seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason-->
-        <!--from  t_production_schedule t1-->
-        <!--WHERE 1=1-->
-        <!--<if test="pro_number != null and pro_number != ''">-->
-            <!--and pro_number like "%"#{pro_number}"%"-->
-        <!--</if>-->
-        <!--<if test="pro_operator != null and pro_operator != ''">-->
-            <!--and pro_operator like "%"#{pro_operator}"%"-->
-        <!--</if>-->
-        <!--order by schedule_time desc-->
-    <!--</select>-->
+    <select id="findPageBreakBySchedule" resultMap="sm" parameterType="map">
+        SELECT
+        seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason
+        from  t_production_schedule t1
+        WHERE 1=1
+        <if test="proNumber != null and proNumber != ''">
+            and pro_number LIKE CONCAT('%',#{proNumber},'%')
+        </if>
+        <if test="proOperator != null and proOperator != ''">
+            and pro_operator LIKE CONCAT('%',#{proOperator},'%')
+        </if>
+        order by schedule_time desc
+    </select>
 
 
-    <!--<select id="findOperationExcelList" resultMap="sm" parameterType="int">-->
-    	<!--SELECT-->
-    	<!--seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason-->
-    	<!--from  t_production_schedule-->
-    	<!--WHERE  seq_id = #{seq_id}-->
-    <!--</select>-->
+    <select id="findOperationExcelList" resultMap="sm" parameterType="int">
+    	SELECT
+    	seq_id,pro_number,pro_operator,operation_type,schedule_time,pre_operation,after_operation,operation_reason
+    	from  t_production_schedule
+    	WHERE  seq_id = #{seqId}
+    </select>
 
     <!--<select id="findProExcelList" resultMap="sm" parameterType="string">-->
 	    	<!--SELECT  oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector-->

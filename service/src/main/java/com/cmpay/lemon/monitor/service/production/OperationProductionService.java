@@ -1,9 +1,7 @@
 package com.cmpay.lemon.monitor.service.production;
 
 
-import com.cmpay.lemon.monitor.bo.MailGroupBO;
-import com.cmpay.lemon.monitor.bo.ProductionBO;
-import com.cmpay.lemon.monitor.bo.ProductionRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowBean;
@@ -25,12 +23,14 @@ public interface OperationProductionService {
      * @return
      */
     ProductionRspBO find(ProductionBO productionBO);
+    ScheduleRspBO find1(ScheduleBO scheduleBO);
     void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO);
 
     void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExport(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String str);
     String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String str);
+    void doProductionDetailDownload(HttpServletRequest request, HttpServletResponse response, String str)throws Exception;
 
     /** 根据人员姓名查询各部门经理邮箱*/
     String findManagerMailByUserName(List<String> userNames);

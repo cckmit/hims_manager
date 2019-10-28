@@ -62,4 +62,8 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     List<ProblemDO> findProblemInfo(String pro_number);
 
     List<MailGroupDO> findMailGroup(MailGroupDO mailGroupDO);
+
+    List<ScheduleDO> findPageBreakBySchedule(ScheduleDO vo);
+    // 投产审计导出列表查询
+    ScheduleDO findOperationExcelList(int seq_id);
 }

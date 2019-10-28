@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IOperationApplicationDao">
+        <resultMap id="rm" type="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
+        <result property="operNumber"         jdbcType="VARCHAR"      column="oper_number"/>
+        <result property="operRequestContent"         jdbcType="VARCHAR"      column="oper_request_content"/>
+        <result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>
+        <result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>
+          <result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>
+         <result property="operStatus"  jdbcType="VARCHAR"      column="oper_status"/>
+        <result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>
+        <result property="operApplicant"       jdbcType="VARCHAR"      column="oper_applicant"/>
+        <result property="applicantTel"       jdbcType="VARCHAR"      column="applicant_tel"/>
+        <result property="operType"       jdbcType="VARCHAR"      column="oper_type"/>
+        <result property="identifier"   jdbcType="VARCHAR"      column="identifier"/>
+        <result property="identifierTel"   jdbcType="VARCHAR"      column="identifier_tel"/>
+        <result property="validationType"   jdbcType="VARCHAR"      column="validation_type"/>
+        <result property="validationInstruction"   jdbcType="VARCHAR"      column="validation_instruction"/>
+        <result property="operApplicationReason"   jdbcType="VARCHAR"      column="oper_application_reason"/>
+        <result property="analysis"   jdbcType="VARCHAR"      column="analysis"/>
+        <result property="completionUpdate"   jdbcType="VARCHAR"      column="completion_update"/>
+        <result property="remark"   jdbcType="VARCHAR"      column="remark"/>
+        <result property="mailRecipient"   jdbcType="VARCHAR"      column="mail_recipient"/>
+        <result property="mailCopyPerson"   jdbcType="VARCHAR"      column="mail_copy_person"/>
+        <result property="developmentLeader"   jdbcType="VARCHAR"      column="development_leader"/>
+        <result property="svntabName"   jdbcType="VARCHAR"      column="svntab_name"/>
+		<result property="isBackWay"   jdbcType="VARCHAR"      column="is_back_way"/>
+    </resultMap>
+    
+    
+    <sql id="Base_Column_List">
+           oper_number,oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector,oper_applicant,
+           applicant_tel,oper_type,identifier,identifier_tel,validation_type,validation_instruction,
+           oper_application_reason,analysis,completion_update,remark,mail_recipient,mail_copy_person,development_leader,mail_leader
+           ,svntab_name,stateId
+    </sql>
+        
+    
+     <!--<insert id="insertOperationalApplication"  parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
+    	<!--insert into  t_operational_application_detail(<include refid="Base_Column_List"/>,is_back_way)-->
+    	<!--values(#{oper_number},-->
+    		<!--#{oper_request_content},-->
+    		<!--#{propose_date},-->
+    		<!--#{is_ref_sql},-->
+    		<!--#{sys_oper_type},-->
+    		<!--#{oper_status},-->
+    		<!--#{application_sector},-->
+    		<!--#{oper_applicant},-->
+    		<!--#{applicant_tel},-->
+    		<!--#{oper_type},-->
+    		<!--#{identifier},-->
+    		<!--#{identifier_tel},-->
+    		<!--#{validation_type},-->
+    		<!--#{validation_instruction},-->
+    		<!--#{oper_application_reason},-->
+    		<!--#{analysis},-->
+            <!--#{completion_update},-->
+    		<!--#{remark},-->
+    		<!--#{mail_recipient},-->
+    		<!--#{mail_copy_person},-->
+    		<!--#{development_leader},-->
+    		<!--#{mail_leader},-->
+    		<!--#{svntab_name},-->
+    		<!--#{stateId},-->
+            <!--#{isBackWay}-->
+    		<!--)	-->
+    <!--</insert>-->
+    <!---->
+    <!--<update id="updateAllOperationalApplication" parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
+    	<!--UPDATE t_operational_application_detail-->
+    	<!--SET-->
+    	<!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
+    		<!--sys_oper_type = #{sys_oper_type},-->
+    	<!--</if>-->
+    	<!--<if test="propose_date != null and propose_date != ''">-->
+    		<!--propose_date = #{propose_date},-->
+    	<!--</if>-->
+    	<!--<if test="application_sector != null and application_sector != ''">-->
+    		<!--application_sector = #{application_sector},-->
+    	<!--</if>-->
+    	<!--<if test="oper_applicant != null and oper_applicant != ''">-->
+    		<!--oper_applicant = #{oper_applicant},-->
+    	<!--</if>-->
+    	<!--<if test="applicant_tel != null and applicant_tel != ''">-->
+    		<!--applicant_tel = #{applicant_tel},-->
+    	<!--</if>-->
+    	<!--<if test="oper_request_content != null and oper_request_content != ''">-->
+    		<!--oper_request_content = #{oper_request_content},-->
+    	<!--</if>-->
+    	<!--<if test="oper_type != null and oper_type != ''">-->
+    		<!--oper_type = #{oper_type},-->
+    	<!--</if>-->
+    	<!--<if test="identifier != null and identifier != ''">-->
+    		<!--identifier = #{identifier},-->
+    	<!--</if>-->
+    	<!--<if test="identifier_tel != null and identifier_tel != ''">-->
+    		<!--identifier_tel = #{identifier_tel},-->
+    	<!--</if>-->
+    	<!--<if test="validation_type != null and validation_type != ''">-->
+    		<!--validation_type = #{validation_type},-->
+    	<!--</if>-->
+    	<!--<if test="validation_instruction != null and validation_instruction != ''">-->
+    		<!--validation_instruction = #{validation_instruction},-->
+    	<!--</if>-->
+    	<!--<if test="oper_application_reason != null and oper_application_reason != ''">-->
+    		<!--oper_application_reason = #{oper_application_reason},-->
+    	<!--</if>-->
+    	<!--<if test="analysis != null and analysis != ''">-->
+    		<!--analysis = #{analysis},-->
+    	<!--</if>-->
+    	<!--<if test="completion_update != null and completion_update != ''">-->
+    		<!--completion_update = #{completion_update},-->
+    	<!--</if>-->
+    	<!--<if test="remark != null and remark != ''">-->
+    		<!--remark = #{remark},-->
+    	<!--</if>-->
+    	<!--<if test="mail_recipient != null and mail_recipient != ''">-->
+    		<!--mail_recipient = #{mail_recipient},-->
+    	<!--</if>-->
+    	<!--<if test="mail_copy_person != null and mail_copy_person != ''">-->
+    		<!--mail_copy_person = #{mail_copy_person},-->
+    	<!--</if>-->
+    	<!--<if test="development_leader != null and development_leader != ''">-->
+    		<!--development_leader = #{development_leader},-->
+    	<!--</if>-->
+    	<!--<if test="mail_leader != null and mail_leader!= ''">-->
+    		<!--mail_leader = #{mail_leader},-->
+    	<!--</if>-->
+    	<!--<if test="svntab_name != null">-->
+    		<!--svntab_name = #{svntab_name},-->
+    	<!--</if>-->
+    	<!--<if test="oper_status != null and oper_status != ''">-->
+    		<!--oper_status = #{oper_status},-->
+    	<!--</if>-->
+		<!--<if test="isBackWay != null and isBackWay != ''">-->
+			<!--is_back_way = #{isBackWay}-->
+		<!--</if>-->
+    	<!--WHERE oper_number = #{oper_number}-->
+    <!--</update>-->
+    
+    
+     <select id="findBaseOperationalApplicationInfo" resultMap="rm" parameterType="string">
+    	SELECT 
+    		<include refid="Base_Column_List"/>,is_back_way
+    	from  t_operational_application_detail t1 
+    	WHERE 
+            oper_number =#{operNumber}
+    </select>
+    
+     <!--<select id="findPageBreakByCondition" resultMap="rm" parameterType="map">-->
+    	<!--SELECT -->
+    		<!--<include refid="Base_Column_List"/>-->
+    	<!--from  t_operational_application_detail t1-->
+    	<!--WHERE 1=1-->
+    	<!--<if test="oper_request_content != null and oper_request_content != ''">-->
+    		<!--and oper_request_content like "%"#{oper_request_content}"%"-->
+    	<!--</if>-->
+    	<!--<if test="po_date_start != null and po_date_start != '' and po_date_end != null and po_date_end != '' ">-->
+    		<!--and propose_date between #{po_date_start} and #{po_date_end}-->
+    	<!--</if>-->
+    	<!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
+    	    <!--and sys_oper_type = #{sys_oper_type}-->
+    	<!--</if>-->
+    	<!--<if test="oper_status != null and oper_status != ''">-->
+    		<!--and oper_status = #{oper_status}-->
+    	<!--</if>-->
+    	<!--<if test="oper_applicant != null and oper_applicant != ''">-->
+    		<!--and oper_applicant like "%"#{oper_applicant}"%"-->
+    	<!--</if>-->
+    	<!--order by propose_date desc-->
+    <!--</select>-->
+    <!---->
+     <!--<select id="findNumberByCondition" resultType="int" parameterType="map">-->
+    	<!--SELECT COUNT(1) FROM t_operational_application_detail-->
+    	<!--WHERE 1=1-->
+    	<!--<if test="oper_request_content != null and oper_request_content != ''">-->
+    		<!--and oper_request_content like "%"#{oper_request_content}"%"-->
+    	<!--</if>-->
+    	<!---->
+    	<!--<if test="po_date_start != null and po_date_start != '' and po_date_end != null and po_date_end != '' ">-->
+    		<!--and propose_date between #{po_date_start} and #{po_date_end}-->
+    	<!--</if>-->
+    	<!---->
+    	<!---->
+    	<!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
+    	    <!--and sys_oper_type = #{sys_oper_type}-->
+    	<!--</if>-->
+    	<!--<if test="oper_status != null and oper_status != ''">-->
+    		<!--and oper_status = #{oper_status}-->
+    	<!--</if>-->
+    	<!--<if test="oper_applicant != null and oper_applicant != ''">-->
+    		<!--and oper_applicant like "%"#{oper_applicant}"%"-->
+    	<!--</if>-->
+    <!--</select>-->
+    <!---->
+    <!--<update id="updateOperationalApplication" parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
+    	<!--UPDATE t_operational_application_detail-->
+    	<!--SET-->
+    	<!--<if test="oper_status != null and oper_status != ''">-->
+    		<!--oper_status = #{oper_status}-->
+    	<!--</if>-->
+    	<!--WHERE oper_number = #{oper_number}-->
+    <!--</update>-->
+    
+</mapper>

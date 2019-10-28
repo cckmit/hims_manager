@@ -5,13 +5,11 @@ import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.MailGroupBO;
-import com.cmpay.lemon.monitor.bo.ProductionBO;
-import com.cmpay.lemon.monitor.bo.ProductionRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.Constant;
@@ -47,6 +45,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     private IOperationProductionDao operationProductionDao;
     @Autowired
+    private IOperationApplicationDao operationApplicationDao;
+
+    @Autowired
     private IProductionPicDao productionPicDao;
     @Autowired
     private ReqTaskService reqTaskService;
@@ -59,12 +60,48 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
     }
+    @Override
+    public ScheduleRspBO find1(ScheduleBO scheduleBO){
+        PageInfo<ScheduleBO> pageInfo = getPageInfo1(scheduleBO);
+        List<ScheduleBO> scheduleBOList = BeanConvertUtils.convertList(pageInfo.getList(), ScheduleBO.class);
+        for (int i=0;i<scheduleBOList.size();i++) {
+            if(scheduleBOList.get(i).getProNumber().startsWith("REQ") || scheduleBOList.get(i).getProNumber().startsWith("P") || scheduleBOList.get(i).getProNumber().startsWith("FIRE")){
 
+                ProductionDO bean=operationProductionDao.findProductionBean(scheduleBOList.get(i).getProNumber());
+                if(bean!=null){
+                    scheduleBOList.get(i).setProType(bean.getProType());
+                    scheduleBOList.get(i).setIsOperationProduction(bean.getIsOperationProduction());
+                }else{
+                    scheduleBOList.get(i).setProType("查无此信息");
+                    scheduleBOList.get(i).setIsOperationProduction("");
+                }
+            }
+            if(scheduleBOList.get(i).getProNumber().startsWith("SYS-OPR")){
+                OperationApplicationDO bean=operationApplicationDao.findBaseOperationalApplicationInfo(scheduleBOList.get(i).getProNumber());
+                if(bean!=null){
+                    scheduleBOList.get(i).setProType(bean.getSysOperType());
+                }else{
+                    scheduleBOList.get(i).setProType("查无此信息");
+                }
+            }
+        }
+        ScheduleRspBO productionRspBO = new ScheduleRspBO();
+        productionRspBO.setScheduleList(scheduleBOList);
+        productionRspBO.setPageInfo(pageInfo);
+        return productionRspBO;
+    }
     private PageInfo<ProductionBO> getPageInfo(ProductionBO productionBO) {
         ProductionDO productionDO = new ProductionDO();
         BeanConvertUtils.convert(productionDO, productionBO);
         PageInfo<ProductionBO> pageInfo = PageUtils.pageQueryWithCount(productionBO.getPageNum(), productionBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(operationProductionDao.findPageBreakByCondition(productionDO), ProductionBO.class));
+        return pageInfo;
+    }
+    private PageInfo<ScheduleBO> getPageInfo1(ScheduleBO scheduleBO) {
+        ScheduleDO productionDO = new ScheduleDO();
+        BeanConvertUtils.convert(productionDO, scheduleBO);
+        PageInfo<ScheduleBO> pageInfo = PageUtils.pageQueryWithCount(scheduleBO.getPageNum(), scheduleBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(operationProductionDao.findPageBreakBySchedule(productionDO), ScheduleBO.class));
         return pageInfo;
     }
     @Override
@@ -253,6 +290,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("您不是投产申请人或者负责该投产的产品经理!");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
+            }
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("投产打回") && (status.equals("投产待部署")) ) || (pro_status_after.equals("投产回退") && status.equals("投产验证完成")) ||(pro_status_after.equals("投产取消") && (status.equals("投产提出")|| status.equals("投产待部署"))))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
         for (int j = 2; j < pro_number_list.length; ++j) {
@@ -1130,5 +1172,81 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         map.put("succFlag", succFlag);
         map.put("result", result);
         return map;
+    }
+    @Override
+    public  void doProductionDetailDownload(HttpServletRequest request, HttpServletResponse response, String taskIdStr)throws Exception{
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list.length == 0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请先查出需要导出的投产变更明细记录!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        int[] pro_number_li = new int[pro_number_list.length];
+        for(int i=0;i<pro_number_list.length;i++){
+            pro_number_li[i]=Integer.parseInt(pro_number_list[i]);
+        }
+        List<ScheduleDO> list=new ArrayList<ScheduleDO>();
+        for(int i=0;i<pro_number_li.length;i++){
+            list.add(operationProductionDao.findOperationExcelList(pro_number_li[i]));
+        }
+        exportOperationExcel(response,request, list);
+    }
+    public void exportOperationExcel(HttpServletResponse response,HttpServletRequest request,
+                                     List<ScheduleDO> list) throws Exception {
+        String fileName = "投产操作明细表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        OutputStream os = null;
+        response.reset();
+        try {
+            //String path = "/home/devadm/temp/propkg/";
+            String path = "C:\\home\\devadm\\temp\\propkg";
+            String filePath = path + fileName;
+            ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
+            String createFile = util.createExcel(filePath, list,null);
+            //告诉浏览器允许所有的域访问
+            //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+            //resp.addHeader("Access-Control-Allow-Origin", "*");
+            //解决办法通过获取Origin请求头来动态设置
+            String origin = request.getHeader("Origin");
+            if (StringUtils.isNotBlank(origin)) {
+                response.addHeader("Access-Control-Allow-Origin", origin);
+            }
+            //允许带有cookie访问
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            //告诉浏览器允许跨域访问的方法
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            //告诉浏览器允许带有Content-Type,header1,header2头的请求访问
+            //resp.addHeader("Access-Control-Allow-Headers", "Content-Type,header1,header2");
+            //设置支持所有的自定义请求头
+            String headers = request.getHeader("Access-Control-Request-Headers");
+            if (StringUtils.isNotBlank(headers)) {
+                response.addHeader("Access-Control-Allow-Headers", headers);
+            }
+            //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.setContentType("application/octet-stream; charset=utf-8");
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName);
+            try {
+                os = response.getOutputStream();
+                os.write(org.apache.commons.io.FileUtils.readFileToByteArray(new File(filePath)));
+                os.flush();
+            } catch (IOException e) {
+                throw e;
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        throw e;
+                    }
+                }
+            }
+            // 删除文件
+            new File(createFile).delete();
+        } catch (UnsupportedEncodingException e) {
+            BusinessException.throwBusinessException("投产操作明细报表导出失败");
+        } catch (Exception e) {
+            BusinessException.throwBusinessException("投产操作明细报表导出失败");
+        }
+
     }
 }
