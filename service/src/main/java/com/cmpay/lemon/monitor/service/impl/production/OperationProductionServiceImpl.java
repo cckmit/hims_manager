@@ -1341,11 +1341,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProManager() == null || bean.getProManager().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!12");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 产品经理不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsUpDatabase() == null || bean.getIsUpDatabase().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!13");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("")) {
@@ -1353,64 +1353,64 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProOperation() == null || bean.getProOperation().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!15");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库表不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!16");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否涉及证书不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsAdvanceProduction() == null || bean.getIsAdvanceProduction().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!17");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否预投产验证不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsAdvanceProduction().equals("否")) {
             if (bean.getNotAdvanceReason() == null || bean.getNotAdvanceReason().equals("")) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!18");
+                MsgEnum.ERROR_IMPORT.setMsgInfo(" 不做预投产验证原因不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
         if (bean.getIsAdvanceProduction().equals("是")) {
             if (bean.getProAdvanceResult() == null || bean.getProAdvanceResult().equals("")) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!19");
+                MsgEnum.ERROR_IMPORT.setMsgInfo(" 预投产验证结果不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
         if (bean.getIdentifier() == null || bean.getIdentifier().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!20");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIdentifierTel() == null || bean.getIdentifierTel().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!21");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人联系方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProChecker() == null || bean.getProChecker().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!22");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getCheckerTel() == null || bean.getCheckerTel().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!23");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人手机号码不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getValidation() == null || bean.getValidation().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!24");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 生成验证方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getDevelopmentLeader() == null || bean.getDevelopmentLeader().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!25");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getApprover() == null || bean.getApprover().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!26");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 审批人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getRemark() == null || bean.getRemark().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!27");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 备注不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
 
         if (bean.getMailLeader() == null || bean.getMailLeader().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!28");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
 
