@@ -1349,11 +1349,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 您有必填字段为空,请不要使用ie或360浏览器录入!14");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库表不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProOperation() == null || bean.getProOperation().equals("")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库表不能为空");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否需要运维监控不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("")) {
