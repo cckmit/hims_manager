@@ -16,6 +16,7 @@ import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BaseUtil;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -35,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,6 +56,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Autowired
     private IProductionPicDao productionPicDao;
+    @Autowired
+    private ProductTimeService productTimeService;
     @Autowired
     private ReqTaskService reqTaskService;
     @Override
@@ -1651,5 +1655,106 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             return   MsgEnum.CUSTOMSUCCESS;
         }
         return MsgEnum.SUCCESS;
+    }
+
+    /**
+     * 投产包上传
+     * @param file
+     */
+    public void doBatchImport(MultipartFile file,String reqNumber) {
+        if (file.isEmpty()) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择上传文件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        String currentUser =  SecurityUtils.getLoginName();
+        ProductionDO bean = null;
+        try {
+            bean = operationProductionDao.findProductionBean(reqNumber);
+            System.err.println(bean.toString());
+//            if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+            if(bean.getProType().equals("正常投产")){
+
+                if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
+                    if(bean.getProDate()!=null && !bean.getProDate().equals("")){
+                        SimpleDateFormat smf = new SimpleDateFormat("yyyyMMdd");
+                        SimpleDateFormat smft = new SimpleDateFormat("yyyyMMddHHmmss");
+                        String nowStr = smft.format(new Date());;
+                        if(bean.getIsOperationProduction().equals("是")){
+                            String config_time = productTimeService.findProductTimeByID(1);
+                            String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";//
+//							 String pro_date = smf.format(bean.getPro_date())+"230000";
+                            if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+                        }else{
+                            String config_time = productTimeService.findProductTimeByID(2);
+                            String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";
+                            if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+                        }
+                    }else{
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("计划投产日字段不能为空");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
+                }else{
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("是否正常投产日投产字段不能为空");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+        File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
+        File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
+        if(fileDir.exists()){
+            File[] oldFile = fileDir.listFiles();
+            for(File o:oldFile) o.delete();
+        }else{
+            fileDir.mkdir();
+        }
+        try {
+            file.transferTo(filePath);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        } catch (IOException e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+        bean.setProPkgTime(new Timestamp(new Date().getTime())); //待修复BUG
+        bean.setProPkgName(file.getOriginalFilename());
+        StringBuffer command = new StringBuffer();
+        command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
+        command.append("cp ~/tomcat/webapps/hims/upload/propkg/" + reqNumber + "/" + bean.getProPkgName()
+                + " ~/tomcat/webapps/hims/hckeck/ver/\n");
+        command.append("sh zck.sh " + bean.getProPkgName() + "\n");
+        Map<String,String> map = execCommand(command.toString());
+        String succFlag=map.get("succFlag");
+        String result=map.get("result");
+
+        if ("1".equals(succFlag)){
+            bean.setProPkgStatus("检查通过");
+        }
+        else{
+            bean.setProPkgStatus("待上传");
+        }
+        operationProductionDao.updateProduction(bean);
     }
 }
