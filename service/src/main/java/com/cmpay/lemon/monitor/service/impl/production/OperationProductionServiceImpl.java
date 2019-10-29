@@ -1669,52 +1669,47 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         String currentUser =  SecurityUtils.getLoginName();
         ProductionDO bean = null;
-        try {
-            bean = operationProductionDao.findProductionBean(reqNumber);
-            System.err.println(bean.toString());
+        bean = operationProductionDao.findProductionBean(reqNumber);
 //            if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
 //                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
 //                MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
 //                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
 //            }
-            if(bean.getProType().equals("正常投产")){
+        if(bean.getProType().equals("正常投产")){
 
-                if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
-                    if(bean.getProDate()!=null && !bean.getProDate().equals("")){
-                        SimpleDateFormat smf = new SimpleDateFormat("yyyyMMdd");
-                        SimpleDateFormat smft = new SimpleDateFormat("yyyyMMddHHmmss");
-                        String nowStr = smft.format(new Date());;
-                        if(bean.getIsOperationProduction().equals("是")){
-                            String config_time = productTimeService.findProductTimeByID(1);
-                            String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";//
+            if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
+                if(bean.getProDate()!=null && !bean.getProDate().equals("")){
+                    SimpleDateFormat smf = new SimpleDateFormat("yyyyMMdd");
+                    SimpleDateFormat smft = new SimpleDateFormat("yyyyMMddHHmmss");
+                    String nowStr = smft.format(new Date());;
+                    if(bean.getIsOperationProduction().equals("是")){
+                        String config_time = productTimeService.findProductTimeByID(1);
+                        String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";//
 //							 String pro_date = smf.format(bean.getPro_date())+"230000";
-                            if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
-                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                                MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
-                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-                            }
-                        }else{
-                            String config_time = productTimeService.findProductTimeByID(2);
-                            String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";
-                            if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
-                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                                MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
-                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-                            }
+                        if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                         }
                     }else{
-                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                        MsgEnum.ERROR_CUSTOM.setMsgInfo("计划投产日字段不能为空");
-                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        String config_time = productTimeService.findProductTimeByID(2);
+                        String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";
+                        if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
                     }
                 }else{
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("是否正常投产日投产字段不能为空");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("计划投产日字段不能为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
+            }else{
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("是否正常投产日投产字段不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-        } catch (Exception e1) {
-            e1.printStackTrace();
         }
         File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
@@ -1748,7 +1743,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         Map<String,String> map = execCommand(command.toString());
         String succFlag=map.get("succFlag");
         String result=map.get("result");
-
         if ("1".equals(succFlag)){
             bean.setProPkgStatus("检查通过");
         }

@@ -163,7 +163,6 @@ public class OperationProductionController {
     public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
         MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
         String reqNumber = request.getParameter("proNumber");
-        System.err.println("投产编号=="+reqNumber);
         operationProductionService.doBatchImport(file,reqNumber);
         return GenericRspDTO.newSuccessInstance();
     }
