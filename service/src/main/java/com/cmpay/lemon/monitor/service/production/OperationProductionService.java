@@ -62,4 +62,10 @@ public interface OperationProductionService {
     Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean);
 
     MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean);
+    /**
+     * 投产包上传
+     *
+     * @param file
+     */
+    void doBatchImport(MultipartFile file,String reqNumber);
 }

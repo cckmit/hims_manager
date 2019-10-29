@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.controller.production;
 
 
+import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
+
 
 @RestController
 @RequestMapping(value = MonitorConstants.Production_PATH)
@@ -37,8 +40,6 @@ public class OperationProductionController {
     @Autowired
     private OperationProductionService operationProductionService;
 
-    @Autowired
-    private ReqTaskService reqTaskService;
     /**
      * 分页需求列表
      *
@@ -151,6 +152,19 @@ public class OperationProductionController {
         MsgEnum msgEnum = operationProductionService.productionInput(file, isApproveProduct, bean);
 
         return GenericRspDTO.newInstance(msgEnum);
+    }
+
+    /**
+     * 导入
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        String reqNumber = request.getParameter("proNumber");
+        operationProductionService.doBatchImport(file,reqNumber);
+        return GenericRspDTO.newSuccessInstance();
     }
 
 }
