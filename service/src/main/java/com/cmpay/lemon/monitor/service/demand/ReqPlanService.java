@@ -8,6 +8,7 @@ import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -99,4 +100,12 @@ public interface ReqPlanService {
      * 获取当前需求阶段
      */
     String getReqPeriod(String preCurPeriod);
+
+    void getReqPlan(HttpServletResponse response, DemandBO demandBO);
+    /**
+     * 批量导入
+     *
+     * @param file
+     */
+    void doBatchImport(MultipartFile file);
 }

@@ -1,5 +1,7 @@
 package com.cmpay.lemon.monitor.service.impl.demand;
 
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -22,6 +24,7 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
+import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.*;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -29,6 +32,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -49,15 +53,16 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 /**
  * 需求计划
@@ -99,6 +104,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private IDemandJiraDao demandJiraDao;
     @Autowired
     private IDemandStateHistoryDao demandStateHistoryDao;
+
+    @Autowired
+    private IDictionaryExtDao dictionaryDao;
+    @Autowired
+    private JiraOperationService jiraOperationService;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -1688,5 +1698,231 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return reqPeriod;
     }
+    private List<DemandDO> reqPlan(DemandBO demandBO) {
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        return demandDao.getReqPlan(demandDO);
+    }
+    @Override
+    public void getReqPlan(HttpServletResponse response, DemandBO demandBO) {
+        List<DemandDO> demandDOList = reqPlan(demandBO);
+        List<PlanDO> planDOList = new  LinkedList<>();
+        demandDOList.forEach(m->{
+            planDOList.add(BeanUtils.copyPropertiesReturnDest(new PlanDO(),m));
+        });
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), PlanDO.class, planDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "reqTask_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
 
+    /**
+     * 需求计划导入
+     * @param file
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void doBatchImport(MultipartFile file) {
+        File f = null;
+        List<DemandDO> demandDOS=new ArrayList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if(suffix.equals("xls")){
+                suffix=".xls";
+            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
+                suffix=".xlsx";
+            }else {
+                BusinessException.throwBusinessException("文件类型错误");
+            }
+            f=File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                DemandDO demandDO = new DemandDO();
+                demandDO.setReqPrdLine(map.get(i).get(0).toString());
+                demandDO.setReqInnerSeq(map.get(i).get(1).toString());
+                demandDO.setReqNo(map.get(i).get(2).toString());
+                demandDO.setReqNm(map.get(i).get(3).toString());
+                demandDO.setPreCurPeriod(map.get(i).get(4).toString());
+                demandDO.setReqSts(map.get(i).get(5).toString());
+                demandDO.setPrdFinshTm(map.get(i).get(6).toString());
+                demandDO.setUatUpdateTm(map.get(i).get(7).toString());
+                demandDO.setTestFinshTm(map.get(i).get(8).toString());
+                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString());
+                demandDO.setCurMonTarget(map.get(i).get(10).toString());
+                demandDO.setDevpLeadDept(map.get(i).get(11).toString());
+                demandDO.setDevpCoorDept(map.get(i).get(12).toString());
+                demandDO.setProductMng(map.get(i).get(13).toString());
+                demandDO.setDevpEng(map.get(i).get(14).toString());
+                demandDO.setFrontEng(map.get(i).get(15).toString());
+                demandDO.setTestEng(map.get(i).get(16).toString());
+                demandDO.setProjectMng(map.get(i).get(17).toString());
+                demandDOS.add(demandDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }finally {
+            f.delete();
+        }
+        List<DemandDO> insertList = new ArrayList<>();
+        List<DemandDO> updateList = new ArrayList<>();
+        demandDOS.forEach(m -> {
+            int i = demandDOS.indexOf(m)+1;
+            if (StringUtils.isBlank(m.getReqNm())) {
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的需求名称不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            //判断编号是否规范
+            String reqNo = m.getReqNo();
+            if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的需求编号有误");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+
+            DictionaryDO dictionaryDO = new DictionaryDO();
+            dictionaryDO.setDicId("PRD_LINE");
+            dictionaryDO.setValue(m.getReqPrdLine());
+            List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
+            if (dic.size() == 0) {
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的产品线字典项不存在");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            m.setReqPrdLine(dic.get(0).getName());
+
+
+            if (StringUtils.isNotBlank(m.getPreCurPeriod())) {
+                dictionaryDO.setDicId("REQ_PEROID");
+                dictionaryDO.setValue(m.getPreCurPeriod());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if (dic.size() == 0) {
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的当前进展字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+                m.setPreCurPeriod(dic.get(0).getName());
+            }
+            m.setPreCurPeriod(StringUtils.isBlank(m.getPreCurPeriod()) ? m.getPreMonPeriod() : m.getPreCurPeriod());
+
+            if (StringUtils.isNotBlank(m.getCurMonTarget())) {
+                dictionaryDO.setDicId("REQ_PEROID");
+                dictionaryDO.setValue(m.getCurMonTarget());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if (dic.size() == 0) {
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的本月预计完成阶段字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+                m.setCurMonTarget(dic.get(0).getName());
+            }
+
+            DemandBO tmp = new DemandBO();
+            BeanUtils.copyPropertiesReturnDest(tmp, m);
+            setReqSts(tmp);
+            setDefaultUser(tmp);
+            BeanUtils.copyPropertiesReturnDest(m, tmp);
+
+            List<DemandDO> dem = demandDao.getReqTaskByUKImpl(m);
+            if (dem.size() == 0) {
+                // 默认设置需求状态为新增
+                m.setReqType("01");
+                // 默认设置qa人员为刘桂娟
+                m.setQaMng("刘桂娟");
+                // 默认设置配置人员为黄佳海
+                m.setConfigMng("黄佳海");
+                m.setReqAbnorType("01");
+                //设置默认值
+                //插入SVN为否
+                m.setIsSvnBuild("否");
+                insertList.add(m);
+            } else {
+                m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+                //设置默认值
+                m.setReqStartMon("");
+                updateList.add(m);
+            }
+        });
+
+        try {
+            // 插入数据库
+            insertList.forEach(m -> {
+                //获取下一条内部编号
+                String nextInnerSeq = getNextInnerSeq();
+                m.setReqInnerSeq(nextInnerSeq);
+                demandDao.insert(m);
+                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
+                demandStateHistoryDO.setReqSts("提出");
+                demandStateHistoryDO.setRemarks("新建任务");
+                demandStateHistoryDO.setReqNm(m.getReqNm());
+                //获取当前操作员
+                demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+                demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                demandStateHistoryDao.insert(demandStateHistoryDO);
+            });
+            // 更新数据库
+            updateList.forEach(m -> {
+                demandDao.update(m);
+            });
+
+        } catch (Exception e) {
+            LOGGER.error("需求计划导入失败", e);
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        jiraOperationService.batchCreateEpic(demandDOS);
+    }
+    /**
+     * 设置用户
+     *
+     * @param demandBO
+     */
+    public void setDefaultUser(DemandBO demandBO) {
+        if (StringUtils.isBlank(demandBO.getCreatUser())) {
+            demandBO.setCreatUser(SecurityUtils.getLoginUserId());
+            demandBO.setCreatTime(new Date());
+        }
+        demandBO.setUpdateUser(SecurityUtils.getLoginUserId());
+        demandBO.setUpdateTime(new Date());
+    }
+
+    /**
+     * 变更需求状态
+     *
+     * @param demandBO
+     */
+    public void setReqSts(DemandBO demandBO) {
+        if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
+            //修改需求状态
+            if ("10".equals(demandBO.getPreCurPeriod())) {
+                //提出
+                demandBO.setReqSts("10");
+            } else if ("180".equals(demandBO.getPreCurPeriod())) {
+                //完成
+                demandBO.setReqSts("50");
+            } else {
+                //进行中
+                demandBO.setReqSts("20");
+            }
+        }
+    }
 }

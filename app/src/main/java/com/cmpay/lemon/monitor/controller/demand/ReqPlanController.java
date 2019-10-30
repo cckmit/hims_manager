@@ -239,4 +239,28 @@ public class ReqPlanController {
         reqPlanService.uploadProjrctFile(ProjectStartBO,FILES,request);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
+
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/download")
+    public GenericRspDTO<NoBody> download(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        reqPlanService.getReqPlan(response, demandBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    /**
+     * 需求计划导入
+     *i
+     * @return
+     */
+    @PostMapping("/doBatchImport")
+    public GenericRspDTO<NoBody> doBatchImport (HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        reqPlanService.doBatchImport(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

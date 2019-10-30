@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.PlanDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface IDemandExtDao extends IDemandDao {
     public List<DemandDO> getReqTaskByUKImpl(DemandDO demandDO);
 
     public List<DemandDO> getReqTask(DemandDO demandDO);
+    public List<DemandDO> getReqPlan(DemandDO demandDO);
 
     /**
      * 查找最大内部用户号
