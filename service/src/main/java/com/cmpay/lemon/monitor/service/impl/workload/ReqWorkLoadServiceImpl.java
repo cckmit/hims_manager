@@ -296,7 +296,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
-             int i = demandDOS.indexOf(m)+1;
+            int i = demandDOS.indexOf(m)+2;
             System.err.println(i);
             String ReqInnerSeq = m.getReqInnerSeq();
             DemandBO demandBO = reqTaskService.findById(ReqInnerSeq);

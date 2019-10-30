@@ -1789,7 +1789,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         List<DemandDO> insertList = new ArrayList<>();
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
-            int i = demandDOS.indexOf(m)+1;
+            int i = demandDOS.indexOf(m)+2;
             if (StringUtils.isBlank(m.getReqNm())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
