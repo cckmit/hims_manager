@@ -252,6 +252,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
+        jiraOperationService.createEpic(demandBO);
     }
 
     @Override
