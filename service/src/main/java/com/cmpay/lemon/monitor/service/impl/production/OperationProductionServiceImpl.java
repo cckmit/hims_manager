@@ -1751,4 +1751,33 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         operationProductionDao.updateProduction(bean);
     }
+
+    @Override
+    public List<ProblemBO> findProblemInfo(String proNumber) {
+        List<ProblemBO> problemBOS = new LinkedList<>();
+        List<ProblemDO> problemDOS=operationProductionDao.findProblemInfo(proNumber);
+        problemDOS.forEach(m->
+                problemBOS.add(BeanUtils.copyPropertiesReturnDest(new ProblemBO(), m))
+        );
+        //确保listc长度为5
+        while (problemBOS.size()<5){
+            problemBOS.add(new ProblemBO());
+        }
+        return problemBOS;
+    }
+
+    @Override
+    public void updateProblem(ProblemBO proBean) {
+
+    }
+
+    @Override
+    public void deleteProblemInfo(String proNumber1) {
+
+    }
+
+    @Override
+    public void insertProblemInfo(ProblemBO proBean) {
+
+    }
 }

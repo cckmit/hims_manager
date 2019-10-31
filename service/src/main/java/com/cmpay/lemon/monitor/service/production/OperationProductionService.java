@@ -68,4 +68,12 @@ public interface OperationProductionService {
      * @param file
      */
     void doBatchImport(MultipartFile file,String reqNumber);
+    //查询投产问题
+    List<ProblemBO> findProblemInfo(String proNumber);
+    //更新投产问题
+    void updateProblem(ProblemBO proBean);
+    //删除投产问题
+    void deleteProblemInfo(String proNumber1);
+    //新增投产问题
+    void insertProblemInfo(ProblemBO proBean);
 }

@@ -5,20 +5,10 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.monitor.bo.*;
-import com.cmpay.lemon.monitor.bo.MailGroupBO;
-import com.cmpay.lemon.monitor.bo.ProductionBO;
-import com.cmpay.lemon.monitor.bo.ProductionRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
-import com.cmpay.lemon.monitor.entity.Constant;
-import com.cmpay.lemon.monitor.entity.ProductionPicDO;
-import com.cmpay.lemon.monitor.entity.ScheduleDO;
-import com.cmpay.lemon.monitor.entity.sendemail.*;
-import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
-import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -167,4 +157,48 @@ public class OperationProductionController {
         return GenericRspDTO.newSuccessInstance();
     }
 
+    /**
+     * 问题录入前查询
+     */
+    @PostMapping("/getQuestion")
+    public GenericRspDTO<GetQuestionRsqDTO> getQuestion(@RequestBody GetQuestionReqDTO getQuestionReqDTO) {
+        String proNumber = getQuestionReqDTO.getProNumber();
+        List<ProblemBO> problemBOS = operationProductionService.findProblemInfo(proNumber);
+        List<ProblemDTO> problemDTOS = new LinkedList<>();
+        problemBOS.forEach(m ->
+                {
+                    problemDTOS.add(BeanUtils.copyPropertiesReturnDest(new ProblemDTO(), m));
+                    System.err.println(m.toString());
+                }
+        );
+        GetQuestionRsqDTO getQuestionRsqDTO = new GetQuestionRsqDTO();
+        getQuestionRsqDTO.setProblemDTO(problemDTOS);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, getQuestionRsqDTO);
+    }
+
+    /**
+     * 问题录入
+     */
+    @PostMapping("questionInput")
+    public GenericRspDTO<NoBody> questionInput(@RequestBody QuestionInputReqDTO questionInputReqDTO) {
+
+        QuestionInputReqBO questionInputReqBO = BeanUtils.copyPropertiesReturnDest(new QuestionInputReqBO(), questionInputReqDTO);
+
+
+        if(questionInputReqBO.getProNumber1()!=null && !questionInputReqBO.getProNumber1().equals("")){
+            if( questionInputReqBO.getQuestionOne() !=null && ! questionInputReqBO.getQuestionOne().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+                operationProductionService.updateProblem(proBean);
+            }
+            else{
+                operationProductionService.deleteProblemInfo(questionInputReqBO.getProNumber1());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionOne()!=null && !questionInputReqBO.getQuestionOne().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+                operationProductionService.insertProblemInfo(proBean);
+            }
+        }
+        return GenericRspDTO.newSuccessInstance();
+    }
 }
