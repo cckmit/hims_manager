@@ -548,7 +548,7 @@
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
             </if>
         </where>
-        ORDER BY a.req_inner_seq asc
+        ORDER BY a.req_inner_seq desc
     </select>
 
     <select id="getReqTaskByUK" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
