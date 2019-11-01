@@ -183,4 +183,12 @@ public class OperationProductionController {
 
         return GenericRspDTO.newSuccessInstance();
     }
+
+    // 查询需求编号
+    @RequestMapping("/findOne")
+    public GenericRspDTO<ProductionDTO> findOne(@RequestParam("pro_number") String proNumber){
+        ProductionBO productionBO = operationProductionService.searchProdutionDetail(proNumber);
+        ProductionDTO rspDTO = BeanUtils.copyPropertiesReturnDest(new ProductionDTO(), productionBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 }
