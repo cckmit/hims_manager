@@ -100,4 +100,21 @@ public class QuestionInputReqDTO {
     public void setProNumber5(String proNumber5) {
         this.proNumber5 = proNumber5;
     }
+
+    @Override
+    public String toString() {
+        return "QuestionInputReqDTO{" +
+                "proNumber='" + proNumber + '\'' +
+                ", questionOne='" + questionOne + '\'' +
+                ", questionTwo='" + questionTwo + '\'' +
+                ", questionThree='" + questionThree + '\'' +
+                ", questionFour='" + questionFour + '\'' +
+                ", questionFive='" + questionFive + '\'' +
+                ", proNumber1='" + proNumber1 + '\'' +
+                ", proNumber2='" + proNumber2 + '\'' +
+                ", proNumber3='" + proNumber3 + '\'' +
+                ", proNumber4='" + proNumber4 + '\'' +
+                ", proNumber5='" + proNumber5 + '\'' +
+                '}';
+    }
 }

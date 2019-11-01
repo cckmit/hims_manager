@@ -7,6 +7,7 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.framework.dao.BaseDao;
+import com.cmpay.lemon.monitor.bo.ProblemBO;
 import com.cmpay.lemon.monitor.entity.ProblemDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
@@ -66,4 +67,10 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     List<ScheduleDO> findPageBreakBySchedule(ScheduleDO vo);
     // 投产审计导出列表查询
     ScheduleDO findOperationExcelList(int seq_id);
+
+    void updateProblem(ProblemDO problemDO);
+
+    void deleteProblemInfo(String proNumber1);
+
+    void insertProblemInfo(ProblemBO problemBO);
 }

@@ -92,7 +92,6 @@ public class ReadExcelUtils {
         row = sheet.getRow(0);
         int colNum = row.getPhysicalNumberOfCells();
         // 正文内容应该从第二行开始,第一行为表头的标题
-        System.err.println(rowNum);
         for (int i = 1; i <= rowNum; i++) {
             row = sheet.getRow(i);
             int j = 0;
@@ -162,8 +161,6 @@ public class ReadExcelUtils {
 //			}
             // 对读取Excel表格内容测试
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
-            System.out.println("获得Excel表格的内容:");
-            System.err.println(map);
             for (int i = 1; i <= map.size(); i++) {
                 DemandDO demandDO = new DemandDO();
                 demandDO.setReqInnerSeq(map.get(i).get(0).toString());
@@ -181,7 +178,6 @@ public class ReadExcelUtils {
                 if(!JudgeUtils.isEmpty(map.get(i).get(8).toString())) {
                     demandDO.setMonInputWorkload(Integer.parseInt( map.get(i).get(8).toString()));
                 }
-                System.err.println(demandDO.toString());
             }
         } catch (FileNotFoundException e) {
             System.out.println("未找到指定路径的文件!");

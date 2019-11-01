@@ -460,7 +460,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             file.transferTo(f);
             String filepath = f.getPath();
             //excel转java类
-            System.err.println(filepath);
             ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {

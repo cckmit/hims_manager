@@ -118,7 +118,6 @@ import java.util.List;
 
     @RequestMapping("/downloadreportform1")
     public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
            reqDataCountReqDTO.setReqImplMon(month);
@@ -128,7 +127,6 @@ import java.util.List;
     }
     @RequestMapping("/downloadreportform2")
     public  GenericRspDTO<NoBody> downloadReportForm2(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
-        System.err.println(reqDataCountReqDTO.getReqImplMon());
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);

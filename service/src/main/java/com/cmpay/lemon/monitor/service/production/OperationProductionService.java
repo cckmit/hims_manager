@@ -76,4 +76,6 @@ public interface OperationProductionService {
     void deleteProblemInfo(String proNumber1);
     //新增投产问题
     void insertProblemInfo(ProblemBO proBean);
+
+    void questionInput(QuestionInputReqBO questionInputReqBO);
 }

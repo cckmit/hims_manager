@@ -20,7 +20,6 @@ import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.session.RowBounds;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -621,7 +620,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	@Override
 	public DemandRspBO findDemand(DemandBO demandBO) {
 		String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-		System.err.println("需求月份"+demandBO.getReqImplMon());
 		PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
 		List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 

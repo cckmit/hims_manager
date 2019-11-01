@@ -174,7 +174,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             c.setTime(month);
             c.add(Calendar.MONTH, -1);
             String last_month = simpleDateFormatMonth.format(c.getTime());
-            System.err.println("上个月"+last_month);
 
             DemandDO demandDO = new DemandDO();
             demandDO.setReqImplMon(last_month);
@@ -281,7 +280,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 demandDOS.add(demandDO);
-                System.err.println(demandDO.toString());
             }
         } catch (BusinessException e) {
             e.printStackTrace();
@@ -299,7 +297,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
             int i = demandDOS.indexOf(m)+2;
-            System.err.println(i);
             String ReqInnerSeq = m.getReqInnerSeq();
             DemandBO demandBO = reqTaskService.findById(ReqInnerSeq);
             //
@@ -379,7 +376,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + map.get("message"));
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
-                System.err.println(map);
                 m.setLeadDeptPro(map.get("leadDeptRate"));
                 m.setCoorDeptPro(map.get("coorDeptRate"));
                 m.setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
@@ -404,7 +400,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     @Override
     public Map<String, String> checkDeptRate(int totWork, String deptInfo, DemandBO demand) {
         deptInfo = deptInfo.replaceAll("：", ":").replaceAll("；", ";");
-        System.err.println(deptInfo);
         Map<String, String> map = new HashMap<>();
         if (deptInfo.indexOf(":") < 0) {
             map.put("message", "【工作量占比(配合部门投入占比)】格式有误，正确格式为：【银行合作研发部：80%;移动业务研发部：20%】，  请修改后重新导入！");
@@ -422,7 +417,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             String perRate = deptrates[i];
             if (StringUtils.isNotEmpty(perRate)) {
                 String[] detailRate = perRate.split(":");
-                System.err.println("detailRate"+detailRate);
                 if (detailRate.length != 2) {
                     map.put("message", "【工作量占比(配合部门投入占比)】格式有误，正确格式为：【银行合作研发部：80%;移动业务研发部：20%】，  请修改后重新导入！");
                     return map;
@@ -458,7 +452,6 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 }
             }
         }
-        System.err.println(totalRate);
         if (totalRate.compareTo(new BigDecimal(100.0)) != 0) {
             // 返回值 -1 小于 0 等于 1 大于
             map.put("message", "【工作量占比(配合部门投入占比)】合计应等于100%，  请修改后重新导入！");
