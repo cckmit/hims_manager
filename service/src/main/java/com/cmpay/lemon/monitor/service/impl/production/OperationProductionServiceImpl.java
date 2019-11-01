@@ -632,7 +632,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProductionBO productionBO=null;
         ProductionDO productionBean = operationProductionDao.findProductionBean(proNumber);
         if(productionBean!=null) {
-            System.err.println(productionBean.toString());
             productionBO= BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
         }
         return productionBO;
