@@ -467,14 +467,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String message = bulidSvnProjrct(reqPlan, request);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败:" + message);
-                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN+message);
+                MsgEnum.ERROR_NOT_SVN.setMsgInfo("项目启动失败:" + message);
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
             }
             //文档建立成功后，更新字段 is_svn_build
             bean.setIsSvnBuild("是");
             demandDao.update(bean);
         } catch (Exception e1) {
             // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
-            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID+ e1.getMessage());
+            MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("项目启动失败:" + e1.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
         }
         try {
             String subject = "【项目启动】" + reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_"
@@ -483,7 +485,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String message = reqPlanService.sendMail(sendTo, copyTo, content, subject, null);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
-                BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL+message);
+                MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:" + message);
+                BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
             }
             //启动成功后记录时间
             reqPlan.setProjectStartTm(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
@@ -491,7 +494,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         } catch (Exception e) {
             e.printStackTrace();
             //return ajaxDoneError("项目启动失败，SVN项目建立成功，启动邮件发送失败：" + e.getMessage());
-            BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL+e.getMessage());
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:"+e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
         }
     }
 
@@ -689,6 +693,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //月底备注置空
                 demand.setEndMonRemark("");
                 demand.setEndFeedbackTm("");
+                // 是否核减置空
+                demand.setIsCut("");
                 // 工作量已录入总量
                 int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
@@ -722,7 +728,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             e.printStackTrace();
             LOGGER.error("存量需求转存失败：" + e.getMessage());
             //"存量需求转存失败" + e.getMessage();
-            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE+e.getMessage());
+            MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
         }
 //        }else{
 //            //无权限使用该功能
@@ -767,6 +774,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //月底备注置空
                 demand.setEndMonRemark("");
                 demand.setEndFeedbackTm("");
+                // 是否核减置空
+                demand.setIsCut("");
                 // 工作量已录入总量
                 int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
@@ -798,8 +807,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.error("需求查询启动：" + e.getMessage());
-            BusinessException.throwBusinessException("异常需求查询启动失败:" + e.getMessage());
+            LOGGER.error("异常需求重新启动：" + e.getMessage());
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("异常需求重新启动失败:" + e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
     }
     private void SyncJira(DemandDO demand, String reqInnerSeq) {
@@ -869,8 +879,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String innerReqSeq = reqDTO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(innerReqSeq);
         if (null == reqPlan) {
-            //return ajaxDoneError("文档上传失败：找不到需求相关信息，无法进行上传!");
-            BusinessException.throwBusinessException("文档上传失败：找不到需求相关信息，无法进行上传!");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：找不到需求相关信息，无法进行上传!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         int period = 0;
         int curPeriod = 0;
@@ -879,13 +889,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             period = Integer.parseInt(uploadPeriod) + 10;
             curPeriod = Integer.parseInt(reqPeriod);
         } catch (Exception e) {
-            //return ajaxDoneError("文档上传失败：请选择相应需求阶段进行文件上传!");
-            BusinessException.throwBusinessException("文档上传失败：请选择相应需求阶段进行文件上传!");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：请选择相应需求阶段进行文件上传!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         String reqNo=reqPlan.getReqNo();
         if(StringUtils.isBlank(reqNo)){
-            //return ajaxDoneError("文档上传失败：需求编号不能为空!");
-            BusinessException.throwBusinessException("文档上传失败：需求编号不能为空!");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：需求编号不能为空!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         int start=reqNo.indexOf("-")+1;
         String reqMonth=reqNo.substring(start,start+6);
@@ -900,8 +910,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
         String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
         if (!StringUtils.isEmpty(checOutMsg)) {
-            //return ajaxDoneError(checOutMsg);
-            BusinessException.throwBusinessException(checOutMsg);
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(checOutMsg);
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         // 获取阶段中文名
         String periodChName = "";
@@ -955,13 +965,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             updateExtraTm(reqPlan);
             map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
         } catch (Exception e) {
-            // return ajaxDoneError(e.getMessage());
-            BusinessException.throwBusinessException(e.getMessage());
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         String message = (String) map.get("message");
         if (!StringUtils.isBlank(message)) {
             //return ajaxDoneError(message);
-            BusinessException.throwBusinessException(message);
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(message);
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         Vector<File> attachFiles = (Vector<File>) map.get("files");
         if (StringUtils.equals(uploadPeriod, ReqPeriodConstants.REQ_CONFIRM) || StringUtils.equals(uploadPeriod,ReqPeriodConstants.TECH_DOC_CONFIRM)
@@ -970,16 +981,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String sendTo = reqDTO.getSendTo();
             String copyTo = reqDTO.getCopyTo();
             if (StringUtils.isBlank(sendTo)) {
-                //return ajaxDoneError("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
-                BusinessException.throwBusinessException("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String currentUser =  SecurityUtils.getLoginName();
             String  subject= reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
             String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser, attachFiles);
             if (StringUtils.isNotEmpty(msg)) {
-                //return ajaxDoneError("文档上传成功，邮件发送失败");
-                BusinessException.throwBusinessException("文档上传成功，邮件发送失败");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
         // period：下拉框阶段值+10  curPeriod：需求当前阶段，上传文档的状态+10大于需求当前阶段时更新状态到下一个阶段

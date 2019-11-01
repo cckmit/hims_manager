@@ -208,7 +208,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         } catch (Exception e) {
             e.printStackTrace();
             //"存量需求转存失败" + e.getMessage();
-            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE+e.getMessage());
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_FAIL_CHANGE.getMsgInfo()+e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 //        }else{
 //            //无权限使用该功能
@@ -241,7 +242,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
                 suffix=".xlsx";
             }else {
-                BusinessException.throwBusinessException("文件类型错误");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             f=File.createTempFile("tmp", suffix);
             file.transferTo(f);
@@ -614,9 +616,11 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 // 删除文件
                 new File(createFile).delete();
             } catch (UnsupportedEncodingException e) {
-                BusinessException.throwBusinessException("各部门工作量月统计汇总报表导出失败");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("各部门工作量月统计汇总报表导出失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             } catch (Exception e) {
-                BusinessException.throwBusinessException("各部门工作量月统计汇总报表导出失败");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("各部门工作量月统计汇总报表导出失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
     }
@@ -934,7 +938,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             workLoadDao.updateReqWorkLoad(deman);
 
         } catch (Exception e) {
-            BusinessException.throwBusinessException("工作量提交失败！");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("工作量提交失败！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
     }

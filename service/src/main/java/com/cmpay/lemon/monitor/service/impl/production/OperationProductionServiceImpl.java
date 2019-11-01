@@ -1256,9 +1256,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 删除文件
             new File(createFile).delete();
         } catch (UnsupportedEncodingException e) {
-            BusinessException.throwBusinessException("投产操作明细报表导出失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         } catch (Exception e) {
-            BusinessException.throwBusinessException("投产操作明细报表导出失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
     }
