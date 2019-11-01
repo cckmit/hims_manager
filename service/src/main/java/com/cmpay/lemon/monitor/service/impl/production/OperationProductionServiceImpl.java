@@ -172,13 +172,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
-                System.err.println(bean);
                 bean.setProductionDeploymentResult("已部署");
                 operationProductionDao.updateProduction(bean);
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getProStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "预投产已部署", sBean.getPreOperation(), sBean.getPreOperation(), "预投产已提前部署");
-                System.err.println(schedule);
                 operationProductionDao.insertSchedule(schedule);
             }
             return;
@@ -320,7 +318,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
                 ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[j]);
-                System.err.println(mfba.getEmployeeName()+"=="+mfba.getEmployeeEmail());
                 MailFlowDO bnb = new MailFlowDO("投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
                 MailSenderInfo mailInfo = new MailSenderInfo();
@@ -632,7 +629,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProductionBO productionBO=null;
         ProductionDO productionBean = operationProductionDao.findProductionBean(proNumber);
         if(productionBean!=null) {
-            System.err.println(productionBean.toString());
             productionBO= BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
         }
         return productionBO;
@@ -1648,7 +1644,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 reqTaskService.updatePreCurPeriod(DemandBO);
             }
         }
-        System.err.println(isSend);
         if (!isSend) {
             //自定义类型成功
             MsgEnum.CUSTOMSUCCESS.setMsgInfo(" 投产已录入,但您有邮件没有发送成功,请及时联系系统维护人员!");
@@ -1767,17 +1762,105 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public void updateProblem(ProblemBO proBean) {
-
+    public void updateProblem(ProblemBO problemBO) {
+        ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
+        operationProductionDao.updateProblem(problemDO);
     }
 
     @Override
     public void deleteProblemInfo(String proNumber1) {
-
+        operationProductionDao.deleteProblemInfo(proNumber1);
     }
 
     @Override
-    public void insertProblemInfo(ProblemBO proBean) {
+    public void insertProblemInfo(ProblemBO problemBO) {
+        ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
+        operationProductionDao.insertProblemInfo(problemBO);
+    }
 
+
+    /**
+     * 问题录入
+     * 按照老系统照搬写下来的，设计的有点不合理 后期可以考虑把参数改成链表
+     *
+     * @param questionInputReqBO
+     */
+    @Override
+    public void questionInput(QuestionInputReqBO questionInputReqBO) {
+        //问题一
+        if(questionInputReqBO.getProNumber1()!=null && !questionInputReqBO.getProNumber1().equals("")){
+            if( questionInputReqBO.getQuestionOne() !=null && ! questionInputReqBO.getQuestionOne().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+                this.updateProblem(proBean);
+            }
+            else{
+                this.deleteProblemInfo(questionInputReqBO.getProNumber1());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionOne()!=null && !questionInputReqBO.getQuestionOne().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+                this.insertProblemInfo(proBean);
+            }
+        }
+        //问题二
+        if(questionInputReqBO.getProNumber2()!=null && !questionInputReqBO.getProNumber2().equals("")){
+            if( questionInputReqBO.getQuestionTwo() !=null && ! questionInputReqBO.getQuestionTwo().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber2()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
+                this.updateProblem(proBean);
+            }
+            else{
+                this.deleteProblemInfo(questionInputReqBO.getProNumber2());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionTwo()!=null && !questionInputReqBO.getQuestionTwo().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
+                this.insertProblemInfo(proBean);
+            }
+        }
+        //问题三
+        if(questionInputReqBO.getProNumber3()!=null && !questionInputReqBO.getProNumber3().equals("")){
+            if( questionInputReqBO.getQuestionThree() !=null && ! questionInputReqBO.getQuestionThree().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber3()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
+                this.updateProblem(proBean);
+            }
+            else{
+                this.deleteProblemInfo(questionInputReqBO.getProNumber3());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionThree()!=null && !questionInputReqBO.getQuestionThree().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
+                this.insertProblemInfo(proBean);
+            }
+        }
+        //问题四
+        if(questionInputReqBO.getProNumber4()!=null && !questionInputReqBO.getProNumber4().equals("")){
+            if( questionInputReqBO.getQuestionFour() !=null && ! questionInputReqBO.getQuestionFour().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber4()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
+                this.updateProblem(proBean);
+            }
+            else{
+                this.deleteProblemInfo(questionInputReqBO.getProNumber4());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionFour()!=null && !questionInputReqBO.getQuestionFour().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
+                this.insertProblemInfo(proBean);
+            }
+        }
+        //问题五
+        if(questionInputReqBO.getProNumber5()!=null && !questionInputReqBO.getProNumber5().equals("")){
+            if( questionInputReqBO.getQuestionFive() !=null && ! questionInputReqBO.getQuestionFive().equals("")){
+                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber5()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
+                this.updateProblem(proBean);
+            }
+            else{
+                this.deleteProblemInfo(questionInputReqBO.getProNumber5());
+            }
+        }else{
+            if(questionInputReqBO.getQuestionFive()!=null && !questionInputReqBO.getQuestionFive().equals("")){
+                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
+                this.insertProblemInfo(proBean);
+            }
+        }
     }
 }

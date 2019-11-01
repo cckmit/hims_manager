@@ -87,14 +87,12 @@ public class OperationProductionController {
     // 投产清单通报
     @RequestMapping("/sendGoExport")
     public GenericRspDTO<NoBody> sendGoExport(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        System.err.println(taskIdStr);
         operationProductionService.sendGoExport(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
     // 投产结果通报
     @RequestMapping("/sendGoExportResult")
     public GenericRspDTO<NoBody> sendGoExportResult(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        System.err.println(taskIdStr);
         operationProductionService.sendGoExportResult(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
@@ -102,7 +100,6 @@ public class OperationProductionController {
     // 投产包检查
     @RequestMapping("/proPkgCheck")
     public GenericRspDTO proPkgCheck(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        System.err.println(taskIdStr);
         String result = operationProductionService.proPkgCheck(request,response,taskIdStr);
         MsgEnum.SUCCESS.setMsgInfo("");
         MsgEnum.SUCCESS.setMsgInfo(result);
@@ -168,7 +165,6 @@ public class OperationProductionController {
         problemBOS.forEach(m ->
                 {
                     problemDTOS.add(BeanUtils.copyPropertiesReturnDest(new ProblemDTO(), m));
-                    System.err.println(m.toString());
                 }
         );
         GetQuestionRsqDTO getQuestionRsqDTO = new GetQuestionRsqDTO();
@@ -183,22 +179,8 @@ public class OperationProductionController {
     public GenericRspDTO<NoBody> questionInput(@RequestBody QuestionInputReqDTO questionInputReqDTO) {
 
         QuestionInputReqBO questionInputReqBO = BeanUtils.copyPropertiesReturnDest(new QuestionInputReqBO(), questionInputReqDTO);
+        operationProductionService.questionInput(questionInputReqBO);
 
-
-        if(questionInputReqBO.getProNumber1()!=null && !questionInputReqBO.getProNumber1().equals("")){
-            if( questionInputReqBO.getQuestionOne() !=null && ! questionInputReqBO.getQuestionOne().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
-                operationProductionService.updateProblem(proBean);
-            }
-            else{
-                operationProductionService.deleteProblemInfo(questionInputReqBO.getProNumber1());
-            }
-        }else{
-            if(questionInputReqBO.getQuestionOne()!=null && !questionInputReqBO.getQuestionOne().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
-                operationProductionService.insertProblemInfo(proBean);
-            }
-        }
         return GenericRspDTO.newSuccessInstance();
     }
 }

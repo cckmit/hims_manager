@@ -436,22 +436,22 @@
     		<!--)-->
     <!--</insert>-->
 
-    <!--<insert id="insertProblemInfo"  parameterType="com.hisun.persistence.beans.ProblemBean">-->
-    	<!--insert into  t_production_problem(pro_number,problem_detail)-->
-    	<!--values(-->
-    	    <!--#{pro_number},-->
-    		<!--#{problem_detail}-->
-    		<!--)-->
-    <!--</insert>-->
+    <insert id="insertProblemInfo"  parameterType="com.cmpay.lemon.monitor.entity.ProblemDO">
+    	insert into  t_production_problem(pro_number,problem_detail)
+    	values(
+    	    #{proNumber},
+    		#{problemDetail}
+    		)
+    </insert>
 
-    <!--<update id="updateProblem" parameterType="com.hisun.persistence.beans.ProblemBean">-->
-        <!--UPDATE t_production_problem-->
-        <!--SET-->
-        <!--<if test="problem_detail != null and problem_detail != ''">-->
-            <!--problem_detail = #{problem_detail}-->
-        <!--</if>-->
-        <!--WHERE problem_serial_number = #{problem_serial_number}-->
-    <!--</update>-->
+    <update id="updateProblem" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO">
+        UPDATE t_production_problem
+        SET
+        <if test="problemDetail != null and problemDetail != ''">
+            problem_detail = #{problemDetail}
+        </if>
+        WHERE problem_serial_number = #{problemSerialNumber}
+    </update>
 
     <!--<select id="findBaseProductionInfo" resultMap="rm" parameterType="string">-->
         <!--SELECT-->
@@ -483,10 +483,10 @@
             pro_number LIKE CONCAT('%',#{proNumber},'%')
     </select>
 
-    <!--<delete id="deleteProblemInfo" parameterType="string">-->
-    <!--delete from t_production_problem-->
-    <!--where problem_serial_number=#{problem_serial_number}-->
-    <!--</delete>-->
+    <delete id="deleteProblemInfo" parameterType="string">
+    delete from t_production_problem
+    where problem_serial_number=#{proNumber1}
+    </delete>
 
     <select id="findPageBreakBySchedule" resultMap="sm" parameterType="map">
         SELECT
