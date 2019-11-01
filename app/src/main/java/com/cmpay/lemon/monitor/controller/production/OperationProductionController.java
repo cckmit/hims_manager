@@ -188,7 +188,10 @@ public class OperationProductionController {
     @RequestMapping("/findOne")
     public GenericRspDTO<ProductionDTO> findOne(@RequestParam("pro_number") String proNumber){
         ProductionBO productionBO = operationProductionService.searchProdutionDetail(proNumber);
-        ProductionDTO rspDTO = BeanUtils.copyPropertiesReturnDest(new ProductionDTO(), productionBO);
+        ProductionDTO rspDTO = null;
+        if(productionBO!=null) {
+            rspDTO = BeanUtils.copyPropertiesReturnDest(new ProductionDTO(), productionBO);
+        }
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }
