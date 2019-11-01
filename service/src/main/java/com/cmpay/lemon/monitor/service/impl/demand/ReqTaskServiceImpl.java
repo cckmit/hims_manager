@@ -454,7 +454,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
                 suffix=".xlsx";
             }else {
-                BusinessException.throwBusinessException("文件类型错误");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             f=File.createTempFile("tmp", suffix);
             file.transferTo(f);
@@ -864,7 +865,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 break;
             }
             default:{
-                BusinessException.throwBusinessException("状态码异常");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("状态码异常!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
         return reqSts;
