@@ -194,4 +194,11 @@ public class OperationProductionController {
         }
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+    // 下载投产包
+    @RequestMapping("/pkgDownload")
+    public GenericRspDTO<NoBody> pkgDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
+        operationProductionService.pkgDownload(request,response,proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
 }

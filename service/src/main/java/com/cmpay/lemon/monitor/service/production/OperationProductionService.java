@@ -78,4 +78,6 @@ public interface OperationProductionService {
     void insertProblemInfo(ProblemBO proBean);
 
     void questionInput(QuestionInputReqBO questionInputReqBO);
+    //投产包下载
+    void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 }
