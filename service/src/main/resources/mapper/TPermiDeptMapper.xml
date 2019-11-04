@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ITPermiDeptDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.TPermiDeptDO" >
+        <id column="seq_id" property="seqId" jdbcType="BIGINT" />
+        <result column="dept_id" property="deptId" jdbcType="VARCHAR" />
+        <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+        <result column="parent_dept_id" property="parentDeptId" jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="create_user_id" property="createUserId" jdbcType="VARCHAR" />
+        <result column="update_user_id" property="updateUserId" jdbcType="VARCHAR" />
+        <result column="sort" property="sort" jdbcType="BIGINT" />
+        <result column="flag" property="flag" jdbcType="CHAR" />
+        <result column="third_dept_id" property="thirdDeptId" jdbcType="VARCHAR" />
+        <result column="dept_manager_id" property="deptManagerId" jdbcType="VARCHAR" />
+        <result column="dept_manager_name" property="deptManagerName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        seq_id, dept_id, dept_name, parent_dept_id, create_time, update_time, create_user_id, 
+        update_user_id, sort, flag, third_dept_id, dept_manager_id, dept_manager_name
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_permi_dept
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_permi_dept
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.TPermiDeptDO" >
+        insert into t_permi_dept
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                seq_id,
+            </if>
+            <if test="deptId != null" >
+                dept_id,
+            </if>
+            <if test="deptName != null" >
+                dept_name,
+            </if>
+            <if test="parentDeptId != null" >
+                parent_dept_id,
+            </if>
+            <if test="createTime != null" >
+                create_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="createUserId != null" >
+                create_user_id,
+            </if>
+            <if test="updateUserId != null" >
+                update_user_id,
+            </if>
+            <if test="sort != null" >
+                sort,
+            </if>
+            <if test="flag != null" >
+                flag,
+            </if>
+            <if test="thirdDeptId != null" >
+                third_dept_id,
+            </if>
+            <if test="deptManagerId != null" >
+                dept_manager_id,
+            </if>
+            <if test="deptManagerName != null" >
+                dept_manager_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                #{seqId,jdbcType=BIGINT},
+            </if>
+            <if test="deptId != null" >
+                #{deptId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptName != null" >
+                #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="parentDeptId != null" >
+                #{parentDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null" >
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null" >
+                #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null" >
+                #{sort,jdbcType=BIGINT},
+            </if>
+            <if test="flag != null" >
+                #{flag,jdbcType=CHAR},
+            </if>
+            <if test="thirdDeptId != null" >
+                #{thirdDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptManagerId != null" >
+                #{deptManagerId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptManagerName != null" >
+                #{deptManagerName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.TPermiDeptDO" >
+        update t_permi_dept
+        <set >
+            <if test="deptId != null" >
+                dept_id = #{deptId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptName != null" >
+                dept_name = #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="parentDeptId != null" >
+                parent_dept_id = #{parentDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null" >
+                create_user_id = #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="updateUserId != null" >
+                update_user_id = #{updateUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null" >
+                sort = #{sort,jdbcType=BIGINT},
+            </if>
+            <if test="flag != null" >
+                flag = #{flag,jdbcType=CHAR},
+            </if>
+            <if test="thirdDeptId != null" >
+                third_dept_id = #{thirdDeptId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptManagerId != null" >
+                dept_manager_id = #{deptManagerId,jdbcType=VARCHAR},
+            </if>
+            <if test="deptManagerName != null" >
+                dept_manager_name = #{deptManagerName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.TPermiDeptDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_permi_dept
+        <where >
+            <if test="seqId != null" >
+                and seq_id = #{seqId,jdbcType=BIGINT}
+            </if>
+            <if test="deptId != null" >
+                and dept_id = #{deptId,jdbcType=VARCHAR}
+            </if>
+            <if test="deptName != null" >
+                and dept_name = #{deptName,jdbcType=VARCHAR}
+            </if>
+            <if test="parentDeptId != null" >
+                and parent_dept_id = #{parentDeptId,jdbcType=VARCHAR}
+            </if>
+            <if test="createTime != null" >
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null" >
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="createUserId != null" >
+                and create_user_id = #{createUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="updateUserId != null" >
+                and update_user_id = #{updateUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="sort != null" >
+                and sort = #{sort,jdbcType=BIGINT}
+            </if>
+            <if test="flag != null" >
+                and flag = #{flag,jdbcType=CHAR}
+            </if>
+            <if test="thirdDeptId != null" >
+                and third_dept_id = #{thirdDeptId,jdbcType=VARCHAR}
+            </if>
+            <if test="deptManagerId != null" >
+                and dept_manager_id = #{deptManagerId,jdbcType=VARCHAR}
+            </if>
+            <if test="deptManagerName != null" >
+                and dept_manager_name = #{deptManagerName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

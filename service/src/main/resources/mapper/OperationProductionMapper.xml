@@ -636,6 +636,7 @@
     SELECT user_name,email,email_password FROM t_permi_user WHERE user_name=#{employeeName};
     </select>
 
+
     <!--<update id="updateMailGroup" parameterType="com.hisun.persistence.beans.MailGroupBean">-->
         <!--UPDATE t_mail_group-->
         <!--<trim prefix="set" suffixOverrides=",">-->

@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IPermiUserDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.PermiUserDO" >
+        <id column="seq_id" property="seqId" jdbcType="BIGINT" />
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="password" property="password" jdbcType="VARCHAR" />
+        <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+        <result column="dept_id" property="deptId" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="update_date" property="updateDate" jdbcType="TIMESTAMP" />
+        <result column="mobile_num" property="mobileNum" jdbcType="VARCHAR" />
+        <result column="register_ip" property="registerIp" jdbcType="VARCHAR" />
+        <result column="register_time" property="registerTime" jdbcType="TIMESTAMP" />
+        <result column="email" property="email" jdbcType="VARCHAR" />
+        <result column="login_date" property="loginDate" jdbcType="TIMESTAMP" />
+        <result column="login_ip" property="loginIp" jdbcType="VARCHAR" />
+        <result column="locked_date" property="lockedDate" jdbcType="TIMESTAMP" />
+        <result column="is_enabled" property="isEnabled" jdbcType="BIT" />
+        <result column="is_locked" property="isLocked" jdbcType="BIT" />
+        <result column="login_count" property="loginCount" jdbcType="INTEGER" />
+        <result column="login_failure_count" property="loginFailureCount" jdbcType="BIGINT" />
+        <result column="is_del_flag" property="isDelFlag" jdbcType="BIT" />
+        <result column="email_password" property="emailPassword" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        seq_id, user_id, user_name, password, dept_name, dept_id, create_date, update_date, 
+        mobile_num, register_ip, register_time, email, login_date, login_ip, locked_date, 
+        is_enabled, is_locked, login_count, login_failure_count, is_del_flag, email_password
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_permi_user
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_permi_user
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.PermiUserDO" >
+        insert into t_permi_user
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                seq_id,
+            </if>
+            <if test="userId != null" >
+                user_id,
+            </if>
+            <if test="userName != null" >
+                user_name,
+            </if>
+            <if test="password != null" >
+                password,
+            </if>
+            <if test="deptName != null" >
+                dept_name,
+            </if>
+            <if test="deptId != null" >
+                dept_id,
+            </if>
+            <if test="createDate != null" >
+                create_date,
+            </if>
+            <if test="updateDate != null" >
+                update_date,
+            </if>
+            <if test="mobileNum != null" >
+                mobile_num,
+            </if>
+            <if test="registerIp != null" >
+                register_ip,
+            </if>
+            <if test="registerTime != null" >
+                register_time,
+            </if>
+            <if test="email != null" >
+                email,
+            </if>
+            <if test="loginDate != null" >
+                login_date,
+            </if>
+            <if test="loginIp != null" >
+                login_ip,
+            </if>
+            <if test="lockedDate != null" >
+                locked_date,
+            </if>
+            <if test="isEnabled != null" >
+                is_enabled,
+            </if>
+            <if test="isLocked != null" >
+                is_locked,
+            </if>
+            <if test="loginCount != null" >
+                login_count,
+            </if>
+            <if test="loginFailureCount != null" >
+                login_failure_count,
+            </if>
+            <if test="isDelFlag != null" >
+                is_del_flag,
+            </if>
+            <if test="emailPassword != null" >
+                email_password,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="seqId != null" >
+                #{seqId,jdbcType=BIGINT},
+            </if>
+            <if test="userId != null" >
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null" >
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="deptName != null" >
+                #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null" >
+                #{deptId,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null" >
+                #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="mobileNum != null" >
+                #{mobileNum,jdbcType=VARCHAR},
+            </if>
+            <if test="registerIp != null" >
+                #{registerIp,jdbcType=VARCHAR},
+            </if>
+            <if test="registerTime != null" >
+                #{registerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="email != null" >
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="loginDate != null" >
+                #{loginDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loginIp != null" >
+                #{loginIp,jdbcType=VARCHAR},
+            </if>
+            <if test="lockedDate != null" >
+                #{lockedDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnabled != null" >
+                #{isEnabled,jdbcType=BIT},
+            </if>
+            <if test="isLocked != null" >
+                #{isLocked,jdbcType=BIT},
+            </if>
+            <if test="loginCount != null" >
+                #{loginCount,jdbcType=INTEGER},
+            </if>
+            <if test="loginFailureCount != null" >
+                #{loginFailureCount,jdbcType=BIGINT},
+            </if>
+            <if test="isDelFlag != null" >
+                #{isDelFlag,jdbcType=BIT},
+            </if>
+            <if test="emailPassword != null" >
+                #{emailPassword,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.PermiUserDO" >
+        update t_permi_user
+        <set >
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null" >
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null" >
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="deptName != null" >
+                dept_name = #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null" >
+                dept_id = #{deptId,jdbcType=VARCHAR},
+            </if>
+            <if test="createDate != null" >
+                create_date = #{createDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateDate != null" >
+                update_date = #{updateDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="mobileNum != null" >
+                mobile_num = #{mobileNum,jdbcType=VARCHAR},
+            </if>
+            <if test="registerIp != null" >
+                register_ip = #{registerIp,jdbcType=VARCHAR},
+            </if>
+            <if test="registerTime != null" >
+                register_time = #{registerTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="email != null" >
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="loginDate != null" >
+                login_date = #{loginDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loginIp != null" >
+                login_ip = #{loginIp,jdbcType=VARCHAR},
+            </if>
+            <if test="lockedDate != null" >
+                locked_date = #{lockedDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isEnabled != null" >
+                is_enabled = #{isEnabled,jdbcType=BIT},
+            </if>
+            <if test="isLocked != null" >
+                is_locked = #{isLocked,jdbcType=BIT},
+            </if>
+            <if test="loginCount != null" >
+                login_count = #{loginCount,jdbcType=INTEGER},
+            </if>
+            <if test="loginFailureCount != null" >
+                login_failure_count = #{loginFailureCount,jdbcType=BIGINT},
+            </if>
+            <if test="isDelFlag != null" >
+                is_del_flag = #{isDelFlag,jdbcType=BIT},
+            </if>
+            <if test="emailPassword != null" >
+                email_password = #{emailPassword,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where seq_id = #{seqId,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.PermiUserDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_permi_user
+        <where >
+            <if test="seqId != null" >
+                and seq_id = #{seqId,jdbcType=BIGINT}
+            </if>
+            <if test="userId != null" >
+                and user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="userName != null" >
+                and user_name = #{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="password != null" >
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="deptName != null" >
+                and dept_name = #{deptName,jdbcType=VARCHAR}
+            </if>
+            <if test="deptId != null" >
+                and dept_id = #{deptId,jdbcType=VARCHAR}
+            </if>
+            <if test="createDate != null" >
+                and create_date = #{createDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateDate != null" >
+                and update_date = #{updateDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="mobileNum != null" >
+                and mobile_num = #{mobileNum,jdbcType=VARCHAR}
+            </if>
+            <if test="registerIp != null" >
+                and register_ip = #{registerIp,jdbcType=VARCHAR}
+            </if>
+            <if test="registerTime != null" >
+                and register_time = #{registerTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="email != null" >
+                and email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="loginDate != null" >
+                and login_date = #{loginDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="loginIp != null" >
+                and login_ip = #{loginIp,jdbcType=VARCHAR}
+            </if>
+            <if test="lockedDate != null" >
+                and locked_date = #{lockedDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test="isEnabled != null" >
+                and is_enabled = #{isEnabled,jdbcType=BIT}
+            </if>
+            <if test="isLocked != null" >
+                and is_locked = #{isLocked,jdbcType=BIT}
+            </if>
+            <if test="loginCount != null" >
+                and login_count = #{loginCount,jdbcType=INTEGER}
+            </if>
+            <if test="loginFailureCount != null" >
+                and login_failure_count = #{loginFailureCount,jdbcType=BIGINT}
+            </if>
+            <if test="isDelFlag != null" >
+                and is_del_flag = #{isDelFlag,jdbcType=BIT}
+            </if>
+            <if test="emailPassword != null" >
+                and email_password = #{emailPassword,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

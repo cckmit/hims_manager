@@ -12,10 +12,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.dao.*;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.DemandJiraDO;
-import com.cmpay.lemon.monitor.entity.DemandStateHistoryDO;
-import com.cmpay.lemon.monitor.entity.DictionaryDO;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
@@ -52,6 +49,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
  */
 @Service
 public class ReqTaskServiceImpl implements ReqTaskService {
+    //超级管理员
+    private static final Long SUPERADMINISTRATOR =(long)10506;
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -74,6 +73,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IDemandJiraDao demandJiraDao;
     @Autowired
     private IJiraDepartmentDao jiraDepartmentDao;
+    @Autowired
+    private ITPermiDeptDao permiDeptDao;
+
+    @Autowired
+    private IPermiUserDao permiUserDao;
+    @Autowired
+    private  IUserRoleExtDao userRoleExtDao;
 
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
@@ -271,24 +277,24 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void delete(String req_inner_seq) {
-        try {
-            demandDao.delete(req_inner_seq);
-        } catch (Exception e) {
-            BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
+    public void delete(String reqInnerSeq) {
+        if(permissionCheck(reqInnerSeq)){
+            demandDao.delete(reqInnerSeq);
         }
+        else{
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能删除");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void deleteBatch(List<String> ids) {
-        try {
-            ids.forEach(demandDao::delete);
-            ids.forEach(demandJiraDao::delete);
-        } catch (Exception e) {
-            LOGGER.error("delete error:", e);
-            BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
-        }
+        ids.forEach(m->{
+            this.delete(m);
+        });
+        ids.forEach(demandJiraDao::delete);
     }
 
     @Override
@@ -514,16 +520,36 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandDOS.forEach(m -> {
             int i = demandDOS.indexOf(m)+2;
             if (StringUtils.isBlank(m.getReqProDept())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"归属部门不能为空");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"归属部门不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqNm())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"需求名称不能为空");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"需求名称不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqDesc())) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"需求描述不能为空");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"需求描述不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqProposer())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"需求提出人不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqMnger())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"需求负责人不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqPrdLine())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"产品线不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqStartMon())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"启动月份不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqImplMon())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"实施月份不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
 
             //判断编号是否规范
@@ -819,8 +845,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateReqSts(String reqInnerSeq, String reqNo,String reqSts, String reqStsRemarks,String reqNm) {
+        if(!permissionCheck(reqInnerSeq)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能删除");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(JudgeUtils.isEmpty(reqInnerSeq)||JudgeUtils.isEmpty(reqSts)) {
-            BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("输入数据不能为空");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         DemandDO demandDO = new DemandDO();
         demandDO.setReqInnerSeq(reqInnerSeq);
@@ -876,8 +907,79 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void updatePreCurPeriod(DemandBO demand) {
         DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demand);
         demandDao.updatePreCurPeriod(demandDO);
+    }
+
+    //判断是否是该项目产品经理或者部门经理
+    public boolean permissionCheck(String reqInnerSeq) {
+        //查询该操作员是否为系统管理员
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(SUPERADMINISTRATOR);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+
+        //当前操作员姓名
+        PermiUserDO permiUserDO = new PermiUserDO();
+        String loginName = SecurityUtils.getLoginName();
+        permiUserDO.setUserId(loginName);
+        List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
+        if(permiUserDOS.isEmpty()){
+            return false ;
+        }
+        String userName = permiUserDOS.get(0).getUserName();
+        //依据内部需求编号查内部需求
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        //获得产品经理，获得开发主导部门部门经理
+        String productMng = demandDO.getProductMng();
+        String devpLeadDept = demandDO.getDevpLeadDept();
+        TPermiDeptDO permiDeptDO = new TPermiDeptDO();
 
 
+        //判断开发主导部门和部门经理不为空
+        if(!(StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng)))){
+            //有产品经理，无主导部门,判断该操作员是否是该产品经理
+            if(!StringUtils.isBlank(productMng)&&(StringUtils.isBlank(devpLeadDept))){
+
+                System.err.println("有产品经理");
+                if(productMng.equals(userName)) {
+                    return true;
+                }else{
+                    return false ;
+                }
+            }
+            //有主导部门，无产品经理,判断该操作员是否是该开发部门项目经理 devpLeadDept
+            if(!StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng))){
+                System.err.println("有部门经理");
+                permiDeptDO.setDeptName(devpLeadDept);
+                //获得开发主导部门查询该部门部门经理
+                List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
+                String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
+                if(deptManagerName.equals(userName)) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            //有主导部门，产品经理,判断该操作员是否是该开发部门项目经理 或产品经理
+            if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
+                System.err.println("都有");
+                permiDeptDO.setDeptName(devpLeadDept);
+                //获得开发主导部门查询该部门部门经理
+                List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
+                String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
+                if(deptManagerName.equals(userName)||productMng.equals(userName)) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }else{
+            return false;
+        }
+        return false;
     }
 
 
