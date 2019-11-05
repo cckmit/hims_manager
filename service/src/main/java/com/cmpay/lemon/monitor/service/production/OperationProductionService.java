@@ -48,6 +48,10 @@ public interface OperationProductionService {
     // 查询一条投产记录的详情
     ProductionBO searchProdutionDetail(String proNumber);
 
+    // 投产审核
+    void approval(String proNumber);
+    // 投产详情修改
+    void updateProductionBean(ProductionBO productionBO);
 
     void updateAllProduction(ProductionBO bean);
 

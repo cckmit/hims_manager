@@ -1909,4 +1909,42 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }
+    //投产审批
+    @Override
+    public void approval(String proNumber){
+        //获取登录用户名
+        String currentUser =  SecurityUtils.getLoginName();
+        ProductionDO bean = operationProductionDao.findProductionBean(proNumber);
+        String proStatus = bean.getProStatus();
+        bean.setProStatus("投产提出");
+        operationProductionDao.updateProduction(bean);
+        ScheduleDO sBean=new ScheduleDO();
+        sBean.setPreOperation(bean.getProStatus());
+        //生成流水记录
+        ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "投产审批", proStatus, bean.getProStatus(), "投产信息更新");
+        operationProductionDao.insertSchedule(schedule);
+    }
+    // 投产详情修改
+    @Override
+    public void updateProductionBean(ProductionBO productionBO){
+        //获取登录用户名
+        String currentUser =  SecurityUtils.getLoginName();
+        if (!(productionBO.getProStatus().equals("投产提出") || (productionBO.getProStatus().equals("投产待部署") && productionBO.getProType().equals("救火更新")))) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产状态的投产信息不可修改!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (!(productionBO.getProApplicant().equals(currentUser))) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("非当前投产申请人不得更改信息!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ProductionDO bean = BeanUtils.copyPropertiesReturnDest(new ProductionDO(), productionBO);
+        operationProductionDao.updateAllProduction(bean);
+        ScheduleDO sBean=new ScheduleDO();
+        sBean.setPreOperation(bean.getProStatus());
+        //生成流水记录
+        ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "修改", bean.getProStatus(), bean.getProStatus(), "投产信息更新");
+        operationProductionDao.insertSchedule(schedule);
+    }
 }
