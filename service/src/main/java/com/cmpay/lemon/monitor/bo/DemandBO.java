@@ -70,6 +70,8 @@ public class DemandBO {
     private String isSvnBuild;
     //jira任务编号  jiraKey
     private String jiraKey;
+    //是否月底反馈查询
+    private String isMonthSer;
 
 
     private String proId;
@@ -158,6 +160,14 @@ public class DemandBO {
         this.creatUser = creatUser;
         this.updateUser = updateUser;
         this.reqAbnorType = reqAbnorType;
+    }
+
+    public String getIsMonthSer() {
+        return isMonthSer;
+    }
+
+    public void setIsMonthSer(String isMonthSer) {
+        this.isMonthSer = isMonthSer;
     }
 
     public String getReqInnerSeq() {

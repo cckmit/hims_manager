@@ -120,6 +120,15 @@ public class DemandDO extends BaseDO {
     private String creatUser;
     private String updateUser;
     private String reqAbnorType;
+    //是否月底反馈查询
+    private String isMonthSer;
+    public String getIsMonthSer() {
+        return isMonthSer;
+    }
+
+    public void setIsMonthSer(String isMonthSer) {
+        this.isMonthSer = isMonthSer;
+    }
     public DemandDO() {
     }
 

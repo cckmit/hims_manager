@@ -468,6 +468,9 @@
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
+            <if test="isMonthSer != null and isMonthSer != ''">
+                AND -a.pre_cur_period > -a.cur_mon_target
+            </if>
             <if test="reqNm != null and reqNm != ''">
                 AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
             </if>

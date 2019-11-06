@@ -472,13 +472,13 @@
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
 			</if>
 			<if test='preCurPeriod == "14"'>
-				AND --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 ) &lt;= 110 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "15"'>
 				AND pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "16"'>
-				AND --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 ) &gt;= 140 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "17"'>
 				AND ( test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
@@ -560,13 +560,13 @@
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
 			</if>
 			<if test='preCurPeriod == "14"'>
-				AND --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 )&lt;= 110 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "15"'>
 				AND pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "16"'>
-				AND --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 ) &gt;= 140 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='preCurPeriod == "17"'>
 				AND ( test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
@@ -648,13 +648,13 @@
 				OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type LIKE '%03%' ) )
 			</if>
 			<if test='pre_cur_period == "14"'>
-				AND --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 ) &lt;= 110 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='pre_cur_period == "15"'>
 				AND pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' )
 			</if>
 			<if test='pre_cur_period == "16"'>
-				AND --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' )
+				AND ( pre_cur_period + 0 ) &gt;= 140 and req_sts not in ( '30', '40' )
 			</if>
 			<if test='pre_cur_period == "17"'>
 				AND ( test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period
@@ -727,9 +727,9 @@
 	<select id="selectByTest" resultMap="rt" parameterType="map">
 		SELECT
 			count(*) total,
-			sum( CASE WHEN --pre_cur_period &lt;= 110 and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_prd,
+			sum( CASE WHEN ( pre_cur_period + 0 ) &lt;= 110 and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_prd,
 			sum( CASE WHEN pre_cur_period in ( '120' , '130' ) and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_devp,
-			sum( CASE WHEN --pre_cur_period &gt;= 140 and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_test,
+			sum( CASE WHEN ( pre_cur_period + 0 ) &gt;= 140 and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_test,
 			sum( CASE WHEN req_abnor_type LIKE "%05%" and req_sts not in ( '30', '40' ) THEN 1 ELSE 0 END ) req_abnormal,
 			sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel,
 			sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend
