@@ -2,9 +2,12 @@ package com.cmpay.lemon.monitor.service.production;
 
 
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.entity.ProductionDO;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowBean;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -84,4 +87,10 @@ public interface OperationProductionService {
     void questionInput(QuestionInputReqBO questionInputReqBO);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
+
+    //查询邮箱密码
+    MailFlowDO searchUserEmail(MailFlowConditionDO mailFlowConditionDO);
+
+    //查询部门经理
+    public ProductionDO findDeptManager(String deptName);
 }

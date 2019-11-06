@@ -10,18 +10,16 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
-import com.cmpay.lemon.monitor.dao.*;
-import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.dao.IOperationApplicationDao;
+import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
+import com.cmpay.lemon.monitor.dao.IProductionPicDao;
 import com.cmpay.lemon.monitor.entity.Constant;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
-import com.cmpay.lemon.monitor.utils.BaseUtil;
-import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.DateUtil;
-import com.cmpay.lemon.monitor.utils.SendExcelOperationResultProductionUtil;
 import com.cmpay.lemon.monitor.utils.*;
 import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,6 +38,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -1909,6 +1908,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }
+
+    @Override
+    public MailFlowDO searchUserEmail(MailFlowConditionDO mailFlowConditionDO) {
+        return operationProductionDao.searchUserEmail(mailFlowConditionDO);
+    }
+
+    @Override
+    public ProductionDO findDeptManager(String deptName) {
+        return operationProductionDao.findDeptManager(deptName);
+    }
+
     //投产审批
     @Override
     public void approval(String proNumber){

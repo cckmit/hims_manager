@@ -8,4 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IOperationApplicationDao extends BaseDao<OperationApplicationDO, String> {
 	// 操作审批基本信息查询
 	OperationApplicationDO findBaseOperationalApplicationInfo(String operNumber);
+
+	//插入操作审批
+	void insertOperationalApplication(OperationApplicationDO bean);
 }

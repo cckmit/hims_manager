@@ -33,6 +33,38 @@ public class OperationApplicationDTO {
     private String mailLeader;//开发负责人邮箱
     private String svntabName;//SVN表名称
 
+    @Override
+    public String toString() {
+        return "OperationApplicationDTO{" +
+                "attachment='" + attachment + '\'' +
+                ", operNumber='" + operNumber + '\'' +
+                ", operRequestContent='" + operRequestContent + '\'' +
+                ", proposeDate=" + proposeDate +
+                ", isRefSql='" + isRefSql + '\'' +
+                ", sysOperType='" + sysOperType + '\'' +
+                ", operStatus='" + operStatus + '\'' +
+                ", applicationSector='" + applicationSector + '\'' +
+                ", operApplicant='" + operApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", operType='" + operType + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", validationType='" + validationType + '\'' +
+                ", validationInstruction='" + validationInstruction + '\'' +
+                ", operApplicationReason='" + operApplicationReason + '\'' +
+                ", analysis='" + analysis + '\'' +
+                ", completionUpdate='" + completionUpdate + '\'' +
+                ", remark='" + remark + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", mailLeader='" + mailLeader + '\'' +
+                ", svntabName='" + svntabName + '\'' +
+                ", isBackWay='" + isBackWay + '\'' +
+                ", stateId=" + stateId +
+                '}';
+    }
+
     /**
      * 是否有回退方案
      */

@@ -44,7 +44,7 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     //插入投产流水记录
     void insertSchedule(ScheduleDO bean);
 
-    //查询邮箱密码
+    //查询邮箱
     MailFlowDO searchUserEmail(MailFlowConditionDO vo);
 
     // 投产纪录导出列表查询
@@ -73,4 +73,6 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     void deleteProblemInfo(String proNumber1);
 
     void insertProblemInfo(ProblemBO problemBO);
+
+    ProductionDO findDeptManager(String deptName);
 }

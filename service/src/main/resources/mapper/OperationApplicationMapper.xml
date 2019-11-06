@@ -36,35 +36,35 @@
     </sql>
         
     
-     <!--<insert id="insertOperationalApplication"  parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
-    	<!--insert into  t_operational_application_detail(<include refid="Base_Column_List"/>,is_back_way)-->
-    	<!--values(#{oper_number},-->
-    		<!--#{oper_request_content},-->
-    		<!--#{propose_date},-->
-    		<!--#{is_ref_sql},-->
-    		<!--#{sys_oper_type},-->
-    		<!--#{oper_status},-->
-    		<!--#{application_sector},-->
-    		<!--#{oper_applicant},-->
-    		<!--#{applicant_tel},-->
-    		<!--#{oper_type},-->
-    		<!--#{identifier},-->
-    		<!--#{identifier_tel},-->
-    		<!--#{validation_type},-->
-    		<!--#{validation_instruction},-->
-    		<!--#{oper_application_reason},-->
-    		<!--#{analysis},-->
-            <!--#{completion_update},-->
-    		<!--#{remark},-->
-    		<!--#{mail_recipient},-->
-    		<!--#{mail_copy_person},-->
-    		<!--#{development_leader},-->
-    		<!--#{mail_leader},-->
-    		<!--#{svntab_name},-->
-    		<!--#{stateId},-->
-            <!--#{isBackWay}-->
-    		<!--)	-->
-    <!--</insert>-->
+     <insert id="insertOperationalApplication"  parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
+    	insert into  t_operational_application_detail(<include refid="Base_Column_List"/>,is_back_way)
+    	values(#{operNumber},
+    		#{operRequestContent},
+    		#{proposeDate},
+    		#{isRefSql},
+    		#{sysOperType},
+    		#{operStatus},
+    		#{applicationSector},
+    		#{operApplicant},
+    		#{applicantTel},
+    		#{operType},
+    		#{identifier},
+    		#{identifierTel},
+    		#{validationType},
+    		#{validationInstruction},
+    		#{operApplicationReason},
+    		#{analysis},
+            #{completionUpdate},
+    		#{remark},
+    		#{mailRecipient},
+    		#{mailCopyPerson},
+    		#{developmentLeader},
+    		#{mailLeader},
+    		#{svntabName},
+    		#{stateId},
+            #{isBackWay}
+    		)
+    </insert>
     <!---->
     <!--<update id="updateAllOperationalApplication" parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
     	<!--UPDATE t_operational_application_detail-->

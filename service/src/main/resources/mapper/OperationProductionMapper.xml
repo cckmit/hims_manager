@@ -461,13 +461,13 @@
         <!--pro_number =#{pro_number}-->
     <!--</select>-->
 
-    <!--<select id="findDeptManager" resultMap="rm" parameterType="string">-->
-    	<!--SELECT-->
-    		<!--dept_name,dept_manager_name-->
-    	<!--from  t_permi_dept t1-->
-    	<!--WHERE-->
-            <!--dept_name = #{dept_name}-->
-    <!--</select>-->
+    <select id="findDeptManager" resultMap="rm" parameterType="string">
+    	SELECT
+    		dept_name,dept_manager_name
+    	from  t_permi_dept t1
+    	WHERE
+            dept_name = #{dept_name}
+    </select>
 
     <!--<select id="findDeptManagerByUser" resultMap="rm" parameterType="string">-->
     	<!--SELECT t1.dept_name,t1.dept_manager_name-->
