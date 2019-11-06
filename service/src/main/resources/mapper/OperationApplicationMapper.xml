@@ -147,29 +147,29 @@
             oper_number =#{operNumber}
     </select>
     
-     <!--<select id="findPageBreakByCondition" resultMap="rm" parameterType="map">-->
-    	<!--SELECT -->
-    		<!--<include refid="Base_Column_List"/>-->
-    	<!--from  t_operational_application_detail t1-->
-    	<!--WHERE 1=1-->
-    	<!--<if test="oper_request_content != null and oper_request_content != ''">-->
-    		<!--and oper_request_content like "%"#{oper_request_content}"%"-->
-    	<!--</if>-->
-    	<!--<if test="po_date_start != null and po_date_start != '' and po_date_end != null and po_date_end != '' ">-->
-    		<!--and propose_date between #{po_date_start} and #{po_date_end}-->
-    	<!--</if>-->
-    	<!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
-    	    <!--and sys_oper_type = #{sys_oper_type}-->
-    	<!--</if>-->
-    	<!--<if test="oper_status != null and oper_status != ''">-->
-    		<!--and oper_status = #{oper_status}-->
-    	<!--</if>-->
-    	<!--<if test="oper_applicant != null and oper_applicant != ''">-->
-    		<!--and oper_applicant like "%"#{oper_applicant}"%"-->
-    	<!--</if>-->
-    	<!--order by propose_date desc-->
-    <!--</select>-->
-    <!---->
+     <select id="findPageBreakByCondition" resultMap="rm" parameterType="map">
+    	SELECT
+    		<include refid="Base_Column_List"/>
+    	from  t_operational_application_detail t1
+    	WHERE 1=1
+    	<if test="operRequestContent != null and operRequestContent != ''">
+    		and oper_request_content LIKE CONCAT('%',#{operRequestContent},'%')
+    	</if>
+    	<if test="poDateStart != null and poDateEnd != null ">
+    		and propose_date between #{poDateStart} and #{poDateEnd}
+    	</if>
+    	<if test="sysOperType != null and sysOperType != ''">
+    	    and sys_oper_type = #{sysOperType}
+    	</if>
+    	<if test="operStatus != null and operStatus != ''">
+    		and oper_status = #{operStatus}
+    	</if>
+    	<if test="operApplicant != null and operApplicant != ''">
+    		and oper_applicant LIKE CONCAT('%',#{operApplicant},'%')
+    	</if>
+    	order by propose_date desc
+    </select>
+
      <!--<select id="findNumberByCondition" resultType="int" parameterType="map">-->
     	<!--SELECT COUNT(1) FROM t_operational_application_detail-->
     	<!--WHERE 1=1-->
