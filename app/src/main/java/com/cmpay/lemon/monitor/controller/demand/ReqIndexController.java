@@ -59,9 +59,11 @@ public class ReqIndexController {
         DemandRspBO demandRspBO = reqDataCountService.findDemand(demandBO);
         //获取所有类型
         List<String> li = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         if (null != reMap.get("DataMap")) {
             Set<String> keys = ((Map) reMap.get("DataMap")).keySet();
             for(String key:keys){
+                list.add(key + "：" + ((Map) reMap.get("DataMap")).get(key));
                 if (!"0".equals(((Map) reMap.get("DataMap")).get(key))) {
                     li.add(key + "：" + ((Map) reMap.get("DataMap")).get(key));
                 }
@@ -70,7 +72,8 @@ public class ReqIndexController {
         ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
         rspDTO.setLi(li);
         rspDTO.setTotle((reMap.get("totle")).toString());
-        rspDTO.setList(reMap.get("DataMap"));
+        System.err.println(list.toString());
+        rspDTO.setList(list);
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());
         rspDTO.setPages(demandRspBO.getPageInfo().getPages());
@@ -104,9 +107,11 @@ public class ReqIndexController {
         DemandRspBO demandRspBO = reqDataCountService.findDemand(demandBO);
         //获取所有类型
         List<String> li = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         if (null != reMap.get("DataMap")) {
             Set<String> keys = ((Map) reMap.get("DataMap")).keySet();
             for(String key:keys){
+                list.add(key + "：" + ((Map) reMap.get("DataMap")).get(key));
                 if (!"0".equals(((Map) reMap.get("DataMap")).get(key))) {
                     li.add(key + "：" + ((Map) reMap.get("DataMap")).get(key));
                 }
@@ -115,7 +120,8 @@ public class ReqIndexController {
         ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
         rspDTO.setLi(li);
         rspDTO.setTotle((reMap.get("totle")).toString());
-        rspDTO.setList(reMap.get("DataMap"));
+        System.err.println(list.toString());
+        rspDTO.setList(list);
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());
         rspDTO.setPages(demandRspBO.getPageInfo().getPages());

@@ -16,7 +16,7 @@ public class ReqIndexCountRspDTO extends PageableRspDTO {
     private List<String> li;
     private List<ReqDataCountDTO> listDetl;
     private String totle;
-    private Object list;
+    private List<String> list;
     private List<DemandDTO> demandDTOList = new ArrayList<>();
 
     public Map getReMap() {
@@ -51,11 +51,11 @@ public class ReqIndexCountRspDTO extends PageableRspDTO {
         this.totle = totle;
     }
 
-    public Object getList() {
+    public List<String> getList() {
         return list;
     }
 
-    public void setList(Object list) {
+    public void setList(List<String> list) {
         this.list = list;
     }
 

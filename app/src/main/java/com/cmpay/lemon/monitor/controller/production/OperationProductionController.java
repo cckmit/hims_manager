@@ -200,5 +200,17 @@ public class OperationProductionController {
         operationProductionService.pkgDownload(request,response,proNumber);
         return GenericRspDTO.newSuccessInstance();
     }
+    // 投产审批
+    @RequestMapping("/approval")
+    public GenericRspDTO<NoBody> approval(@RequestParam("proNumber") String proNumber){
+        operationProductionService.approval(proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
 
+    @RequestMapping("/updateProductionBean")
+    public GenericRspDTO<NoBody> updateProductionBean(@RequestBody ProductionConditionReqDTO reqDTO) {
+        ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), reqDTO);
+        operationProductionService.updateProductionBean(productionBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }
