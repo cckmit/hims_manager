@@ -3,12 +3,13 @@ package com.cmpay.lemon.monitor.dto;
 import com.cmpay.framework.data.request.GenericDTO;
 
 import java.sql.Date;
-import java.sql.Timestamp;
 
 /**
  * @author: zhou_xiong
  */
 public class OperationApplicationDTO extends GenericDTO {
+    //是否带附件标识
+    private String attachment;
     private String operNumber;
     private String operRequestContent;
     private Date proposeDate;
@@ -287,6 +288,13 @@ public class OperationApplicationDTO extends GenericDTO {
         this.pageSize = pageSize;
     }
 
+    public String getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(String attachment) {
+        this.attachment = attachment;
+    }
     @Override
     public String toString() {
         return "OperationApplicationDTO{" +
@@ -320,5 +328,4 @@ public class OperationApplicationDTO extends GenericDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
-    }
 }

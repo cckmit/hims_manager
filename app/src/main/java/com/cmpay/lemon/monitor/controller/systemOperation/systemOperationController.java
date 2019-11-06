@@ -7,6 +7,8 @@ import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
 import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
 import com.cmpay.lemon.monitor.bo.ProductionBO;
 import com.cmpay.lemon.monitor.bo.ProductionRspBO;
+import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -15,8 +17,15 @@ import com.cmpay.lemon.monitor.service.systemOperation.OperationApplicationServi
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.cmpay.lemon.monitor.dto.OperationApplicationDTO;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = MonitorConstants.SYSTEMOPERATION_PATH)
@@ -24,6 +33,20 @@ public class systemOperationController {
     @Autowired
     private OperationApplicationService operationApplicationService;
 
+    @RequestMapping("/entry")
+    public GenericRspDTO<NoBody> systemOperationEntry(OperationApplicationDTO operationApplicationDTO, HttpServletRequest request) {
+        List<MultipartFile> files=null;
+        //判断是否带附件
+        if(operationApplicationDTO.getAttachment()!=null&&operationApplicationDTO.getAttachment().equals("true")) {
+            files = ((MultipartHttpServletRequest) request).getFiles("file");
+            files.forEach(m->{
+                System.err.println(m.getOriginalFilename());
+            });
+        }
+
+
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
     /**
      * 分页需求列表
      *

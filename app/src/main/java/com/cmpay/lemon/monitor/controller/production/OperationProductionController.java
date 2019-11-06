@@ -121,15 +121,17 @@ public class OperationProductionController {
     }
 
 
-    //保存全部投产记录
+    //投产录入
     @RequestMapping(value = "/productionInput", method = RequestMethod.POST)
     public GenericRspDTO<NoBody>  productionInput( ProductionInputReqDTO reqDTO,HttpServletRequest request) {
         MultipartFile file = null;
+        //是否是11点之后录入的，是则需要审批
         String isApproveProduct1 = request.getParameter("isApproveProduct");
         Boolean isApproveProduct = false;
         if (isApproveProduct1 != null && isApproveProduct1.equals("true")) {
             isApproveProduct = true;
         }
+        //判断是否带附件
         if(reqDTO.getAttachment()) {
             List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
             file = files.get(0);

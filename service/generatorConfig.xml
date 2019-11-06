@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-         <table tableName="t_production_picture" domainObjectName="productionPicDO" enableCountByExample="false"
+         <table tableName="t_permi_user" domainObjectName="PermiUserDO" enableCountByExample="false"
                 enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
          </table>
