@@ -328,4 +328,5 @@ public class OperationApplicationDTO extends GenericDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
+    }
 }
