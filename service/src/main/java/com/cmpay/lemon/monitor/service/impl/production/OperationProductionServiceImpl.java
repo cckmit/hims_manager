@@ -1539,7 +1539,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 unusualFile.delete();
             }
         }
-        //非投救火更新
+        //救火更新
         if (bean.getProType().equals("救火更新")) {
             bean.setIsOperationProduction("");
             bean.setProStatus("投产待部署");

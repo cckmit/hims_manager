@@ -653,6 +653,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 //获取下一条内部编号
                 String nextInnerSeq = getNextInnerSeq();
                 m.setReqInnerSeq(nextInnerSeq);
+                System.err.println(m.getReqStartMon());
+                System.err.println(m.getReqImplMon());
                 demandDao.insert(m);
                 DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                 demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
