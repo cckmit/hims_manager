@@ -1,11 +1,15 @@
 package com.cmpay.lemon.monitor.dto;
 
-import java.util.Date;
+import com.cmpay.framework.data.request.GenericDTO;
 
-public class OperationApplicationDTO {
+import java.sql.Date;
+
+/**
+ * @author: zhou_xiong
+ */
+public class OperationApplicationDTO extends GenericDTO {
     //是否带附件标识
     private String attachment;
-
     private String operNumber;
     private String operRequestContent;
     private Date proposeDate;
@@ -71,6 +75,18 @@ public class OperationApplicationDTO {
     private String isBackWay;
 
     private int stateId;
+
+    private Date poDateStart;
+    private Date poDateEnd;
+
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
 
     public String getOperNumber() {
         return operNumber;
@@ -272,11 +288,77 @@ public class OperationApplicationDTO {
         this.stateId = stateId;
     }
 
+    public Date getPoDateStart() {
+        return poDateStart;
+    }
+
+    public void setPoDateStart(Date poDateStart) {
+        this.poDateStart = poDateStart;
+    }
+
+    public Date getPoDateEnd() {
+        return poDateEnd;
+    }
+
+    public void setPoDateEnd(Date poDateEnd) {
+        this.poDateEnd = poDateEnd;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public String getAttachment() {
         return attachment;
     }
 
     public void setAttachment(String attachment) {
         this.attachment = attachment;
+    }
+    @Override
+    public String toString() {
+        return "OperationApplicationDTO{" +
+                "operNumber='" + operNumber + '\'' +
+                ", operRequestContent='" + operRequestContent + '\'' +
+                ", proposeDate=" + proposeDate +
+                ", isRefSql='" + isRefSql + '\'' +
+                ", sysOperType='" + sysOperType + '\'' +
+                ", operStatus='" + operStatus + '\'' +
+                ", applicationSector='" + applicationSector + '\'' +
+                ", operApplicant='" + operApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", operType='" + operType + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", validationType='" + validationType + '\'' +
+                ", validationInstruction='" + validationInstruction + '\'' +
+                ", operApplicationReason='" + operApplicationReason + '\'' +
+                ", analysis='" + analysis + '\'' +
+                ", completionUpdate='" + completionUpdate + '\'' +
+                ", remark='" + remark + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", mailLeader='" + mailLeader + '\'' +
+                ", svntabName='" + svntabName + '\'' +
+                ", isBackWay='" + isBackWay + '\'' +
+                ", stateId=" + stateId +
+                ", poDateStart=" + poDateStart +
+                ", poDateEnd=" + poDateEnd +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

@@ -1,16 +1,13 @@
-package com.cmpay.lemon.monitor.bo;
+package com.cmpay.lemon.monitor.dto;
+
+import com.cmpay.framework.data.response.PageableRspDTO;
 
 import java.sql.Date;
 
 /**
  * @author: zhou_xiong
  */
-
-public class OperationApplicationBO {
-    //是否带附件标识
-    private String attachment;
-
-
+public class OperationApplicationReqDTO extends PageableRspDTO {
     private String operNumber;
     private String operRequestContent;
     private Date proposeDate;
@@ -57,7 +54,24 @@ public class OperationApplicationBO {
      */
     private int pageSize;
 
-    public OperationApplicationBO() {
+    @Override
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    @Override
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    @Override
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 
     public String getOperNumber() {
@@ -276,33 +290,9 @@ public class OperationApplicationBO {
         this.poDateEnd = poDateEnd;
     }
 
-    public int getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public String getAttachment() {
-        return attachment;
-    }
-
-    public void setAttachment(String attachment) {
-        this.attachment = attachment;
-    }
-
     @Override
     public String toString() {
-        return "OperationApplicationBO{" +
+        return "OperationApplicationReqDTO{" +
                 "operNumber='" + operNumber + '\'' +
                 ", operRequestContent='" + operRequestContent + '\'' +
                 ", proposeDate=" + proposeDate +

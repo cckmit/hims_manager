@@ -41,6 +41,9 @@ public class OperationApplicationDO extends AbstractDO{
 
 	private int stateId;
 
+	private Date poDateStart;
+	private Date poDateEnd;
+
 	@Override
 	public String toString() {
 		return "OperationApplicationDO{" +
@@ -69,7 +72,25 @@ public class OperationApplicationDO extends AbstractDO{
 				", svntabName='" + svntabName + '\'' +
 				", isBackWay='" + isBackWay + '\'' +
 				", stateId=" + stateId +
+				", poDateStart=" + poDateStart +
+				", poDateEnd=" + poDateEnd +
 				'}';
+	}
+
+	public Date getPoDateStart() {
+		return poDateStart;
+	}
+
+	public void setPoDateStart(Date poDateStart) {
+		this.poDateStart = poDateStart;
+	}
+
+	public Date getPoDateEnd() {
+		return poDateEnd;
+	}
+
+	public void setPoDateEnd(Date poDateEnd) {
+		this.poDateEnd = poDateEnd;
 	}
 
 	public int getStateId() {
