@@ -108,6 +108,11 @@ public class OperationApplicationDO extends AbstractDO{
 	public OperationApplicationDO() {
 	}
 
+	public OperationApplicationDO(String operNumber, String operStatus) {
+		this.operNumber = operNumber;
+		this.operStatus = operStatus;
+	}
+
 	public String getOperNumber() {
 		return operNumber;
 	}

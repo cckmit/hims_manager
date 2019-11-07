@@ -13,4 +13,7 @@ public interface IOperationApplicationDao extends BaseDao<OperationApplicationDO
 
 
 	List<OperationApplicationDO> findPageBreakByCondition(OperationApplicationDO vo);
+
+	//修改操作审批状态
+	void updateOperationalApplication(OperationApplicationDO bean);
 }

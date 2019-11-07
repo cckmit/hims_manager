@@ -193,13 +193,13 @@
     	<!--</if>-->
     <!--</select>-->
     <!---->
-    <!--<update id="updateOperationalApplication" parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
-    	<!--UPDATE t_operational_application_detail-->
-    	<!--SET-->
-    	<!--<if test="oper_status != null and oper_status != ''">-->
-    		<!--oper_status = #{oper_status}-->
-    	<!--</if>-->
-    	<!--WHERE oper_number = #{oper_number}-->
-    <!--</update>-->
+    <update id="updateOperationalApplication" parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
+    	UPDATE t_operational_application_detail
+    	SET
+    	<if test="operStatus != null and operStatus != ''">
+    		oper_status = #{operStatus}
+    	</if>
+    	WHERE oper_number = #{operNumber}
+    </update>
     
 </mapper>

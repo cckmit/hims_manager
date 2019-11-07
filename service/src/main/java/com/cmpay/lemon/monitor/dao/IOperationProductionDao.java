@@ -73,4 +73,6 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
     void deleteProblemInfo(String proNumber1);
 
     void insertProblemInfo(ProblemBO problemBO);
+
+    ScheduleDO findProExcelList(String seq_id);
 }

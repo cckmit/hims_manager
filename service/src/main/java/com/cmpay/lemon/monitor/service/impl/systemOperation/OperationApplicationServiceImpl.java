@@ -13,6 +13,7 @@ import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IOperationApplicationDao;
 import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
 import com.cmpay.lemon.monitor.dao.IProductionPicDao;
+import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
@@ -49,9 +50,18 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Service
 public class OperationApplicationServiceImpl implements OperationApplicationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationApplicationServiceImpl.class);
+    //超级管理员
+    private static final Long SUPERADMINISTRATOR =(long)10506;
+    //团队主管
+    private static final Long SUPERADMINISTRATOR1 =(long)5004;
+    //运维部署组
+    private static final Long SUPERADMINISTRATOR2 =(long)5005;
+    @Autowired
+    private IOperationProductionDao operationProductionDao;
     @Autowired
     private IOperationApplicationDao operationApplicationDao;
-
+    @Autowired
+    private IUserRoleExtDao userRoleExtDao;
     /**
      * 系统操作分页查询
      * @param productionBO
@@ -73,5 +83,431 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         PageInfo<OperationApplicationBO> pageInfo = PageUtils.pageQueryWithCount(productionBO.getPageNum(), productionBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(operationApplicationDao.findPageBreakByCondition(productionDO), OperationApplicationBO.class));
         return pageInfo;
+    }
+    @Override
+    public  void doOperationDownload(HttpServletRequest request, HttpServletResponse response, String taskIdStr)throws Exception{
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list.length == 0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请先查出需要导出的投产操作明细记录!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        List<ScheduleDO> list=new ArrayList<ScheduleDO>();
+        for(int i=0;i<pro_number_list.length;i++){
+            list.add(operationProductionDao.findProExcelList(pro_number_list[i]));
+        }
+        exportOperationExcel(response,request, list);
+    }
+    @Override
+    public  void doAllOperationDownload(HttpServletRequest request, HttpServletResponse response, OperationApplicationBO operationApplicationBO)throws Exception{
+        OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
+        BeanConvertUtils.convert(operationApplicationDO, operationApplicationBO);
+        List<OperationApplicationDO> li  = operationApplicationDao.findPageBreakByCondition(operationApplicationDO);
+        List<ScheduleDO> list=new ArrayList<ScheduleDO>();
+        for(int i=0;i<li.size();i++){
+            list.add(operationProductionDao.findProExcelList(li.get(i).getOperNumber()));
+        }
+        exportOperationExcel(response,request, list);
+    }
+    public void exportOperationExcel(HttpServletResponse response,HttpServletRequest request,
+                                     List<ScheduleDO> list) throws Exception {
+        String fileName = "投产操作明细表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        OutputStream os = null;
+        response.reset();
+        try {
+            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "/home/devadm/temp/propkg/";
+            String filePath = path + fileName;
+            ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
+            String createFile = util.createCzlcExcel(filePath, list,null);
+            //告诉浏览器允许所有的域访问
+            //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+            //resp.addHeader("Access-Control-Allow-Origin", "*");
+            //解决办法通过获取Origin请求头来动态设置
+            String origin = request.getHeader("Origin");
+            if (StringUtils.isNotBlank(origin)) {
+                response.addHeader("Access-Control-Allow-Origin", origin);
+            }
+            //允许带有cookie访问
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            //告诉浏览器允许跨域访问的方法
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            //告诉浏览器允许带有Content-Type,header1,header2头的请求访问
+            //resp.addHeader("Access-Control-Allow-Headers", "Content-Type,header1,header2");
+            //设置支持所有的自定义请求头
+            String headers = request.getHeader("Access-Control-Request-Headers");
+            if (StringUtils.isNotBlank(headers)) {
+                response.addHeader("Access-Control-Allow-Headers", headers);
+            }
+            //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.setContentType("application/octet-stream; charset=utf-8");
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName);
+            try {
+                os = response.getOutputStream();
+                os.write(org.apache.commons.io.FileUtils.readFileToByteArray(new File(filePath)));
+                os.flush();
+            } catch (IOException e) {
+                throw e;
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        throw e;
+                    }
+                }
+            }
+            // 删除文件
+            new File(createFile).delete();
+        } catch (UnsupportedEncodingException e) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        } catch (Exception e) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public  void updateAllOperationApplication(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        //获取登录用户名
+        String currentUser =  SecurityUtils.getLoginName();
+        //生成流水记录
+        ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list[0].equals("1")){
+            //return ajaxDoneError("请填写进行此操作原因");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(pro_number_list.length==2){
+            //return ajaxDoneError("请选择投产进行操作!");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        String pro_status_after="";
+        String pro_status_before="";
+        if(pro_number_list[0].equals("dtc")){
+            if(pro_number_list.length==1){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            pro_status_before="提出";
+            pro_status_after="审批通过待部署";
+            scheduleBean.setOperationReason("通过");
+
+        }else if(pro_number_list[0].equals("dh")){
+            pro_status_before="提出";
+            pro_status_after="审批不通过";
+            scheduleBean.setOperationReason(pro_number_list[1]);
+        }else if(pro_number_list[0].equals("qx")){
+            pro_status_before="提出";
+            pro_status_after="取消";
+            scheduleBean.setOperationReason(pro_number_list[1]);
+        }else if(pro_number_list[0].equals("czwc")){
+            if(pro_number_list.length==1){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            pro_status_before="审批通过待部署";
+            pro_status_after="操作完成";
+            scheduleBean.setOperationReason("通过");
+        }else if(pro_number_list[0].equals("yzwc")){
+            if(pro_number_list.length==1){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            pro_status_before="操作完成";
+            pro_status_after="验证完成";
+            scheduleBean.setOperationReason("通过");
+        }
+        scheduleBean.setPreOperation(pro_status_before);
+        scheduleBean.setAfterOperation(pro_status_after);
+        scheduleBean.setOperationType(pro_status_after);
+        for(int i=2;i<pro_number_list.length;i++){
+            OperationApplicationDO bean=operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[i]);
+            String status=bean.getOperStatus();
+            scheduleBean.setProNumber(pro_number_list[i]);
+            scheduleBean.setPreOperation(status);
+            if(pro_status_after.equals("取消")){
+                String applicant=operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[i]).getOperApplicant();
+                if(!currentUser.equals(applicant) && !isDepartmentManager(SUPERADMINISTRATOR1)&&!isDepartmentManager(SUPERADMINISTRATOR2)&&!isDepartmentManager(SUPERADMINISTRATOR)){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("对不起，您不是投产申请人、团队主管、运维部署组或超级管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+            if(pro_status_after.equals("审批不通过") || pro_status_after.equals("审批通过待部署")){
+                if(!isDepartmentManager(SUPERADMINISTRATOR1)&&!isDepartmentManager(SUPERADMINISTRATOR)){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("对不起,您不是团队主管或超级管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+            if(!(pro_status_before.equals(status) || pro_status_after.equals("验证完成") && (status.equals("操作完成")) ||(pro_status_after.equals("取消") && (status.equals("提出")|| status.equals("审批通过待部署"))) ||(pro_status_after.equals("审批不通过") && (status.equals("提出")|| status.equals("审批通过待部署"))))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        for(int j=2;j<pro_number_list.length;j++){
+            OperationApplicationDO bean=operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]);
+            String status=bean.getOperStatus();
+            scheduleBean.setProNumber(pro_number_list[j]);
+            scheduleBean.setPreOperation(status);
+
+            operationApplicationDao.updateOperationalApplication(new OperationApplicationDO(pro_number_list[j],pro_status_after));
+            operationProductionDao.insertSchedule(scheduleBean);
+            if(pro_status_after.equals("审批通过待部署")){
+                //发送审批邮件
+                String operName=bean.getSysOperType();
+
+                String receiverMail=bean.getMailRecipient();
+                String copyToMail=null;
+                SendEmailConfig config = new SendEmailConfig();
+                if(bean.getSysOperType().equals("数据变更")){
+                    copyToMail=bean.getMailCopyPerson();
+                    if(bean.getIsRefSql().equals("是")){
+                        //增加DBA
+                        receiverMail=receiverMail+";"+config.getDbaMailTo();
+                    }
+
+                }else{
+                    //追加部门经理抄送人
+                    copyToMail=bean.getMailCopyPerson();
+                    if(bean.getIsRefSql().equals("是")){
+                        //武金艳、肖铧、董建敏、朱明华、增加DBA
+                        receiverMail=receiverMail+";"+config.getSqlMailTo()+";"+config.getDbaMailTo();
+                    }else{
+                        //武金艳、肖铧、董建敏、朱明华
+                        receiverMail=receiverMail+";"+config.getSqlMailTo();
+                    }
+                }
+
+                //非七方审核追加附件
+                Vector<File> filesv = new Vector<File>() ;
+//     			if(!bean.getSys_oper_type().equals("数据变更")){
+                /**
+                 * 附件
+                 */
+                //获取邮件附件
+               // File motherFile=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +bean.getOper_number());
+                File motherFile=new File("C:\\home\\devadm\\temp\\propkg\\wlr重构测试31");
+                File[] childFile=motherFile.listFiles();
+                if(childFile!=null){
+                    for(File file:childFile){
+                        filesv.add(file) ;
+                    }
+                }
+//     			}
+
+                //记录邮箱信息
+                MailFlowDO bnb=new MailFlowDO("【"+operName+"审核】",Constant.P_EMAIL_NAME, receiverMail,"");
+                MailSenderInfo mailInfo = new MailSenderInfo();
+                // 设置邮件服务器类型
+                mailInfo.setMailServerHost("smtp.qiye.163.com");
+                //设置端口号
+                mailInfo.setMailServerPort("25");
+                //设置是否验证
+                mailInfo.setValidate(true);
+                //设置用户名、密码、发送人地址
+                mailInfo.setUserName(Constant.P_EMAIL_NAME);
+                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+
+                /**
+                 * 收件人邮箱
+                 */
+                String receiverMail_1 = receiverMail.replace(',',';');
+                String[] mailToAddressDemo=receiverMail_1.split(";");
+                //收件人去重复
+                List<String> result = new ArrayList<String>();
+                boolean flag;
+                for(int i=0;i<mailToAddressDemo.length;i++){
+                    flag = false;
+                    for(int k=0;k<result.size();k++){
+                        if(mailToAddressDemo[i].equals(result.get(k))){
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if(!flag){
+                        result.add(mailToAddressDemo[i]);
+                    }
+                }
+
+                String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                mailInfo.setToAddress(mailToAddress);
+                if(copyToMail!=null){
+                    mailInfo.setCcs(copyToMail.split(";"));
+                }
+                //非七方审核添加附件
+                if(filesv!=null && filesv.size()!=0){
+                    mailInfo.setFile(filesv);
+                }
+
+                StringBuffer sb=new StringBuffer();
+                mailInfo.setSubject("【"+operName+"审核】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
+                sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>"+operName+"申请表</td></tr> ");
+                sb.append("<tr><td style='font-weight: bold;'>申请部门:</td><td>"+bean.getApplicationSector()+"</td>");
+                sb.append("<td style='font-weight: bold;'>申请人:</td><td>"+bean.getOperApplicant()+"</td>");
+                sb.append("<td style='font-weight: bold;'>联系方式:</td><td>"+bean.getApplicantTel()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>操作类型:</td><td>"+bean.getOperType()+"</td>");
+                sb.append("<td style='font-weight: bold;'>验证人:</td><td>"+bean.getIdentifier()+"</td>");
+                sb.append("<td style='font-weight: bold;'>联系方式：</td><td>"+bean.getIdentifierTel()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>验证测试类型：</td><td>"+bean.getValidationType()+"</td>");
+                sb.append("<td style='font-weight: bold;'>验证说明：</td><td colspan='3'>"+bean.getValidationInstruction()+"</td></tr>");
+                if (operName.equals("数据变更")) {
+                    sb.append("<tr><td style='font-weight: bold;'>是否有回退方案：</td><td colspan='5'>" + bean.getIsBackWay() + "</td></tr>");
+                }
+                sb.append("<tr><td style='font-weight: bold;'>系统操作原因描述：</td><td colspan='5'>"+bean.getOperApplicationReason()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>影响分析描述：</td><td colspan='5'>"+bean.getAnalysis()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>更新要求完成时间说明：</td><td colspan='5'>"+bean.getCompletionUpdate()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
+                mailInfo.setContent("各位领导好！<br/>&nbsp;&nbsp;以下"+operName+"，烦请审批，谢谢！<br/>"+sb.toString());
+                // 这个类主要来发送邮件
+                SimpleMailSender sms = new SimpleMailSender();
+                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                if(!isSend){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("审批邮件发送失败!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }else{
+                    operationProductionDao.addMailFlow(bnb);
+                }
+
+            }
+            //操作完成通知申请人
+            if(pro_status_after.equals("操作完成")){
+                //发送审批邮件
+                String operName=bean.getSysOperType();
+                //添加申请人邮箱地址
+
+                MailFlowConditionDO vo=new MailFlowConditionDO();
+                vo.setEmployeeName(bean.getOperApplicant());
+                MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+
+                MailSenderInfo mailInfo = new MailSenderInfo();
+                // 设置邮件服务器类型
+                mailInfo.setMailServerHost("smtp.qiye.163.com");
+                //设置端口号
+                mailInfo.setMailServerPort("25");
+                //设置是否验证
+                mailInfo.setValidate(true);
+                //设置用户名、密码、发送人地址
+                mailInfo.setUserName(Constant.P_EMAIL_NAME);
+                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+
+                //记录邮箱信息
+                MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
+
+                mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
+//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+//                mailInfo.setToAddress(mailToAddress);
+                StringBuffer sb=new StringBuffer();
+
+                mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
+                sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>"+operName+"结果反馈</td></tr> ");
+                sb.append("<tr><td style='font-weight: bold;'>申请部门:</td><td>"+bean.getApplicationSector()+"</td>");
+                sb.append("<td style='font-weight: bold;'>申请人:</td><td>"+bean.getOperApplicant()+"</td>");
+                sb.append("<td style='font-weight: bold;'>联系方式:</td><td>"+bean.getApplicantTel()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>操作类型:</td><td>"+bean.getOperType()+"</td>");
+                sb.append("<td style='font-weight: bold;'>验证人:</td><td>"+bean.getIdentifier()+"</td>");
+                sb.append("<td style='font-weight: bold;'>联系方式：</td><td>"+bean.getIdentifierTel()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>验证测试类型：</td><td>"+bean.getValidationType()+"</td>");
+                sb.append("<td style='font-weight: bold;'>验证说明：</td><td>"+bean.getValidationInstruction()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>开发负责人：</td><td>"+bean.getDevelopmentLeader()+"</td>");
+                sb.append("<tr><td style='font-weight: bold;'>系统操作原因描述：</td><td colspan='5'>"+bean.getOperApplicationReason()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>影响分析描述：</td><td colspan='5'>"+bean.getAnalysis()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>更新要求完成时间说明：</td><td colspan='5'>"+bean.getCompletionUpdate()+"</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
+                mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次系统操作实施完成，请知悉。谢谢！<br/>"+sb.toString());
+                // 这个类主要来发送邮件
+                SimpleMailSender sms = new SimpleMailSender();
+                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                if(!isSend){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件通知申请人发送失败!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }else{
+                    operationProductionDao.addMailFlow(bnb);
+                }
+
+            }
+
+
+            //异常状态邮件发送
+
+            if(pro_status_before.equals(status) ||(pro_status_after.equals("取消") && (status.equals("提出")|| status.equals("审批通过待部署"))) ||(pro_status_after.equals("审批不通过") && (status.equals("提出")|| status.equals("审批通过待部署")))){
+                if(pro_status_after.equals("取消") || pro_status_after.equals("审批不通过") ){
+                    //发送申请人邮箱地址
+                    MailFlowConditionDO mfva=new MailFlowConditionDO();
+                    mfva.setEmployeeName(operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]).getOperApplicant());
+                    MailFlowDO mfba=operationProductionDao.searchUserEmail(mfva);
+                    //记录邮箱信息
+                    String mess=null;
+                    if(pro_status_after.equals("取消")){
+                        mess=pro_status_after;
+                    }
+                    if(pro_status_after.equals("审批不通过")){
+                        mess=pro_status_after;
+                    }
+
+                    MailFlowDO bnb=new MailFlowDO("【系统操作("+mess+")结果反馈】",Constant.P_EMAIL_NAME, mfba.getEmployeeEmail(),"");
+                    MailSenderInfo mailInfo = new MailSenderInfo();
+                    // 设置邮件服务器类型
+                    mailInfo.setMailServerHost("smtp.qiye.163.com");
+                    //设置端口号
+                    mailInfo.setMailServerPort("25");
+                    //设置是否验证
+                    mailInfo.setValidate(true);
+                    //设置用户名、密码、发送人地址
+                    mailInfo.setUserName(Constant.P_EMAIL_NAME);
+                    mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
+                    mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                    /**
+                     * 收件人邮箱
+                     */
+                    String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                    //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                    mailInfo.setToAddress(mailToAddress);
+                    mailInfo.setSubject("【系统操作("+mess+")结果反馈】");
+                    mailInfo.setContent("你好:<br/>由于【"+pro_number_list[1]+"】,您的"
+                            +operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]).getOperRequestContent()+",此系统操作中止审批流程");
+                    // 这个类主要来发送邮件
+                    SimpleMailSender sms = new SimpleMailSender();
+                    boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                    if(isSend){
+                        operationProductionDao.addMailFlow(bnb);
+                    }
+                }
+
+            }
+        }
+
+
+    }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
     }
 }
