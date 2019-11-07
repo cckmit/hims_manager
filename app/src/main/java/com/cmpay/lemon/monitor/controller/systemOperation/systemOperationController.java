@@ -2,10 +2,19 @@ package com.cmpay.lemon.monitor.controller.systemOperation;
 
 
 import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
+import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
+import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.OperationApplicationDTO;
+import com.cmpay.lemon.monitor.dto.OperationApplicationReqDTO;
+import com.cmpay.lemon.monitor.dto.OperationApplicationRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.systemOperation.OperationApplicationService;
+import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,9 +35,6 @@ public class systemOperationController {
         //判断是否带附件
         if(operationApplicationDTO.getAttachment()!=null&&operationApplicationDTO.getAttachment().equals("true")) {
             files = ((MultipartHttpServletRequest) request).getFiles("file");
-            files.forEach(m->{
-                System.err.println(m.getOriginalFilename());
-            });
         }
         OperationApplicationBO operationApplicationBO = BeanUtils.copyPropertiesReturnDest(new OperationApplicationBO(), operationApplicationDTO);
 

@@ -9,12 +9,33 @@ import java.util.List;
  * @date : 2018/11/13
  */
 public class UserAddReqDTO {
+    //账号 邮箱前缀
     private String username;
     private String password;
     private String email;
     private String mobile;
     private Byte status;
     private List<Long> roleIds;
+    //全名
+    private String fullname;
+    //部门
+    private String department;
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     public String getUsername() {
         return username;
@@ -73,6 +94,8 @@ public class UserAddReqDTO {
                 ", mobile='" + mobile + '\'' +
                 ", status=" + status +
                 ", roleIds=" + roleIds +
+                ", fullname='" + fullname + '\'' +
+                ", department='" + department + '\'' +
                 '}';
     }
 }

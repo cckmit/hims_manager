@@ -1,3 +1,4 @@
+/*
 package com.cmpay.lemon.monitor.service.impl.production;
 
 import com.cmpay.lemon.common.exception.BusinessException;
@@ -51,8 +52,10 @@ public class OperationApplicationServiceImpl  implements OperationApplicationSer
                         //归类文件，创建编号文件夹
                         System.err.println(request.getSession().getServletContext().getRealPath("/") +
                                 RELATIVE_PATH + bean.getOperNumber());
-                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
-                                RELATIVE_PATH + bean.getOperNumber());*/
+                     */
+/*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
+                                RELATIVE_PATH + bean.getOperNumber());*//*
+
                         File fileNumber = new File("D:\\home\\devadm\\temp");
                         fileNumber.mkdir();
                         // 文件保存路径
@@ -256,12 +259,15 @@ public class OperationApplicationServiceImpl  implements OperationApplicationSer
         ScheduleDO scheduleBean = new ScheduleDO(bean.getOperNumber(), SecurityUtils.getLoginName(), "录入", "", "提出", "");
         operationProductionService.addScheduleBean(scheduleBean);
 
-        /**
+        */
+/**
          * 发送给申请人部门经理,通知及时审批
-         */
+         *//*
+
         //记录邮箱信息
         MailFlowBean bnb = new MailFlowBean("【" + bean.getSysOperType() + "审批】-" + bean.getOperRequestContent() + "-" + bean.getOperApplicant(), Constant.P_EMAIL_NAME, mManager.getEmployeeEmail() + ";" + mflow.getEmployeeEmail(), "");
-     /*   MailSenderInfo mailInfo = new MailSenderInfo();
+     */
+/*   MailSenderInfo mailInfo = new MailSenderInfo();
         // 设置邮件服务器类型
         mailInfo.setMailServerHost("smtp.qiye.163.com");
         //设置端口号
@@ -271,7 +277,8 @@ public class OperationApplicationServiceImpl  implements OperationApplicationSer
         //设置用户名、密码、发送人地址
         mailInfo.setUserName(Constant.P_EMAIL_NAME);
         mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);*/
+        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);*//*
+
         mailInfo.setToAddress(mManager.getEmployeeEmail().split(";"));
         mailInfo.setCcs(mflow.getEmployeeEmail().split(";"));
         mailInfo.setSubject("【" + bean.getSysOperType() + "审批】-" + bean.getOperRequestContent() + "-" + bean.getOperApplicant());
@@ -297,3 +304,4 @@ public class OperationApplicationServiceImpl  implements OperationApplicationSer
     }
 
 }
+*/

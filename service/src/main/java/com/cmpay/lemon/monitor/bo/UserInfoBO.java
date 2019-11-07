@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  */
 public class UserInfoBO {
     /**
-     * @Fields userNo
+     * @Fields userNo 用户ID
      */
     private Long userNo;
     /**
@@ -26,6 +26,14 @@ public class UserInfoBO {
      */
     private String salt;
     /**
+     * @Fields department 部门
+     */
+    private String department;
+    /**
+     * @Fields fullname 用户全名
+     */
+    private String fullname;
+    /**
      * @Fields email 邮箱
      */
     private String email;
@@ -38,9 +46,9 @@ public class UserInfoBO {
      */
     private Byte status;
     /**
-     * @Fields createUserId 创建者ID
+     * @Fields createUserNo 创建者ID
      */
-    private Long createUserId;
+    private Long createUserNo;
     /**
      * @Fields createTime 创建时间
      */
@@ -78,6 +86,22 @@ public class UserInfoBO {
         this.salt = salt;
     }
 
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -102,12 +126,12 @@ public class UserInfoBO {
         this.status = status;
     }
 
-    public Long getCreateUserId() {
-        return createUserId;
+    public Long getCreateUserNo() {
+        return createUserNo;
     }
 
-    public void setCreateUserId(Long createUserId) {
-        this.createUserId = createUserId;
+    public void setCreateUserNo(Long createUserNo) {
+        this.createUserNo = createUserNo;
     }
 
     public LocalDateTime getCreateTime() {
@@ -120,15 +144,17 @@ public class UserInfoBO {
 
     @Override
     public String toString() {
-        return "UserInfoBO{" +
+        return "UserDO{" +
                 "userNo=" + userNo +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", salt='" + salt + '\'' +
+                ", department='" + department + '\'' +
+                ", fullname='" + fullname + '\'' +
                 ", email='" + email + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", status=" + status +
-                ", createUserId=" + createUserId +
+                ", createUserNo=" + createUserNo +
                 ", createTime=" + createTime +
                 '}';
     }

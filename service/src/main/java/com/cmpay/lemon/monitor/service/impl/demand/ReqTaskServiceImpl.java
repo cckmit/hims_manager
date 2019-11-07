@@ -913,7 +913,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     //判断是否是该项目产品经理或者部门经理
     public boolean permissionCheck(String reqInnerSeq) {
-        //查询该操作员是否为系统管理员
+        //查询该操作员是否为超级管理员
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setRoleId(SUPERADMINISTRATOR);
         userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));

@@ -14,6 +14,7 @@ public class RolePageQueryReqDTO extends GenericDTO {
     private Integer pageNum;
     private Integer pageSize;
 
+
     public Long getRoleId() {
         return roleId;
     }

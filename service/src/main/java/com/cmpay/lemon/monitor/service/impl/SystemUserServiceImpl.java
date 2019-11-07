@@ -12,8 +12,10 @@ import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.UserInfoQueryBO;
 import com.cmpay.lemon.monitor.bo.UserPermissionBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
+import com.cmpay.lemon.monitor.dao.IPermiUserDao;
 import com.cmpay.lemon.monitor.dao.IUserExtDao;
 import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
+import com.cmpay.lemon.monitor.entity.PermiUserDO;
 import com.cmpay.lemon.monitor.entity.UserDO;
 import com.cmpay.lemon.monitor.entity.UserRoleDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -45,6 +47,9 @@ public class SystemUserServiceImpl implements SystemUserService {
     private IUserExtDao iUserDao;
     @Autowired
     private SystemMenuService systemMenuService;
+    @Autowired
+    IPermiUserDao iPermiUserDao;
+
 
     /**
      * 获取用户权限
@@ -111,9 +116,24 @@ public class SystemUserServiceImpl implements SystemUserService {
         user.setSalt(salt);
         user.setPassword(password);
         user.setCreateTime(LocalDateTime.now());
-        user.setCreateUserId(Long.valueOf(SecurityUtils.getLoginUserId()));
+        user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
         UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
-        int res = iUserDao.insert(userDO);
+
+        //同步老表
+        PermiUserDO permiUserDO = new PermiUserDO();
+        permiUserDO.setUserId(userDO.getUsername());
+        permiUserDO.setUserName(userDO.getFullname());
+        permiUserDO.setMobileNum(userDO.getMobile());
+        permiUserDO.setEmail(userDO.getEmail());
+        permiUserDO.setDeptName(userDO.getDepartment());
+        permiUserDO.setIsEnabled(true);
+        permiUserDO.setPassword("123456");
+        int res;
+        res= iPermiUserDao.insert(permiUserDO);
+        if (res != 1) {
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        res = iUserDao.insert(userDO);
         if (res != 1) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
@@ -192,7 +212,6 @@ public class SystemUserServiceImpl implements SystemUserService {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
     }
-
     @Override
     public void updateUserRole(Long userNo, List<Long> roleIds) {
         //删除用户拥有的角色

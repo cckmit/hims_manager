@@ -10,6 +10,8 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.UserInfoQueryBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
+import com.cmpay.lemon.monitor.dao.IPermiUserDao;
+import com.cmpay.lemon.monitor.dao.IUserExtDao;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.UserDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -34,7 +36,6 @@ public class SystemUserController {
     private SystemUserService systemUserService;
     @Autowired
     private SystemRoleService systemRoleService;
-
 
     /**
      * 查询用户信息
@@ -66,11 +67,13 @@ public class SystemUserController {
      */
     @GetMapping("/list")
     public GenericRspDTO<UserInfoQueryRspDTO> getUserInfoPage(@QueryBody UserInfoQueryReqDTO userInfoQueryReqDTO) {
+
         UserInfoQueryBO userInfoQueryBO = new UserInfoQueryBO();
         BeanUtils.copyProperties(userInfoQueryBO, userInfoQueryReqDTO);
         PageInfo<UserDO> page = systemUserService.findUsers(userInfoQueryBO);
 
         List<UserInfoDTO> userInfos = BeanConvertUtils.convertList(page.getList(), UserInfoDTO.class);
+        System.err.println(userInfos.toString());
         UserInfoQueryRspDTO userInfoQueryRspDTO = new UserInfoQueryRspDTO();
         userInfoQueryRspDTO.setList(userInfos);
         userInfoQueryRspDTO.setPageNum(page.getPageNum());
@@ -143,6 +146,7 @@ public class SystemUserController {
         systemUserService.updatePassword(passwordReqDTO.getPassword(), passwordReqDTO.getNewPassword());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
+
 
     /**
      * 查询用户信息

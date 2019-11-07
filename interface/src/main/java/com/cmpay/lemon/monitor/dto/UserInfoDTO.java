@@ -18,6 +18,30 @@ public class UserInfoDTO {
     private Byte status;
     private LocalDateTime createTime;
     private List<Long> roleIds;
+    /**
+     * @Fields department 部门
+     */
+    private String department;
+    /**
+     * @Fields fullname 用户全名
+     */
+    private String fullname;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
 
     public Long getUserNo() {
         return userNo;
@@ -94,6 +118,8 @@ public class UserInfoDTO {
                 ", status=" + status +
                 ", createTime=" + createTime +
                 ", roleIds=" + roleIds +
+                ", department='" + department + '\'' +
+                ", fullname='" + fullname + '\'' +
                 '}';
     }
 }

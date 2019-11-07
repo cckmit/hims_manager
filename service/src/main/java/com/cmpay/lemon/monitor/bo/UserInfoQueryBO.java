@@ -41,6 +41,30 @@ public class UserInfoQueryBO {
      * 创建时间
      */
     private LocalDateTime createTime;
+    /**
+     * @Fields department 部门
+     */
+    private String department;
+    /**
+     * @Fields fullname 用户全名
+     */
+    private String fullname;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
 
     public String getUserName() {
         return userName;

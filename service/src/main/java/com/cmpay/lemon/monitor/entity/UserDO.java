@@ -1,20 +1,19 @@
 /*
  * @ClassName UserDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2018-11-01 10:27:24
+ * @Date 2019-11-07 09:40:56
  */
 package com.cmpay.lemon.monitor.entity;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
-
 import java.time.LocalDateTime;
 
 @DataObject
 public class UserDO extends BaseDO {
     /**
-     * @Fields userNo
+     * @Fields userNo 用户ID
      */
     private Long userNo;
     /**
@@ -30,6 +29,14 @@ public class UserDO extends BaseDO {
      */
     private String salt;
     /**
+     * @Fields department 部门
+     */
+    private String department;
+    /**
+     * @Fields fullname 用户全名
+     */
+    private String fullname;
+    /**
      * @Fields email 邮箱
      */
     private String email;
@@ -42,9 +49,9 @@ public class UserDO extends BaseDO {
      */
     private Byte status;
     /**
-     * @Fields createUserId 创建者ID
+     * @Fields createUserNo 创建者ID
      */
-    private Long createUserId;
+    private Long createUserNo;
     /**
      * @Fields createTime 创建时间
      */
@@ -82,6 +89,22 @@ public class UserDO extends BaseDO {
         this.salt = salt;
     }
 
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -106,12 +129,12 @@ public class UserDO extends BaseDO {
         this.status = status;
     }
 
-    public Long getCreateUserId() {
-        return createUserId;
+    public Long getCreateUserNo() {
+        return createUserNo;
     }
 
-    public void setCreateUserId(Long createUserId) {
-        this.createUserId = createUserId;
+    public void setCreateUserNo(Long createUserNo) {
+        this.createUserNo = createUserNo;
     }
 
     public LocalDateTime getCreateTime() {
@@ -120,5 +143,22 @@ public class UserDO extends BaseDO {
 
     public void setCreateTime(LocalDateTime createTime) {
         this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDO{" +
+                "userNo=" + userNo +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", department='" + department + '\'' +
+                ", fullname='" + fullname + '\'' +
+                ", email='" + email + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", status=" + status +
+                ", createUserNo=" + createUserNo +
+                ", createTime=" + createTime +
+                '}';
     }
 }
