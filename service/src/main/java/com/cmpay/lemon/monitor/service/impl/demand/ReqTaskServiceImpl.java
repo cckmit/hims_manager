@@ -765,7 +765,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/hims/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
                         + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
 
                 File file1 = new File(path + "/开发技术文档/");
