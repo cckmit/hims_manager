@@ -16,11 +16,13 @@ import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
@@ -67,4 +69,27 @@ public class systemOperationController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
+    @RequestMapping("/doOperationDownload")
+    public void doOperationDownload(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response)throws Exception{
+        operationApplicationService.doOperationDownload(request,response,taskIdStr);
+    }
+
+    @RequestMapping("/doAllOperationDownload")
+    public void doAllOperationDownload(@RequestBody OperationApplicationReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response)throws Exception{
+        if(reqDTO.getPoDateStart()!=null && !reqDTO.getPoDateStart().equals("") && (reqDTO.getPoDateEnd()==null || reqDTO.getPoDateEnd().equals(""))){
+            reqDTO.setProposeDate(reqDTO.getPoDateStart());
+        }
+        if(reqDTO.getPoDateEnd()!=null && !reqDTO.getPoDateEnd().equals("") && (reqDTO.getPoDateStart()==null || reqDTO.getPoDateStart().equals(""))){
+            reqDTO.setProposeDate(reqDTO.getPoDateEnd());
+        }
+        OperationApplicationBO operationApplicationBO = BeanUtils.copyPropertiesReturnDest(new OperationApplicationBO(), reqDTO);
+        operationApplicationService.doAllOperationDownload(request,response,operationApplicationBO);
+    }
+
+    @RequestMapping("/updateAllOperationApplication")
+    public GenericRspDTO<NoBody> updateAllOperationApplication(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response) {
+        System.err.println(taskIdStr);
+        operationApplicationService.updateAllOperationApplication(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

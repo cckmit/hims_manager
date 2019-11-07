@@ -332,8 +332,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setPassword(Constant.P_EMAIL_PSWD);
                 mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
 
-                //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
@@ -385,8 +385,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -475,8 +475,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = productionBean.getMailRecipient().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();
@@ -797,8 +797,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
@@ -956,8 +956,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
@@ -1020,8 +1020,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file2=exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
-        //String[] mailToAddresss = mp.getMailUser().split(";");
-        String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] mailToAddresss = mp.getMailUser().split(";");
+        //String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
         mailInfo.setToAddress(mailToAddresss);
         /**
          * 附件

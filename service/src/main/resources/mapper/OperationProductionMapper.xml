@@ -83,7 +83,7 @@
         <result property="scheduleTime"  jdbcType="TIMESTAMP"      column="schedule_time"/>
         <result property="preOperation"  jdbcType="VARCHAR"      column="pre_operation"/>
         <result property="afterOperation"  jdbcType="VARCHAR"      column="after_operation"/>
-        <result property="operRequestContent"  jdbcType="VARCHAR"      column="after_operation"/>
+        <result property="operRequestContent"  jdbcType="VARCHAR"      column="oper_request_content"/>
         <result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>
         <result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>
         <result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>
@@ -91,6 +91,10 @@
         <result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>
         <result property="identifier"  jdbcType="VARCHAR"      column="identifier"/>
         <result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>
+        <result property="operApplicant"  jdbcType="VARCHAR"      column="oper_applicant"/>
+        <result property="svntabName"  jdbcType="VARCHAR"      column="svntab_name"/>
+        <result property="operApplicationReason"  jdbcType="VARCHAR"      column="oper_application_reason"/>
+        <result property="analysis"  jdbcType="VARCHAR"      column="analysis"/>
     </resultMap>
 
     <resultMap id="mf" type="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
@@ -510,11 +514,11 @@
     	WHERE  seq_id = #{seqId}
     </select>
 
-    <!--<select id="findProExcelList" resultMap="sm" parameterType="string">-->
-	    	<!--SELECT  oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector-->
-	    	<!--oper_applicant,identifier,development_leader,svntab_name,oper_application_reason,analysis-->
-	    	 <!--FROM t_operational_application_detail where oper_number = #{seq_id}-->
-	    <!--</select>-->
+    <select id="findProExcelList" resultMap="sm" parameterType="string">
+	    	SELECT  oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector
+	    	oper_applicant,identifier,development_leader,svntab_name,oper_application_reason,analysis
+	    	 FROM t_operational_application_detail where oper_number = #{seqId}
+	    </select>
 
     <!--<select id="findScheduleNumberByCondition" resultType="int" parameterType="map">-->
         <!--SELECT COUNT(1) FROM t_production_schedule-->
