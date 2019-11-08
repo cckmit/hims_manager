@@ -788,17 +788,13 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         File fl = null;
         String[] attachFileNames = null;
         if (bean.getOperStatus().equals("提出")) {
-            System.err.println("2222222");
             // 判断文件是否为空
             if (files != null && !files.equals("")) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            System.err.println(request.getSession().getServletContext().getRealPath("/") +
-                                    RELATIVE_PATH + bean.getOperNumber());
-                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
-                                RELATIVE_PATH + bean.getOperNumber());*/
+                            //File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
                             File fileNumber = new File("C:\\home\\devadm\\temp\\" + bean.getOperNumber());
                             fileNumber.mkdir();
                             // 文件保存路径
@@ -832,17 +828,13 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             }
         }
         if(bean.getOperStatus().equals("审批通过待部署")){
-            System.err.println("444444444");
             // 判断文件是否为空
             if (files != null && !files.equals("")) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            System.err.println(request.getSession().getServletContext().getRealPath("/") +
-                                    RELATIVE_PATH + bean.getOperNumber());
-                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
-                                RELATIVE_PATH + bean.getOperNumber());*/
+                            //File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
                             File fileNumber = new File("C:\\home\\devadm\\temp\\"+ bean.getOperNumber());
                             fileNumber.mkdir();
                             // 文件保存路径
@@ -887,12 +879,14 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
+            //File fileDir = new File(RELATIVE_PATH + proNumber);
             File fileDir = new File("C:\\home\\devadm\\temp\\" + proNumber);
             File[] pkgFile=fileDir.listFiles();
             for (File f : pkgFile){
                 System.out.println(f);
             }
             //压缩包名称
+            //String zipPath = "/home/devadm/temp/propkg/";
             String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
             String zipName =DateUtil.date2String(new java.util.Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
