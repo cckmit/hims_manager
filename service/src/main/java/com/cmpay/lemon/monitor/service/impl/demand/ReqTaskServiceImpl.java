@@ -727,6 +727,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             // 删除文件
             zip.delete();
         } catch (Exception e) {
+            LOGGER.error("下载失败：",e);
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
@@ -765,7 +766,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/hims/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
                         + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
 
                 File file1 = new File(path + "/开发技术文档/");
@@ -820,9 +821,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
                         String demandName = srcfile[i].getPath().substring(34, srcfile[i].getPath().length());
-                        String name = demandName.substring(0, demandName.indexOf("\\"));
-                        String path = demandName.substring(demandName.lastIndexOf("\\") + 1);
-                        out.putNextEntry(new ZipEntry(name + "\\" + path));
+                        String name = demandName.substring(0, demandName.indexOf("/"));
+                        String path = demandName.substring(demandName.lastIndexOf("/") + 1);
+                        out.putNextEntry(new ZipEntry(name + "/" + path));
                     } else {
                         out.putNextEntry(new ZipEntry(srcfile[i].getPath()));
                     }
@@ -837,6 +838,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
             out.close();
         } catch (IOException e) {
+            LOGGER.error("压缩失败：",e);
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }

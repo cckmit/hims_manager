@@ -10,8 +10,6 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.UserInfoQueryBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dao.IPermiUserDao;
-import com.cmpay.lemon.monitor.dao.IUserExtDao;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.UserDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
