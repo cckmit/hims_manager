@@ -92,4 +92,23 @@ public class systemOperationController {
         operationApplicationService.updateAllOperationApplication(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
+
+    @RequestMapping("/update")
+    public GenericRspDTO<NoBody> systemOperationUpdate(OperationApplicationDTO operationApplicationDTO, HttpServletRequest request) {
+        System.err.println("1111111111");
+        List<MultipartFile> files=null;
+        //判断是否带附件
+        if(operationApplicationDTO.getAttachment()!=null&&operationApplicationDTO.getAttachment().equals("true")) {
+            files = ((MultipartHttpServletRequest) request).getFiles("file");
+        }
+        OperationApplicationBO operationApplicationBO = BeanUtils.copyPropertiesReturnDest(new OperationApplicationBO(), operationApplicationDTO);
+        operationApplicationService.systemOperationUpdate(files,operationApplicationBO,request);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+    // 下载投产包
+    @RequestMapping("/pkgDownload")
+    public GenericRspDTO<NoBody> pkgDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
+        operationApplicationService.pkgDownload(request,response,proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

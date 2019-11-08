@@ -19,4 +19,7 @@ public interface IOperationApplicationDao extends BaseDao<OperationApplicationDO
 
 	//插入操作审批
 	void insertOperationalApplication(OperationApplicationDO bean);
+
+	//修改操作审批状态(全部)
+	void updateAllOperationalApplication(OperationApplicationDO bean);
 }

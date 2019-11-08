@@ -36,16 +36,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
+import java.util.zip.CRC32;
+import java.util.zip.CheckedOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
 /**
@@ -784,5 +786,192 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         }
         return false ;
     }
+    @Override
+    public void systemOperationUpdate(List<MultipartFile> files, OperationApplicationBO bean, HttpServletRequest request) {
+        //获取登录用户名
+        String currentUser = SecurityUtils.getLoginName();
+        //处理多文件上传
+        String filePath = null;
+        File fl = null;
+        String[] attachFileNames = null;
+        if (bean.getOperStatus().equals("提出")) {
+            System.err.println("2222222");
+            // 判断文件是否为空
+            if (files != null && !files.equals("")) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        try {
+                            //归类文件，创建编号文件夹
+                            System.err.println(request.getSession().getServletContext().getRealPath("/") +
+                                    RELATIVE_PATH + bean.getOperNumber());
+                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
+                                RELATIVE_PATH + bean.getOperNumber());*/
+                            File fileNumber = new File("C:\\home\\devadm\\temp\\" + bean.getOperNumber());
+                            fileNumber.mkdir();
+                            // 文件保存路径
+                            filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
+                            // 转存文件
+                            fl = new File(filePath);
+                            attachFileNames = fl.getAbsolutePath().split(";");
+                            for (int i = 0; i < attachFileNames.length; i++) {
+                                if ("\\".equals(File.separator)) attachFileNames[i].replace("/", "\\");
+                                else if ("/".equals(File.separator)) attachFileNames[i].replace("\\", "/");
+                            }
+                            file.transferTo(fl);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                ScheduleDO schedule = new ScheduleDO(bean.getOperNumber(), currentUser, "文件上传", bean.getOperStatus(), bean.getOperStatus(), "系统操作审批信息更新");
+                operationProductionDao.insertSchedule(schedule);
+                return;
+            } else {
+                if (!(bean.getOperApplicant().equals(currentUser))) {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("非当前投产申请人不得更改信息！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+                OperationApplicationDO operationApplicationDO = BeanUtils.copyPropertiesReturnDest(new OperationApplicationDO(), bean);
+                operationApplicationDao.updateAllOperationalApplication(operationApplicationDO);
+                ScheduleDO schedule = new ScheduleDO(bean.getOperNumber(), currentUser, "修改", bean.getOperStatus(), bean.getOperStatus(), "系统操作审批信息更新");
+                operationProductionDao.insertSchedule(schedule);
+            }
+        }
+        if(bean.getOperStatus().equals("审批通过待部署")){
+            System.err.println("444444444");
+            // 判断文件是否为空
+            if (files != null && !files.equals("")) {
+                for (MultipartFile file : files) {
+                    if (!file.isEmpty()) {
+                        try {
+                            //归类文件，创建编号文件夹
+                            System.err.println(request.getSession().getServletContext().getRealPath("/") +
+                                    RELATIVE_PATH + bean.getOperNumber());
+                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
+                                RELATIVE_PATH + bean.getOperNumber());*/
+                            File fileNumber = new File("C:\\home\\devadm\\temp\\"+ bean.getOperNumber());
+                            fileNumber.mkdir();
+                            // 文件保存路径
+                            filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
+                            // 转存文件
+                            fl = new File(filePath);
+                            attachFileNames = fl.getAbsolutePath().split(";");
+                            for (int i = 0; i < attachFileNames.length; i++) {
+                                if ("\\".equals(File.separator)) attachFileNames[i].replace("/", "\\");
+                                else if ("/".equals(File.separator)) attachFileNames[i].replace("\\", "/");
+                            }
+                            file.transferTo(fl);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                ScheduleDO schedule=new ScheduleDO(bean.getOperNumber(), currentUser, "文件上传", bean.getOperStatus(),bean.getOperStatus(), "系统操作审批信息更新");
+                operationProductionDao.insertSchedule(schedule);
+                return ;
 
+            }else{
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前系统操作信息不可修改！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+        }
+        if(!bean.getOperStatus().equals("提出") && !bean.getOperStatus().equals("审批通过待部署")){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前系统操作信息不可修改！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+        return ;
+    }
+
+    //投产包下载
+    @Override
+    public void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber){
+        response.reset();
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
+            File fileDir = new File("C:\\home\\devadm\\temp\\" + proNumber);
+            File[] pkgFile=fileDir.listFiles();
+            for (File f : pkgFile){
+                System.out.println(f);
+            }
+            //压缩包名称
+            String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
+            String zipName =DateUtil.date2String(new java.util.Date(), "yyyyMMddHHmmss") + ".zip";
+            //压缩文件
+            File zip = new File(zipPath + zipName);
+            ZipFiles(pkgFile, zip, true);
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + zipName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            //告诉浏览器允许所有的域访问
+            //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+            //resp.addHeader("Access-Control-Allow-Origin", "*");
+            //解决办法通过获取Origin请求头来动态设置
+            String origin = request.getHeader("Origin");
+            if (StringUtils.isNotBlank(origin)) {
+                response.addHeader("Access-Control-Allow-Origin", origin);
+            }
+            //允许带有cookie访问
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            //告诉浏览器允许跨域访问的方法
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            //告诉浏览器允许带有Content-Type,header1,header2头的请求访问
+            //resp.addHeader("Access-Control-Allow-Headers", "Content-Type,header1,header2");
+            //设置支持所有的自定义请求头
+            String headers = request.getHeader("Access-Control-Request-Headers");
+            if (StringUtils.isNotBlank(headers)) {
+                response.addHeader("Access-Control-Allow-Headers", headers);
+            }
+            //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.setContentType("application/octet-stream; charset=utf-8");
+            output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
+            bufferedOutPut.flush();
+            // 删除文件
+            //zip.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+
+    public String ZipFiles(File[] srcfile, File zipfile, boolean flag) {
+        try {
+            byte[] buf = new byte[1024];
+            FileOutputStream fileOutputStream = new FileOutputStream(zipfile);
+            CheckedOutputStream cos = new CheckedOutputStream(fileOutputStream, new CRC32());
+            ZipOutputStream out = new ZipOutputStream(cos);
+
+            for (int i = 0; i < srcfile.length; i++) {
+                if (srcfile[i] != null) {
+                    FileInputStream in = new FileInputStream(srcfile[i]);
+                    if (flag) {
+                        String demandName = srcfile[i].getPath().substring(34, srcfile[i].getPath().length());
+                        String name = demandName.substring(0, demandName.indexOf("\\"));
+                        String path = demandName.substring(demandName.lastIndexOf("\\") + 1);
+                        out.putNextEntry(new ZipEntry(name + "\\" + path));
+                    } else {
+                        out.putNextEntry(new ZipEntry(srcfile[i].getPath()));
+                    }
+
+                    int len;
+                    while ((len = in.read(buf)) > 0) {
+                        out.write(buf, 0, len);
+                    }
+                    out.closeEntry();
+                    in.close();
+                }
+            }
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+
+        return "";
+    }
 }
