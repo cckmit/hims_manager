@@ -1286,7 +1286,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return  files;
     }
 
-
+    //投产录入
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
         boolean isSend = false;

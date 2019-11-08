@@ -1,10 +1,7 @@
 package com.cmpay.lemon.monitor.service.impl.systemOperation;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
-import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
@@ -13,7 +10,6 @@ import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
 import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
 import com.cmpay.lemon.monitor.dao.IOperationApplicationDao;
 import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
-import com.cmpay.lemon.monitor.dao.IProductionPicDao;
 import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.OperationApplicationDO;
@@ -67,7 +63,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
     @Autowired
     IOperationApplicationDao operationApplicationDao;
 
-    public final static String RELATIVE_PATH = "upload/sysopr/";
+    public final static String RELATIVE_PATH = "/home/devadm/temp/sysopr/";
 
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
@@ -110,11 +106,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 if (!file.isEmpty()) {
                     try {
                         //归类文件，创建编号文件夹
-                        System.err.println(request.getSession().getServletContext().getRealPath("/") +
-                                RELATIVE_PATH + bean.getOperNumber());
-                     /*   File fileNumber = new File(request.getSession().getServletContext().getRealPath("/") +
-                                RELATIVE_PATH + bean.getOperNumber());*/
-                        File fileNumber = new File("D:\\home\\devadm\\temp");
+                        File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
+                      //  File fileNumber = new File("D:\\home\\devadm\\temp");
                         fileNumber.mkdir();
                         // 文件保存路径
                         filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
