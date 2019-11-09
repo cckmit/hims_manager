@@ -17,6 +17,7 @@ import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.entity.UserRoleDO;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.systemOperation.OperationApplicationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -69,6 +70,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
+    @Autowired
+    SystemUserService userService;
     /**
      * 系统操作分页查询
      * @param productionBO
@@ -441,7 +444,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public  void updateAllOperationApplication(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
         ScheduleDO scheduleBean =new ScheduleDO(currentUser);
         String[] pro_number_list=taskIdStr.split("~");
@@ -782,7 +785,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
     @Override
     public void systemOperationUpdate(List<MultipartFile> files, OperationApplicationBO bean, HttpServletRequest request) {
         //获取登录用户名
-        String currentUser = SecurityUtils.getLoginName();
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //处理多文件上传
         String filePath = null;
         File fl = null;

@@ -1930,7 +1930,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public void approval(String proNumber){
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = operationProductionDao.findProductionBean(proNumber);
         String proStatus = bean.getProStatus();
         bean.setProStatus("投产提出");
@@ -1945,7 +1945,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public void updateProductionBean(ProductionBO productionBO){
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (!(productionBO.getProStatus().equals("投产提出") || (productionBO.getProStatus().equals("投产待部署") && productionBO.getProType().equals("救火更新")))) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产状态的投产信息不可修改!");

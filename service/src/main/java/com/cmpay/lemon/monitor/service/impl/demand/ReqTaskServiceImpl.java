@@ -398,10 +398,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     public void setDefaultUser(DemandBO demandBO) {
         if (StringUtils.isBlank(demandBO.getCreatUser())) {
-            demandBO.setCreatUser(SecurityUtils.getLoginUserId());
+            demandBO.setCreatUser(SecurityUtils.getLoginName());
             demandBO.setCreatTime(new Date());
         }
-        demandBO.setUpdateUser(SecurityUtils.getLoginUserId());
+        demandBO.setUpdateUser(SecurityUtils.getLoginName());
         demandBO.setUpdateTime(new Date());
     }
 

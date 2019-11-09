@@ -439,7 +439,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String req_inner_seq = projectStartBO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(req_inner_seq);
         DemandDO bean = new DemandDO();
-        //String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (null == reqPlan) {
             //"项目启动失败，找不到该需求对应信息!"
             BusinessException.throwBusinessException(MsgEnum.ERROR_PLAN_NULL);
@@ -455,10 +455,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQNO_REQNM_ISBLANK);
             }
             String projectMng = reqPlan.getProjectMng();
-//            if (!currentUser.equals(projectMng)) {
-//                //"项目启动失败，只能有项目经理进行项目启动"
-//                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
-//            }
+            if (!currentUser.equals(projectMng)) {
+                //"项目启动失败，只能有项目经理进行项目启动"
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
+            }
         }
         // 判断必填内容不为空 时间人员配置
         if (notFinishInfo(reqPlan)) {
@@ -754,7 +754,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String month = df.format(date);
             System.err.println("当前月份："+month);
             //获取登录用户ID
-            String update_user = SecurityUtils.getLoginUserId();
+            String update_user = SecurityUtils.getLoginName();
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
                 DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
@@ -1911,10 +1911,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     public void setDefaultUser(DemandBO demandBO) {
         if (StringUtils.isBlank(demandBO.getCreatUser())) {
-            demandBO.setCreatUser(SecurityUtils.getLoginUserId());
+            demandBO.setCreatUser(SecurityUtils.getLoginName());
             demandBO.setCreatTime(new Date());
         }
-        demandBO.setUpdateUser(SecurityUtils.getLoginUserId());
+        demandBO.setUpdateUser(SecurityUtils.getLoginName());
         demandBO.setUpdateTime(new Date());
     }
 
