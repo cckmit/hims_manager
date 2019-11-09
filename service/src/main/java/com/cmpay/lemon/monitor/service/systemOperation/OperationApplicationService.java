@@ -44,4 +44,8 @@ public interface OperationApplicationService {
     void doAllOperationDownload(HttpServletRequest request, HttpServletResponse response, OperationApplicationBO operationApplicationBO)throws Exception;
    // 操作状态修改
     void updateAllOperationApplication(HttpServletRequest request, HttpServletResponse response, String taskIdStr);
+   //修改
+    void systemOperationUpdate(List<MultipartFile> files, OperationApplicationBO operationApplicationBO, HttpServletRequest request);
+    // 下载附件
+    void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber);
 }

@@ -25,6 +25,7 @@
         <result property="developmentLeader"   jdbcType="VARCHAR"      column="development_leader"/>
         <result property="svntabName"   jdbcType="VARCHAR"      column="svntab_name"/>
 		<result property="isBackWay"   jdbcType="VARCHAR"      column="is_back_way"/>
+			<result property="mailLeader"   jdbcType="VARCHAR"      column="mail_leader"/>
     </resultMap>
     
     
@@ -65,78 +66,79 @@
             #{isBackWay}
     		)
     </insert>
-    <!---->
-    <!--<update id="updateAllOperationalApplication" parameterType="com.hisun.persistence.beans.OperationApplicationBean">-->
-    	<!--UPDATE t_operational_application_detail-->
-    	<!--SET-->
-    	<!--<if test="sys_oper_type != null and sys_oper_type != ''">-->
-    		<!--sys_oper_type = #{sys_oper_type},-->
-    	<!--</if>-->
-    	<!--<if test="propose_date != null and propose_date != ''">-->
-    		<!--propose_date = #{propose_date},-->
-    	<!--</if>-->
-    	<!--<if test="application_sector != null and application_sector != ''">-->
-    		<!--application_sector = #{application_sector},-->
-    	<!--</if>-->
-    	<!--<if test="oper_applicant != null and oper_applicant != ''">-->
-    		<!--oper_applicant = #{oper_applicant},-->
-    	<!--</if>-->
-    	<!--<if test="applicant_tel != null and applicant_tel != ''">-->
-    		<!--applicant_tel = #{applicant_tel},-->
-    	<!--</if>-->
-    	<!--<if test="oper_request_content != null and oper_request_content != ''">-->
-    		<!--oper_request_content = #{oper_request_content},-->
-    	<!--</if>-->
-    	<!--<if test="oper_type != null and oper_type != ''">-->
-    		<!--oper_type = #{oper_type},-->
-    	<!--</if>-->
-    	<!--<if test="identifier != null and identifier != ''">-->
-    		<!--identifier = #{identifier},-->
-    	<!--</if>-->
-    	<!--<if test="identifier_tel != null and identifier_tel != ''">-->
-    		<!--identifier_tel = #{identifier_tel},-->
-    	<!--</if>-->
-    	<!--<if test="validation_type != null and validation_type != ''">-->
-    		<!--validation_type = #{validation_type},-->
-    	<!--</if>-->
-    	<!--<if test="validation_instruction != null and validation_instruction != ''">-->
-    		<!--validation_instruction = #{validation_instruction},-->
-    	<!--</if>-->
-    	<!--<if test="oper_application_reason != null and oper_application_reason != ''">-->
-    		<!--oper_application_reason = #{oper_application_reason},-->
-    	<!--</if>-->
-    	<!--<if test="analysis != null and analysis != ''">-->
-    		<!--analysis = #{analysis},-->
-    	<!--</if>-->
-    	<!--<if test="completion_update != null and completion_update != ''">-->
-    		<!--completion_update = #{completion_update},-->
-    	<!--</if>-->
-    	<!--<if test="remark != null and remark != ''">-->
-    		<!--remark = #{remark},-->
-    	<!--</if>-->
-    	<!--<if test="mail_recipient != null and mail_recipient != ''">-->
-    		<!--mail_recipient = #{mail_recipient},-->
-    	<!--</if>-->
-    	<!--<if test="mail_copy_person != null and mail_copy_person != ''">-->
-    		<!--mail_copy_person = #{mail_copy_person},-->
-    	<!--</if>-->
-    	<!--<if test="development_leader != null and development_leader != ''">-->
-    		<!--development_leader = #{development_leader},-->
-    	<!--</if>-->
-    	<!--<if test="mail_leader != null and mail_leader!= ''">-->
-    		<!--mail_leader = #{mail_leader},-->
-    	<!--</if>-->
-    	<!--<if test="svntab_name != null">-->
-    		<!--svntab_name = #{svntab_name},-->
-    	<!--</if>-->
-    	<!--<if test="oper_status != null and oper_status != ''">-->
-    		<!--oper_status = #{oper_status},-->
-    	<!--</if>-->
-		<!--<if test="isBackWay != null and isBackWay != ''">-->
-			<!--is_back_way = #{isBackWay}-->
-		<!--</if>-->
-    	<!--WHERE oper_number = #{oper_number}-->
-    <!--</update>-->
+
+    <update id="updateAllOperationalApplication" parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
+    	UPDATE t_operational_application_detail
+    	<set>
+			<if test="sysOperType != null and sysOperType != ''">
+				sys_oper_type = #{sysOperType},
+			</if>
+			<if test="proposeDate != null">
+				propose_date = #{proposeDate},
+			</if>
+			<if test="applicationSector != null and applicationSector != ''">
+				application_sector = #{applicationSector},
+			</if>
+			<if test="operApplicant != null and operApplicant != ''">
+				oper_applicant = #{operApplicant},
+			</if>
+			<if test="applicantTel != null and applicantTel != ''">
+				applicant_tel = #{applicantTel},
+			</if>
+			<if test="operRequestContent != null and operRequestContent != ''">
+				oper_request_content = #{operRequestContent},
+			</if>
+			<if test="operType != null and operType != ''">
+				oper_type = #{operType},
+			</if>
+			<if test="identifier != null and identifier != ''">
+				identifier = #{identifier},
+			</if>
+			<if test="identifierTel != null and identifierTel != ''">
+				identifier_tel = #{identifierTel},
+			</if>
+			<if test="validationType != null and validationType != ''">
+				validation_type = #{validationType},
+			</if>
+			<if test="validationInstruction != null and validationInstruction != ''">
+				validation_instruction = #{validationInstruction},
+			</if>
+			<if test="operApplicationReason != null and operApplicationReason != ''">
+				oper_application_reason = #{operApplicationReason},
+			</if>
+			<if test="analysis != null and analysis != ''">
+				analysis = #{analysis},
+			</if>
+			<if test="completionUpdate != null and completionUpdate != ''">
+				completion_update = #{completionUpdate},
+			</if>
+			<if test="remark != null and remark != ''">
+				remark = #{remark},
+			</if>
+			<if test="mailRecipient != null and mailRecipient != ''">
+				mail_recipient = #{mailRecipient},
+			</if>
+			<if test="mailCopyPerson != null and mailCopyPerson != ''">
+				mail_copy_person = #{mailCopyPerson},
+			</if>
+			<if test="developmentLeader != null and developmentLeader != ''">
+				development_leader = #{developmentLeader},
+			</if>
+			<if test="mailLeader != null and mailLeader!= ''">
+				mail_leader = #{mailLeader},
+			</if>
+			<if test="svntabName != null">
+				svntab_name = #{svntabName},
+			</if>
+			<if test="operStatus != null and operStatus != ''">
+				oper_status = #{operStatus},
+			</if>
+			<if test="isBackWay != null and isBackWay != ''">
+				is_back_way = #{isBackWay},
+			</if>
+		</set>
+    	WHERE oper_number = #{operNumber}
+    </update>
     
     
      <select id="findBaseOperationalApplicationInfo" resultMap="rm" parameterType="string">

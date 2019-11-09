@@ -59,10 +59,10 @@ public class LoginAutoConfiguration {
         return new LoginAuthenticationSuccessHandler(this.responseMessageResolver, this.internalDataHelper, authenticationSuccessProcessorComposite);
     }
 
-    @Bean(name = "lemonAuthenticationFailureHandler")
-    public AuthenticationFailureHandler lemonAuthenticationFailureHandler() {
-        return new LoginAuthenticationFailureHandler(this.responseMessageResolver);
-    }
+//    @Bean(name = "lemonAuthenticationFailureHandler")
+//    public AuthenticationFailureHandler lemonAuthenticationFailureHandler() {
+//        return new LoginAuthenticationFailureHandler(this.responseMessageResolver);
+//    }
 
     @Bean
     public AuthenticationEntryPoint lemonAuthenticationEntryPoint() {
