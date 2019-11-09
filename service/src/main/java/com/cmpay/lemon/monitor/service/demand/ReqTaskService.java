@@ -127,4 +127,5 @@ public interface ReqTaskService {
     String reqStsCheck(String reqSts);
 
     void updatePreCurPeriod(DemandBO demand);
+    List<String> lists(DemandBO demand);
 }

@@ -7,10 +7,7 @@ import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.DemandDTO;
-import com.cmpay.lemon.monitor.dto.DemandReqDTO;
-import com.cmpay.lemon.monitor.dto.DemandRspDTO;
-import com.cmpay.lemon.monitor.dto.UpdateReqStsDTO;
+import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
@@ -181,5 +178,16 @@ public class ReqTaskController {
         MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
         reqTaskService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
+    }
+    /**
+     *获取上传文档列表
+     */
+    @RequestMapping("/lists")
+    public GenericRspDTO<ReqIndexCountRspDTO> lists(@RequestBody DemandReqDTO reqDTO) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        List<String> list  = reqTaskService.lists( demandBO);
+        ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
+        rspDTO.setLi(list);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }

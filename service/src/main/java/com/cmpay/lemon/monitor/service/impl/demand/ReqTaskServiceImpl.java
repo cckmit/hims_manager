@@ -1019,5 +1019,124 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         return false;
     }
 
+    @Override
+    public List<String> lists(DemandBO demand) {
+        DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demand);
+        Map<String, Object> resMap = BatLists(demandDO);
+        File srcfile[] = (File[]) resMap.get("srcfile");
+        String list[] = new String[srcfile.length] ;
+        List<String> li =  new ArrayList<>();
+        for (int i = 0; i < srcfile.length; i++) {
+            if (srcfile[i] != null) {
+                System.err.println(srcfile[i].getName());
+                li.add(srcfile[i].getName());
+            }
+        }
+        return li;
+    }
+    //获取已经上传的文档
+    private Map<String, Object> BatLists(DemandDO demandDO) {
+        System.err.println(demandDO);
+        List<DemandDO> List = new ArrayList<>();
+        Map<String, Object> map = new HashMap<>();
+        int start = demandDO.getReqNo().indexOf("-") + 1;
+        String reqMonth = demandDO.getReqNo().substring(start, start + 6);
+        demandDO.setReqStartMon(reqMonth);
+        List.add(demandDO);
+        //循环文件目录
+        if (List != null) {
+            File srcfile[] = new File[List.size() * 50];
+            int num = 0;
+            //要压缩的文件
+            for (int i = 0; i < List.size(); i++) {
+                //需求说明书、技术方案、原子功能点评估表
+                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
 
+                File file1 = new File(path + "/开发技术文档/");
+                if (!file1.exists() && !file1.isDirectory()) {
+                    file1.mkdir();
+                }
+                File[] tempFile1 = file1.listFiles();
+                if (tempFile1 == null) {
+                    tempFile1 = new File[0];
+                }
+                for (int j = 0; j < tempFile1.length; j++) {
+                    srcfile[num] = new File(path + "/开发技术文档/" + tempFile1[j].getName());
+                    num++;
+
+                }
+
+                File file2 = new File(path + "/产品文档/");
+                if (!file2.exists() && !file2.isDirectory()) {
+                    file2.mkdir();
+                }
+                File[] tempFile2 = file2.listFiles();
+                if (tempFile2 == null) {
+                    tempFile2 = new File[0];
+                }
+                for (int j = 0; j < tempFile2.length; j++) {
+                    srcfile[num] = new File(path + "/产品文档/" + tempFile2[j].getName());
+                    num++;
+                }
+
+                File file3 = new File(path + "/测试文档/");
+                if (!file3.exists() && !file3.isDirectory()) {
+                    file3.mkdir();
+                }
+                File[] tempFile3 = file3.listFiles();
+                if (tempFile3 == null) {
+                    tempFile3 = new File[0];
+                }
+                for (int j = 0; j < tempFile3.length; j++) {
+                    srcfile[num] = new File(path + "/测试文档/" + tempFile3[j].getName());
+                    num++;
+                }
+
+                File file4 = new File(path + "/评审文档/");
+                if (!file4.exists() && !file4.isDirectory()) {
+                    file4.mkdir();
+                }
+                File[] tempFile4 = file4.listFiles();
+                if (tempFile4 == null) {
+                    tempFile4 = new File[0];
+                }
+                for (int j = 0; j < tempFile4.length; j++) {
+                    srcfile[num] = new File(path + "/评审文档/" + tempFile4[j].getName());
+                    num++;
+                }
+
+                File file5 = new File(path + "/项目管理文档/");
+                if (!file5.exists() && !file5.isDirectory()) {
+                    file5.mkdir();
+                }
+                File[] tempFile5 = file5.listFiles();
+                if (tempFile5 == null) {
+                    tempFile5 = new File[0];
+                }
+                for (int j = 0; j < tempFile5.length; j++) {
+                    srcfile[num] = new File(path + "/项目管理文档/" + tempFile5[j].getName());
+                    num++;
+                }
+
+                File file6 = new File(path + "/预投产投产文档/");
+                if (!file6.exists() && !file6.isDirectory()) {
+                    file6.mkdir();
+                }
+                File[] tempFile6 = file6.listFiles();
+                if (tempFile6 == null) {
+                    tempFile6 = new File[0];
+                }
+                for (int j = 0; j < tempFile6.length; j++) {
+                    srcfile[num] = new File(path + "/预投产投产文档/" + tempFile6[j].getName());
+                    num++;
+                }
+
+
+            }
+            map.put("srcfile", srcfile);
+        }
+
+        return map;
+    }
 }
