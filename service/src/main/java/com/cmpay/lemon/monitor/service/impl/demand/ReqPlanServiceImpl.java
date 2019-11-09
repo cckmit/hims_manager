@@ -71,6 +71,8 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
  */
 @Service
 public class ReqPlanServiceImpl implements ReqPlanService {
+    //超级管理员
+    private static final Long SUPERADMINISTRATOR =(long)10506;
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -108,6 +110,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     @Autowired
     private IDictionaryExtDao dictionaryDao;
+    @Autowired
+    private ITPermiDeptDao permiDeptDao;
+
+    @Autowired
+    private IPermiUserDao permiUserDao;
+    @Autowired
+    private  IUserRoleExtDao userRoleExtDao;
     @Autowired
     private JiraOperationService jiraOperationService;
     /**
@@ -669,8 +678,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changeReq(String req_impl_mon){
-//        boolean flag = this.authenticationUser();
-//        if(flag){
+        boolean flag = this.authenticationUser();
+        if(flag){
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
@@ -734,12 +743,81 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
         }
-//        }else{
-//            //无权限使用该功能
-//            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PRIVILEGE);
-//        }
+        }else{
+            //无权限使用该功能
+            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PRIVILEGE);
+        }
     }
+    //判断是否是该项目产品经理或者部门经理
+    public boolean permissionCheck(String reqInnerSeq) {
+        //查询该操作员是否为超级管理员
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(SUPERADMINISTRATOR);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
 
+        //当前操作员姓名
+        PermiUserDO permiUserDO = new PermiUserDO();
+        String loginName = SecurityUtils.getLoginName();
+        permiUserDO.setUserId(loginName);
+        List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
+        if(permiUserDOS.isEmpty()){
+            return false ;
+        }
+        String userName = permiUserDOS.get(0).getUserName();
+        //依据内部需求编号查内部需求
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        //获得产品经理，获得开发主导部门部门经理
+        String productMng = demandDO.getProductMng();
+        String devpLeadDept = demandDO.getDevpLeadDept();
+        TPermiDeptDO permiDeptDO = new TPermiDeptDO();
+
+
+        //判断开发主导部门和部门经理不为空
+        if(!(StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng)))){
+            //有产品经理，无主导部门,判断该操作员是否是该产品经理
+            if(!StringUtils.isBlank(productMng)&&(StringUtils.isBlank(devpLeadDept))){
+
+
+                if(productMng.equals(userName)) {
+                    return true;
+                }else{
+                    return false ;
+                }
+            }
+            //有主导部门，无产品经理,判断该操作员是否是该开发部门项目经理 devpLeadDept
+            if(!StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng))){
+                permiDeptDO.setDeptName(devpLeadDept);
+                //获得开发主导部门查询该部门部门经理
+                List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
+                String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
+                if(deptManagerName.equals(userName)) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            //有主导部门，产品经理,判断该操作员是否是该开发部门项目经理 或产品经理
+            if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
+                permiDeptDO.setDeptName(devpLeadDept);
+                //获得开发主导部门查询该部门部门经理
+                List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
+                String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
+                if(deptManagerName.equals(userName)||productMng.equals(userName)) {
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }else{
+            return false;
+        }
+        return false;
+    }
     /**
      * 需求重新启动
      * @param  ids 需求内部编号
@@ -763,6 +841,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 if(!REQSUSPEND.equals(demand.getReqSts())&&!REQCANCEL.equals(demand.getReqSts())){
                     System.err.println("此需求不是异常需求");
                     continue;
+                }
+                if(!permissionCheck(ids.get(i))){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("非当前需求产品经理和开发主导部门部门经理不能重新启动！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 //需求状态变为进行中
                 demand.setReqSts("20");
