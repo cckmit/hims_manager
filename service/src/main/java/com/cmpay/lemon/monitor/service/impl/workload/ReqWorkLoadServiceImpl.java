@@ -19,6 +19,7 @@ import com.cmpay.lemon.monitor.dao.IWorkLoadDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqTaskServiceImpl;
@@ -89,6 +90,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     private DictionaryService dictionaryService;
     @Autowired
     private ReqTaskService reqTaskService;
+    @Autowired
+    SystemUserService userService;
 
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
@@ -220,7 +223,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
      */
     public boolean authenticationUser(){
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (currentUser.equals("田群") || currentUser.equals("吴暇")) {
             return true;
         }

@@ -14,6 +14,7 @@ import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -80,7 +81,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IPermiUserDao permiUserDao;
     @Autowired
     private  IUserRoleExtDao userRoleExtDao;
-
+    @Autowired
+    SystemUserService userService;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -262,7 +264,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandStateHistoryDO.setReqNm(demandBO.getReqNm());
             demandStateHistoryDO.setReqNo(demandBO.getReqNo());
             //获取当前操作员
-            demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+            demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
             //登记需求状态历史表
             demandStateHistoryDao.insert(demandStateHistoryDO);
@@ -662,7 +664,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandStateHistoryDO.setRemarks("新建任务");
                 demandStateHistoryDO.setReqNm(m.getReqNm());
                 //获取当前操作员
-                demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+                demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                 demandStateHistoryDao.insert(demandStateHistoryDO);
             });
@@ -870,7 +872,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setReqNo(reqNo);
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
         //获取当前操作员
-        demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+        demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandStateHistoryDao.insert(demandStateHistoryDO);
     }
 
@@ -947,7 +949,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //有产品经理，无主导部门,判断该操作员是否是该产品经理
             if(!StringUtils.isBlank(productMng)&&(StringUtils.isBlank(devpLeadDept))){
 
-                System.err.println("有产品经理");
+
                 if(productMng.equals(userName)) {
                     return true;
                 }else{
@@ -956,7 +958,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
             //有主导部门，无产品经理,判断该操作员是否是该开发部门项目经理 devpLeadDept
             if(!StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng))){
-                System.err.println("有部门经理");
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
@@ -969,7 +970,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
             //有主导部门，产品经理,判断该操作员是否是该开发部门项目经理 或产品经理
             if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
-                System.err.println("都有");
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);

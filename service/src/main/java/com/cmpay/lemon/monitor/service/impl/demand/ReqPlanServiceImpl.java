@@ -21,6 +21,7 @@ import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
@@ -116,6 +117,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private ReqPlanService reqPlanService;
     @Autowired
     private ReqTaskService reqTaskService;
+    @Autowired
+    SystemUserService userService;
 
 
     @Override
@@ -829,7 +832,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandStateHistoryDO.setReqNo(demand.getReqNo());
         demandStateHistoryDO.setReqNm(demand.getReqNm());
         //获取当前操作员
-        demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+        demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
         //登记需求状态历史表
         demandStateHistoryDao.insert(demandStateHistoryDO);
@@ -841,7 +844,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     public boolean authenticationUser(){
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (currentUser.equals("田群") || currentUser.equals("吴暇")) {
             return true;
         }
@@ -984,7 +987,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            String currentUser =  SecurityUtils.getLoginName();
+            String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
             String  subject= reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
             String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser, attachFiles);
@@ -1039,8 +1042,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String importFilePath = null;
         Map<String, Object> map = new HashMap<String, Object>();
         Vector<File> attachFiles = new Vector<File>();
-        System.err.println(files);
-        System.err.println(files[0].getSize());
         LOGGER.info(files[0].getOriginalFilename());
         LOGGER.info(files[0].getSize()+"");
         if (files != null && files[0].getSize() != 0) {
@@ -1888,7 +1889,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demandStateHistoryDO.setRemarks("新建任务");
                 demandStateHistoryDO.setReqNm(m.getReqNm());
                 //获取当前操作员
-                demandStateHistoryDO.setCreatUser(SecurityUtils.getLoginName());
+                demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                 demandStateHistoryDao.insert(demandStateHistoryDO);
             });

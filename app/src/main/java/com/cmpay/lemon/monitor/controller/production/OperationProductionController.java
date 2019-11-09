@@ -215,4 +215,16 @@ public class OperationProductionController {
         operationProductionService.updateProductionBean(productionBO);
         return GenericRspDTO.newSuccessInstance();
     }
+
+    @RequestMapping(value = "/reissueMail", method = RequestMethod.POST)
+    public GenericRspDTO<NoBody> reissueMail(ProductionInputReqDTO reqDTO,HttpServletRequest request) {
+        String reqNumber = request.getParameter("proNumber");
+        List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
+        MultipartFile file = files.get(0);
+
+        ProductionBO bean = new ProductionBO();
+        BeanUtils.copyPropertiesReturnDest(bean,reqDTO);
+        operationProductionService.reissueMail(file , bean);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

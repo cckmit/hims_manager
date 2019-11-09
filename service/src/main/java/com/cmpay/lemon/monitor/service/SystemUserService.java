@@ -98,4 +98,12 @@ public interface SystemUserService {
      * @return
      */
     List<UserInfoBO> getUserList();
+
+
+    /**
+     * 获取用户名全名
+     *
+     * @return
+     */
+    String  getFullname(String loginname);
 }

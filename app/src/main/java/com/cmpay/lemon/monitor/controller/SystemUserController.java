@@ -71,7 +71,6 @@ public class SystemUserController {
         PageInfo<UserDO> page = systemUserService.findUsers(userInfoQueryBO);
 
         List<UserInfoDTO> userInfos = BeanConvertUtils.convertList(page.getList(), UserInfoDTO.class);
-        System.err.println(userInfos.toString());
         UserInfoQueryRspDTO userInfoQueryRspDTO = new UserInfoQueryRspDTO();
         userInfoQueryRspDTO.setList(userInfos);
         userInfoQueryRspDTO.setPageNum(page.getPageNum());
@@ -128,6 +127,8 @@ public class SystemUserController {
     @PostMapping("/update")
     public GenericRspDTO update(@RequestBody UserUpdateReqDTO updateReqDTO) {
         UserInfoBO userInfoBO = BeanUtils.copyPropertiesReturnDest(new UserInfoBO(), updateReqDTO);
+        userInfoBO.setDepartment(updateReqDTO.getDepartment());
+        userInfoBO.setFullname(updateReqDTO.getFullname());
         systemUserService.update(userInfoBO);
         systemUserService.updateUserRole(userInfoBO.getUserNo(), updateReqDTO.getRoleIds());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);

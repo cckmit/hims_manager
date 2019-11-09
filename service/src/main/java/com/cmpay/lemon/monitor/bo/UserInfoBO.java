@@ -9,22 +9,13 @@ import java.time.LocalDateTime;
  * @date : 2018/11/12
  */
 public class UserInfoBO {
-    /**
-     * @Fields userNo 用户ID
-     */
     private Long userNo;
-    /**
-     * @Fields username 用户名
-     */
     private String username;
-    /**
-     * @Fields password 密码
-     */
     private String password;
-    /**
-     * @Fields salt 盐
-     */
     private String salt;
+    private String email;
+    private String mobile;
+    private Byte status;
     /**
      * @Fields department 部门
      */
@@ -33,18 +24,6 @@ public class UserInfoBO {
      * @Fields fullname 用户全名
      */
     private String fullname;
-    /**
-     * @Fields email 邮箱
-     */
-    private String email;
-    /**
-     * @Fields mobile 手机号
-     */
-    private String mobile;
-    /**
-     * @Fields status 状态  0：禁用   1：正常
-     */
-    private Byte status;
     /**
      * @Fields createUserNo 创建者ID
      */
@@ -144,7 +123,7 @@ public class UserInfoBO {
 
     @Override
     public String toString() {
-        return "UserDO{" +
+        return "UserInfoBO{" +
                 "userNo=" + userNo +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +

@@ -185,6 +185,7 @@ public class SystemUserServiceImpl implements SystemUserService {
             user.setPassword(password);
         }
         UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
+
         int res = iUserDao.update(userDO);
         if (res != 1) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
@@ -232,5 +233,12 @@ public class SystemUserServiceImpl implements SystemUserService {
         UserDO userDO = new UserDO();
         List<UserDO> userDOList = iUserDao.find(userDO);
         return BeanConvertUtils.convertList(userDOList, UserInfoBO.class);
+    }
+
+    @Override
+    public String getFullname(String loginname) {
+        UserDO userDO = new UserDO();
+        UserDO userByUserName = iUserDao.getUserByUserName(loginname);
+        return  userByUserName.getFullname();
     }
 }

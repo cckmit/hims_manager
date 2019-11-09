@@ -16,7 +16,33 @@ public class UserUpdateReqDTO {
     private String email;
     private String mobile;
     private Byte status;
+    /**
+     * @Fields department 部门
+     */
+    private String department;
+    /**
+     * @Fields fullname 用户全名
+     */
+    private String fullname;
+
     private List<Long> roleIds;
+
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
 
     public Long getUserNo() {
         return userNo;
@@ -93,6 +119,8 @@ public class UserUpdateReqDTO {
                 ", mobile='" + mobile + '\'' +
                 ", status=" + status +
                 ", roleIds=" + roleIds +
+                ", department='" + department + '\'' +
+                ", fullname='" + fullname + '\'' +
                 '}';
     }
 }

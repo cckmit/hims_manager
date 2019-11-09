@@ -10,13 +10,12 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
-import com.cmpay.lemon.monitor.dao.IOperationApplicationDao;
-import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
-import com.cmpay.lemon.monitor.dao.IProductionPicDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
@@ -59,6 +58,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private ProductTimeService productTimeService;
     @Autowired
     private ReqTaskService reqTaskService;
+    @Autowired
+    IPermiUserDao permiUserDao;
+    @Autowired
+    ITPermiDeptDao permiDeptDao;
+    @Autowired
+    SystemUserService userService;
+
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
         PageInfo<ProductionBO> pageInfo = getPageInfo(productionBO);
@@ -139,7 +145,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
         //UserPrincipal currentUser = (UserPrincipal) SecurityUtils.getSubject().getPrincipal();
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
         ScheduleDO scheduleBean =new ScheduleDO(currentUser);
         String[] pro_number_list=taskIdStr.split("~");
@@ -650,7 +656,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public void addProductionPicBean(ProductionPicDO productionPicDO) {
-
         productionPicDao.insert(productionPicDO);
     }
 
@@ -1016,7 +1021,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
         }
         //获取登录用户名
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         File file2=exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
@@ -1268,8 +1273,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
         //todo 先改成本机写死路径
         //String path = "/Users/zouxin/Desktop/tmpFile";
-        //String path="D:\\home\\devadm\\temp\\import";
-        String path = "/home/devadm/temp/import/";
+        String path="D:\\home\\devadm\\temp\\import";
+        //String path = "/home/devadm/temp/import/";
         String fileName = file.getOriginalFilename();
         File tmp_file = new File(path + File.separator + bean.getProNumber() + "_" + fileName);
         try {
@@ -1609,7 +1614,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             this.updateAllProduction(bean);
 
             //生成流水记录
-            ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), SecurityUtils.getLoginName(), "重新录入", productionBean.getProStatus(), bean.getProStatus(), "无");
+            ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", productionBean.getProStatus(), bean.getProStatus(), "无");
             this.addScheduleBean(scheduleBean);
             //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
             if (bean.getIsAdvanceProduction().equals("否")) {
@@ -1632,7 +1637,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         this.addProduction(bean);
         //生成流水记录
-        ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  SecurityUtils.getLoginName(), "录入", "", "投产提出", "无");
+        ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  userService.getFullname(SecurityUtils.getLoginName()), "录入", "", "投产提出", "无");
         this.addScheduleBean(scheduleBean);
         //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
         if (bean.getIsAdvanceProduction().equals("否")) {
@@ -1663,7 +1668,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择上传文件!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        String currentUser =  SecurityUtils.getLoginName();
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = null;
         bean = operationProductionDao.findProductionBean(reqNumber);
 //            if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
@@ -1919,6 +1924,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return operationProductionDao.findDeptManager(deptName);
     }
 
+
+
     //投产审批
     @Override
     public void approval(String proNumber){
@@ -1956,5 +1963,45 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //生成流水记录
         ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "修改", bean.getProStatus(), bean.getProStatus(), "投产信息更新");
         operationProductionDao.insertSchedule(schedule);
+    }
+
+    //邮件补发
+    @Override
+    public void reissueMail(MultipartFile file, ProductionBO bean) {
+        //当前操作员姓名
+        PermiUserDO permiUserDO = new PermiUserDO();
+        String loginName = SecurityUtils.getLoginName();
+        permiUserDO.setUserId(loginName);
+        System.err.println(loginName);
+        List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
+        if(permiUserDOS.isEmpty()){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作人信息未同步，请联系管理员");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        String userName = permiUserDOS.get(0).getUserName();
+
+        ProductionDO productionDO = operationProductionDao.findProductionBean(bean.getProNumber());
+        //判断操作人是否是该投产申请人，若不是则判断是不是部门经理
+        if(!userName.equals(productionDO.getProApplicant())){
+
+            TPermiDeptDO permiDeptDO = new TPermiDeptDO();
+            permiDeptDO.setDeptName(productionDO.getApplicationDept());
+            //获得开发主导部门查询该部门部门经理
+            List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
+            String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
+            if(!deptManagerName.equals(productionDO.getProApplicant())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("只有申请人本人和申请部门部门经理才有权操作");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+
+
+
+
+
+        ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDO);
+        productionBO.setMailRecipient(bean.getMailRecipient());
+        productionBO.setMailCopyPerson(bean.getMailCopyPerson());
+        this.productionInput( file,false,  productionBO);
     }
 }

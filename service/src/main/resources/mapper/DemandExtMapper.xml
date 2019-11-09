@@ -337,9 +337,6 @@
         <if test="devpLeadDept != null and devpLeadDept != ''">
             ,devp_lead_dept =#{devpLeadDept }
         </if>
-        <if test="devpCoorDept != null and devpCoorDept != ''">
-            ,devp_coor_dept =#{devpCoorDept }
-        </if>
         <if test="reqProDept != null and reqProDept != ''">
             ,req_pro_dept =#{reqProDept }
         </if>
@@ -460,6 +457,7 @@
         <if test="updateUser != null and updateUser != ''">
             ,update_user =#{updateUser}
         </if>
+            ,devp_coor_dept =#{devpCoorDept }
         where req_inner_seq =#{reqInnerSeq }
     </update>
 

@@ -34,7 +34,7 @@ public class SystemLoginServiceImpl implements SystemLoginService {
     @Override
     public UserLoginBO login(UserLoginBO userLoginBO) {
         UserDO userDO = iUserDao.getUserByUserName(userLoginBO.getUsername());
-        if (JudgeUtils.notEquals(userDO.getStatus().toString(),ENABLED)) {
+        if (!userDO.getStatus().toString().equals(ENABLED)) {
             BusinessException.throwBusinessException(MsgEnum.USER_DISABLED);
         }
         String inputPassword = CryptoUtils.sha256Hash(userLoginBO.getPassword(), userDO.getSalt());

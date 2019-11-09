@@ -93,4 +93,6 @@ public interface OperationProductionService {
 
     //查询部门经理
     public ProductionDO findDeptManager(String deptName);
+
+    void reissueMail(MultipartFile file, ProductionBO bean);
 }

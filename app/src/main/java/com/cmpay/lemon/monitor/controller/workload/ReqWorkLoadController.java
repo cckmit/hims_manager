@@ -9,10 +9,8 @@ import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.DictionaryBO;
-import com.cmpay.lemon.monitor.bo.ProjectStartBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
-import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
@@ -227,7 +225,6 @@ public class ReqWorkLoadController {
     }
     @RequestMapping("/checkDeptRate")
     public GenericRspDTO<WorkLoadRspDTO> checkDeptRate(@RequestBody DemandReqDTO reqDTO) {
-        System.err.println(reqDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         Map<String, String> map =reqWorkLoadService.checkDeptRate1(demandBO);
         if(StringUtils.isNotEmpty(map.get("message"))){
