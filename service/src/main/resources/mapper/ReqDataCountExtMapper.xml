@@ -104,6 +104,30 @@
 		<result property="devpResMng" jdbcType="VARCHAR" column="devp_res_mng" />
 	</resultMap>
 
+	<resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
+		<result property="seqId"         jdbcType="VARCHAR"      column="seq_id"/>
+		<result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>
+		<result property="proNeed"         jdbcType="VARCHAR"      column="pro_need"/>
+		<result property="proOperator"         jdbcType="VARCHAR"      column="pro_operator"/>
+		<result property="operationType"  jdbcType="VARCHAR"      column="operation_type"/>
+		<result property="scheduleTime"  jdbcType="TIMESTAMP"      column="schedule_time"/>
+		<result property="preOperation"  jdbcType="VARCHAR"      column="pre_operation"/>
+		<result property="afterOperation"  jdbcType="VARCHAR"      column="after_operation"/>
+		<result property="operRequestContent"  jdbcType="VARCHAR"      column="oper_request_content"/>
+		<result property="proposeDate"  jdbcType="DATE"      column="propose_date"/>
+		<result property="isRefSql"  jdbcType="VARCHAR"      column="is_ref_sql"/>
+		<result property="sysOperType"  jdbcType="VARCHAR"      column="sys_oper_type"/>
+		<result property="operStatus"  jdbcType="VARCHAR"      column="oper_status"/>
+		<result property="applicationSector"  jdbcType="VARCHAR"      column="application_sector"/>
+		<result property="identifier"  jdbcType="VARCHAR"      column="identifier"/>
+		<result property="developmentLeader"  jdbcType="VARCHAR"      column="development_leader"/>
+		<result property="operApplicant"  jdbcType="VARCHAR"      column="oper_applicant"/>
+		<result property="svntabName"  jdbcType="VARCHAR"      column="svntab_name"/>
+		<result property="operApplicationReason"  jdbcType="VARCHAR"      column="oper_application_reason"/>
+		<result property="analysis"  jdbcType="VARCHAR"      column="analysis"/>
+		<result property="applicationDept"  jdbcType="VARCHAR"      column="application_dept"/>
+	</resultMap>
+
 	<sql id="Base_Column_List">
 		req_prd,
 		req_devp,
@@ -348,6 +372,18 @@
 		FROM
 			t_demand_info
 		WHERE req_impl_mon = #{0}
+	</select>
+
+	<select id="getProduction" resultMap="sm">
+		SELECT
+			t.pro_number 'pro_number' ,
+			 p.pro_need 'pro_need' ,
+			 p.application_dept 'application_dept',
+			 t.pro_operator 'pro_operator',
+			 t.schedule_time 'schedule_time'
+		FROM
+			t_production_schedule t ,t_production_records p
+		where after_operation ='投产待审批' and schedule_time LIKE CONCAT('%',#{0},'%')  and t.pro_number = p.pro_number
 	</select>
 	
 	<select id="getStageByJd" resultMap="rt">

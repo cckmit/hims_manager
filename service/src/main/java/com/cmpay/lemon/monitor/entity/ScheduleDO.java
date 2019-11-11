@@ -40,6 +40,26 @@ public class ScheduleDO extends AbstractDO {
     private String operApplicationReason;
     private String notProductionImpact;
     private String urgentReasonPhrase;
+    private String proNeed;
+
+    public String getProNeed() {
+        return proNeed;
+    }
+
+    public void setProNeed(String proNeed) {
+        this.proNeed = proNeed;
+    }
+
+    // 主导部门
+    private String applicationDept;
+
+    public String getApplicationDept() {
+        return applicationDept;
+    }
+
+    public void setApplicationDept(String applicationDept) {
+        this.applicationDept = applicationDept;
+    }
 
     public ScheduleDO(int seqId, String proNumber, String proOperator, String operationType, Date scheduleTime, String preOperation, String afterOperation, String operationReason, String proType, String isOperationProduction, String operRequestContent, String proposeDate, String isRefSql, String sysOperType, String operStatus, String applicationSector, String operApplicant, String identifier, String developmentLeader, String svntabName, String analysis, String operApplicationReason, String notProductionImpact, String urgentReasonPhrase) {
         this.seqId = seqId;

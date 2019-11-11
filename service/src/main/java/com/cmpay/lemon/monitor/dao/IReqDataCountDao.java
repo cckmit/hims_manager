@@ -6,6 +6,7 @@ import com.cmpay.lemon.framework.dao.BaseDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
 import com.cmpay.lemon.monitor.entity.ReqMngDO;
+import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +40,9 @@ public interface IReqDataCountDao extends BaseDao<DemandDO,String> {
 
 	//需求类型统计
 	List<ReqDataCountDO> getReqSts(String reqImplMon);
+
+	//投产录入不及时
+	List<ScheduleDO> getProduction(String reqImplMon);
 
 	//按基地归属部门统计报表
 	List<ReqDataCountDO> getStageByJd(String reqImplMon);

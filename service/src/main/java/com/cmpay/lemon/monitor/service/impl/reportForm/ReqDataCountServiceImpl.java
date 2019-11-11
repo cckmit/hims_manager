@@ -13,6 +13,7 @@ import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
 import com.cmpay.lemon.monitor.entity.ReqMngDO;
+import com.cmpay.lemon.monitor.entity.ScheduleDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
@@ -283,6 +284,16 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	}
 
 	@Override
+	public List<ScheduleBO> getProduction(String reqImplMon) {
+		List<ScheduleBO> reqDataCountBOS = new LinkedList<>();
+		List<ScheduleDO> impl = reqDataCountDao.getProduction(reqImplMon);
+		impl.forEach(m->
+				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new ScheduleBO(), m))
+		);
+		return reqDataCountBOS;
+	}
+
+	@Override
 	public List<ReqDataCountBO> getStageByJd(String reqImplMon) {
 		List<ReqDataCountBO> reqDataCountBOS = new LinkedList<>();
 		reqDataCountDao.getStageByJd(reqImplMon).forEach(m->
@@ -451,6 +462,39 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			}
 			// 设置excel的文件名称
 			String excelName = "需求类型统计报表" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+			response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+			response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+			workbook.write(bufferedOutPut);
+			bufferedOutPut.flush();
+		} catch (IOException e) {
+			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+		}
+	}
+	@Override
+	public void downloadProductionTypeStatistics(String month, HttpServletResponse response) {
+		List<DemandTypeProductionBO> DemandTypeStatisticsBOList = new ArrayList<>();
+		List<ScheduleBO> reportLista = new ArrayList<>();
+		reportLista = this.getProduction(month);
+		if (JudgeUtils.isNotEmpty(reportLista)) {
+			reportLista.forEach(m->{
+				DemandTypeProductionBO demandTypeStatisticsBO = new DemandTypeProductionBO();
+				demandTypeStatisticsBO.setProNumber(m.getProNumber());
+				demandTypeStatisticsBO.setProNeed(m.getProNeed());
+				demandTypeStatisticsBO.setProOperator(m.getProOperator());
+				demandTypeStatisticsBO.setScheduleTime(m.getScheduleTime());
+				demandTypeStatisticsBO.setApplicationDept(m.getApplicationDept());
+				DemandTypeStatisticsBOList.add(demandTypeStatisticsBO);
+			});
+		}
+		Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandTypeProductionBO.class, DemandTypeStatisticsBOList);
+		try (OutputStream output = response.getOutputStream();
+			 BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+			// 判断数据
+			if (workbook == null) {
+				BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+			}
+			// 设置excel的文件名称
+			String excelName = "投产录入不及时报表" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
 			response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
 			response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
 			workbook.write(bufferedOutPut);

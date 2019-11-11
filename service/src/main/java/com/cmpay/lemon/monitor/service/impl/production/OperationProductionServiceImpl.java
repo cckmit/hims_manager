@@ -1637,7 +1637,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         this.addProduction(bean);
         //生成流水记录
-        ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  userService.getFullname(SecurityUtils.getLoginName()), "录入", "", "投产提出", "无");
+        ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
         this.addScheduleBean(scheduleBean);
         //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
         if (bean.getIsAdvanceProduction().equals("否")) {

@@ -1,10 +1,7 @@
 package com.cmpay.lemon.monitor.service.reportForm;
 
 
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
-import com.cmpay.lemon.monitor.bo.ReqMngBO;
+import com.cmpay.lemon.monitor.bo.*;
 
 
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +57,7 @@ public interface ReqDataCountService {
 
     //按基地归属部门统计报表
     List<ReqDataCountBO> getStageByJd(String req_impl_mon);
+    List<ScheduleBO> getProduction(String reqImplMon);
 
     //查询本月需求详情
     List<ReqDataCountBO> selectDetl(ReqMngBO vo);
@@ -79,6 +77,8 @@ public interface ReqDataCountService {
     Map selectByEng(ReqMngBO vo);
 
     void downloadDemandTypeStatistics(String month, HttpServletResponse response);
+
+    void downloadProductionTypeStatistics(String month, HttpServletResponse response);
 
     void downloadDemandImplementationReport(String month, HttpServletResponse response);
 
