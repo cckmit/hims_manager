@@ -1272,9 +1272,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
         //todo 先改成本机写死路径
-        //String path = "/Users/zouxin/Desktop/tmpFile";
-        String path="D:\\home\\devadm\\temp\\import";
-        //String path = "/home/devadm/temp/import/";
+
+       // String path="D:\\home\\devadm\\temp\\import";
+        String path = "/home/devadm/temp/import/";
         String fileName = file.getOriginalFilename();
         File tmp_file = new File(path + File.separator + bean.getProNumber() + "_" + fileName);
         try {
