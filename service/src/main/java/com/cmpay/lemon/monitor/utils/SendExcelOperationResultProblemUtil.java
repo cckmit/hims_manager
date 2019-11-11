@@ -98,7 +98,7 @@ public class SendExcelOperationResultProblemUtil {
 		int countCR=0;
 		int countP=0;
 		for (ProductionDO bean : rowList) {
-			if(bean.getProNumber().contains("CR")){
+			if(bean.getProNumber().contains("REQ")){
 				countCR++;
 			}
 			if(bean.getProNumber().contains("P")){
