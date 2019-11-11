@@ -720,6 +720,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void doBatchDown(MultipartHttpServletRequest request, HttpServletResponse response) {
         MultipartFile file = request.getFile(FILE);
+        //response.resetBuffer();
         response.reset();
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
@@ -802,6 +803,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
                 String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+              //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
                         + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
 
                 File file1 = new File(path + "/开发技术文档/");
@@ -855,7 +857,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
-                        String demandName = srcfile[i].getPath().substring(34, srcfile[i].getPath().length());
+                        String demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
                         String name = demandName.substring(0, demandName.indexOf("/"));
                         String path = demandName.substring(demandName.lastIndexOf("/") + 1);
                         out.putNextEntry(new ZipEntry(name + "/" + path));
