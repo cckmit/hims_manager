@@ -34,7 +34,25 @@ public class ScheduleReqDTO extends PageableRspDTO {
     private String operApplicationReason;
     private String notProductionImpact;
     private String urgentReasonPhrase;
+    // 主导部门
+    private String applicationDept;
 
+    public String getApplicationDept() {
+        return applicationDept;
+    }
+
+    public void setApplicationDept(String applicationDept) {
+        this.applicationDept = applicationDept;
+    }
+    private String proNeed;
+
+    public String getProNeed() {
+        return proNeed;
+    }
+
+    public void setProNeed(String proNeed) {
+        this.proNeed = proNeed;
+    }
     /**
      * 页数
      */

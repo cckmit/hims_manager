@@ -242,10 +242,43 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
         }
     }
+    /**
+     * 得到指定月的天数
+     * */
+    public int getMonthLastDay(int year, int month)
+    {
+        Calendar a = Calendar.getInstance();
+        a.set(Calendar.YEAR, year);
+        a.set(Calendar.MONTH, month - 1);
+        a.set(Calendar.DATE, 1);//把日期设置为当月第一天
+        a.roll(Calendar.DATE, -1);//日期回滚一天，也就是最后一天
+        int maxDate = a.get(Calendar.DATE);
+        return maxDate;
+    }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
+        //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
+        //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
+        int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
+        int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
+        String startdata = demandBO.getReqImplMon()+"-01";
+        String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
+        if("180".equals(demandBO.getCurMonTarget())){
+            System.err.println(demandBO.getExpPrdReleaseTm());
+            if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }else{
+            if(demandBO.getExpPrdReleaseTm().compareTo(enddata)<0){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为非完成产品发布时，预计产品发布日期必须为下月之后！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         try {
             if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
                 //修改需求状态
@@ -279,6 +312,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public  ProjectStartBO goProjectStart(String reqInnerSeq){
         System.out.println("内部编号："+reqInnerSeq);
         DemandDO demandDO = demandDao.get(reqInnerSeq);
+        if (JudgeUtils.isNull(demandDO)) {
+            BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
+        }
         ProjectStartDO projectStartDO = new ProjectStartDO();
         projectStartDO.setReqNm(demandDO.getReqNm());
         projectStartDO.setReqNo(demandDO.getReqNo());

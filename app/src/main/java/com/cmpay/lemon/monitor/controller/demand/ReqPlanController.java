@@ -219,8 +219,6 @@ public class ReqPlanController {
     public GenericRspDTO batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
         MultipartFile[] FILES = files.toArray(new MultipartFile[files.size()]);
-        System.err.println(FILES[0].getSize());
-        System.err.println(FILES[0].getOriginalFilename());
         String uploadPeriod = request.getParameter("uploadPeriod");
         String innerReqSeq = request.getParameter("reqInnerSeq");
         String reqNo = request.getParameter("reqNo");
