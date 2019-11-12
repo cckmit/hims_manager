@@ -126,6 +126,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i = 0; i < demandBOList.size(); i++) {
+            if (JudgeUtils.isEmpty(demandBOList.get(i).getIsSvnBuild())) {
+                demandBOList.get(i).setIsSvnBuild("否");
+            }
             String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
             DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
@@ -227,18 +230,36 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void add(DemandBO demandBO) {
         //校验数据
         checkReqTask(demandBO);
-
         // 判断需求编号或需求名称是否重复
         List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
         if (list.size() > 0) {
             BusinessException.throwBusinessException(MsgEnum.NON_UNIQUE);
         }
-
+        //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
+        //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
+        int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
+        int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
+        String startdata = demandBO.getReqImplMon()+"-01";
+        String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
+        if("180".equals(demandBO.getCurMonTarget())){
+            System.err.println(demandBO.getExpPrdReleaseTm());
+            if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }else{
+            if(demandBO.getExpPrdReleaseTm().compareTo(enddata)<0){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为非完成产品发布时，预计产品发布日期必须为下月之后！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         //设置默认值
         demandBO.getReqType();
-        String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        demandBO.setReqImplMon(month);
-        demandBO.setReqStartMon(month);
+        String mon = DateUtil.date2String(new Date(), "yyyy-MM");
+        demandBO.setReqImplMon(mon);
+        demandBO.setReqStartMon(mon);
         demandBO.setReqInnerSeq(reqTaskService.getNextInnerSeq());
         if( JudgeUtils.isEmpty(demandBO.getQaMng())) {
             demandBO.setQaMng("刘桂娟");
@@ -250,6 +271,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandBO.setConfigMng("黄佳海");
         }if (JudgeUtils.isEmpty(demandBO.getReqAbnorType())) {
             demandBO.setReqAbnorType("01");
+        }
+        // 设置是否经理svn默认值 ：否
+        if (JudgeUtils.isEmpty(demandBO.getIsSvnBuild())) {
+            demandBO.setIsSvnBuild("否");
         }
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
@@ -315,26 +340,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
-        //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
-        //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
-        int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
-        int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
-        String startdata = demandBO.getReqImplMon()+"-01";
-        String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
-        if("180".equals(demandBO.getCurMonTarget())){
-            System.err.println(demandBO.getExpPrdReleaseTm());
-            if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        }else{
-            if(demandBO.getExpPrdReleaseTm().compareTo(enddata)<0){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为非完成产品发布时，预计产品发布日期必须为下月之后！");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        }
         //校验数据
         checkReqTask(demandBO);
 

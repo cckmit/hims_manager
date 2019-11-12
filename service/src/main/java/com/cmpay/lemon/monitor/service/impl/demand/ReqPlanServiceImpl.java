@@ -147,6 +147,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i = 0; i < demandBOList.size(); i++) {
+            if (JudgeUtils.isEmpty(demandBOList.get(i).getIsSvnBuild())) {
+                demandBOList.get(i).setIsSvnBuild("否");
+            }
             String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
             DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
