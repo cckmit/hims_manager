@@ -17,6 +17,14 @@ public class MailGroupBO  {
     private String mailUser;
     private String mailGroupDesc;
     private Date groupTime;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
 
     public MailGroupBO() {
     }
@@ -77,4 +85,32 @@ public class MailGroupBO  {
         this.groupTime = groupTime;
     }
 
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    @Override
+    public String toString() {
+        return "MailGroupBO{" +
+                "mailGroupId='" + mailGroupId + '\'' +
+                ", mailGroupName='" + mailGroupName + '\'' +
+                ", mailUser='" + mailUser + '\'' +
+                ", mailGroupDesc='" + mailGroupDesc + '\'' +
+                ", groupTime=" + groupTime +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
 }

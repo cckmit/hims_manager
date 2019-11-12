@@ -660,14 +660,23 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public List<MailGroupBO> searchMailGroupList(MailGroupBO mailGroupBO) {
+    public void updateMailGroup(MailGroupBO mailGroupBO) {
         MailGroupDO mailGroupDO = BeanUtils.copyPropertiesReturnDest(new MailGroupDO(), mailGroupBO);
-        List<MailGroupBO> mailGroupBOS = new LinkedList<>();
-        List<MailGroupDO> mailGroupDOS = operationProductionDao.findMailGroup(mailGroupDO);
-        mailGroupDOS.forEach(m->{
-            mailGroupBOS.add(BeanUtils.copyPropertiesReturnDest(new MailGroupBO(),m));
-        });
-        return mailGroupBOS;
+        operationProductionDao.updateMailGroup(mailGroupDO);
+    }
+
+
+    @Override
+    public MailGroupRspBO searchMailGroupList(MailGroupBO mailGroupBO) {
+        MailGroupDO mailGroupDO = BeanUtils.copyPropertiesReturnDest(new MailGroupDO(), mailGroupBO);
+
+        PageInfo<MailGroupBO> pageInfo = PageUtils.pageQueryWithCount(mailGroupBO.getPageNum(), mailGroupBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(operationProductionDao.findMailGroup(mailGroupDO), MailGroupBO.class));
+        List<MailGroupBO> mailGroupBOList = BeanConvertUtils.convertList(pageInfo.getList(), MailGroupBO.class);
+        MailGroupRspBO mailGroupRspBO = new MailGroupRspBO();
+        mailGroupRspBO.setMailGroupBOList(mailGroupBOList);
+        mailGroupRspBO.setPageInfo(pageInfo);
+        return mailGroupRspBO;
     }
 
 
@@ -1013,6 +1022,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 file.delete();
             }
         }
+
 
         MailGroupDO mpb=operationProductionDao.findMailGroupBeanDetail("3");
         mp.setMailUser(mpb.getMailUser());
@@ -1995,13 +2005,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
 
-
-
-
-
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDO);
         productionBO.setMailRecipient(bean.getMailRecipient());
         productionBO.setMailCopyPerson(bean.getMailCopyPerson());
         this.productionInput( file,false,  productionBO);
     }
+
+
 }

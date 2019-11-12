@@ -64,7 +64,7 @@ public interface OperationProductionService {
     /** 保存图片基本信息*/
     void addProductionPicBean(ProductionPicDO productionPicDO);
 
-    List<MailGroupBO> searchMailGroupList(MailGroupBO mailGroupBO);
+    MailGroupRspBO searchMailGroupList(MailGroupBO mailGroupBO);
 
     Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean);
 
@@ -95,4 +95,6 @@ public interface OperationProductionService {
     public ProductionDO findDeptManager(String deptName);
 
     void reissueMail(MultipartFile file, ProductionBO bean);
+
+    void updateMailGroup(MailGroupBO mailGroupBO);
 }

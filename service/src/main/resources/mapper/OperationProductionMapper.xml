@@ -641,21 +641,21 @@
     </select>
 
 
-    <!--<update id="updateMailGroup" parameterType="com.hisun.persistence.beans.MailGroupBean">-->
-        <!--UPDATE t_mail_group-->
-        <!--<trim prefix="set" suffixOverrides=",">-->
-            <!--<if test="mail_group_name != null and mail_group_name != ''">-->
-                <!--mail_group_name = #{mail_group_name},-->
-            <!--</if>-->
-            <!--<if test="mail_user != null and mail_user != ''">-->
-                <!--mail_user = #{mail_user},-->
-            <!--</if>-->
-            <!--<if test="mail_group_desc != null and mail_group_desc != ''">-->
-                <!--mail_group_desc = #{mail_group_desc},-->
-            <!--</if>-->
-        <!--</trim>-->
-        <!--WHERE mail_group_id = #{mail_group_id}-->
-    <!--</update>-->
+    <update id="updateMailGroup" parameterType="com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO">
+        UPDATE t_mail_group
+        <trim prefix="set" suffixOverrides=",">
+            <if test="mailGroupName != null and mailGroupName != ''">
+                mail_group_name = #{mailGroupName},
+            </if>
+            <if test="mailUser != null and mailUser != ''">
+                mail_user = #{mailUser},
+            </if>
+            <if test="mailGroupDesc != null and mailGroupDesc != ''">
+                mail_group_desc = #{mailGroupDesc},
+            </if>
+        </trim>
+        WHERE mail_group_id = #{mailGroupId}
+    </update>
 
     <update id="updateProduction" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
         UPDATE t_production_records

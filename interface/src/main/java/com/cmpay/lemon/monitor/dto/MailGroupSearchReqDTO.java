@@ -12,6 +12,17 @@ public class MailGroupSearchReqDTO extends PageableRspDTO {
     private String mailGroupDesc;
     private Date groupTime;
 
+
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+    private String orderDirection;
+
     public MailGroupSearchReqDTO() {
     }
 
@@ -69,5 +80,33 @@ public class MailGroupSearchReqDTO extends PageableRspDTO {
 
     public void setGroupTime(Date groupTime) {
         this.groupTime = groupTime;
+    }
+
+    @Override
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    @Override
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    @Override
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    @Override
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getOrderDirection() {
+        return orderDirection;
+    }
+
+    public void setOrderDirection(String orderDirection) {
+        this.orderDirection = orderDirection;
     }
 }

@@ -108,16 +108,26 @@ public class OperationProductionController {
 
     //获取邮件组
     @RequestMapping("/mailGroupSearch")
-    public GenericRspDTO<MailGroupSearchRspDTO> productionInput( @RequestBody MailGroupSearchReqDTO req , HttpServletRequest request, HttpServletResponse response){
+    public GenericRspDTO<MailGroupSearchRspDTO> mailGroupSearch(@RequestBody MailGroupSearchReqDTO req , HttpServletRequest request, HttpServletResponse response){
         MailGroupBO mailGroupBO = BeanUtils.copyPropertiesReturnDest(new MailGroupBO(), req);
-        MailGroupSearchRspDTO mailGroupSearchRspDTO = new MailGroupSearchRspDTO();
-        List<MailGroupBO> lst =operationProductionService.searchMailGroupList(mailGroupBO);
-        LinkedList<MailGroupDTO> mailGroupDTOList = new LinkedList<>();
-        lst.forEach(m->{
-            mailGroupDTOList.add(BeanUtils.copyPropertiesReturnDest(new MailGroupDTO(),m));
-        });
-        mailGroupSearchRspDTO.setMailGroupBOList(mailGroupDTOList);
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS,mailGroupSearchRspDTO);
+        MailGroupRspBO mailGroupRspBO = operationProductionService.searchMailGroupList(mailGroupBO);
+        MailGroupSearchRspDTO rspDTO = new MailGroupSearchRspDTO();
+        rspDTO.setMailGroupBOList(BeanConvertUtils.convertList(mailGroupRspBO.getMailGroupBOList(), MailGroupDTO.class));
+        rspDTO.setPageNum(mailGroupRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(mailGroupRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(mailGroupRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(mailGroupRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+
+
+    //更新邮件组
+    @RequestMapping("/updateMailGroup")
+    public  GenericRspDTO<NoBody> updateMailGroup(@RequestBody MailGroupSearchReqDTO req , HttpServletRequest request, HttpServletResponse response){
+        MailGroupBO mailGroupBO = BeanUtils.copyPropertiesReturnDest(new MailGroupBO(), req);
+        operationProductionService.updateMailGroup(mailGroupBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 
 
@@ -221,7 +231,6 @@ public class OperationProductionController {
         String reqNumber = request.getParameter("proNumber");
         List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
         MultipartFile file = files.get(0);
-
         ProductionBO bean = new ProductionBO();
         BeanUtils.copyPropertiesReturnDest(bean,reqDTO);
         operationProductionService.reissueMail(file , bean);
