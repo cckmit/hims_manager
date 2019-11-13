@@ -536,16 +536,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String message = reqPlanService.sendMail(sendTo, copyTo, content, subject, null);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
-                MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:" + message);
+                MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
                 BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
             }
             //启动成功后记录时间
             reqPlan.setProjectStartTm(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
-            demandDao.update(reqPlan);
+            updateExtraTm(reqPlan);
         } catch (Exception e) {
             e.printStackTrace();
             //return ajaxDoneError("项目启动失败，SVN项目建立成功，启动邮件发送失败：" + e.getMessage());
-            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:"+e.getMessage());
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:"+e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
         }
     }
@@ -1086,9 +1086,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         // 上传文档到本地SVN工作空间
         Map<String, Object> map = null;
         try {
+            map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
             //更新文档上传时间
             updateExtraTm(reqPlan);
-            map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
         } catch (Exception e) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo(e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1776,34 +1776,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     public void updateExtraTm(DemandDO bean) {
         List<DemandDO> list = demandDao.getExtraTm(bean);
+        System.err.println(bean);
+        System.err.println(list.get(0));
         if (list.size() == 0) {
             demandDao.insertExtraTm(bean);
         }else {
             bean.setProId(list.get(0).getProId());
-            if (StringUtils.isNotBlank(list.get(0).getProjectStartTm())) {
-                bean.setProjectStartTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActPrdUploadTm())) {
-                bean.setActPrdUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActWorkloadUploadTm())) {
-                bean.setActWorkloadUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActSitUploadTm())) {
-                bean.setActSitUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActTestCasesUploadTm())) {
-                bean.setActTestCasesUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActUatUploadTm())) {
-                bean.setActUatUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActPreUploadTm())) {
-                bean.setActPreUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActProductionUploadTm())) {
-                bean.setActProductionUploadTm(null);
-            }
             demandDao.updateExtraTm(bean);
         }
     }

@@ -61,6 +61,15 @@
         <result property="updateUser" jdbcType="VARCHAR" column="update_user" />
         <result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
         <result property="devpResMng" jdbcType="VARCHAR" column="devp_res_mng" />
+        <result property="proId" jdbcType="VARCHAR" column="pro_id" />
+        <result property="projectStartTm" jdbcType="VARCHAR" column="project_start_tm" />
+        <result property="actPrdUploadTm" jdbcType="VARCHAR" column="act_prd_upload_tm" />
+        <result property="actWorkloadUploadTm" jdbcType="VARCHAR" column="act_workload_upload_tm" />
+        <result property="actSitUploadTm" jdbcType="VARCHAR" column="act_sit_upload_tm" />
+        <result property="actTestCasesUploadTm" jdbcType="VARCHAR" column="act_test_cases_upload_tm" />
+        <result property="actUatUploadTm" jdbcType="VARCHAR" column="act_uat_upload_tm" />
+        <result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
+        <result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
     </resultMap>
 
     <sql id="Base_Column_List" >

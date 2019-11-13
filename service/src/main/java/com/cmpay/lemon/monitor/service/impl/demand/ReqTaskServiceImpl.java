@@ -1039,6 +1039,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 li.add(srcfile[i].getName());
             }
         }
+        if(li.size()==0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("项目已启动,未上传文档!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         return li;
     }
     //获取已经上传的文档
