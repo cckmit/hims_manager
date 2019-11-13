@@ -102,6 +102,15 @@
 		<result property="updateUser" jdbcType="VARCHAR" column="update_user" />
 		<result property="monRemark" jdbcType="VARCHAR" column="mon_remark" />
 		<result property="devpResMng" jdbcType="VARCHAR" column="devp_res_mng" />
+		<result property="proId" jdbcType="VARCHAR" column="pro_id" />
+		<result property="projectStartTm" jdbcType="VARCHAR" column="project_start_tm" />
+		<result property="actPrdUploadTm" jdbcType="VARCHAR" column="act_prd_upload_tm" />
+		<result property="actWorkloadUploadTm" jdbcType="VARCHAR" column="act_workload_upload_tm" />
+		<result property="actSitUploadTm" jdbcType="VARCHAR" column="act_sit_upload_tm" />
+		<result property="actTestCasesUploadTm" jdbcType="VARCHAR" column="act_test_cases_upload_tm" />
+		<result property="actUatUploadTm" jdbcType="VARCHAR" column="act_uat_upload_tm" />
+		<result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
+		<result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
 	</resultMap>
 
 	<resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
@@ -383,9 +392,33 @@
 			 t.schedule_time 'schedule_time'
 		FROM
 			t_production_schedule t ,t_production_records p
-		where after_operation ='投产待审批' and schedule_time LIKE CONCAT('%',#{0},'%')  and t.pro_number = p.pro_number
+		where after_operation ='投产待审批'
+		 and operation_type = '录入'
+		and t.pro_number = p.pro_number
+		and schedule_time LIKE CONCAT('%',#{0},'%')
 	</select>
-	
+
+	<select id="getReportForm6" resultMap="BaseResultMap">
+		select DISTINCT a.req_no 'req_no',
+		a.req_nm 'req_nm',
+		a.project_start_tm 'project_start_tm',
+		a.act_prd_upload_tm 'act_prd_upload_tm',
+		a.act_workload_upload_tm 'act_workload_upload_tm' ,
+		a.act_sit_upload_tm 'act_sit_upload_tm' ,
+		a.act_test_cases_upload_tm 'act_test_cases_upload_tm',
+		a.act_uat_upload_tm 'act_uat_upload_tm',
+		a.act_pre_upload_tm 'act_pre_upload_tm',
+		a.act_production_upload_tm 'act_production_upload_tm',
+		b.devp_lead_dept 'devp_lead_dept',
+		b.product_mng 'product_mng',
+		b.devp_eng 'devp_eng',
+		b.front_eng 'front_eng',
+		b.test_eng 'test_eng',
+		(select value from t_permi_dic_data where dic_id ='REQ_PEROID' and name =b.pre_cur_period) 'pre_cur_period'
+		from t_demand_extra a ,t_demand_info b
+		where  a.req_no = b.req_no and b.req_impl_mon  = #{0}
+	</select>
+
 	<select id="getStageByJd" resultMap="rt">
 		SELECT * FROM
 		(SELECT

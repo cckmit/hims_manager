@@ -294,6 +294,16 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	}
 
 	@Override
+	public List<DemandBO> getReportForm6(String reqImplMon) {
+		List<DemandBO> reqDataCountBOS = new LinkedList<>();
+		List<DemandDO> impl = reqDataCountDao.getReportForm6(reqImplMon);
+		impl.forEach(m->
+				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new DemandBO(), m))
+		);
+		return reqDataCountBOS;
+	}
+
+	@Override
 	public List<ReqDataCountBO> getStageByJd(String reqImplMon) {
 		List<ReqDataCountBO> reqDataCountBOS = new LinkedList<>();
 		reqDataCountDao.getStageByJd(reqImplMon).forEach(m->
@@ -503,7 +513,50 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
 		}
 	}
-
+	@Override
+	public void downloadDemandUploadDocumentBO(String month, HttpServletResponse response) {
+		List<DemandUploadDocumentBO> DemandTypeStatisticsBOList = new ArrayList<>();
+		List<DemandBO> reportLista = new ArrayList<>();
+		reportLista = this.getReportForm6(month);
+		if (JudgeUtils.isNotEmpty(reportLista)) {
+			reportLista.forEach(m->{
+				DemandUploadDocumentBO demandTypeStatisticsBO = new DemandUploadDocumentBO();
+				demandTypeStatisticsBO.setReqNo(m.getReqNo());
+				demandTypeStatisticsBO.setReqNm(m.getReqNm());
+				demandTypeStatisticsBO.setProjectStartTm(m.getProjectStartTm());
+				demandTypeStatisticsBO.setActPrdUploadTm(m.getActPrdUploadTm());
+				demandTypeStatisticsBO.setActWorkloadUploadTm(m.getActWorkloadUploadTm());
+				demandTypeStatisticsBO.setActSitUploadTm(m.getActSitUploadTm());
+				demandTypeStatisticsBO.setActTestCasesUploadTm(m.getActTestCasesUploadTm());
+				demandTypeStatisticsBO.setActUatUploadTm(m.getActUatUploadTm());
+				demandTypeStatisticsBO.setActPreUploadTm(m.getActPreUploadTm());
+				demandTypeStatisticsBO.setActProductionUploadTm(m.getActProductionUploadTm());
+				demandTypeStatisticsBO.setDevpLeadDept(m.getDevpLeadDept());
+				demandTypeStatisticsBO.setProductMng(m.getProductMng());
+				demandTypeStatisticsBO.setDevpEng(m.getDevpEng());
+				demandTypeStatisticsBO.setFrontEng(m.getFrontEng());
+				demandTypeStatisticsBO.setTestEng(m.getTestEng());
+				demandTypeStatisticsBO.setPreCurPeriod(m.getPreCurPeriod());
+				DemandTypeStatisticsBOList.add(demandTypeStatisticsBO);
+			});
+		}
+		Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandUploadDocumentBO.class, DemandTypeStatisticsBOList);
+		try (OutputStream output = response.getOutputStream();
+			 BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+			// 判断数据
+			if (workbook == null) {
+				BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+			}
+			// 设置excel的文件名称
+			String excelName = "需求文档上传情况报表" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+			response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+			response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+			workbook.write(bufferedOutPut);
+			bufferedOutPut.flush();
+		} catch (IOException e) {
+			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+		}
+	}
 	@Override
 	public void downloadDemandImplementationReport(String month, HttpServletResponse response) {
 		List<ReqDataCountBO> reportLista = this.getImpl(month);

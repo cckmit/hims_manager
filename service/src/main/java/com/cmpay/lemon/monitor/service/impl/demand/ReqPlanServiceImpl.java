@@ -1776,8 +1776,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     public void updateExtraTm(DemandDO bean) {
         List<DemandDO> list = demandDao.getExtraTm(bean);
-        System.err.println(bean);
-        System.err.println(list.get(0));
         if (list.size() == 0) {
             demandDao.insertExtraTm(bean);
         }else {
