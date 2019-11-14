@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandChangeDetailsExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandChangeDetailsDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="req_impl_mon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="parent_req_no" property="parentReqNo" jdbcType="VARCHAR" />
+        <result column="identification" property="identification" jdbcType="VARCHAR" />
+        <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
+        <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_inner_seq, req_no, req_nm, req_impl_mon, parent_req_no, identification, creat_user,
+        creat_time
+    </sql>
+
+
+    <!-- 通过标示查询投产时间信息 -->
+    <select id="getIdentificationByReqInnerSeq" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT identification FROM t_demand_change_details WHERE req_inner_seq = #{reqInnerSeq}
+    </select>
+
+</mapper>

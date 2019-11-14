@@ -1,8 +1,8 @@
 /*
- * @ClassName DemandStateHistoryDO
+ * @ClassName DemandChangeDetailsDO
  * @Description 
  * @version 1.0
- * @Date 2019-11-14 09:52:51
+ * @Date 2019-11-13 10:55:00
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -12,7 +12,7 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 import java.time.LocalDateTime;
 
 @DataObject
-public class DemandStateHistoryDO extends BaseDO {
+public class DemandChangeDetailsDO extends BaseDO {
     /**
      * @Fields id id
      */
@@ -30,15 +30,15 @@ public class DemandStateHistoryDO extends BaseDO {
      */
     private String reqNm;
     /**
-     * @Fields reqSts 需求状态
+     * @Fields reqImplMon 需求实施月份
      */
-    private String reqSts;
+    private String reqImplMon;
     /**
-     * @Fields remarks 需求状态修改备注
+     * @Fields parentReqNo 父需求编号（由那条需求变更而得）
      */
-    private String remarks;
+    private String parentReqNo;
     /**
-     * @Fields identification 标识（同一需求的统一标识）
+     * @Fields identification 标识（需求变更之后的数据库表生成的新需求使用同一标识）
      */
     private String identification;
     /**
@@ -82,20 +82,20 @@ public class DemandStateHistoryDO extends BaseDO {
         this.reqNm = reqNm;
     }
 
-    public String getReqSts() {
-        return reqSts;
+    public String getReqImplMon() {
+        return reqImplMon;
     }
 
-    public void setReqSts(String reqSts) {
-        this.reqSts = reqSts;
+    public void setReqImplMon(String reqImplMon) {
+        this.reqImplMon = reqImplMon;
     }
 
-    public String getRemarks() {
-        return remarks;
+    public String getParentReqNo() {
+        return parentReqNo;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
+    public void setParentReqNo(String parentReqNo) {
+        this.parentReqNo = parentReqNo;
     }
 
     public String getIdentification() {

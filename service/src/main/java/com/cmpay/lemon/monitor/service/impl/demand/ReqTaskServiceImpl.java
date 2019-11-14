@@ -9,8 +9,7 @@ import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -83,6 +82,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private  IUserRoleExtDao userRoleExtDao;
     @Autowired
     SystemUserService userService;
+    @Autowired
+    private IDemandChangeDetailsExtDao demandChangeDetailsDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -255,19 +256,40 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         setDefaultUser(demandBO);
         setReqSts(demandBO);
         DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+        DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
         try {
             //登记需求表
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
-            demandStateHistoryDO.setReqInnerSeq(demandDao.getMaxInnerSeq().getReqInnerSeq());
+
+            String reqInnerSeq = demandDao.getMaxInnerSeq().getReqInnerSeq();
+            // 登记需求变更明细表
+            demandChangeDetailsDO.setReqInnerSeq(reqInnerSeq);
+            demandChangeDetailsDO.setReqNo(demandBO.getReqNo());
+            demandChangeDetailsDO.setReqNm(demandBO.getReqNm());
+            demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+            demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+            demandChangeDetailsDO.setIdentification(reqInnerSeq);
+            demandChangeDetailsDO.setReqImplMon(demandBO.getReqImplMon());
+            demandChangeDetailsDao.insert(demandChangeDetailsDO);
+            //登记需求状态表
+            demandStateHistoryDO.setReqInnerSeq(reqInnerSeq);
             demandStateHistoryDO.setReqSts("提出");
             demandStateHistoryDO.setRemarks("新建任务");
             demandStateHistoryDO.setReqNm(demandBO.getReqNm());
             demandStateHistoryDO.setReqNo(demandBO.getReqNo());
+            //登记需求状态历史表
+            //依据内部需求编号查唯一标识
+            String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+            if(identificationByReqInnerSeq==null){
+                identificationByReqInnerSeq=reqInnerSeq;
+            }
+            demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
             //获取当前操作员
             demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
             //登记需求状态历史表
             demandStateHistoryDao.insert(demandStateHistoryDO);
+
             //异步登记jira
             jiraOperationService.createEpic(demandBO);
         } catch (Exception e) {
@@ -281,7 +303,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void delete(String reqInnerSeq) {
         if(permissionCheck(reqInnerSeq)){
-            demandDao.delete(reqInnerSeq);
+            demandDao.logicDelete(reqInnerSeq);
         }
         else{
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能删除");
@@ -315,12 +337,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
-        //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
-        //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
+
         int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
         int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
+        //设置本月第一天
         String startdata = demandBO.getReqImplMon()+"-01";
+        //本月最后一天
         String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
+        //“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
+        //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
         if("180".equals(demandBO.getCurMonTarget())){
             System.err.println(demandBO.getExpPrdReleaseTm());
             if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
@@ -687,15 +712,31 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             insertList.forEach(m -> {
                 //获取下一条内部编号
                 String nextInnerSeq = getNextInnerSeq();
+                String reqInnerSeq = m.getReqInnerSeq();
                 m.setReqInnerSeq(nextInnerSeq);
-                System.err.println(m.getReqStartMon());
-                System.err.println(m.getReqImplMon());
                 demandDao.insert(m);
+                // 登记需求变更明细表
+                DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+                demandChangeDetailsDO.setReqInnerSeq(m.getReqInnerSeq());
+                demandChangeDetailsDO.setReqNo(m.getReqNo());
+                demandChangeDetailsDO.setReqNm(m.getReqNm());
+                demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+                demandChangeDetailsDO.setIdentification(nextInnerSeq);
+                demandChangeDetailsDO.setReqImplMon(m.getReqImplMon());
+                demandChangeDetailsDao.insert(demandChangeDetailsDO);
                 DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                 demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
                 demandStateHistoryDO.setReqSts("提出");
                 demandStateHistoryDO.setRemarks("新建任务");
                 demandStateHistoryDO.setReqNm(m.getReqNm());
+                //依据内部需求编号查唯一标识
+                String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                if(identificationByReqInnerSeq==null){
+                    identificationByReqInnerSeq=reqInnerSeq;
+                }
+                demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                //登记需求状态历史表
                 //获取当前操作员
                 demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
@@ -906,6 +947,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setReqSts(reqSts);
         demandStateHistoryDO.setReqNo(reqNo);
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+        //依据内部需求编号查唯一标识
+        String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+        if(identificationByReqInnerSeq==null){
+            identificationByReqInnerSeq=reqInnerSeq;
+        }
+        demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
         //获取当前操作员
         demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandStateHistoryDao.insert(demandStateHistoryDO);
@@ -1036,6 +1083,61 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
         return li;
     }
+
+    @Override
+    public DemandStateHistoryRspBO findDemandChangeDetails(DemandChangeDetailsBO demandChangeDetailsBO) {
+        if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&!demandChangeDetailsBO.getReqNo().isEmpty()){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只需要传一个条件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&demandChangeDetailsBO.getReqNo().isEmpty()){
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsBO.getReqInnerSeq());
+            if(identification==null){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+            System.err.println(identification);
+            demandStateHistoryDO.setIdentification(identification);
+            PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
+            List<DemandStateHistoryBO> demandStateHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandStateHistoryBO.class);
+            DemandStateHistoryRspBO demandStateHistoryRspBO = new DemandStateHistoryRspBO();
+            demandStateHistoryRspBO.setDemandStateHistoryBOList(demandStateHistoryBOList);
+            demandStateHistoryRspBO.setPageInfo(pageInfo);
+            return demandStateHistoryRspBO;
+        }else if(demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&!demandChangeDetailsBO.getReqNo().isEmpty()){
+            DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+            demandChangeDetailsDO.setReqNo(demandChangeDetailsBO.getReqNo());
+            List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
+            demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
+            if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
+            DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+            demandStateHistoryDO.setIdentification(identification);
+            PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
+            List<DemandStateHistoryBO> demandStateHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandStateHistoryBO.class);
+            DemandStateHistoryRspBO demandStateHistoryRspBO = new DemandStateHistoryRspBO();
+            demandStateHistoryRspBO.setDemandStateHistoryBOList(demandStateHistoryBOList);
+            demandStateHistoryRspBO.setPageInfo(pageInfo);
+            return demandStateHistoryRspBO;
+        }else{
+            //未传参数 输出所有
+            DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+            PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
+            List<DemandStateHistoryBO> demandStateHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandStateHistoryBO.class);
+            DemandStateHistoryRspBO demandStateHistoryRspBO = new DemandStateHistoryRspBO();
+            demandStateHistoryRspBO.setDemandStateHistoryBOList(demandStateHistoryBOList);
+            demandStateHistoryRspBO.setPageInfo(pageInfo);
+            return demandStateHistoryRspBO;
+        }
+    }
+
     //获取已经上传的文档
     private Map<String, Object> BatLists(DemandDO demandDO) {
         System.err.println(demandDO);

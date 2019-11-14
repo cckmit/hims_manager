@@ -119,6 +119,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private  IUserRoleExtDao userRoleExtDao;
     @Autowired
     private JiraOperationService jiraOperationService;
+    @Autowired
+    private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -226,7 +229,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandBO.setReqSts("20");
                 }
             }
-            demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
+            DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO);
+
         } catch (Exception e) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
@@ -764,7 +768,44 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     String reqInnerSeq = demand.getReqInnerSeq();
                     demand.setReqInnerSeq(getNextInnerSeq());
                     demandDao.insertStockReq(demand);
+                    // 登记需求变更明细表
+                    DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+                    demandChangeDetailsDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandChangeDetailsDO.setReqNo(demand.getReqNo());
+                    demandChangeDetailsDO.setReqNm(demand.getReqNm());
+                    demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+                    System.err.println(reqInnerSeq);
+                    System.err.println(1111111);
+                    String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                    if(identification==null){
+                        identification=reqInnerSeq;
+                    }
+                    demandChangeDetailsDO.setIdentification(identification);
+                    demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
+                    demandChangeDetailsDO.setParentReqNo(reqInnerSeq);
+                    demandChangeDetailsDao.insert(demandChangeDetailsDO);
+                    //同步jira
                     SyncJira(demand, reqInnerSeq);
+                    //更新需求状态历史表
+                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
+                    demandStateHistoryDO.setReqSts(reqSts);
+                    demandStateHistoryDO.setRemarks("存量变更录入");
+                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                    //依据内部需求编号查唯一标识
+                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                    if(identificationByReqInnerSeq==null){
+                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                    }
+                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                    //获取当前操作员
+                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                    //登记需求状态历史表
+                    demandStateHistoryDao.insert(demandStateHistoryDO);
 
                 }else {
                     demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
@@ -921,7 +962,41 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     String reqInnerSeq = demand.getReqInnerSeq();
                     demand.setReqInnerSeq(getNextInnerSeq());
                     demandDao.insertStockReq(demand);
+                    // 登记需求变更明细表
+                    DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+                    demandChangeDetailsDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandChangeDetailsDO.setReqNo(demand.getReqNo());
+                    demandChangeDetailsDO.setReqNm(demand.getReqNm());
+                    demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+                    String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                    if(identification==null){
+                        identification=reqInnerSeq;
+                    }
+                    demandChangeDetailsDO.setIdentification(identification);
+                    demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
+                    demandChangeDetailsDO.setParentReqNo(reqInnerSeq);
+                    demandChangeDetailsDao.insert(demandChangeDetailsDO);
                     SyncJira(demand, reqInnerSeq);
+                    //更新需求状态历史表
+                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
+                    demandStateHistoryDO.setReqSts(reqSts);
+                    demandStateHistoryDO.setRemarks("存量变更录入");
+                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                    //获取当前操作员
+                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                    //依据内部需求编号查唯一标识
+                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                    if(identificationByReqInnerSeq==null){
+                        identificationByReqInnerSeq=reqInnerSeq;
+                    }
+                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                    //登记需求状态历史表
+                    demandStateHistoryDao.insert(demandStateHistoryDO);
                 } else {
                     demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);
@@ -942,19 +1017,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandJiraDO.setCreatTime(LocalDateTime.now());
             demandJiraDao.insert(demandJiraDO);
         }
-        //更新需求状态历史表
-        DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
-        demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
-        String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
-        demandStateHistoryDO.setReqSts(reqSts);
-        demandStateHistoryDO.setRemarks("存量变更录入");
-        demandStateHistoryDO.setReqNo(demand.getReqNo());
-        demandStateHistoryDO.setReqNm(demand.getReqNm());
-        //获取当前操作员
-        demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
-        demandStateHistoryDO.setCreatTime(LocalDateTime.now());
-        //登记需求状态历史表
-        demandStateHistoryDao.insert(demandStateHistoryDO);
     }
 
 
@@ -2000,8 +2062,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             insertList.forEach(m -> {
                 //获取下一条内部编号
                 String nextInnerSeq = getNextInnerSeq();
+                //原内部编号
+                String reqInnerSeq = m.getReqInnerSeq();
                 m.setReqInnerSeq(nextInnerSeq);
                 demandDao.insert(m);
+                // 登记需求变更明细表
+                DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+                demandChangeDetailsDO.setReqInnerSeq(m.getReqInnerSeq());
+                demandChangeDetailsDO.setReqNo(m.getReqNo());
+                demandChangeDetailsDO.setReqNm(m.getReqNm());
+                demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+                demandChangeDetailsDO.setIdentification(nextInnerSeq);
+                demandChangeDetailsDO.setReqImplMon(m.getReqImplMon());
+                demandChangeDetailsDao.insert(demandChangeDetailsDO);
                 DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                 demandStateHistoryDO.setReqInnerSeq(nextInnerSeq);
                 demandStateHistoryDO.setReqSts("提出");
@@ -2010,6 +2084,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //获取当前操作员
                 demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                //依据内部需求编号查唯一标识
+                String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                if(identificationByReqInnerSeq==null){
+                    identificationByReqInnerSeq=reqInnerSeq;
+                }
+                demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                 demandStateHistoryDao.insert(demandStateHistoryDO);
             });
             // 更新数据库

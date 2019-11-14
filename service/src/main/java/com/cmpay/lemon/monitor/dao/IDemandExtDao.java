@@ -1,7 +1,6 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.PlanDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -49,4 +48,6 @@ public interface IDemandExtDao extends IDemandDao {
     void updatePreCurPeriod(DemandDO demand);
 
     void updateReqSts(DemandDO demandDO);
+
+    void logicDelete(String reqInnerSeq);
 }

@@ -4,7 +4,7 @@
  * @version 1.0
  * @Date 2019-11-14 09:52:51
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.bo;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
@@ -12,7 +12,7 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 import java.time.LocalDateTime;
 
 @DataObject
-public class DemandStateHistoryDO extends BaseDO {
+public class DemandStateHistoryBO extends BaseDO {
     /**
      * @Fields id id
      */

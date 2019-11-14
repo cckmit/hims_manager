@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandStateHistoryDao" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandChangeDetailsDao" >
 
-    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandChangeDetailsDO" >
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
         <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
-        <result column="req_sts" property="reqSts" jdbcType="VARCHAR" />
-        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="req_impl_mon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="parent_req_no" property="parentReqNo" jdbcType="VARCHAR" />
         <result column="identification" property="identification" jdbcType="VARCHAR" />
         <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
         <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_inner_seq, req_no, req_nm, req_sts, remarks, identification, creat_user, 
+        id, req_inner_seq, req_no, req_nm, req_impl_mon, parent_req_no, identification, creat_user, 
         creat_time
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
         select 
         <include refid="Base_Column_List" />
-        from t_demand_state_history
+        from t_demand_change_details
         where id = #{id,jdbcType=INTEGER}
     </select>
 
     <delete id="delete" parameterType="java.lang.Integer" >
-        delete from t_demand_state_history
+        delete from t_demand_change_details
         where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
-        insert into t_demand_state_history
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandChangeDetailsDO" >
+        insert into t_demand_change_details
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >
                 id,
@@ -46,11 +46,11 @@
             <if test="reqNm != null" >
                 req_nm,
             </if>
-            <if test="reqSts != null" >
-                req_sts,
+            <if test="reqImplMon != null" >
+                req_impl_mon,
             </if>
-            <if test="remarks != null" >
-                remarks,
+            <if test="parentReqNo != null" >
+                parent_req_no,
             </if>
             <if test="identification != null" >
                 identification,
@@ -75,11 +75,11 @@
             <if test="reqNm != null" >
                 #{reqNm,jdbcType=VARCHAR},
             </if>
-            <if test="reqSts != null" >
-                #{reqSts,jdbcType=VARCHAR},
+            <if test="reqImplMon != null" >
+                #{reqImplMon,jdbcType=VARCHAR},
             </if>
-            <if test="remarks != null" >
-                #{remarks,jdbcType=VARCHAR},
+            <if test="parentReqNo != null" >
+                #{parentReqNo,jdbcType=VARCHAR},
             </if>
             <if test="identification != null" >
                 #{identification,jdbcType=VARCHAR},
@@ -93,8 +93,8 @@
         </trim>
     </insert>
 
-    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
-        update t_demand_state_history
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandChangeDetailsDO" >
+        update t_demand_change_details
         <set >
             <if test="reqInnerSeq != null" >
                 req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR},
@@ -105,11 +105,11 @@
             <if test="reqNm != null" >
                 req_nm = #{reqNm,jdbcType=VARCHAR},
             </if>
-            <if test="reqSts != null" >
-                req_sts = #{reqSts,jdbcType=VARCHAR},
+            <if test="reqImplMon != null" >
+                req_impl_mon = #{reqImplMon,jdbcType=VARCHAR},
             </if>
-            <if test="remarks != null" >
-                remarks = #{remarks,jdbcType=VARCHAR},
+            <if test="parentReqNo != null" >
+                parent_req_no = #{parentReqNo,jdbcType=VARCHAR},
             </if>
             <if test="identification != null" >
                 identification = #{identification,jdbcType=VARCHAR},
@@ -124,11 +124,11 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandChangeDetailsDO" >
         select 
         <include refid="Base_Column_List" />
-        from t_demand_state_history
-        <where >
+        from t_demand_change_details
+        <where>
             <if test="id != null" >
                 and id = #{id,jdbcType=INTEGER}
             </if>
@@ -141,11 +141,11 @@
             <if test="reqNm != null" >
                 and req_nm = #{reqNm,jdbcType=VARCHAR}
             </if>
-            <if test="reqSts != null" >
-                and req_sts = #{reqSts,jdbcType=VARCHAR}
+            <if test="reqImplMon != null" >
+                and req_impl_mon = #{reqImplMon,jdbcType=VARCHAR}
             </if>
-            <if test="remarks != null" >
-                and remarks = #{remarks,jdbcType=VARCHAR}
+            <if test="parentReqNo != null" >
+                and parent_req_no = #{parentReqNo,jdbcType=VARCHAR}
             </if>
             <if test="identification != null" >
                 and identification = #{identification,jdbcType=VARCHAR}

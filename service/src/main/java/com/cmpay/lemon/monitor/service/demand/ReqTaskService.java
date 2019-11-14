@@ -1,8 +1,7 @@
 package com.cmpay.lemon.monitor.service.demand;
 
 
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -128,4 +127,6 @@ public interface ReqTaskService {
 
     void updatePreCurPeriod(DemandBO demand);
     List<String> lists(DemandBO demand);
+
+    DemandStateHistoryRspBO findDemandChangeDetails(DemandChangeDetailsBO demandChangeDetailsBO);
 }

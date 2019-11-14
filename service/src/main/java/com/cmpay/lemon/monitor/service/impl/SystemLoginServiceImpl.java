@@ -33,16 +33,20 @@ public class SystemLoginServiceImpl implements SystemLoginService {
      */
     @Override
     public UserLoginBO login(UserLoginBO userLoginBO) {
-        UserDO userDO = iUserDao.getUserByUserName(userLoginBO.getUsername());
-        if (!userDO.getStatus().toString().equals(ENABLED)) {
-            BusinessException.throwBusinessException(MsgEnum.USER_DISABLED);
+        UserDO userDO =null;
+        userDO = iUserDao.getUserByUserName(userLoginBO.getUsername());
+          if(userDO==null){
+              BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
+          }
+            if (!userDO.getStatus().toString().equals(ENABLED)) {
+                BusinessException.throwBusinessException(MsgEnum.USER_DISABLED);
+            }
+            String inputPassword = CryptoUtils.sha256Hash(userLoginBO.getPassword(), userDO.getSalt());
+            if (JudgeUtils.notEquals(inputPassword, userDO.getPassword())) {
+                BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
+            }
+            userLoginBO.setUserNo(userDO.getUserNo());
+            userLoginBO.setMobileNo(userDO.getMobile());
+            return userLoginBO;
         }
-        String inputPassword = CryptoUtils.sha256Hash(userLoginBO.getPassword(), userDO.getSalt());
-        if (JudgeUtils.notEquals(inputPassword, userDO.getPassword())) {
-            BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
-        }
-        userLoginBO.setUserNo(userDO.getUserNo());
-        userLoginBO.setMobileNo(userDO.getMobile());
-        return userLoginBO;
-    }
 }

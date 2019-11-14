@@ -21,7 +21,6 @@ public class MailGroupSearchReqDTO extends PageableRspDTO {
      * 页面大小
      */
     private int pageSize;
-    private String orderDirection;
 
     public MailGroupSearchReqDTO() {
     }
@@ -102,11 +101,17 @@ public class MailGroupSearchReqDTO extends PageableRspDTO {
         this.pageSize = pageSize;
     }
 
-    public String getOrderDirection() {
-        return orderDirection;
-    }
 
-    public void setOrderDirection(String orderDirection) {
-        this.orderDirection = orderDirection;
+    @Override
+    public String toString() {
+        return "MailGroupSearchReqDTO{" +
+                "mailGroupId='" + mailGroupId + '\'' +
+                ", mailGroupName='" + mailGroupName + '\'' +
+                ", mailUser='" + mailUser + '\'' +
+                ", mailGroupDesc='" + mailGroupDesc + '\'' +
+                ", groupTime=" + groupTime +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

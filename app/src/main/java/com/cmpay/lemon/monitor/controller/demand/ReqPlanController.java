@@ -2,7 +2,6 @@ package com.cmpay.lemon.monitor.controller.demand;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
-import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
@@ -119,7 +118,6 @@ public class ReqPlanController {
      */
     @RequestMapping("/update")
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
-        System.out.println(demandDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqPlanService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);

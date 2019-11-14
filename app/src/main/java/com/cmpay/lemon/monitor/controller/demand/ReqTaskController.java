@@ -4,8 +4,7 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
@@ -188,6 +187,20 @@ public class ReqTaskController {
         List<String> list  = reqTaskService.lists( demandBO);
         ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
         rspDTO.setLi(list);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+
+    @PostMapping("/demandTaskStatusBreakdown")
+    public GenericRspDTO<DemandStateHistoryRspDTO> demandTaskStatusBreakdown (@RequestBody DemandChangeDetailsReqDTO req) {
+        DemandStateHistoryRspDTO rspDTO = new DemandStateHistoryRspDTO();
+        DemandChangeDetailsBO demandChangeDetailsBO = BeanUtils.copyPropertiesReturnDest(new DemandChangeDetailsBO(), req);
+        DemandStateHistoryRspBO demandStateHistoryRspBO = reqTaskService.findDemandChangeDetails(demandChangeDetailsBO);
+        rspDTO.setDemandStateHistoryDTOList(BeanConvertUtils.convertList(demandStateHistoryRspBO.getDemandStateHistoryBOList(), DemandStateHistoryDTO.class));
+        rspDTO.setPageNum(demandStateHistoryRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(demandStateHistoryRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(demandStateHistoryRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(demandStateHistoryRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }
