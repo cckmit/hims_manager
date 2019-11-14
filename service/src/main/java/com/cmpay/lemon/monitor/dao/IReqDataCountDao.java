@@ -44,6 +44,9 @@ public interface IReqDataCountDao extends BaseDao<DemandDO,String> {
 	//投产录入不及时
 	List<ScheduleDO> getProduction(String reqImplMon);
 
+	//需求文档上传情况
+	List<DemandDO> getReportForm6(String reqImplMon);
+
 	//按基地归属部门统计报表
 	List<ReqDataCountDO> getStageByJd(String reqImplMon);
 

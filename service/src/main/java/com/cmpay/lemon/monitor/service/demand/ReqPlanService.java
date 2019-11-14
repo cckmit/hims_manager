@@ -96,6 +96,8 @@ public interface ReqPlanService {
      * 需求文档上传
      */
     void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files,HttpServletRequest request);
+    // 文档上传获取需求信息
+    ProjectStartBO uploadFile(String reqInnerSeq);
     /**
      * 获取当前需求阶段
      */

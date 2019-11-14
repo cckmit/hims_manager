@@ -150,6 +150,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
         for (int i = 0; i < demandBOList.size(); i++) {
+            if (JudgeUtils.isEmpty(demandBOList.get(i).getIsSvnBuild())) {
+                demandBOList.get(i).setIsSvnBuild("否");
+            }
             String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
             DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
@@ -314,7 +317,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     @Override
     public  ProjectStartBO goProjectStart(String reqInnerSeq){
-        System.out.println("内部编号："+reqInnerSeq);
         DemandDO demandDO = demandDao.get(reqInnerSeq);
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
@@ -325,7 +327,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
         Map<String, String> resMap = new HashMap<>();
         resMap = reqPlanService.getMailbox(reqInnerSeq);
-        System.out.println("邮箱信息resMap："+resMap);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
         String devpEmail =  resMap.get("devpEmail");
@@ -340,7 +341,42 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }else{
             projectStartDO.setCopyTo("");
         }
-        System.out.println("projectStartDO："+projectStartDO);
+        return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
+    }
+
+    /**
+     * 根据内部编号查询项目启动信息
+     */
+    @Override
+    public  ProjectStartBO uploadFile(String reqInnerSeq){
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        if (JudgeUtils.isNull(demandDO)) {
+            BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
+        }
+        if(JudgeUtils.isNull(demandDO.getIsSvnBuild())||"否".equals(demandDO.getIsSvnBuild())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ProjectStartDO projectStartDO = new ProjectStartDO();
+        projectStartDO.setReqNm(demandDO.getReqNm());
+        projectStartDO.setReqNo(demandDO.getReqNo());
+        projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
+        Map<String, String> resMap = new HashMap<>();
+        resMap = reqPlanService.getMailbox(reqInnerSeq);
+        String proMemberEmail = resMap.get("proMemberEmail");
+        String testDevpEmail = resMap.get("testDevpEmail");
+        String devpEmail =  resMap.get("devpEmail");
+        String jdEmail = resMap.get("jdEmail");
+        if (StringUtils.isNotBlank(proMemberEmail)){
+            projectStartDO.setSendTo(proMemberEmail);
+        }else{
+            projectStartDO.setSendTo("");
+        }
+        if (StringUtils.isNotBlank(testDevpEmail)){
+            projectStartDO.setCopyTo(testDevpEmail+devpEmail);
+        }else{
+            projectStartDO.setCopyTo("");
+        }
         return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
     }
 
@@ -537,16 +573,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String message = reqPlanService.sendMail(sendTo, copyTo, content, subject, null);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
-                MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:" + message);
+                MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
                 BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
             }
             //启动成功后记录时间
             reqPlan.setProjectStartTm(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
-            demandDao.update(reqPlan);
+            updateExtraTm(reqPlan);
         } catch (Exception e) {
             e.printStackTrace();
             //return ajaxDoneError("项目启动失败，SVN项目建立成功，启动邮件发送失败：" + e.getMessage());
-            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败:"+e.getMessage());
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:"+e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
         }
     }
@@ -1145,9 +1181,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         // 上传文档到本地SVN工作空间
         Map<String, Object> map = null;
         try {
+            map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
             //更新文档上传时间
             updateExtraTm(reqPlan);
-            map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
         } catch (Exception e) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo(e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1839,30 +1875,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandDao.insertExtraTm(bean);
         }else {
             bean.setProId(list.get(0).getProId());
-            if (StringUtils.isNotBlank(list.get(0).getProjectStartTm())) {
-                bean.setProjectStartTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActPrdUploadTm())) {
-                bean.setActPrdUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActWorkloadUploadTm())) {
-                bean.setActWorkloadUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActSitUploadTm())) {
-                bean.setActSitUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActTestCasesUploadTm())) {
-                bean.setActTestCasesUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActUatUploadTm())) {
-                bean.setActUatUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActPreUploadTm())) {
-                bean.setActPreUploadTm(null);
-            }
-            if (StringUtils.isNotBlank(list.get(0).getActProductionUploadTm())) {
-                bean.setActProductionUploadTm(null);
-            }
             demandDao.updateExtraTm(bean);
         }
     }

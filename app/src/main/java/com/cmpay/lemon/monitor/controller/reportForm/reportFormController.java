@@ -4,6 +4,7 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
+import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.bo.ScheduleBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -130,6 +131,23 @@ import java.util.List;
         reqDataCountRspDTO.setDemandDTOList(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
+    // 需求文档上传情况报表
+    @RequestMapping("/reportform6")
+    public GenericRspDTO<DemandRspDTO> getReportForm6(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        List<DemandBO> reportLista = new ArrayList<>();
+        reportLista = reqDataCountService.getReportForm6(reqDataCountReqDTO.getReqImplMon());
+        DemandRspDTO reqDataCountRspDTO = new DemandRspDTO();
+        List<DemandDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new DemandDTO(), m))
+        );
+        reqDataCountRspDTO.setDemandDTOList(reqDataCountDTOListA);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
 
     @RequestMapping("/downloadreportform1")
     public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
@@ -176,6 +194,15 @@ import java.util.List;
             reqDataCountReqDTO.setReqImplMon(month);
         }
         reqDataCountService.downloadProductionTypeStatistics(reqDataCountReqDTO.getReqImplMon(),response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
+    @RequestMapping("/downloadreportform6")
+    public  GenericRspDTO<NoBody> downloadReportForm6(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 }
