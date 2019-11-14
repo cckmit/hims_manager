@@ -179,7 +179,7 @@ public class ReqPlanController {
      */
     @RequestMapping("/goUploadFile")
     public GenericRspDTO<ProjectStartRspDTO> goUploadFile(@RequestBody DemandReqDTO reqDTO) {
-        ProjectStartBO projectStartBO = reqPlanService.goProjectStart(reqDTO.getReqInnerSeq());
+        ProjectStartBO projectStartBO = reqPlanService.uploadFile(reqDTO.getReqInnerSeq());
         DemandBO demandBO = reqPlanService.findById(reqDTO.getReqInnerSeq());
         ProjectStartRspDTO projectStartRspDTO = new ProjectStartRspDTO();
         projectStartRspDTO.setReqInnerSeq(projectStartBO.getReqInnerSeq());
@@ -219,13 +219,6 @@ public class ReqPlanController {
     public GenericRspDTO batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
         MultipartFile[] FILES = files.toArray(new MultipartFile[files.size()]);
-        String uploadPeriod = request.getParameter("uploadPeriod");
-        String innerReqSeq = request.getParameter("reqInnerSeq");
-        String reqNo = request.getParameter("reqNo");
-        String reqNm = request.getParameter("reqNm");
-        String preCurPeriod = request.getParameter("preCurPeriod");
-        String copyTo = request.getParameter("copyTo");
-        System.err.println(uploadPeriod + "===" + innerReqSeq+"=="+reqNo+"="+reqNm+"="+preCurPeriod+"="+copyTo);
         ProjectStartBO ProjectStartBO = new ProjectStartBO();
         ProjectStartBO.setReqInnerSeq(request.getParameter("reqInnerSeq"));
         ProjectStartBO.setReqNm(request.getParameter("reqNm"));

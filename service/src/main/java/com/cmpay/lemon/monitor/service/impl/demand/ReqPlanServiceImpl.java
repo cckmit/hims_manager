@@ -313,7 +313,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     @Override
     public  ProjectStartBO goProjectStart(String reqInnerSeq){
-        System.out.println("内部编号："+reqInnerSeq);
         DemandDO demandDO = demandDao.get(reqInnerSeq);
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
@@ -324,7 +323,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
         Map<String, String> resMap = new HashMap<>();
         resMap = reqPlanService.getMailbox(reqInnerSeq);
-        System.out.println("邮箱信息resMap："+resMap);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
         String devpEmail =  resMap.get("devpEmail");
@@ -339,7 +337,42 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }else{
             projectStartDO.setCopyTo("");
         }
-        System.out.println("projectStartDO："+projectStartDO);
+        return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
+    }
+
+    /**
+     * 根据内部编号查询项目启动信息
+     */
+    @Override
+    public  ProjectStartBO uploadFile(String reqInnerSeq){
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        if (JudgeUtils.isNull(demandDO)) {
+            BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
+        }
+        if(JudgeUtils.isNull(demandDO.getIsSvnBuild())||"否".equals(demandDO.getIsSvnBuild())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ProjectStartDO projectStartDO = new ProjectStartDO();
+        projectStartDO.setReqNm(demandDO.getReqNm());
+        projectStartDO.setReqNo(demandDO.getReqNo());
+        projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
+        Map<String, String> resMap = new HashMap<>();
+        resMap = reqPlanService.getMailbox(reqInnerSeq);
+        String proMemberEmail = resMap.get("proMemberEmail");
+        String testDevpEmail = resMap.get("testDevpEmail");
+        String devpEmail =  resMap.get("devpEmail");
+        String jdEmail = resMap.get("jdEmail");
+        if (StringUtils.isNotBlank(proMemberEmail)){
+            projectStartDO.setSendTo(proMemberEmail);
+        }else{
+            projectStartDO.setSendTo("");
+        }
+        if (StringUtils.isNotBlank(testDevpEmail)){
+            projectStartDO.setCopyTo(testDevpEmail+devpEmail);
+        }else{
+            projectStartDO.setCopyTo("");
+        }
         return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
     }
 
