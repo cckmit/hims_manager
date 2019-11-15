@@ -236,8 +236,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         if (list.size() > 0) {
             BusinessException.throwBusinessException(MsgEnum.NON_UNIQUE);
         }
+
+        //设置默认值
+        demandBO.getReqType();
+        String mon = DateUtil.date2String(new Date(), "yyyy-MM");
+        demandBO.setReqImplMon(mon);
+        demandBO.setReqStartMon(mon);
+
         //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
         //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
+        System.err.println(demandBO.getReqImplMon());
         int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
         int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
         String startdata = demandBO.getReqImplMon()+"-01";
@@ -256,11 +264,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        //设置默认值
-        demandBO.getReqType();
-        String mon = DateUtil.date2String(new Date(), "yyyy-MM");
-        demandBO.setReqImplMon(mon);
-        demandBO.setReqStartMon(mon);
+
         demandBO.setReqInnerSeq(reqTaskService.getNextInnerSeq());
         if( JudgeUtils.isEmpty(demandBO.getQaMng())) {
             demandBO.setQaMng("刘桂娟");

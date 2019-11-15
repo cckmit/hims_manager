@@ -754,8 +754,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changeReq(String req_impl_mon){
-        boolean flag = this.authenticationUser();
-        if(flag){
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
@@ -855,10 +853,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //"存量需求转存失败" + e.getMessage();
             MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
-        }
-        }else{
-            //无权限使用该功能
-            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PRIVILEGE);
         }
     }
     //判断是否是该项目产品经理或者部门经理
@@ -1059,14 +1053,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     /**
      * 用户身份验证
      */
-    public boolean authenticationUser(){
+   /* public boolean authenticationUser(){
         //获取登录用户名
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (currentUser.equals("田群") || currentUser.equals("吴暇")) {
             return true;
         }
         return false;
-    }
+    }*/
     /**
      * 查找最大内部用户号
      */
