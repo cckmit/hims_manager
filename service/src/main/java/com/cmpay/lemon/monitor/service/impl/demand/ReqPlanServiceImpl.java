@@ -321,6 +321,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
+        //获取登录名
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String projectMng = demandDO.getProjectMng();
+        if (!currentUser.equals(projectMng)) {
+            //"项目启动失败，只能有项目经理进行项目启动"
+            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
+        }
         ProjectStartDO projectStartDO = new ProjectStartDO();
         projectStartDO.setReqNm(demandDO.getReqNm());
         projectStartDO.setReqNo(demandDO.getReqNo());
