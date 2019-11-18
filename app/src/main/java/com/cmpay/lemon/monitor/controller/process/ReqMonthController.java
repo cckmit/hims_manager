@@ -10,6 +10,7 @@ import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
+import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,8 @@ public class ReqMonthController {
 
     @Autowired
     private ReqPlanService reqPlanService;
+    @Autowired
+    private ReqTaskService reqTaskService;
 
     /**
      * 分页需求列表
@@ -68,13 +71,12 @@ public class ReqMonthController {
      */
     @RequestMapping("/update")
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
-        System.out.println(demandDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = df.format(date);
         demandBO.setEndFeedbackTm(time);
-        reqPlanService.update(demandBO);
+        reqTaskService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 }

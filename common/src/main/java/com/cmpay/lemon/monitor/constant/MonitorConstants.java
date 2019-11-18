@@ -65,6 +65,10 @@ public class MonitorConstants {
      * 工作量管理uri
      */
     public static final String REQWORK_PATH = BASE_URI + "/workload";
+    /**
+     * 错误码管理uri
+     */
+    public static final String ERROR_PATH = BASE_URI + "/error";
 
     /**
      * 投产查询管理uri

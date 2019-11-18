@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IErcdmgErorDao">
+    <resultMap id="rm" type="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        <result property="id"      jdbcType="VARCHAR"      column="id"/>
+        <result property="errorCd" jdbcType="VARCHAR" column="error_cd"/>
+        <result property="prodMod" jdbcType="VARCHAR" column="prod_mod"/>
+        <result property="prodModName" jdbcType="VARCHAR" column="prod_mod_name"/>
+        <result property="appScen" jdbcType="VARCHAR" column="app_scen"/>
+        <result property="techTip" jdbcType="VARCHAR" column="tech_tip"/>
+        <result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>
+        <result property="curtState" jdbcType="VARCHAR" column="curt_state"/>
+        <result property="curtStateName" jdbcType="VARCHAR" column="curt_state_name"/>
+        <result property="errorState" jdbcType="VARCHAR" column="error_state"/>
+        <result property="techUserName" jdbcType="VARCHAR" column="tech_user_name"/>
+        <result property="techUserId" jdbcType="VARCHAR" column="tech_user_id"/>
+        <result property="prodUserId" jdbcType="VARCHAR" column="prod_user_id"/>
+        <result property="prodUserName" jdbcType="VARCHAR" column="prod_user_name"/>
+        <result property="entryDate" jdbcType="TIMESTAMP" column="entry_date"/>
+        <result property="updateDate" jdbcType="TIMESTAMP" column="update_date"/>
+        <result property="createDatetime" jdbcType="TIMESTAMP" column="create_datetime"/>
+        <result property="audiRoleName" jdbcType="VARCHAR" column="audi_role_name"/>
+        <result property="remark" jdbcType="VARCHAR" column="remark"/>
+        <result property="updateNo" jdbcType="VARCHAR" column="update_no"/>
+        <result property="lastUpdateDate" jdbcType="TIMESTAMP" column="last_update_date"/>
+        <result property="buscnl" jdbcType="VARCHAR" column="bus_cnl"/>
+        <result property="ftpUploadStatus" jdbcType="VARCHAR" column="cur_status"/>
+        <result property="createUserId" jdbcType="VARCHAR" column="create_UserId"/>
+        <result property="synflg" jdbcType="VARCHAR" column="syn_flg"/>
+        <result property="cr" jdbcType="VARCHAR" column="cr"/>
+        
+    </resultMap>
+     <!--<resultMap id="rm5" type="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--<result property="id"      jdbcType="VARCHAR"      column="id"/>-->
+        <!--<result property="errorCd" jdbcType="VARCHAR" column="error_cd"/>-->
+        <!--<result property="techTip" jdbcType="VARCHAR" column="tech_tip"/>-->
+        <!--<result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>-->
+        <!--<result property="buscnl" jdbcType="VARCHAR" column="bus_cnl"/>-->
+    <!--</resultMap>-->
+    <!--<resultMap id="rm1" type="com.hisun.persistence.beans.ErcdmgPordUser">-->
+        <!--<result property="prodUserId" jdbcType="VARCHAR" column="user_id"/>-->
+        <!--<result property="prodUserName" jdbcType="VARCHAR" column="user_name"/>-->
+        <!--<result property="email" jdbcType="VARCHAR" column="email"/>-->
+        <!--<result property="emailPassword" jdbcType="VARCHAR" column="email_password"/>-->
+        <!--<result property="audiUserId" jdbcType="VARCHAR" column="audi_user_id"/>-->
+        <!--<result property="audiUserName" jdbcType="VARCHAR" column="audi_user_name"/>-->
+    <!--</resultMap>-->
+    <!---->
+    <!--<resultMap id="userMap" type="com.hisun.persistence.beans.TPermiUser">-->
+        <!--<id property="userId" jdbcType="VARCHAR" column="user_id"></id>-->
+        <!--<result property="seqId" jdbcType="BIGINT" column="seq_id"/>-->
+        <!--<result property="userName" jdbcType="VARCHAR" column="user_name"/>-->
+        <!--<result property="password" jdbcType="VARCHAR" column="password"/>-->
+        <!--<result property="deptName" jdbcType="VARCHAR" column="dept_name"/>-->
+        <!--<result property="deptId" jdbcType="VARCHAR" column="dept_id"/>-->
+        <!--<result property="mobileNum" jdbcType="VARCHAR" column="mobile_num"/>-->
+        <!--<result property="registerIp" jdbcType="VARCHAR" column="register_ip"/>-->
+        <!--<result property="email" jdbcType="VARCHAR" column="email"/>-->
+        <!--<result property="loginIp" jdbcType="VARCHAR" column="login_ip"/>-->
+        <!--<result property="isEnabled" jdbcType="BIT" column="is_enabled"/>-->
+        <!--<result property="isLocked" jdbcType="BIT" column="is_locked"/>-->
+        <!--<result property="loginCount" jdbcType="INTEGER" column="login_count"/>-->
+        <!--<result property="loginFailureCount" jdbcType="BIGINT" column="login_failure_count"/>-->
+        <!--<result property="registerTime" jdbcType="TIMESTAMP" column="register_time"/>-->
+        <!--<result property="createDate" jdbcType="TIMESTAMP" column="create_date"/>-->
+        <!--<result property="updateDate" jdbcType="TIMESTAMP" column="update_date"/>-->
+        <!--<result property="lockedDate" jdbcType="TIMESTAMP" column="locked_date"/>-->
+        <!--<result property="loginDate" jdbcType="TIMESTAMP" column="login_date"/>      -->
+    <!--</resultMap>-->
+    <!--<resultMap id="rm2" type="com.hisun.persistence.beans.Dictionary">-->
+        <!--<result property="fieldId"          jdbcType="VARCHAR"      column="id"/>-->
+        <!--<result property="fieldName"        jdbcType="VARCHAR"      column="name"/>-->
+        <!--<result property="fieldValue"       jdbcType="VARCHAR"      column="value"/>-->
+    <!--</resultMap>-->
+     <!--<resultMap id="rm_bus_cnl" type="com.hisun.persistence.beans.Dictionary">-->
+        <!--<result property="fieldId"          jdbcType="VARCHAR"      column="id"/>-->
+        <!--<result property="fieldName"        jdbcType="VARCHAR"      column="name"/>-->
+        <!--<result property="fieldValue"       jdbcType="VARCHAR"      column="value"/>-->
+    <!--</resultMap>-->
+    
+    <sql id="user_Column_List">
+		   seq_id
+		  ,user_id
+		  ,user_name
+		  ,password
+		  ,dept_name
+		  ,dept_id
+		  ,create_date
+		  ,update_date
+		  ,mobile_num
+		  ,register_ip
+		  ,register_time
+		  ,email
+		  ,login_date
+		  ,login_ip
+		  ,locked_date
+		  ,is_enabled
+		  ,is_locked
+		  ,login_count
+		  ,login_failure_count 
+    </sql>
+    <sql id="Base_Column_List">
+    	id,
+	    error_cd,
+        prod_mod,
+        app_scen,
+        tech_tip,
+        busn_tip,
+        curt_state,
+        error_state,
+        tech_user_id,
+        tech_user_name,
+        prod_user_id,
+        prod_user_name,
+        entry_date,
+        update_date,
+        create_datetime,
+        audi_role_name,
+        remark,
+        update_no,
+        last_update_date,
+        bus_cnl,
+        create_UserId,
+        syn_flg,
+        cr
+    </sql>
+    <!-- 新增 -->
+    <!--<insert id="insert" useGeneratedKeys="true" keyProperty="error_cd">-->
+        <!--INSERT INTO t_ercdmg_error (-->
+        	<!--id,-->
+            <!--error_cd,-->
+            <!--prod_mod,-->
+            <!--app_scen,-->
+            <!--tech_tip,-->
+            <!--busn_tip,-->
+            <!--curt_state,-->
+            <!--error_state,-->
+            <!--tech_user_name,-->
+            <!--tech_user_id,-->
+            <!--prod_user_id,-->
+            <!--prod_user_name,-->
+            <!--audi_role_name,-->
+            <!--entry_date,-->
+            <!--update_date,-->
+            <!--create_datetime,-->
+            <!--remark,-->
+            <!--update_no,-->
+            <!--last_update_date-->
+            <!--<if test="buscnl!=null">-->
+             <!--,bus_cnl-->
+             <!--</if> -->
+              <!--<if test="createUserId!=null">-->
+             <!--,create_UserId-->
+             <!--</if>-->
+              <!--<if test="synflg!=null">-->
+             <!--,syn_flg-->
+             <!--</if>-->
+              <!--<if test="cr!=null">-->
+             <!--,cr-->
+             <!--</if>-->
+              <!---->
+             <!---->
+        <!--)VALUES(-->
+            <!--#{id},-->
+            <!--#{errorCd},-->
+            <!--#{prodMod},-->
+            <!--#{appScen},-->
+            <!--#{techTip},-->
+            <!--#{busnTip},-->
+            <!--#{curtState},-->
+            <!--#{errorState},-->
+            <!--#{techUserName},-->
+            <!--#{techUserId},-->
+            <!--#{prodUserId},-->
+            <!--#{prodUserName},-->
+            <!--#{audiRoleName},-->
+            <!--#{entryDate},-->
+            <!--#{updateDate},-->
+            <!--#{createDatetime},-->
+            <!--#{remark},-->
+            <!--#{updateNo},-->
+            <!--#{lastUpdateDate}-->
+           <!--<if test="buscnl!=null">-->
+             <!--,#{buscnl}-->
+             <!--</if> -->
+             <!--<if test="createUserId!=null">-->
+            <!--,#{createUserId}-->
+            <!--</if> -->
+             <!--<if test="synflg!=null">-->
+            <!--,#{synflg}-->
+            <!--</if> -->
+             <!--<if test="cr!=null">-->
+            <!--,#{cr}-->
+            <!--</if> -->
+             <!---->
+        <!--)-->
+    <!--</insert>-->
+    
+     <!-- 备份错误码历史表 -->
+    <!--<insert id="insertErrorlg" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--INSERT INTO t_ercdmg_errorlg (-->
+        	<!--id,-->
+            <!--error_cd,-->
+            <!--prod_mod,-->
+            <!--app_scen,-->
+            <!--tech_tip,-->
+            <!--busn_tip,-->
+            <!--curt_state,-->
+            <!--error_state,-->
+            <!--tech_user_name,-->
+            <!--tech_user_id,-->
+            <!--prod_user_id,-->
+            <!--prod_user_name,-->
+            <!--audi_role_name,-->
+            <!--entry_date,-->
+            <!--update_date,-->
+            <!--create_datetime,-->
+            <!--remark,-->
+            <!--update_no,-->
+            <!--last_update_date-->
+            <!--<if test="buscnl!=null">-->
+             <!--,bus_cnl-->
+             <!--</if> -->
+              <!--<if test="createUserId!=null">-->
+            <!--,create_UserId-->
+            <!--</if> -->
+        <!--)VALUES(-->
+            <!--#{id},-->
+            <!--#{errorCd},-->
+            <!--#{prodMod},-->
+            <!--#{appScen},-->
+            <!--#{techTip},-->
+            <!--#{busnTip},-->
+            <!--#{curtState},-->
+            <!--#{errorState},-->
+            <!--#{techUserName},-->
+            <!--#{techUserId},-->
+            <!--#{prodUserId},-->
+            <!--#{prodUserName},-->
+            <!--#{audiRoleName},-->
+            <!--#{entryDate},-->
+            <!--#{updateDate},-->
+            <!--#{createDatetime},-->
+            <!--#{remark},-->
+            <!--#{updateNo},-->
+            <!--#{lastUpdateDate}-->
+          <!---->
+            <!--<if test="buscnl!=null">-->
+             <!--,#{buscnl}-->
+             <!--</if> -->
+              <!--<if test="createUserId!=null">-->
+            <!--,#{createUserId}-->
+            <!--</if> -->
+        <!--)-->
+    <!--</insert>-->
+    <!---->
+    <!--&lt;!&ndash; 新增PUBTMSG &ndash;&gt;-->
+    <!--<insert id="insertPubtmsg" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--INSERT INTO pubtmsg(-->
+            <!--MSG_CD,-->
+            <!--MSG_TYP,-->
+            <!--ATH_LVL1,-->
+            <!--ATH_LVL2,-->
+            <!--MSG_INF,-->
+            <!--MON_FLG,-->
+            <!--MSG_DESC,-->
+            <!--last_upd_opr,-->
+            <!--upd_dt,-->
+            <!--TM_SMP-->
+        <!--)VALUES(-->
+            <!--#{errorCd},-->
+            <!--'E',-->
+            <!--'0',-->
+            <!--'0',-->
+            <!--#{techTip},-->
+            <!--0,-->
+            <!--#{appScen},-->
+            <!--#{techUserId},-->
+            <!--to_char(sysdate,'yyyymmdd'),-->
+           <!--to_char(sysdate,'yyyymmddhh24miss')-->
+        <!--)-->
+    <!--</insert>-->
+    <!--&lt;!&ndash; 新增PUBTTMS &ndash;&gt;-->
+    <!--<insert id="insertPubttms" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--INSERT INTO PUBTTMS(-->
+            <!--MSG_CD,-->
+            <!--BUS_CNL,-->
+            <!--MSG_INF,-->
+            <!--MSG_DESC,-->
+            <!--BUS_TYP,-->
+            <!--last_upd_opr,-->
+            <!--upd_dt,-->
+            <!--TM_SMP-->
+        <!--)VALUES(-->
+            <!--#{errorCd},-->
+            <!--#{buscnl},-->
+            <!--#{busnTip},-->
+            <!--#{appScen},-->
+            <!--'*',-->
+            <!--#{techUserId},-->
+            <!--to_char(sysdate,'yyyymmdd'),-->
+            <!--to_char(sysdate,'yyyymmddhh24miss')-->
+        <!--)-->
+    <!--</insert>-->
+    <!--<select id="selectPubtmsg" parameterType="java.lang.String"  resultType="java.lang.String" >-->
+         <!--select MSG_CD FROM pubtmsg where MSG_CD=#{errorCd}  -->
+    <!--</select>-->
+    <!--<select id="selectPubttms" parameterType="java.lang.String"  resultType="java.lang.String">-->
+         <!--select MSG_CD FROM pubttms where MSG_CD=#{errorCd} and  bus_cnl=#{buscnl}   -->
+    <!--</select>-->
+    <!--<update id="updatePubtmsg">-->
+        <!--update Pubtmsg-->
+          <!--<set>-->
+                <!--<if test="techTip!=null">-->
+                 <!--MSG_INF =#{techTip},-->
+                <!--</if>-->
+                <!--<if test="appScen!=null">-->
+                 <!--MSG_DESC =#{appScen},-->
+                <!--</if> -->
+                 <!--UPD_DT=to_char(sysdate,'yyyymmdd')-->
+            <!--</set>-->
+            <!--WHERE -->
+            <!--MSG_CD = #{errorCd}-->
+    <!--</update>-->
+    <!--<update id="updatePubttms">-->
+    	<!--update PUBTTMS -->
+    	 <!--<set>-->
+            <!--<if test="techTip!=null">-->
+             <!--MSG_INF =#{busnTip},-->
+            <!--</if>-->
+            <!--<if test="appScen!=null">-->
+             <!--MSG_DESC =#{appScen},-->
+            <!--</if> -->
+             <!--UPD_DT=to_char(sysdate,'yyyymmdd')-->
+         <!--</set>-->
+          <!--WHERE -->
+          <!--MSG_CD = #{errorCd}  and  bus_cnl=#{buscnl} -->
+    <!--</update>-->
+    <!--&lt;!&ndash; 更新 &ndash;&gt;-->
+    <!--<update id="update" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--UPDATE t_ercdmg_error -->
+            <!--<set>-->
+                <!--<if test="prodMod!=null">-->
+                <!--prod_mod = #{prodMod}-->
+                <!--</if>-->
+                <!--<if test="appScen!=null">-->
+                <!--,app_scen = #{appScen}-->
+                <!--</if>                -->
+                <!--<if test="techTip!=null">-->
+                <!--,tech_tip = #{techTip}-->
+                <!--</if>-->
+                  <!--<if test="buscnl!=null">-->
+                <!--,bus_cnl = #{buscnl}-->
+                <!--</if>-->
+                <!--<if test="busnTip!=null">-->
+                <!--,busn_tip = #{busnTip}-->
+                <!--</if>-->
+                <!--<if test="prodUserId!=null">-->
+                <!--,prod_user_id = #{prodUserId}-->
+                <!--</if>-->
+                <!--<if test="prodUserName!=null">-->
+                <!--,prod_user_name = #{prodUserName}-->
+                <!--</if>-->
+                <!--<if test="updateDate!=null">-->
+                <!--,update_date = #{updateDate}-->
+                <!--</if>-->
+                <!--<if test="remark!=null">-->
+                <!--,remark = #{remark}-->
+                <!--</if>-->
+                <!--<if test="lastUpdateDate!=null">-->
+                 <!--,last_update_date = #{lastUpdateDate}-->
+                <!--</if>-->
+                 <!--<if test="cr!=null">-->
+                 <!--,cr = #{cr}-->
+                <!--</if>-->
+            <!--</set>-->
+            <!--WHERE -->
+            <!--id = #{id}-->
+    <!--</update>    -->
+    <!--&lt;!&ndash; 查询产品经理接受人 &ndash;&gt;-->
+    <!--<select id="selectPordUser" resultMap="rm1" parameterType="java.util.List">-->
+        <!--select distinct user_id,user_name,email from -->
+        <!--t_permi_user -->
+        <!--<where>-->
+         <!--user_id in (-->
+         <!--<foreach item="item" index="index" collection="list" separator=","> -->
+         <!--#{item.prodUserId} -->
+         <!--</foreach> -->
+         <!--)-->
+        <!--</where>  -->
+    <!--</select>-->
+    <!--&lt;!&ndash; 单个查询 &ndash;&gt;-->
+    <!---->
+    <!--<select id="selectErrorSingle" parameterType="java.lang.String" resultMap="rm" >-->
+        <!--SELECT -->
+        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_error -->
+        <!--where id =#{id}-->
+    <!--</select>-->
+    <!---->
+    <!--<select id="selectErcdmgByErrorList" resultMap="rm" >-->
+        <!--SELECT  -->
+        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_error-->
+        <!--<where>  -->
+         <!--id in (-->
+         <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
+         <!--#{errorCd} </foreach> -->
+         <!--)-->
+        <!--</where>  -->
+    <!--</select>-->
+     <!--<update id="updateSYNState" >-->
+        <!--update t_ercdmg_error set syn_flg=1 -->
+         <!--<where>  -->
+          <!--id in (-->
+          <!--<foreach item="id" index="index" collection="array" separator=","> -->
+           <!--#{id}-->
+           <!--</foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</update>-->
+    <!---->
+    <!---->
+    <!---->
+    <!--<select id="selectErrorByUpdateNo"  resultMap="rm" >-->
+          <!--SELECT  -->
+	      <!--<include refid="Base_Column_List" />-->
+	      <!--from t_ercdmg_error-->
+          <!--<where>  -->
+           <!--update_no in (-->
+          <!--<foreach item="updateNo" index="index" collection="array" separator=","> -->
+           <!--#{updateNo} </foreach> -->
+           <!--)-->
+          <!--</where> -->
+    <!--</select> -->
+    <!--<select id="selectErrorByUpdateNoAndCR"  resultMap="rm" >-->
+          <!--SELECT  -->
+	      <!--<include refid="Base_Column_List" />-->
+	      <!--from t_ercdmg_error-->
+          <!--<where>  -->
+           <!--update_no in (-->
+          <!--<foreach item="updateNo" index="index" collection="updateNosArr" separator=","> -->
+           <!--#{updateNo} </foreach> -->
+           <!--)-->
+           <!--<if test="cr != null and cr != ''">-->
+    		 <!--and cr=#{cr}-->
+    		<!--</if>-->
+           <!---->
+          <!--</where> -->
+          <!---->
+    <!--</select> -->
+    <!---->
+     <!--<select id="selectCRByUpdateNo"  resultType="String" >-->
+          <!--SELECT  -->
+	      <!--distinct cr-->
+	      <!--from t_ercdmg_error-->
+          <!--<where>  -->
+           <!--update_no in (-->
+          <!--<foreach item="updateNo" index="index" collection="array" separator=","> -->
+           <!--#{updateNo} </foreach> -->
+           <!--)-->
+          <!--</where> -->
+          <!--order by cr desc-->
+    <!--</select> -->
+    <!---->
+    <!--<select id="selectUserForEmail"  resultType="String" >-->
+          <!--SELECT  distinct p.email-->
+	      <!--from t_ercdmg_error e, t_permi_user p-->
+          <!--<where>  -->
+           <!--e.update_no in (-->
+          <!--<foreach item="updateNo" index="index" collection="array" separator=","> -->
+           <!--#{updateNo} </foreach> -->
+           <!--)-->
+           <!--and (e.prod_user_id=p.user_id or e.tech_user_id=p.user_id )-->
+          <!--</where> -->
+    <!--</select> -->
+    <!---->
+    <!--&lt;!&ndash; 删除 &ndash;&gt;-->
+    <!--<delete id="deleteError" parameterType="java.lang.String">-->
+        <!--DELETE FROM t_ercdmg_error-->
+        <!--where id =#{id}-->
+    <!--</delete>  -->
+    <!--<delete id="deletePubtmsg" parameterType="java.lang.String">-->
+        <!--DELETE FROM Pubtmsg-->
+        <!--where msg_cd =#{errorCd} 	-->
+    <!--</delete> -->
+    <!---->
+    <!--<delete id="deletePubttms" parameterType="map">-->
+        <!--DELETE FROM Pubttms-->
+        <!--where msg_cd =#{errorCd}  and  bus_cnl=#{buscnl}-->
+    <!--</delete> -->
+    <!-- 分页查询 -->
+    <select id="findErcdmgErrorList" resultMap="rm" parameterType="map">
+        SELECT
+         (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_error
+        WHERE 1=1
+        <if test="strDate != null">
+             AND entry_date &gt;= #{strDate}
+        </if>
+        <if test="endDate != null">
+             AND entry_date &lt;= #{endDate}
+        </if>
+        <if test="errorCd != null and errorCd != ''">
+    		and error_cd = #{errorCd}
+    	</if>
+
+    	 <if test="buscnl != null and buscnl != ''">
+    		and bus_cnl = #{buscnl}
+    	</if>
+    	 <if test="cr != null and cr != ''">
+    		and cr like "%"#{cr}"%"
+    	</if>
+
+    		<if test='prodMod == "其他"'>
+    			and error_cd  REGEXP  "^[^a-zA-Z]"
+
+    		</if>
+    		<if test="prodMod != '其他' and prodMod != null and prodMod != ''">
+    			and error_cd  LIKE CONCAT('%',#{prodMod},'%')
+
+    		</if>
+    	<if test="curtState != null and curtState != ''">
+    		and curt_state = #{curtState}
+    	</if>
+    	<if test="techUserName != null and techUserName != ''">
+    		and tech_user_name  LIKE CONCAT('%',#{techUserName},'%')
+    	</if>
+    	<if test="prodUserName != null and prodUserName != ''">
+    		and prod_user_name  LIKE CONCAT('%',#{prodUserName},'%')
+    	</if>
+    	<if test="techUserId != null and techUserId != ''">
+    		and tech_user_id  LIKE CONCAT('%',#{techUserId},'%')
+    	</if>
+    	<if test="prodUserId != null and prodUserId != ''">
+    		and prod_user_id  LIKE CONCAT('%',#{prodUserId},'%')
+    	</if>
+    	<if test="desc != null and desc != ''">
+            and(
+             app_scen  LIKE CONCAT('%',#{desc},'%')
+             or tech_tip  LIKE CONCAT('%',#{desc},'%')
+             or busn_tip  LIKE CONCAT('%',#{desc},'%')
+            )
+        </if>
+    	ORDER BY  create_datetime DESC,error_cd ASC,bus_cnl asc
+    </select>
+    <!--<select id="findErcdmgErrorNumber" resultType="java.lang.Integer" parameterType="map">-->
+        <!--select COUNT(1) from t_ercdmg_error-->
+        <!--WHERE 1=1-->
+        <!--<if test="strDateStr != null">-->
+             <!--AND entry_date &gt;= #{strDateStr} -->
+        <!--</if>-->
+        <!--<if test="endDateStr != null">-->
+             <!--AND entry_date &lt;= #{endDateStr} -->
+        <!--</if>-->
+        <!--<if test="errorCd != null and errorCd != ''">-->
+    		<!--and error_cd = #{errorCd}-->
+    	<!--</if>-->
+    	 <!--<if test="buscnl != null and buscnl != ''">-->
+    		<!--and bus_cnl = #{buscnl}-->
+    	<!--</if>-->
+    	 <!--<if test="cr != null and cr != ''">-->
+    		<!--and cr like "%"#{cr}"%"-->
+    	<!--</if>	-->
+    		<!--<if test='prodMod == "其他"'>	-->
+    			<!--and error_cd  REGEXP  "^[^a-zA-Z]"-->
+    		<!---->
+    		<!--</if>-->
+    		<!--<if test="prodMod != '其他' and prodMod != null and prodMod != ''">	-->
+    			<!--and error_cd like "%"#{prodMod}"%"-->
+    		<!---->
+    		<!--</if>-->
+    	<!--<if test="curtState != null and curtState != ''">-->
+    		<!--and curt_state = #{curtState}-->
+    	<!--</if>-->
+    	<!--<if test="techUserName != null and techUserName != ''">-->
+    		<!--and tech_user_name like "%"#{techUserName}"%"-->
+    	<!--</if>-->
+    	<!--<if test="prodUserName != null and prodUserName != ''">-->
+    		<!--and prod_user_name like "%"#{prodUserName}"%"-->
+    	<!--</if>-->
+    	<!--<if test="techUserId != null and techUserId != ''">-->
+    		<!--and tech_user_id like "%"#{techUserId}"%"-->
+    	<!--</if>-->
+    	<!--<if test="prodUserId != null and prodUserId != ''">-->
+    		<!--and prod_user_id like "%"#{prodUserId}"%"-->
+    	<!--</if>-->
+    	<!--<if test="desc != null and desc != ''">-->
+            <!--AND(-->
+             <!--app_scen like "%"#{desc}"%" -->
+             <!--or tech_tip LIKE "%"#{desc}"%" -->
+             <!--or busn_tip LIKE "%"#{desc}"%"-->
+            <!--)-->
+        <!--</if>-->
+    <!--</select>-->
+    <!--<update id="updateErrorCurtState" parameterType="java.util.HashMap">-->
+        <!--update t_ercdmg_error set curt_state=#{curtState} -->
+         <!--<where>  -->
+          <!--id in (-->
+          <!--<foreach item="errorCd" index="index" collection="errorCdsArr" separator=","> -->
+           <!--#{errorCd}-->
+           <!--</foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</update>-->
+    <!--<update id="updateErrorUpdateNo" parameterType="map">-->
+        <!--update t_ercdmg_error set update_no=#{updateNo} -->
+        <!--<where>  -->
+         <!--prod_user_id= #{prodUserId} and id in (-->
+          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
+           <!--#{errorCd} </foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</update>-->
+    <!--<update id="updateErrorUpdDate" parameterType="map">-->
+        <!--update t_ercdmg_error set update_date=#{updateDate} -->
+         <!--<where>  -->
+          <!--id in (-->
+          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
+           <!--#{errorCd} </foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</update>-->
+
+
+    <!--<select id="searchUserEmailById"   resultMap="rm1" parameterType="java.lang.String">-->
+      <!--SELECT email,email_password FROM t_permi_user WHERE user_id=#{userId};-->
+    <!--</select>-->
+    <!--<select id="searchUserRoleName"  parameterType="java.lang.String"  resultType="String">-->
+         <!--select DISTINCT r.role_name -->
+   		 <!--from t_permi_user_role ur,t_permi_role r -->
+   		 <!--where ur.role_id = r.role_id and user_id =#{userId}-->
+    <!--</select> -->
+    <!--<select id="searchUserRoleProd"  parameterType="java.lang.String"  resultType="String">-->
+         <!--select DISTINCT r.role_name -->
+   		 <!--from t_permi_user_role ur,t_permi_role r -->
+   		 <!--where ur.role_id = r.role_id and ur.user_id =#{userId} and r.role_name='验证产品经理'-->
+    <!--</select> -->
+    <!---->
+    <!--<select id="selectUserByRole"  parameterType="java.lang.String"  resultMap="rm1">-->
+         <!--select DISTINCT a.user_id as audi_user_id ,a.user_name as audi_user_name ,a.email-->
+   		 <!--from t_permi_user a,t_permi_user_role b,t_permi_role c -->
+   		 <!--where a.user_id=b.user_id and b.role_id=c.role_id-->
+   		 <!--and c.role_name=#{roleName}-->
+    <!--</select> -->
+    <!--<select id="selectProdUserbyErrorCds"  resultMap="rm1">-->
+         <!--select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b-->
+         <!--<where>  -->
+          <!--a.user_id=b.prod_user_id and b.id in (-->
+          <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
+           <!--#{errorCd} </foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</select>-->
+     <!--<select id="selectTechUserbyErrorCds"  resultMap="rm1">-->
+         <!--select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b-->
+         <!--<where>  -->
+          <!--a.user_name=b.tech_user_name and b.id in (-->
+          <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
+           <!--#{errorCd} </foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</select>-->
+    <!--<select id="selectProdUserId"  resultMap="rm1" >-->
+         <!--select DISTINCT prod_user_id user_id ,prod_user_name user_name from t_ercdmg_error -->
+         <!--<where>  -->
+          <!--id in (-->
+          <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
+           <!--#{errorCd} </foreach> -->
+          <!--)-->
+        <!--</where>  -->
+    <!--</select> -->
+    <!--<select id="selectErrorUpdDate" parameterType="java.util.HashMap" resultType="java.util.Date">-->
+         <!--select DISTINCT update_date from t_ercdmg_error -->
+		 <!--<where>  -->
+          <!--prod_user_id=#{pordUserId} and id in  (-->
+          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
+           <!--#{errorCd} -->
+           <!--</foreach> -->
+          <!--)-->
+          <!--ORDER BY update_date DESC-->
+          <!--limit 1-->
+         <!--</where>  -->
+         <!---->
+    <!--</select> -->
+    <!---->
+    <!--<select id="selectErrorCount"  resultType="java.lang.String" parameterType="java.util.HashMap">-->
+         <!--select COUNT(1) from t_ercdmg_error -->
+         <!--where prod_user_id=#{pordUserId}-->
+         <!--and id in-->
+         <!--(   -->
+		 <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
+		 <!--#{errorCd}</foreach> -->
+		 <!--)-->
+    <!--</select> -->
+    <!--<select id="selectUpdateErrorCd" parameterType="java.lang.String"  resultType="java.lang.String" >-->
+         <!--select update_no from t_ercdmg_error where id=#{id}-->
+    <!--</select>-->
+    <!--<select id="searchErcdmgErrorList" resultMap="rm" parameterType="java.lang.String">-->
+        <!--(select -->
+        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--a.error_cd,-->
+        <!--a.prod_mod,-->
+	    <!--a.app_scen,-->
+	    <!--a.tech_tip,-->
+	    <!--a.busn_tip,-->
+	    <!--a.error_state,-->
+	    <!--a.entry_date,-->
+	    <!--a.cr-->
+        <!--from t_ercdmg_error a-->
+        <!--where -->
+        <!--a.update_no=#{updateNo}-->
+		<!--)UNION (-->
+		<!--select -->
+		<!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--b.error_cd,-->
+        <!--b.prod_mod,-->
+	    <!--b.app_scen,-->
+	    <!--b.tech_tip,-->
+	    <!--b.busn_tip,-->
+	    <!--b.error_state,-->
+	    <!--b.entry_date-->
+        <!--from t_ercdmg_errorlg b-->
+        <!--where -->
+        <!--b.update_no=#{updateNo})-->
+    <!--</select>-->
+    <!--<select id="selectErrorUpdateNo" resultMap="rm" parameterType="java.lang.String">-->
+        <!--select -->
+        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
+     	 <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_error -->
+        <!--where -->
+        <!--update_no=#{updateNo}-->
+    <!--</select>-->
+    <!--<select id="findCurtState" resultMap="rm2" parameterType="string">-->
+        <!--SELECT NAME AS VALUE,VALUE AS NAME FROM t_permi_dic_data WHERE DIC_ID = #{curtStateStr} ORDER BY SORT-->
+    <!--</select>-->
+    <!--<select id="findPordmod" resultMap="rm2">-->
+        <!--SELECT CONCAT(NAME,'_',description) name,NAME as value FROM t_ercdmg_busmod order by name asc-->
+    <!--</select>-->
+    <!--<select id="findByUsername" parameterType="java.lang.String" resultMap="userMap">-->
+          <!--select <include refid="user_Column_List" />-->
+          <!--from t_permi_user where user_name = #{userName} limit 1-->
+    <!--</select>-->
+    <!--<select id="findDictionary"  resultMap="rm_bus_cnl" >-->
+         <!--SELECT CONCAT(NAME,'_',CASE WHEN description = '*' THEN '全渠道' else description END ) as name,NAME as value-->
+          <!--FROM t_ercdmg_buscnl order by name asc-->
+    <!--</select> -->
+       <!--<select id="selectErrorSingle2" parameterType="com.hisun.persistence.beans.ErcdmgError" resultMap="rm" >-->
+        <!--SELECT -->
+        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
+        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_error -->
+        <!--where id =#{id} -->
+    <!--</select>-->
+    <!---->
+   <!--<select id="checkErrorCodeExist" parameterType="map" resultMap="rm" >-->
+        <!--SELECT -->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_error -->
+         <!--where error_cd =#{errorCd}  and  bus_cnl=#{buscnl}-->
+    <!--</select>-->
+    <!---->
+     <!--&lt;!&ndash; 插入待上传表 &ndash;&gt;-->
+    <!--<insert id="insertForUpload" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
+        <!--INSERT INTO t_ercdmg_forftp(-->
+        	<!--error_id,-->
+            <!--error_cd,-->
+            <!--bus_cnl,-->
+            <!--prod_mod,-->
+            <!--tech_tip,-->
+            <!--busn_tip,-->
+            <!--cur_status-->
+            <!---->
+        <!--)VALUES(-->
+            <!--#{id},-->
+            <!--#{errorCd},-->
+            <!--#{buscnl},-->
+            <!--#{prodMod},-->
+            <!--#{techTip},-->
+            <!--#{busnTip},-->
+            <!--#{ftpUploadStatus}-->
+            <!---->
+            <!---->
+        <!--)-->
+    <!--</insert>-->
+    <!---->
+      <!---->
+    <!--<select id="queryForUpload"  resultMap="rm5">-->
+         <!--SELECT id,error_Cd,tech_Tip,busn_Tip,bus_cnl FROM t_ercdmg_forftp  where cur_status='0'   order by tm_smp asc-->
+    <!--</select> -->
+    <!---->
+    <!--<update id="updateForUpload" parameterType="java.util.List">-->
+        <!--update t_ercdmg_forftp set cur_status='1' -->
+         <!--<where>  -->
+          <!--id in (-->
+          <!--<foreach item="id" index="index" collection="list" separator=","> -->
+           		<!--#{id}-->
+           <!--</foreach> -->
+          <!--)-->
+          <!--and cur_status='0'-->
+        <!---->
+        <!--</where>  -->
+    <!--</update>-->
+    
+</mapper>
