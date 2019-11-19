@@ -235,6 +235,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO);
 
         } catch (Exception e) {
+            e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
     }
@@ -302,6 +303,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
         } catch (Exception e) {
+            e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
         jiraOperationService.createEpic(demandBO);
@@ -570,6 +572,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandDao.update(bean);
         } catch (Exception e1) {
             // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
+            e1.printStackTrace();
             MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("项目启动失败:" + e1.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
         }
@@ -641,6 +644,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             // 导入文件夹
             SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
         } catch (Exception e) {
+            e.printStackTrace();
             return "项目启动创建子文件夹失败，" + e.getMessage();
         }
         return "";
@@ -695,6 +699,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             content.append("<br/>");
             content.append("&nbsp;&nbsp;5、投产时间：" + oprFisnTm);
         } catch (ParseException e) {
+            e.printStackTrace();
             return "时间转换错误," + e.getMessage();
         }
         return content.toString();
@@ -1110,6 +1115,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             period = Integer.parseInt(uploadPeriod) + 10;
             curPeriod = Integer.parseInt(reqPeriod);
         } catch (Exception e) {
+            e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：请选择相应需求阶段进行文件上传!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
@@ -1186,6 +1192,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //更新文档上传时间
             updateExtraTm(reqPlan);
         } catch (Exception e) {
+            e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo(e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
@@ -1238,6 +1245,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 }
                 SVNUtil.checkout(clientManager, SVNURL.parseURIEncoded(svnRoot), SVNRevision.HEAD, new File(localSvnPath), SVNDepth.INFINITY);
             } catch (SVNException e) {
+                e.printStackTrace();
                 return "文档上传失败：SVN检出失败!";
             }
         }
@@ -1931,6 +1939,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             workbook.write(bufferedOutPut);
             bufferedOutPut.flush();
         } catch (IOException e) {
+            e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }

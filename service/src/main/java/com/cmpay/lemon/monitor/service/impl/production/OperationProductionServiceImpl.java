@@ -1221,8 +1221,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         OutputStream os = null;
         response.reset();
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
+            String path = "C:\\home\\devadm\\temp\\propkg";
+            //String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createExcel(filePath, list,null);
@@ -1267,9 +1267,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 删除文件
             new File(createFile).delete();
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         } catch (Exception e) {
+            e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("投产操作明细报表导出失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }

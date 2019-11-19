@@ -2,7 +2,7 @@ package com.cmpay.lemon.monitor.bo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 public class DemandTypeProductionBO {
 
@@ -15,7 +15,7 @@ public class DemandTypeProductionBO {
     @Excel(name = "录入人")
     private String proOperator;
     @Excel(name = "操作时间")
-    private Date scheduleTime;
+    private LocalDateTime scheduleTime;
 
     public String getProNumber() {
         return proNumber;
@@ -49,11 +49,11 @@ public class DemandTypeProductionBO {
         this.proOperator = proOperator;
     }
 
-    public Date getScheduleTime() {
+    public LocalDateTime getScheduleTime() {
         return scheduleTime;
     }
 
-    public void setScheduleTime(Date scheduleTime) {
+    public void setScheduleTime(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
     }
 }

@@ -2,7 +2,8 @@ package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.request.GenericDTO;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author: zhou_xiong
@@ -23,9 +24,9 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
     private String techUserName;
     private String prodUserId;
     private String prodUserName;//产品经理名称
-    private java.util.Date entryDate;
-    private java.util.Date updateDate;//期望更新时间
-    private java.util.Date createDatetime;
+    private LocalDateTime entryDate;
+    private LocalDateTime updateDate;//期望更新时间
+    private LocalDateTime createDatetime;
     private String createUserId;
     private String audiRoleName;
     private String remark;
@@ -34,9 +35,9 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
     private String synflg;
     private String cr;
     private String ftpUploadStatus;   //修改后的上传状态  0未上传，1已经上传
-    private java.util.Date lastUpdateDate;
+    private LocalDateTime lastUpdateDate;
 
-    private java.util.Date strDate;
+    private Date strDate;
     private Date endDate;
     private String strDateStr;
     private String endDateStr;
@@ -166,27 +167,27 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
         this.prodUserName = prodUserName;
     }
 
-    public Date getEntryDate() {
+    public LocalDateTime getEntryDate() {
         return entryDate;
     }
 
-    public void setEntryDate(Date entryDate) {
+    public void setEntryDate(LocalDateTime entryDate) {
         this.entryDate = entryDate;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Date getCreateDatetime() {
+    public LocalDateTime getCreateDatetime() {
         return createDatetime;
     }
 
-    public void setCreateDatetime(Date createDatetime) {
+    public void setCreateDatetime(LocalDateTime createDatetime) {
         this.createDatetime = createDatetime;
     }
 
@@ -254,11 +255,11 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
         this.ftpUploadStatus = ftpUploadStatus;
     }
 
-    public Date getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

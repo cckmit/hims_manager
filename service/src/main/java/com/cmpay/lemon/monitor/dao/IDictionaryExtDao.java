@@ -28,4 +28,14 @@ public interface IDictionaryExtDao extends IDictionaryDao {
     List<DictionaryDO> findUploadPeriod(String reqPeriod);
 
     List<DictionaryDO> findProManager();
+    /**
+     * 查询错误码模块字典项
+     */
+    public List<DictionaryDO> findPordmod();
+
+    /**
+     *查询错误码渠道字典项
+     */
+
+    public List<DictionaryDO> findDictionary();
 }

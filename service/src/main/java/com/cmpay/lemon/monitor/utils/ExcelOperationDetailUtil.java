@@ -172,12 +172,13 @@ public class ExcelOperationDetailUtil {
 			addCell(sheet, i+1, ++k, msb.getProNumber(), bodyFormat,0,20);
 			//操作类型
 			addCell(sheet, i+1, ++k, msb.getOperationType(), bodyFormat,0,15);
-			//操作时间 
+			//操作时间
+			addCell(sheet, i+1, ++k, msb.getScheduleTime().toString(), bodyFormat,0,15);
 			// 日期转换
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			if(msb.getScheduleTime()!=null)
-			addCell(sheet, i+1, ++k, sdf.format(msb.getScheduleTime()), bodyFormat,0,20);
-			//操作人员
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			if(msb.getScheduleTime()!=null)
+//			addCell(sheet, i+1, ++k, sdf.format(msb.getScheduleTime()), bodyFormat,0,20);
+//			//操作人员
 			addCell(sheet, i+1, ++k, msb.getProOperator(), bodyFormat,0,15);
 			//操作前投产状态
 			addCell(sheet, i+1, ++k, msb.getPreOperation(), bodyFormat,0,15);

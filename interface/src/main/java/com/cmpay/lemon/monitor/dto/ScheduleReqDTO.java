@@ -3,7 +3,7 @@ package com.cmpay.lemon.monitor.dto;
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.PageableRspDTO;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author: zhou_xiong
@@ -14,7 +14,7 @@ public class ScheduleReqDTO extends PageableRspDTO {
     private String proNumber;
     private String proOperator;
     private String operationType;
-    private Date scheduleTime;
+    private LocalDateTime scheduleTime;
     private String preOperation;
     private String afterOperation;
     private String operationReason;
@@ -129,11 +129,11 @@ public class ScheduleReqDTO extends PageableRspDTO {
         this.operationType = operationType;
     }
 
-    public Date getScheduleTime() {
+    public LocalDateTime getScheduleTime() {
         return scheduleTime;
     }
 
-    public void setScheduleTime(Date scheduleTime) {
+    public void setScheduleTime(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
     }
 

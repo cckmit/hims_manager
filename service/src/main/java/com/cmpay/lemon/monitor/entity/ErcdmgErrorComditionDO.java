@@ -1,16 +1,10 @@
-/*
- * @ClassName CenterDO
- * @Description 
- * @version 1.0
- * @Date 2019-07-25 11:01:18
- */
 package com.cmpay.lemon.monitor.entity;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 @DataObject
 public class ErcdmgErrorComditionDO extends BaseDO {
@@ -28,9 +22,9 @@ public class ErcdmgErrorComditionDO extends BaseDO {
     private String techUserName;
     private String prodUserId;
     private String prodUserName;//产品经理名称
-    private Date entryDate;
-    private Date updateDate;//期望更新时间
-    private Date createDatetime;
+    private LocalDateTime entryDate;
+    private LocalDateTime updateDate;//期望更新时间
+    private LocalDateTime createDatetime;
     private String createUserId;
     private String audiRoleName;
     private String remark;
@@ -39,7 +33,7 @@ public class ErcdmgErrorComditionDO extends BaseDO {
     private String synflg;
     private String cr;
     private String ftpUploadStatus;   //修改后的上传状态  0未上传，1已经上传
-    private Date lastUpdateDate;
+    private LocalDateTime lastUpdateDate;
 
     private Date strDate;
     private Date endDate;
@@ -162,27 +156,27 @@ public class ErcdmgErrorComditionDO extends BaseDO {
         this.prodUserName = prodUserName;
     }
 
-    public Date getEntryDate() {
+    public LocalDateTime getEntryDate() {
         return entryDate;
     }
 
-    public void setEntryDate(Date entryDate) {
+    public void setEntryDate(LocalDateTime entryDate) {
         this.entryDate = entryDate;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
 
-    public Date getCreateDatetime() {
+    public LocalDateTime getCreateDatetime() {
         return createDatetime;
     }
 
-    public void setCreateDatetime(Date createDatetime) {
+    public void setCreateDatetime(LocalDateTime createDatetime) {
         this.createDatetime = createDatetime;
     }
 
@@ -250,11 +244,11 @@ public class ErcdmgErrorComditionDO extends BaseDO {
         this.ftpUploadStatus = ftpUploadStatus;
     }
 
-    public Date getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(Date lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

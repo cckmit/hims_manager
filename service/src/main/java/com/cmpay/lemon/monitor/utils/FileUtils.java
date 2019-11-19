@@ -51,6 +51,7 @@ public class FileUtils {
             setHeader(filePath, res);
             doResWrite(filePath, res);
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("下载报表失败！失败信息：", e);
             BusinessException.throwBusinessException(MsgEnum.WRITE_FILE_ERROR);
         }
