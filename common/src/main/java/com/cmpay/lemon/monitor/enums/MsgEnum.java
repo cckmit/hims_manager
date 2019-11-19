@@ -54,6 +54,7 @@ public enum MsgEnum implements AlertCapable {
     ERROR_NOT_SVNBULID("MON00507", "项目启动失败，SVN项目建立失败："),
     ERROR_MAIL_FAIL("MON00508", "项目启动失败，SVN项目建立成功，启动邮件发送失败："),
     ERROR_NOT_PRIVILEGE("MON00509", "无权限使用该功能"),
+    WECHAT_QUERY_FAILED("MON00501", "向企业微信请求失败"),
     ERROR_FAIL_CHANGE("MON00510", "存量需求转存失败:");
 
     private String msgCd;

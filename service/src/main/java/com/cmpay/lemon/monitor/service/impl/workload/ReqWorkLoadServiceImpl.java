@@ -167,8 +167,9 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changeReq(String req_impl_mon){
-        boolean flag = this.authenticationUser();
-        if(flag){
+        //取消固定操作人判断
+        // boolean flag = this.authenticationUser();
+        if(true){
             try {
                 //获取上个月时间
                 SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
@@ -497,7 +498,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             List<DemandDO> demandDOList = workLoadDao.findList(demandDO);
             List<BaseWorkloadBO> baseWorkloadBOList = new LinkedList<>();
             demandDOList.forEach(m->
-             baseWorkloadBOList.add(BeanUtils.copyPropertiesReturnDest(new BaseWorkloadBO(), m))
+                    baseWorkloadBOList.add(BeanUtils.copyPropertiesReturnDest(new BaseWorkloadBO(), m))
             );
             Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), BaseWorkloadBO.class, baseWorkloadBOList);
             try (OutputStream output = response.getOutputStream();
@@ -798,18 +799,18 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         //配合部门占比
         String coorDeptPro = bean.getCoorDeptPro();
         bean.setCoorDeptPro(coorDeptPro);
-		// 合法性校验以及自动补充数据
-		int totWork = bean.getTotalWorkload();
-		if (totWork == 0){
+        // 合法性校验以及自动补充数据
+        int totWork = bean.getTotalWorkload();
+        if (totWork == 0){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "【总工作量】不能为零！");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-		}
-		if (totWork < bean.getInputWorkload()){
+        }
+        if (totWork < bean.getInputWorkload()){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "【总工作量】不能小于已录入工作量！");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-		}
+        }
         String deptInfo = bean.getLeadDeptPro() + bean.getCoorDeptPro();
         Map<String, String> map = checkDeptRate(totWork, deptInfo, bean);
         String msg = map.get("message");
@@ -833,56 +834,56 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         List<DemandDO> list = workLoadDao.getReqTaskByNameAndUK(demandDO);
         //存放比当前页面实时月份大的实体
         try {
-        List<DemandDO> reqImplMonList = new ArrayList<>();
-        DateFormat df = new SimpleDateFormat("yyyy-MM");
-        Date dt1 = df.parse(req_impl_mon_page);
-        Date dt2 = null;
-        for (int i = 0; i < list.size(); i++){
-            //实施月份
-            String req_impl_mon = list.get(i).getReqImplMon();
-            //总工作量
-            int total_workload = list.get(i).getTotalWorkload();
-            //需求状态
-            int pre_cur_period = Integer.parseInt(list.get(i).getPreCurPeriod());
-            String req_sts = list.get(i).getReqSts();
-            if (StringUtils.isNotBlank(req_impl_mon_page) && req_impl_mon_page.equals(req_impl_mon)){
-                continue;
-            }else if (StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon)) && total_workload == 0 && pre_cur_period > 50 && !("30".equals(req_sts))){
-                //存放最小实施日期的对象
-                DemandDO headmost = new DemandDO();
-                for (int j = 0;j < list.size();j++){
-                    dt2 = df.parse(list.get(j).getReqImplMon());
-                    if (list.get(j).getTotalWorkload() == 0 && Integer.parseInt(list.get(j).getPreCurPeriod()) > 50 && !("30".equals(req_sts)) && dt2.getTime() < dt1.getTime() ){
-                        dt1 = dt2;
-                        headmost = list.get(j);
+            List<DemandDO> reqImplMonList = new ArrayList<>();
+            DateFormat df = new SimpleDateFormat("yyyy-MM");
+            Date dt1 = df.parse(req_impl_mon_page);
+            Date dt2 = null;
+            for (int i = 0; i < list.size(); i++){
+                //实施月份
+                String req_impl_mon = list.get(i).getReqImplMon();
+                //总工作量
+                int total_workload = list.get(i).getTotalWorkload();
+                //需求状态
+                int pre_cur_period = Integer.parseInt(list.get(i).getPreCurPeriod());
+                String req_sts = list.get(i).getReqSts();
+                if (StringUtils.isNotBlank(req_impl_mon_page) && req_impl_mon_page.equals(req_impl_mon)){
+                    continue;
+                }else if (StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon)) && total_workload == 0 && pre_cur_period > 50 && !("30".equals(req_sts))){
+                    //存放最小实施日期的对象
+                    DemandDO headmost = new DemandDO();
+                    for (int j = 0;j < list.size();j++){
+                        dt2 = df.parse(list.get(j).getReqImplMon());
+                        if (list.get(j).getTotalWorkload() == 0 && Integer.parseInt(list.get(j).getPreCurPeriod()) > 50 && !("30".equals(req_sts)) && dt2.getTime() < dt1.getTime() ){
+                            dt1 = dt2;
+                            headmost = list.get(j);
+                        }
+                    }
+                    if (StringUtils.isNotBlank(headmost.getReqImplMon())){
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "请先填写该需求实施月份为"+headmost.getReqImplMon()+"的【总工作量】！");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                     }
                 }
-                if (StringUtils.isNotBlank(headmost.getReqImplMon())){
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "请先填写该需求实施月份为"+headmost.getReqImplMon()+"的【总工作量】！");
-                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-                }
-            }
-            if(StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon))){
-                for (int j = 0;j < list.size();j++){
-                    dt2 = df.parse(list.get(j).getReqImplMon());
-                    if (dt2.getTime() > dt1.getTime()){
-                        reqImplMonList.add(list.get(j));
+                if(StringUtils.isNotBlank(req_impl_mon_page) && !(req_impl_mon_page.equals(req_impl_mon))){
+                    for (int j = 0;j < list.size();j++){
+                        dt2 = df.parse(list.get(j).getReqImplMon());
+                        if (dt2.getTime() > dt1.getTime()){
+                            reqImplMonList.add(list.get(j));
+                        }
                     }
                 }
             }
-        }
-        //已录入工作量
-        int input_workload = bean.getMonInputWorkload();
-        for(int i=0; i < list.size(); i++){
-            //实施月份
-            String req_impl_mon = list.get(i).getReqImplMon();
-            dt2 = df.parse(req_impl_mon);
-            if ( dt2.getTime() < dt1.getTime() ){
-                //已录入工作量
-                input_workload += list.get(i).getMonInputWorkload();
+            //已录入工作量
+            int input_workload = bean.getMonInputWorkload();
+            for(int i=0; i < list.size(); i++){
+                //实施月份
+                String req_impl_mon = list.get(i).getReqImplMon();
+                dt2 = df.parse(req_impl_mon);
+                if ( dt2.getTime() < dt1.getTime() ){
+                    //已录入工作量
+                    input_workload += list.get(i).getMonInputWorkload();
+                }
             }
-        }
             if (reqImplMonList.size() >= 2){
                 //存放最小实施日期的对象
                 DemandDO headmost = new DemandDO();

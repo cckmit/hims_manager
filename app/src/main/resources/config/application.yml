@@ -1,1 +1,6 @@
-
+monitor:
+  boardcast:
+    cronExpression: 0 0 7 * * ?
+    corpid: wx1ab762ccb661e135
+    corpsecret: YvFG_M56n0tB3ltKwZM0BOfgUyNvUZK8lyA5-Sgwy44
+    agentid: 1000004

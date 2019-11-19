@@ -14,6 +14,7 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,8 @@ public class ReqPlanController {
     private ReqPlanService reqPlanService;
     @Autowired
     private DictionaryService dictionaryService;
+    @Autowired
+    private BoardcastScheduler boardcastScheduler;
 
     /**
      * 分页需求列表
@@ -56,6 +59,7 @@ public class ReqPlanController {
         rspDTO.setPages(demandRspBO.getPageInfo().getPages());
         rspDTO.setTotal(demandRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(demandRspBO.getPageInfo().getPageSize());
+        //boardcastScheduler.test();
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
