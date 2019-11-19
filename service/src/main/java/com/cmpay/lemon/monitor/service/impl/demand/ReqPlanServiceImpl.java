@@ -816,8 +816,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandChangeDetailsDO.setReqNm(demand.getReqNm());
                     demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                     demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
-                    System.err.println(reqInnerSeq);
-                    System.err.println(1111111);
+
                     String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
                     if(identification==null){
                         identification=reqInnerSeq;
