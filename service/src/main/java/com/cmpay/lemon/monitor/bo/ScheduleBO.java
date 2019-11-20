@@ -1,6 +1,6 @@
 package com.cmpay.lemon.monitor.bo;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author: zhou_xiong
@@ -11,7 +11,7 @@ public class ScheduleBO {
     private String proNumber;
     private String proOperator;
     private String operationType;
-    private Date scheduleTime;
+    private LocalDateTime scheduleTime;
     private String preOperation;
     private String afterOperation;
     private String operationReason;
@@ -127,11 +127,11 @@ public class ScheduleBO {
         this.operationType = operationType;
     }
 
-    public Date getScheduleTime() {
+    public LocalDateTime getScheduleTime() {
         return scheduleTime;
     }
 
-    public void setScheduleTime(Date scheduleTime) {
+    public void setScheduleTime(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
     }
 

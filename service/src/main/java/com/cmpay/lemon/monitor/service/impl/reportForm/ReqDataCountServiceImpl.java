@@ -608,6 +608,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			workbook.write(bufferedOutPut);
 			bufferedOutPut.flush();
 		} catch (IOException e) {
+			e.printStackTrace();
 			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
 		}
 	}
@@ -671,6 +672,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			workbook.write(bufferedOutPut);
 			bufferedOutPut.flush();
 		} catch (IOException e) {
+			e.printStackTrace();
 			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
 		}
 

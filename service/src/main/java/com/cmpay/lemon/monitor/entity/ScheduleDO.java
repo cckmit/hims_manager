@@ -3,7 +3,7 @@ package com.cmpay.lemon.monitor.entity;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.lemon.framework.annotation.DataObject;
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDateTime;
 /**
  * 投产状态变更记录
  */
@@ -17,7 +17,7 @@ public class ScheduleDO extends AbstractDO {
     private String proOperator;
     private String operationType;
     @Excel(name = "操作时间")
-    private Date scheduleTime;
+    private LocalDateTime scheduleTime;
     @Excel(name = "操作前投产状态")
     private String preOperation;
     @Excel(name = "操作后投产状态")
@@ -61,7 +61,7 @@ public class ScheduleDO extends AbstractDO {
         this.applicationDept = applicationDept;
     }
 
-    public ScheduleDO(int seqId, String proNumber, String proOperator, String operationType, Date scheduleTime, String preOperation, String afterOperation, String operationReason, String proType, String isOperationProduction, String operRequestContent, String proposeDate, String isRefSql, String sysOperType, String operStatus, String applicationSector, String operApplicant, String identifier, String developmentLeader, String svntabName, String analysis, String operApplicationReason, String notProductionImpact, String urgentReasonPhrase) {
+    public ScheduleDO(int seqId, String proNumber, String proOperator, String operationType, LocalDateTime scheduleTime, String preOperation, String afterOperation, String operationReason, String proType, String isOperationProduction, String operRequestContent, String proposeDate, String isRefSql, String sysOperType, String operStatus, String applicationSector, String operApplicant, String identifier, String developmentLeader, String svntabName, String analysis, String operApplicationReason, String notProductionImpact, String urgentReasonPhrase) {
         this.seqId = seqId;
         this.proNumber = proNumber;
         this.proOperator = proOperator;
@@ -109,7 +109,7 @@ public class ScheduleDO extends AbstractDO {
 
 
     public ScheduleDO(int seqId, String proNumber, String proOperator,
-                        String operationType, Date scheduleTime, String preOperation,
+                        String operationType, LocalDateTime scheduleTime, String preOperation,
                         String afterOperation, String operationReason) {
         this.seqId = seqId;
         this.proNumber = proNumber;
@@ -125,7 +125,7 @@ public class ScheduleDO extends AbstractDO {
 
 
     public ScheduleDO(String proNumber, String proOperator,
-                        String operationType, Date scheduleTime, String preOperation,
+                        String operationType, LocalDateTime scheduleTime, String preOperation,
                         String afterOperation, String operationReason) {
         this.proNumber = proNumber;
         this.proOperator = proOperator;
@@ -173,11 +173,11 @@ public class ScheduleDO extends AbstractDO {
         this.operationType = operationType;
     }
 
-    public Date getScheduleTime() {
+    public LocalDateTime getScheduleTime() {
         return scheduleTime;
     }
 
-    public void setScheduleTime(Date scheduleTime) {
+    public void setScheduleTime(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
     }
 

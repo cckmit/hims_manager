@@ -56,6 +56,15 @@
         </where>
     </select>
 
+    <select id="findDictionary"  resultMap="BaseResultMap" >
+         SELECT CONCAT(NAME,'_',CASE WHEN description = '*' THEN '全渠道' else description END ) as name,NAME as value
+          FROM t_ercdmg_buscnl order by name asc
+    </select>
+
+    <select id="findPordmod" resultMap="BaseResultMap">
+        SELECT CONCAT(NAME,'_',description) name,NAME as value FROM t_ercdmg_busmod order by name asc
+    </select>
+
     <select id="getJdInfo" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DictionaryDO" >
         SELECT
         <include refid="Jd_Column_List" />

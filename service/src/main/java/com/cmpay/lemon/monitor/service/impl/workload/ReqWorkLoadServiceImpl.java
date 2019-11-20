@@ -263,24 +263,27 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 demandDO.setDevpLeadDept(map.get(i).get(4).toString());
                 demandDO.setDevpResMng(map.get(i).get(5).toString());
                 if(!JudgeUtils.isEmpty(map.get(i).get(6).toString())) {
-                    demandDO.setTotalWorkload(Integer.parseInt( map.get(i).get(6).toString()));
+                    demandDO.setTotalWorkload((int)Float.parseFloat( map.get(i).get(6).toString()));
                 }else {
+                    int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + i + "行的" + "总工作量为空");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + t + "行的" + "总工作量为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 if(!JudgeUtils.isEmpty(map.get(i).get(7).toString())) {
-                    demandDO.setInputWorkload(Integer.parseInt( map.get(i).get(7).toString()));
+                    demandDO.setInputWorkload((int)Float.parseFloat( map.get(i).get(7).toString()));
                 }else {
+                    int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + i + "行的" + "已录入工作量为空");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + t + "行的" + "已录入工作量为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 if(!JudgeUtils.isEmpty(map.get(i).get(8).toString())) {
-                    demandDO.setMonInputWorkload(Integer.parseInt( map.get(i).get(8).toString()));
+                    demandDO.setMonInputWorkload((int)Float.parseFloat( map.get(i).get(8).toString()));
                 }else {
+                    int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + i + "行的" + "本月录入工作量为空");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + t + "行的" + "本月录入工作量为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 demandDOS.add(demandDO);

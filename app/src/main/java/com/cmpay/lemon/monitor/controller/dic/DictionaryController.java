@@ -55,6 +55,30 @@ public class DictionaryController {
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
+    /**
+     * 错误码产品模块
+     *
+     */
+    @GetMapping("/findPordmod")
+    public GenericRspDTO<DictionaryRspDTO> findPordmod(GenericDTO<NoBody> req) {
+        DictionaryBO dictionaryBO = dictionaryService.findPordmod();
+        List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
+    }
+    /**
+     * 错误码渠道
+     *
+     */
+    @GetMapping("/findDictionary")
+    public GenericRspDTO<DictionaryRspDTO> findDictionary(GenericDTO<NoBody> req) {
+        DictionaryBO dictionaryBO = dictionaryService.findDictionary();
+        List<DictionaryBO> dictionaryBOList = dictionaryBO.getDictionaryBOList();
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOList, DictionaryDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
+    }
 
     /**
      * 查询产品经理

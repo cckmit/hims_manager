@@ -72,4 +72,25 @@ public class DictionaryServiceImpl implements DictionaryService {
         List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(lst, DictionaryBO.class);
         return dictionaryBOList;
     }
+    @Override
+    public DictionaryBO findPordmod() {
+
+        List<DictionaryDO> dictionaryDOList = dictionaryDao.findPordmod();
+
+        List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
+        DictionaryBO dictionaryBO = new DictionaryBO();
+        dictionaryBO.setDictionaryBOList(dictionaryBOList);
+        return dictionaryBO;
+    }
+    @Override
+    public DictionaryBO findDictionary() {
+
+        List<DictionaryDO> dictionaryDOList = dictionaryDao.findDictionary();
+
+        List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
+        DictionaryBO dictionaryBO = new DictionaryBO();
+        dictionaryBO.setDictionaryBOList(dictionaryBOList);
+        return dictionaryBO;
+    }
+
 }

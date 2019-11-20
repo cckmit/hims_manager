@@ -515,7 +515,7 @@
     		and bus_cnl = #{buscnl}
     	</if>
     	 <if test="cr != null and cr != ''">
-    		and cr like "%"#{cr}"%"
+    		and cr LIKE CONCAT('%',#{cr},'%')
     	</if>
 
     		<if test='prodMod == "其他"'>
