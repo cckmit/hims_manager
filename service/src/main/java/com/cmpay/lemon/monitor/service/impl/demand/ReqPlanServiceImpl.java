@@ -1267,8 +1267,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String importFilePath = null;
         Map<String, Object> map = new HashMap<String, Object>();
         Vector<File> attachFiles = new Vector<File>();
-        LOGGER.info(files[0].getOriginalFilename());
-        LOGGER.info(files[0].getSize()+"");
         if (files != null && files[0].getSize() != 0) {
             // 处理多文件上传
             File fl = null;
