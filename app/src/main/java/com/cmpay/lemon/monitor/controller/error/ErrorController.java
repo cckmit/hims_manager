@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.controller.error;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -14,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author: zhou_xiong
@@ -48,5 +51,26 @@ public class ErrorController {
         rspDTO.setPageSize(demandRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
-
+    /**
+     * 新增
+     * @param
+     * @return
+     */
+    @RequestMapping("/add")
+    public GenericRspDTO addError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO);
+        System.err.println(1111111);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    /**
+     * 修改
+     * @param
+     * @return
+     */
+    @RequestMapping("/update")
+    public GenericRspDTO updateError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO);
+        System.err.println(1111111);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
 }
