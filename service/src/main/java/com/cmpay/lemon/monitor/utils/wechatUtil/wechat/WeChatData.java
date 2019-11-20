@@ -10,6 +10,7 @@ public class WeChatData {
     private Object text;
     private Object markdown;
     private Object image;
+    private Object file;
     /**
      * 表示是否是保密消息，0表示否，1表示是，默认0
      */
@@ -69,5 +70,13 @@ public class WeChatData {
 
     public void setSafe(int safe) {
         this.safe = safe;
+    }
+
+    public Object getFile() {
+        return file;
+    }
+
+    public void setFile(Object file) {
+        this.file = file;
     }
 }

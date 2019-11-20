@@ -11,6 +11,7 @@ import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,11 +26,12 @@ import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
 
 @RestController
-@RequestMapping(value = MonitorConstants.Production_PATH)
+@RequestMapping(value = MonitorConstants.PRODUCTION_PATH)
 public class OperationProductionController {
     @Autowired
     private OperationProductionService operationProductionService;
-
+    @Autowired
+    private BoardcastScheduler boardcastScheduler;
     /**
      * 分页需求列表
      *
@@ -52,6 +54,9 @@ public class OperationProductionController {
         rspDTO.setPages(productionRspBO.getPageInfo().getPages());
         rspDTO.setTotal(productionRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(productionRspBO.getPageInfo().getPageSize());
+        //todo
+        operationProductionService.productionVerificationIsNotTimely();
+
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
@@ -60,7 +65,7 @@ public class OperationProductionController {
         ScheduleBO scheduleBO = BeanUtils.copyPropertiesReturnDest(new ScheduleBO(), reqDTO);
         ScheduleRspBO productionRspBO = operationProductionService.find1(scheduleBO);
         ScheduleRspDTO rspDTO = new ScheduleRspDTO();
-        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(productionRspBO.getScheduleList(), ScheduleDTO.class));
+        rspDTO.setScheduleDTOList(BeanConvertUtils.convertList(productionRspBO.getScheduleList(), ScheduleDTO.class));
         rspDTO.setPageNum(productionRspBO.getPageInfo().getPageNum());
         rspDTO.setPages(productionRspBO.getPageInfo().getPages());
         rspDTO.setTotal(productionRspBO.getPageInfo().getTotal());
@@ -75,12 +80,10 @@ public class OperationProductionController {
     @RequestMapping("/productionOut")
     public void exportExcel(@RequestBody ProductionConditionReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response) {
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), reqDTO);
-        System.err.println(productionBO);
         operationProductionService.exportExcel(request,response,productionBO);
     }
     @RequestMapping("/updateAllProduction")
     public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        System.err.println(taskIdStr);
         operationProductionService.updateAllProduction(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }

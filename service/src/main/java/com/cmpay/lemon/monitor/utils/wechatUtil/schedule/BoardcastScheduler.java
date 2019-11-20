@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+
 /**
  * @author: zhou_xiong
  */
@@ -24,10 +26,13 @@ public class BoardcastScheduler {
     private BoardcastExecutor boardcastExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void test() {
-        //todo
+    public void test(String body , File file){
+
         boardcastExecutor.getAccessToken(corpid, corpsecret);
-        boardcastExecutor.sendTextMessage("WuLiangRui", "111");
+        boardcastExecutor.sendTextMessage("WuLiangRui", body);
+        String fileID = boardcastExecutor.sendUploadFile(file);
+        //
+        boardcastExecutor.sendFileMessage("WuLiangRui", fileID);
     }
 
 

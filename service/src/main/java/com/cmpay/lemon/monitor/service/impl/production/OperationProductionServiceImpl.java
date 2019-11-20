@@ -20,6 +20,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.*;
+import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
@@ -64,6 +65,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     ITPermiDeptDao permiDeptDao;
     @Autowired
     SystemUserService userService;
+    @Autowired
+    private BoardcastScheduler boardcastScheduler;
 
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
@@ -663,6 +666,61 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public void updateMailGroup(MailGroupBO mailGroupBO) {
         MailGroupDO mailGroupDO = BeanUtils.copyPropertiesReturnDest(new MailGroupDO(), mailGroupBO);
         operationProductionDao.updateMailGroup(mailGroupDO);
+    }
+
+    /*
+    *投产不及时验证清单发送企业微信
+    * */
+    @Override
+    public void productionVerificationIsNotTimely() {
+        int number =-50;
+        List<ProductionDO> productionDOList = getProductionVerificationIsNotTimely( number);
+        Map<String, Integer> map = new HashMap<>();
+        productionDOList.forEach(m->{
+            String applicationDept = m.getApplicationDept();
+            boolean exist = map.containsKey(applicationDept);
+            if(exist){
+                map.put(applicationDept,map.get(applicationDept)+1);
+            }else{
+                map.put(applicationDept,1);
+            }
+        });
+
+        String body="投产验证不及时清单汇总"+"\n"
+            ;
+        for(Map.Entry<String, Integer> entry : map.entrySet()){
+            String mapKey = entry.getKey();
+            Integer mapValue = entry.getValue();
+            body=body+ mapKey+":"+mapValue+"条"+"\n";
+        }
+        body=body+"详情如下";
+        SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
+        File file=null;
+        try{
+            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("D:\\投产验证不及时清单.xls", productionDOList, null);
+            file=new File("D:\\投产验证不及时清单.xls");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        boardcastScheduler.test(body,file);
+        file.delete();
+
+
+
+    }
+    /**
+     * @param number 天数
+     *  计算天数内投产验证不及时清单
+     */
+    @Override
+    public List<ProductionDO> getProductionVerificationIsNotTimely(int number) {
+        ProductionDO productionDO = new ProductionDO();
+        productionDO.setProStatus("部署完成待验证");
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE,-number);
+        Date dd = new Date(c.getTimeInMillis());
+        productionDO.setProDate(new java.sql.Date(c.getTimeInMillis()));
+        return operationProductionDao.getProductionVerificationIsNotTimely(productionDO);
     }
 
 

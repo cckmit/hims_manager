@@ -11,12 +11,12 @@ import java.util.List;
 public class ScheduleRspDTO extends PageableRspDTO {
     private List<ScheduleDTO> scheduleDTOList = new ArrayList<>();
 
-    public List<ScheduleDTO> getDemandDTOList() {
+    public List<ScheduleDTO> getScheduleDTOList() {
         return scheduleDTOList;
     }
 
-    public void setDemandDTOList(List<ScheduleDTO> demandDTOList) {
-        this.scheduleDTOList = demandDTOList;
+    public void setScheduleDTOList(List<ScheduleDTO> scheduleDTOList) {
+        this.scheduleDTOList = scheduleDTOList;
     }
 
     @Override

@@ -71,6 +71,8 @@ public class ProductionDTO extends GenericDTO {
     private String proPkgStatus;
     private Timestamp proPkgTime;
     private String proPkgName;
+
+    private String dayNumber;
     /**
      * 是否有回退方案
      */
@@ -142,6 +144,14 @@ public class ProductionDTO extends GenericDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
+    }
+
+    public String getDayNumber() {
+        return dayNumber;
+    }
+
+    public void setDayNumber(String dayNumber) {
+        this.dayNumber = dayNumber;
     }
 
     public int getPageNum() {

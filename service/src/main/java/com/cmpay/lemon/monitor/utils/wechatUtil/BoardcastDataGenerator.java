@@ -17,6 +17,7 @@ import java.util.Map;
 public class BoardcastDataGenerator {
     private static final String TEXT_TYPE = "text";
     private static final String MARKDOWN_TYPE = "markdown";
+    private static final String FILE_TYPE = "file";
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -29,10 +30,12 @@ public class BoardcastDataGenerator {
         content.put(contentKey, contentValue);
         if (JudgeUtils.equals(msgtype, TEXT_TYPE)) {
             weChatData.setText(content);
-            weChatData.setSafe(1);
+            weChatData.setSafe(0);
         } else if (JudgeUtils.equals(msgtype, MARKDOWN_TYPE)) {
             weChatData.setMarkdown(content);
-        } else {
+        } else if (JudgeUtils.equals(msgtype, FILE_TYPE)) {
+            weChatData.setFile(content);
+        }else {
             weChatData.setImage(content);
             weChatData.setSafe(0);
         }

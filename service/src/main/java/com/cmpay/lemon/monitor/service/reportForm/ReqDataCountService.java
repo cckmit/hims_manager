@@ -92,4 +92,6 @@ public interface ReqDataCountService {
 
     void downloadBaseOwnershipDepartmentStatistics(String month, HttpServletResponse response);
     DemandRspBO findDemand(DemandBO demandBO);
+
+    List<ProductionBO> getProductionVerificationIsNotTimely(int dayNumber);
 }

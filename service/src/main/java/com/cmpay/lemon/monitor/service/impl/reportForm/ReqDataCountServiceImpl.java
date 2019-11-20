@@ -10,13 +10,11 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.ReqDataCountDO;
-import com.cmpay.lemon.monitor.entity.ReqMngDO;
-import com.cmpay.lemon.monitor.entity.ScheduleDO;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
+import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
@@ -32,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -69,6 +68,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
 	@Autowired
 	private ReqPlanService reqPlanService;
+
+	@Autowired
+	private OperationProductionService operationProductionService;
 
 	/**
 	 * 本月需求完成情况：进行中、已投产需求数
@@ -773,6 +775,32 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		demandRspBO.setDemandBOList(demandBOList);
 		demandRspBO.setPageInfo(pageInfo);
 		return demandRspBO;
+	}
+
+	@Override
+	public List<ProductionBO> getProductionVerificationIsNotTimely(int dayNumber) {
+
+		List<ProductionDO> productionDOList = new LinkedList<>();
+		productionDOList = operationProductionService.getProductionVerificationIsNotTimely(dayNumber);
+		List<ProductionBO> productionBOList = new LinkedList<>();
+		productionDOList.forEach(m -> {
+			try {
+				ProductionBO productionBO = new ProductionBO();
+				productionBOList.add(BeanUtils.copyPropertiesReturnDest(productionBO, m));
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				//已投产天数
+				Calendar c1 = Calendar.getInstance();
+				Calendar c2 = Calendar.getInstance();
+				c1.setTime(sdf.parse(sdf.format(new Date())));
+				c2.setTime(sdf.parse(sdf.format(m.getProDate())));
+				long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(m.getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+				productionBO.setDayNumber(String.valueOf(day));
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+		});
+		return productionBOList;
+
 	}
 
 	private PageInfo<DemandBO>  getPageInfo(DemandBO demandBO) {

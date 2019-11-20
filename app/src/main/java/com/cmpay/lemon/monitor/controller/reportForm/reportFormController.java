@@ -4,9 +4,7 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
-import com.cmpay.lemon.monitor.bo.ScheduleBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -128,7 +126,7 @@ import java.util.List;
         reportLista.forEach(m->
                 reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new ScheduleDTO(), m))
         );
-        reqDataCountRspDTO.setDemandDTOList(reqDataCountDTOListA);
+        reqDataCountRspDTO.setScheduleDTOList(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
     // 需求文档上传情况报表
@@ -148,6 +146,31 @@ import java.util.List;
         reqDataCountRspDTO.setDemandDTOList(reqDataCountDTOListA);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
+
+    //todo
+    //生产验证不及时清单
+    @RequestMapping("/reportform7")
+    public GenericRspDTO<ProductionRspDTO> getReportForm7(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
+        int dayNumber;
+        if(reqDataCountReqDTO.getDayNumber()==null||reqDataCountReqDTO.getDayNumber().equals("")){
+            dayNumber = 50;
+        }else{
+            dayNumber = Integer.parseInt(reqDataCountReqDTO.getDayNumber());
+        }
+        List<ProductionBO> productionLista = new ArrayList<>();
+        productionLista = reqDataCountService.getProductionVerificationIsNotTimely(dayNumber);
+        ProductionRspDTO rspDTO = new ProductionRspDTO();
+        List<ProductionDTO> reqDataCountDTOListA = new LinkedList<>();
+        productionLista.forEach(m->{
+                    ProductionDTO productionDTO = new ProductionDTO();
+                    reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(productionDTO, m));
+                    System.err.println(productionDTO.getDayNumber());
+        }
+        );
+        rspDTO.setProductionList(reqDataCountDTOListA);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
 
     @RequestMapping("/downloadreportform1")
     public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
@@ -205,4 +228,6 @@ import java.util.List;
         reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
+
+
 }

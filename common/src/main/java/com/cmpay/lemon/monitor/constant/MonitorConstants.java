@@ -73,7 +73,7 @@ public class MonitorConstants {
     /**
      * 投产查询管理uri
      */
-    public static final String Production_PATH = BASE_URI + "/production";
+    public static final String PRODUCTION_PATH = BASE_URI + "/production";
 
     public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**

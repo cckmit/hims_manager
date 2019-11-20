@@ -23,7 +23,6 @@ public class BoardcastExecutor {
     private SendProcessor sendProcessor;
     @Autowired
     private BoardcastDataGenerator generator;
-
     @JCacheCacheable("wechatUtil")
     public String getAccessToken(String corpid, String corpsecret) {
         urlData = new UrlData();
@@ -32,6 +31,7 @@ public class BoardcastExecutor {
         String token = tokenResult.get(ACCESS_TOKEN).toString();
         urlData.setSendMessageUrl(token);
         urlData.setUploadImageUrl(token);
+        urlData.setUploadFileUrl(token);
         return token;
     }
 
@@ -44,13 +44,22 @@ public class BoardcastExecutor {
     public String sendUploadMessage(File file) {
         return sendProcessor.uploadTempImage(file, urlData.getUploadImageUrl());
     }
+    public String sendUploadFile(File file) {
+        return sendProcessor.uploadTempFile(file, urlData.getUploadImageUrl());
+    }
+
 
     public Map<String, Object> sendImageMessage(String toUser, String contentValue) {
         String body = generator.create(toUser, "image", Integer.valueOf(agentid), "media_id", contentValue);
         return sendProcessor.exchange(urlData.getSendMessageUrl(), HttpMethod.POST, body);
     }
-    public Map<String, Object> sendTextMessage(String toUser, String contentValue) {
+    public Map<String, Object> sendTextMessage(String toUser, String contentValue ) {
         String body = generator.create(toUser, "text", Integer.valueOf(agentid), "content", contentValue);
+        return sendProcessor.exchange(urlData.getSendMessageUrl(), HttpMethod.POST, body);
+    }
+
+    public Map<String, Object> sendFileMessage(String toUser, String contentValue ) {
+        String body = generator.create(toUser, "file", Integer.valueOf(agentid), "media_id", contentValue);
         return sendProcessor.exchange(urlData.getSendMessageUrl(), HttpMethod.POST, body);
     }
 

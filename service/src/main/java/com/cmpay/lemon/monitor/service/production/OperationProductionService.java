@@ -97,4 +97,8 @@ public interface OperationProductionService {
     void reissueMail(MultipartFile file, ProductionBO bean);
 
     void updateMailGroup(MailGroupBO mailGroupBO);
+
+    void productionVerificationIsNotTimely();
+    List<ProductionDO> getProductionVerificationIsNotTimely(int number);
+
 }

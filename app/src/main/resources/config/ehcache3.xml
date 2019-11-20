@@ -34,4 +34,13 @@
             <max-object-size unit="kB">10</max-object-size>
         </heap-store-settings>
     </cache>
+    <cache alias="wechatUtil">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <heap unit="entries">10000</heap>
+        <heap-store-settings>
+            <max-object-size unit="kB">10</max-object-size>
+        </heap-store-settings>
+    </cache>
 </config>

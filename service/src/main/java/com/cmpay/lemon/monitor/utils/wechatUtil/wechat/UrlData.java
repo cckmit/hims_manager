@@ -9,6 +9,7 @@ public class UrlData {
     private String tokenUrl;
     private String sendMessageUrl;
     private String uploadImageUrl;
+    private String uploadFileUrl;
 
     public String getCorpId() {
         return corpId;
@@ -34,7 +35,7 @@ public class UrlData {
         return tokenUrl;
     }
 
-    public void setSendMessageUrl(String accessToken) {
+    public void  setSendMessageUrl(String accessToken) {
         this.sendMessageUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send?access_token=" + accessToken;
     }
 
@@ -48,5 +49,13 @@ public class UrlData {
 
     public void setUploadImageUrl(String accessToken) {
         this.uploadImageUrl = "https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=" + accessToken + "&type=image";
+    }
+
+    public void setUploadFileUrl(String accessToken) {
+        this.uploadImageUrl = "https://qyapi.weixin.qq.com/cgi-bin/media/upload?access_token=" + accessToken + "&type=file";
+    }
+
+    public String getUploadFileUrl() {
+        return uploadFileUrl;
     }
 }

@@ -32,8 +32,7 @@ public class SendProcessor {
         this.httpRestTemplate = httpRestTemplate;
         this.objectMapper = objectMapper;
     }
-    public SendProcessor() {
-    }
+
 
     public <T> Map<String, Object> exchange(String url, HttpMethod method, T body) {
         HttpHeaders headers = new HttpHeaders();
@@ -46,6 +45,7 @@ public class SendProcessor {
             LOGGER.debug("wechatUtil query:[{}] elapsed:{}ms", url, System.currentTimeMillis() - start);
             resultMap = objectMapper.readValue(responseEntity.getBody(), Map.class);
         } catch (Exception ignored) {
+            ignored.printStackTrace();
             LOGGER.error("wechatUtil query:[{}] I/O exception", url, ignored);
         }
         return resultMap;
@@ -65,6 +65,29 @@ public class SendProcessor {
         ResponseEntity<Map> responseEntity = httpRestTemplate.postForEntity(url, httpEntity, Map.class);
         LOGGER.debug("wechatUtil query:[{}] elapsed:{}ms", url, System.currentTimeMillis() - start);
         Map body = responseEntity.getBody();
+        if ((int) body.get(ERRCODE) != OK) {
+            LOGGER.error("wechatUtil query:[{}] failed", url);
+            BusinessException.throwBusinessException(MsgEnum.WECHAT_QUERY_FAILED);
+        }
+        return (String) body.get("media_id");
+    }
+
+    public String uploadTempFile(File file, String url) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        System.err.println(MediaType.MULTIPART_FORM_DATA);
+        FileSystemResource resource = new FileSystemResource(file);
+        MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+        parts.add("file", resource);
+        parts.add("name", "media");
+        parts.add("filename", file.getName());
+        parts.add("filelength", file.length());
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(parts, headers);
+        long start = System.currentTimeMillis();
+        ResponseEntity<Map> responseEntity = httpRestTemplate.postForEntity(url, httpEntity, Map.class);
+        LOGGER.debug("wechatUtil query:[{}] elapsed:{}ms", url, System.currentTimeMillis() - start);
+        Map body = responseEntity.getBody();
+        System.err.println(body.toString());
         if ((int) body.get(ERRCODE) != OK) {
             LOGGER.error("wechatUtil query:[{}] failed", url);
             BusinessException.throwBusinessException(MsgEnum.WECHAT_QUERY_FAILED);
