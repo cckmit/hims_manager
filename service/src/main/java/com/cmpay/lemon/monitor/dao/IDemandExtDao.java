@@ -50,4 +50,16 @@ public interface IDemandExtDao extends IDemandDao {
     void updateReqSts(DemandDO demandDO);
 
     void logicDelete(String reqInnerSeq);
+    //获取需求进度异常需求
+    List<DemandDO> getPrdFnishAbnor(String month);
+    //获取测试进度异常需求
+    List<DemandDO> getTestFnishAbnor(String month);
+    //获取开发进度异常需求
+    List<DemandDO> getUatUpdateAbnor(String month);
+    //修改需求异常状态
+    void updateReqAbnorType(DemandDO bean);
+    List<DemandDO> getPrdFnishWarn();
+    List<DemandDO> getTestFnishWarn();
+
+    List<DemandDO> getUatUpdateWarn();
 }

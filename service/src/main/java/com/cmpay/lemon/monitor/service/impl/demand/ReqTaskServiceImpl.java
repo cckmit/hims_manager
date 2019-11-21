@@ -1253,4 +1253,36 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         return map;
     }
+    @Override
+    public List<DemandBO> getPrdFnishAbnor(String month) {
+        return BeanConvertUtils.convertList(demandDao.getPrdFnishAbnor(month), DemandBO.class);
+    }
+
+    @Override
+    public List<DemandBO> getTestFnishAbnor(String month) {
+        return BeanConvertUtils.convertList(demandDao.getTestFnishAbnor(month), DemandBO.class);
+    }
+
+    @Override
+    public List<DemandBO> getUatUpdateAbnor(String month) {
+        return BeanConvertUtils.convertList(demandDao.getUatUpdateAbnor(month), DemandBO.class);
+    }
+    @Override
+    public void updateReqAbnorType(DemandBO reqTask) {
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, reqTask);
+        demandDao.updateReqAbnorType(demandDO);
+    }
+    @Override
+    public List<DemandBO> getPrdFnishWarn() {
+        return BeanConvertUtils.convertList(demandDao.getPrdFnishWarn(), DemandBO.class);
+    }
+    @Override
+    public List<DemandBO> getUatUpdateWarn() {
+        return BeanConvertUtils.convertList(demandDao.getUatUpdateWarn(), DemandBO.class);
+    }
+    @Override
+    public List<DemandBO> getTestFnishWarn() {
+        return BeanConvertUtils.convertList(demandDao.getTestFnishWarn(), DemandBO.class);
+    }
 }

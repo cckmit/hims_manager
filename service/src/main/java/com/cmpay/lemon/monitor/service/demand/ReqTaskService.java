@@ -129,4 +129,15 @@ public interface ReqTaskService {
     List<String> lists(DemandBO demand);
 
     DemandStateHistoryRspBO findDemandChangeDetails(DemandChangeDetailsBO demandChangeDetailsBO);
+    //获取需求进度异常需求
+    List<DemandBO> getPrdFnishAbnor(String month);
+    //获取测试进度异常需求
+    List<DemandBO> getTestFnishAbnor(String month);
+    //获取开发进度异常需求
+    List<DemandBO> getUatUpdateAbnor(String month);
+    //修改需求异常状态
+    void updateReqAbnorType(DemandBO reqTask);
+    List<DemandBO> getPrdFnishWarn();
+    List<DemandBO> getUatUpdateWarn();
+    List<DemandBO> getTestFnishWarn();
 }
