@@ -779,11 +779,12 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		return demandRspBO;
 	}
 
+	//投产未验证清单，功能已取消，无调用
 	@Override
 	public List<ProductionBO> getProductionVerificationIsNotTimely(int dayNumber) {
-
+		String date="";
 		List<ProductionDO> productionDOList = new LinkedList<>();
-		productionDOList = operationProductionService.getProductionVerificationIsNotTimely(dayNumber);
+		productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
 		List<ProductionBO> productionBOList = new LinkedList<>();
 		productionDOList.forEach(m -> {
 			try {

@@ -103,6 +103,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         ScheduleRspBO productionRspBO = new ScheduleRspBO();
+        System.err.println(scheduleBOList.size());
         productionRspBO.setScheduleList(scheduleBOList);
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
@@ -671,10 +672,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     /*
     *投产不及时验证清单发送企业微信
     * */
+    //TODO 添加定时
+   // @Scheduled
     @Override
     public void productionVerificationIsNotTimely() {
-        int number =-50;
-        List<ProductionDO> productionDOList = getProductionVerificationIsNotTimely( number);
+        String date="2019-10-01";
+        List<ProductionDO> productionDOList = getProductionVerificationIsNotTimely(date);
         Map<String, Integer> map = new HashMap<>();
         productionDOList.forEach(m->{
             String applicationDept = m.getApplicationDept();
@@ -709,17 +712,20 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     }
     /**
-     * @param number 天数
+     * @param date 天数
      *  计算天数内投产验证不及时清单
      */
     @Override
-    public List<ProductionDO> getProductionVerificationIsNotTimely(int number) {
+    public List<ProductionDO> getProductionVerificationIsNotTimely(String date) {
         ProductionDO productionDO = new ProductionDO();
+        try {
         productionDO.setProStatus("部署完成待验证");
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DATE,-number);
-        Date dd = new Date(c.getTimeInMillis());
-        productionDO.setProDate(new java.sql.Date(c.getTimeInMillis()));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date1 = sdf.parse(date);
+        productionDO.setProDate(new java.sql.Date(date1.getTime()));
+        }catch ( Exception e){
+            e.printStackTrace();
+        }
         return operationProductionDao.getProductionVerificationIsNotTimely(productionDO);
     }
 
@@ -1361,9 +1367,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return  files;
     }
 
-    //投产录入
+    //
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
+        System.err.println(bean.toString());
         boolean isSend = false;
         //后台判断数据
         if (!bean.getProNumber().matches(".*[a-zA-z].*")) {
@@ -1375,117 +1382,117 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProType().equals("救火更新")) {
-            if (bean.getOperatingTime() == null || bean.getOperatingTime().equals("")) {
+            if (bean.getOperatingTime() == null || bean.getOperatingTime().equals("")|| bean.getOperatingTime().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 更新预计操作时长不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
-        if (bean.getProNeed() == null || bean.getProNeed().equals("")) {
+        if (bean.getProNeed() == null || bean.getProNeed().equals("")|| bean.getProNeed().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 需求名不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProType() == null || bean.getProType().equals("")) {
+        if (bean.getProType() == null || bean.getProType().equals("")|| bean.getProType().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 投产类型不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProDate() == null || bean.getProDate().equals("")) {
+        if (bean.getProDate() == null || bean.getProDate().equals("")|| bean.getProDate().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 投产日期不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApplicationDept() == null || bean.getApplicationDept().equals("")) {
+        if (bean.getApplicationDept() == null || bean.getApplicationDept().equals("")|| bean.getApplicationDept().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请部门不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProApplicant() == null || bean.getProApplicant().equals("")) {
+        if (bean.getProApplicant() == null || bean.getProApplicant().equals("")|| bean.getProApplicant().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApplicantTel() == null || bean.getApplicantTel().equals("")) {
+        if (bean.getApplicantTel() == null || bean.getApplicantTel().equals("")|| bean.getApplicantTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请人联系方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProModule() == null || bean.getProModule().equals("")) {
+        if (bean.getProModule() == null || bean.getProModule().equals("")|| bean.getProModule().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 产品模块不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getBusinessPrincipal() == null || bean.getBusinessPrincipal().equals("")) {
+        if (bean.getBusinessPrincipal() == null || bean.getBusinessPrincipal().equals("")|| bean.getBusinessPrincipal().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 基地业务负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getBasePrincipal() == null || bean.getBasePrincipal().equals("")) {
+        if (bean.getBasePrincipal() == null || bean.getBasePrincipal().equals("")|| bean.getBasePrincipal().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 基地技术负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProManager() == null || bean.getProManager().equals("")) {
+        if (bean.getProManager() == null || bean.getProManager().equals("")|| bean.getProManager().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 产品经理不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsUpDatabase() == null || bean.getIsUpDatabase().equals("")) {
+        if (bean.getIsUpDatabase() == null || bean.getIsUpDatabase().equals("")|| bean.getIsUpDatabase().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("")) {
+        if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("")|| bean.getIsUpStructure().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库表不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProOperation() == null || bean.getProOperation().equals("")) {
+        if (bean.getProOperation() == null || bean.getProOperation().equals("")|| bean.getProOperation().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否需要运维监控不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("")) {
+        if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("")|| bean.getIsRefCerificate().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否涉及证书不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsAdvanceProduction() == null || bean.getIsAdvanceProduction().equals("")) {
+        if (bean.getIsAdvanceProduction() == null || bean.getIsAdvanceProduction().equals("")|| bean.getIsAdvanceProduction().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否预投产验证不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsAdvanceProduction().equals("否")) {
-            if (bean.getNotAdvanceReason() == null || bean.getNotAdvanceReason().equals("")) {
+            if (bean.getNotAdvanceReason() == null || bean.getNotAdvanceReason().equals("")|| bean.getNotAdvanceReason().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 不做预投产验证原因不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
         if (bean.getIsAdvanceProduction().equals("是")) {
-            if (bean.getProAdvanceResult() == null || bean.getProAdvanceResult().equals("")) {
+            if (bean.getProAdvanceResult() == null || bean.getProAdvanceResult().equals("")|| bean.getProAdvanceResult().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 预投产验证结果不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
-        if (bean.getIdentifier() == null || bean.getIdentifier().equals("")) {
+        if (bean.getIdentifier() == null || bean.getIdentifier().equals("")|| bean.getIdentifier().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIdentifierTel() == null || bean.getIdentifierTel().equals("")) {
+        if (bean.getIdentifierTel() == null || bean.getIdentifierTel().equals("")|| bean.getIdentifierTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人联系方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProChecker() == null || bean.getProChecker().equals("")) {
+        if (bean.getProChecker() == null || bean.getProChecker().equals("")|| bean.getProChecker().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getCheckerTel() == null || bean.getCheckerTel().equals("")) {
+        if (bean.getCheckerTel() == null || bean.getCheckerTel().equals("")|| bean.getCheckerTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人手机号码不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getValidation() == null || bean.getValidation().equals("")) {
+        if (bean.getValidation() == null || bean.getValidation().equals("")|| bean.getValidation().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 生成验证方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getDevelopmentLeader() == null || bean.getDevelopmentLeader().equals("")) {
+        if (bean.getDevelopmentLeader() == null || bean.getDevelopmentLeader().equals("")|| bean.getDevelopmentLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApprover() == null || bean.getApprover().equals("")) {
+        if (bean.getApprover() == null || bean.getApprover().equals("")|| bean.getApprover().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 审批人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getRemark() == null || bean.getRemark().equals("")) {
+        if (bean.getRemark() == null || bean.getRemark().equals("")|| bean.getRemark().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 备注不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
 
-        if (bean.getMailLeader() == null || bean.getMailLeader().equals("")) {
+        if (bean.getMailLeader() == null || bean.getMailLeader().equals("")|| bean.getMailLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }

@@ -99,6 +99,6 @@ public interface OperationProductionService {
     void updateMailGroup(MailGroupBO mailGroupBO);
 
     void productionVerificationIsNotTimely();
-    List<ProductionDO> getProductionVerificationIsNotTimely(int number);
+    List<ProductionDO> getProductionVerificationIsNotTimely(String number);
 
 }

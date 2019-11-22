@@ -95,7 +95,6 @@ public class systemOperationController {
 
     @RequestMapping("/update")
     public GenericRspDTO<NoBody> systemOperationUpdate(OperationApplicationDTO operationApplicationDTO, HttpServletRequest request) {
-        System.err.println("1111111111");
         List<MultipartFile> files=null;
         //判断是否带附件
         if(operationApplicationDTO.getAttachment()!=null&&operationApplicationDTO.getAttachment().equals("true")) {
