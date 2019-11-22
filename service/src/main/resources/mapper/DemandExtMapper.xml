@@ -1197,6 +1197,130 @@
         WHERE req_inner_seq = #{reqInnerSeq}
     </update>
 
-
+    <select id="getPrdFnishAbnor" resultMap="BaseResultMap">
+        select
+        datediff(date_format(SYSDATE(),'%Y-%m-%d'),prd_finsh_tm) as mon_remark,
+        <include refid="Base_Column_List" />
+        from t_demand_info a
+        where date_format(SYSDATE(),'%Y-%m-%d') > a.prd_finsh_tm
+        and 30 > pre_cur_period
+        and req_sts not in ('30','40','60')
+        and datediff(date_format(SYSDATE(),'%Y-%m-%d'),prd_finsh_tm) > (select pro_time from t_production_time where pro_id='6')
+        and req_impl_mon = #{0}
+        and req_abnor_type not like '%03%'
+    </select>
+    <select id="getUatUpdateAbnor" resultMap="BaseResultMap">
+        select
+        datediff(date_format(SYSDATE(),'%Y-%m-%d'),uat_update_tm) as mon_remark,
+        <include refid="Base_Column_List" />
+        from t_demand_info a
+        where date_format(SYSDATE(),'%Y-%m-%d') > a.uat_update_tm
+        and  pre_cur_period >= 30
+        and  120 > pre_cur_period
+        and req_sts not in ('30','40','60')
+        and datediff(date_format(SYSDATE(),'%Y-%m-%d'),uat_update_tm) > (select pro_time from t_production_time where pro_id='6')
+        and req_impl_mon = #{0}
+        and req_abnor_type not like '%04%'
+    </select>
+    <select id="getTestFnishAbnor" resultMap="BaseResultMap">
+        select
+        datediff(date_format(SYSDATE(),'%Y-%m-%d'),test_finsh_tm) as mon_remark,
+        <include refid="Base_Column_List" />
+        from t_demand_info a
+        where date_format(SYSDATE(),'%Y-%m-%d') > a.test_finsh_tm
+        and  pre_cur_period >= 120
+        and  140 > pre_cur_period
+        and req_sts not in ('30','40','60')
+        and datediff(date_format(SYSDATE(),'%Y-%m-%d'),test_finsh_tm) > (select pro_time from t_production_time where pro_id='6')
+        and req_impl_mon = #{0}
+        and req_abnor_type not like '%05%'
+    </select>
+    <update id="updateReqAbnorType" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        req_inner_seq = #{reqInnerSeq}
+        <if test="reqAbnorType != null and reqAbnorType != ''">
+            ,req_abnor_type =#{reqAbnorType}
+        </if>
+        WHERE req_inner_seq = #{reqInnerSeq}
+    </update>
+    <select id="getPrdFnishWarn" resultMap="BaseResultMap" parameterType="map">
+        select
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        req_prd_line AND
+        t.DIC_ID='PRD_LINE') AS req_prd_line,
+        (SELECT VALUE
+        FROM
+        t_permi_dic_data t WHERE t.NAME = req_type AND
+        t.DIC_ID='REQ_TASK_TYPE') AS req_type,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = req_sts AND
+        t.DIC_ID='REQ_STS') AS
+        req_sts,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        pre_cur_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        (SELECT
+        VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND
+        t.DIC_ID='REQ_PEROID') AS cur_mon_target,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = pre_mon_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        <include refid="Base_Column_List" />
+        from t_demand_info a where a.prd_finsh_tm=date_format(
+        date_add(SYSDATE(), interval 2 day),'%Y-%m-%d');
+    </select>
+    <select id="getUatUpdateWarn" resultMap="BaseResultMap" parameterType="map">
+        select
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        req_prd_line AND
+        t.DIC_ID='PRD_LINE') AS req_prd_line,
+        (SELECT VALUE
+        FROM
+        t_permi_dic_data t WHERE t.NAME = req_type AND
+        t.DIC_ID='REQ_TASK_TYPE') AS req_type,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = req_sts AND
+        t.DIC_ID='REQ_STS') AS
+        req_sts,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        pre_cur_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        (SELECT
+        VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND
+        t.DIC_ID='REQ_PEROID') AS cur_mon_target,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = pre_mon_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        <include refid="Base_Column_List" />
+        from t_demand_info a where a.uat_update_tm=date_format(
+        date_add(SYSDATE(), interval 2 day),'%Y-%m-%d');
+    </select>
+    <select id="getTestFnishWarn" resultMap="BaseResultMap" parameterType="map">
+        select
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        req_prd_line AND
+        t.DIC_ID='PRD_LINE') AS req_prd_line,
+        (SELECT VALUE
+        FROM
+        t_permi_dic_data t WHERE t.NAME = req_type AND
+        t.DIC_ID='REQ_TASK_TYPE') AS req_type,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = req_sts AND
+        t.DIC_ID='REQ_STS') AS
+        req_sts,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        pre_cur_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_cur_period,
+        (SELECT
+        VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND
+        t.DIC_ID='REQ_PEROID') AS cur_mon_target,
+        (SELECT VALUE FROM
+        t_permi_dic_data t WHERE t.NAME = pre_mon_period AND
+        t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        <include refid="Base_Column_List" />
+        from t_demand_info a where a.test_finsh_tm=date_format(
+        date_add(SYSDATE(), interval 2 day),'%Y-%m-%d');
+    </select>
 
 </mapper>
