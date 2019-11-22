@@ -341,8 +341,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setPassword(Constant.P_EMAIL_PSWD);
                 mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
 
-                String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
@@ -394,8 +394,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                //String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -484,8 +484,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                String[] mailToAddress = productionBean.getMailRecipient().split(";");
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                //String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();
@@ -869,8 +869,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
@@ -1028,8 +1028,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
@@ -1093,8 +1093,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file2=exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
-        String[] mailToAddresss = mp.getMailUser().split(";");
-        //String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        //String[] mailToAddresss = mp.getMailUser().split(";");
+        String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddresss);
         /**
          * 附件
@@ -1156,7 +1156,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     if (bean.getProPkgStatus().equals("待上传"))
                         s1+=s+",";
                     else
-                        command.append("cp ~/tomcat/webapps/hims/upload/propkg/"+s+"/"+bean.getProPkgName()
+                        command.append("cp ~/home/devadm/temp/propkg/"+s+"/"+bean.getProPkgName()
                                 +" ~/tomcat/webapps/hims/hckeck/ver/\n");
                 }
                 if(!s1.equals("")){
@@ -1200,8 +1200,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String result="检查失败";
 
         try{
-            session = jsch.getSession("hims", "10.9.10.116", 22);
-            session.setPassword("hims@mca");
+            session = jsch.getSession("devadm", "10.9.10.116", 22);
+            session.setPassword("devadm@hisun");
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
@@ -1279,8 +1279,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         OutputStream os = null;
         response.reset();
         try {
-            String path = "C:\\home\\devadm\\temp\\propkg";
-            //String path = "/home/devadm/temp/propkg/";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createExcel(filePath, list,null);
@@ -1741,11 +1741,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = null;
         bean = operationProductionDao.findProductionBean(reqNumber);
-//            if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
-//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-//                MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
-//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//            }
+        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(bean.getProType().equals("正常投产")){
 
             if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
@@ -1782,7 +1782,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
+        //File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
+        File fileDir = new File("/home/devadm/temp/upload/propkg/" + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
         if(fileDir.exists()){
             File[] oldFile = fileDir.listFiles();
@@ -1808,7 +1809,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         bean.setProPkgName(file.getOriginalFilename());
         StringBuffer command = new StringBuffer();
         command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
-        command.append("cp ~/tomcat/webapps/hims/upload/propkg/" + reqNumber + "/" + bean.getProPkgName()
+        command.append("cp ~/home/devadm/temp/upload/propkg/" + reqNumber + "/" + bean.getProPkgName()
                 + " ~/tomcat/webapps/hims/hckeck/ver/\n");
         command.append("sh zck.sh " + bean.getProPkgName() + "\n");
         Map<String,String> map = execCommand(command.toString());
@@ -1946,7 +1947,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
            // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + proNumber);
+            File fileDir = new File("/home/devadm/temp/upload/propkg/" + proNumber);
             File[] pkgFile=fileDir.listFiles();
             File fileSend=null;
             if(pkgFile!=null&&pkgFile.length>0){
