@@ -231,6 +231,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void add(DemandBO demandBO) {
         //校验数据
         checkReqTask(demandBO);
+        //设置时间
+        String mon = DateUtil.date2String(new Date(), "yyyy-MM");
+        demandBO.setReqImplMon(mon);
+        demandBO.setReqStartMon(mon);
         // 判断需求编号或需求名称是否重复
         List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
         if (list.size() > 0) {
@@ -238,20 +242,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
 
         //设置默认值
-        demandBO.getReqType();
-        String mon = DateUtil.date2String(new Date(), "yyyy-MM");
-        demandBO.setReqImplMon(mon);
-        demandBO.setReqStartMon(mon);
-
         //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
         //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
-        System.err.println(demandBO.getReqImplMon());
         int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
         int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
         String startdata = demandBO.getReqImplMon()+"-01";
         String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
         if("180".equals(demandBO.getCurMonTarget())){
-            System.err.println(demandBO.getExpPrdReleaseTm());
             if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");
@@ -391,6 +388,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public List<DemandBO> getReqTaskByUK(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanUtils.copyPropertiesReturnDest(demandDO, demandBO);
+        System.err.println(11111);
+        System.err.println(demandBO.toString());
         return BeanConvertUtils.convertList(demandDao.getReqTaskByUK(demandDO), DemandBO.class);
     }
 

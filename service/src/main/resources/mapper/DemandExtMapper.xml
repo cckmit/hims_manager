@@ -573,6 +573,9 @@
         FROM t_demand_info a
         <where>
             req_sts not in ('60')
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon =#{reqImplMon}
+            </if>
             <if test="reqNm != null and reqNm != ''">
                 AND a.req_nm =#{reqNm}
             </if>
