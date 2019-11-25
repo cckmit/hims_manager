@@ -3,6 +3,7 @@ buildscript {
         springBootVersion = '1.5.10.RELEASE'
         lemonVersion = '1.7.x'
         cmpayVersion = '1.7.x'
+        oracleVersion = "11.2.0.4"
         sonarUrl = 'http://172.16.50.222:9000/'
         mavenUrl = 'http://maven.cmpay.com:8081/repository/maven-public/'
         versionMngUrl = 'http://gitlab.cmpay.com:82/snippets/2/raw'
