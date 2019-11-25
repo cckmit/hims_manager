@@ -54,8 +54,6 @@ public class OperationProductionController {
         rspDTO.setPages(productionRspBO.getPageInfo().getPages());
         rspDTO.setTotal(productionRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(productionRspBO.getPageInfo().getPageSize());
-        //todo
-        operationProductionService.productionVerificationIsNotTimely();
 
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }

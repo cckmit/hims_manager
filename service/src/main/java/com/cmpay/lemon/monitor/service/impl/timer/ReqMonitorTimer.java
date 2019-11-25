@@ -2,16 +2,19 @@ package com.cmpay.lemon.monitor.service.impl.timer;
 
 
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ReqMonitorTimer {
@@ -20,6 +23,9 @@ public class ReqMonitorTimer {
 	private ReqTaskService reqTaskService;
 	@Autowired
 	private ReqPlanService reqPlanService;
+
+	@Autowired
+	private ProductTimeService productTimeService;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -40,25 +46,27 @@ public class ReqMonitorTimer {
 	/**
 	 *  每周一更新投产时间
 	 */
-//	public void updateProductTime() {
-//		Calendar c = Calendar.getInstance();
-//		SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM-dd");
-//
-//		ProductTimeBean productTimeBean = new ProductTimeBean();
-//
-//		//本周投产日
-//		c.add(Calendar.DATE, 2);
-//		String day = simpleDateFormatMonth.format(c.getTime());
-//		productTimeBean.setId(Integer.valueOf(3));
-//		productTimeBean.setTime(day);
-//		productTimeServiceMgr.updateProductTime(productTimeBean);
-//		//下周预投产时间
-//		c.add(Calendar.DATE, 7);
-//		day = simpleDateFormatMonth.format(c.getTime());
-//		productTimeBean.setId(Integer.valueOf(4));
-//		productTimeBean.setTime(day);
-//		productTimeServiceMgr.updateProductTime(productTimeBean);
-//	}
+	//@Scheduled(cron = "0 0 1 ? * 2")
+	@Scheduled(cron = "0 0 12 * * ?")
+	public void updateProductTime() {
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM-dd");
+
+		ProductionTimeBO productionTimeBO = new ProductionTimeBO();
+
+		//本周投产日
+		c.add(Calendar.DATE, 2);
+		String day = simpleDateFormatMonth.format(c.getTime());
+		productionTimeBO.setId(Integer.valueOf(3));
+		productionTimeBO.setTime(day);
+		productTimeService.updateProductTime(productionTimeBO);
+		//下周预投产时间
+		c.add(Calendar.DATE, 7);
+		day = simpleDateFormatMonth.format(c.getTime());
+		productionTimeBO.setId(Integer.valueOf(4));
+		productionTimeBO.setTime(day);
+		productTimeService.updateProductTime(productionTimeBO);
+	}
 	
 
 	/**

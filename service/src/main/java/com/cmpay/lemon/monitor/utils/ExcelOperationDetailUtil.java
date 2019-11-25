@@ -124,9 +124,9 @@ public class ExcelOperationDetailUtil {
 			//操作申请状态
 			addCell(sheet, i+1, ++k, msb.getOperStatus(), bodyFormat,0,15);
 			//申请部门
-			addCell(sheet, i+1, ++k, msb.getDevelopmentLeader(), bodyFormat,0,15);
+			addCell(sheet, i+1, ++k, msb.getOperApplicant(), bodyFormat,0,15);
 			//申请人
-			addCell(sheet, i+1, ++k, msb.getOperApplicant(), bodyFormat,0,20);
+			addCell(sheet, i+1, ++k, msb.getDevelopmentLeader(), bodyFormat,0,20);
 			//验证人
 			addCell(sheet, i+1, ++k, msb.getIdentifier(), bodyFormat,0,20);
            //开发负责人

@@ -719,13 +719,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
         File file=null;
         try{
-            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("/abcefg.xls", productionDOList, null,operationApplicationDOList);
-            file=new File("/abcefg.xls");
+            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("\\abcefg.xls", productionDOList, null,operationApplicationDOList);
+            file=new File("\\abcefg.xls");
         }catch (Exception e){
             e.printStackTrace();
         }
        boardcastScheduler.test(body,file);
-       // file.delete();
+        file.delete();
     }
     private List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date) {
         OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
