@@ -163,6 +163,29 @@
 		req_abnor_type
 	</sql>
 
+    <update id="updateReqPlanJsp" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+		UPDATE t_demand_info
+		SET
+		req_inner_seq = #{reqInnerSeq}
+		,devp_lead_dept =#{devpLeadDept}
+		,devp_coor_dept =#{ devpCoorDept }
+		,project_mng =#{ projectMng }
+		,devp_eng =#{ devpEng }
+		,front_eng =#{ frontEng }
+		,product_mng =#{ productMng }
+		,test_eng =#{ testEng }
+		,config_mng=#{configMng}
+		,prd_finsh_tm =#{ prdFinshTm }
+		,uat_update_tm =#{ uatUpdateTm }
+		,test_finsh_tm =#{ testFinshTm }
+		,pre_tm=#{preTm}
+		,exp_prd_release_tm=#{expPrdReleaseTm}
+		,devp_res_mng =#{ devpResMng}
+		,update_time =#{ updateTime }
+		,update_user =#{ updateUser }
+		WHERE req_inner_seq = #{reqInnerSeq}
+	</update>
+
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />

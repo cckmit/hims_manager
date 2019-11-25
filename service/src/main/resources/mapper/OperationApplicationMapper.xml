@@ -175,6 +175,9 @@
     	<if test="poDateStart != null and poDateEnd != null ">
     		and propose_date between #{poDateStart} and #{poDateEnd}
     	</if>
+		 <if test="proposeDate != null ">
+			 and propose_date = #{proposeDate}
+		 </if>
     	<if test="sysOperType != null and sysOperType != ''">
     	    and sys_oper_type = #{sysOperType}
     	</if>

@@ -387,8 +387,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         OutputStream os = null;
         response.reset();
         try {
-            String path = "C:\\home\\devadm\\temp\\propkg";
-            //String path = "/home/devadm/temp/propkg/";
+            //String path = "C:\\home\\devadm\\temp\\propkg";
+            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createCzlcExcel(filePath, list,null);
@@ -527,6 +527,12 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
+            // 已审批通过待部署的系统操作不能审批不通过
+            if(pro_status_after.equals("审批不通过") && "审批通过待部署".equals(status)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
         }
         for(int j=2;j<pro_number_list.length;j++){
             OperationApplicationDO bean=operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]);
@@ -569,8 +575,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                  * 附件
                  */
                 //获取邮件附件
-                // File motherFile=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +bean.getOper_number());
-                File motherFile=new File("C:\\home\\devadm\\temp\\propkg\\wlr重构测试31");
+                 File motherFile=new File( RELATIVE_PATH +bean.getOperNumber());
+                //File motherFile=new File("C:\\home\\devadm\\temp\\propkg\\wlr重构测试31");
                 File[] childFile=motherFile.listFiles();
                 if(childFile!=null){
                     for(File file:childFile){
@@ -614,8 +620,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     }
                 }
 
-                String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                //String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 if(copyToMail!=null){
                     mailInfo.setCcs(copyToMail.split(";"));
@@ -682,9 +688,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
 
-                mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
-//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
-//                mailInfo.setToAddress(mailToAddress);
+               // mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb=new StringBuffer();
 
                 mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
@@ -750,8 +756,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     /**
                      * 收件人邮箱
                      */
-                    String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                    //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+                    //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                    String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                     mailInfo.setToAddress(mailToAddress);
                     mailInfo.setSubject("【系统操作("+mess+")结果反馈】");
                     mailInfo.setContent("你好:<br/>由于【"+pro_number_list[1]+"】,您的"
@@ -797,8 +803,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            //File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            File fileNumber = new File("C:\\home\\devadm\\temp\\" + bean.getOperNumber());
+                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
+                            //File fileNumber = new File("/home/devadm/temp/" + bean.getOperNumber());
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -837,8 +843,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            //File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            File fileNumber = new File("C:\\home\\devadm\\temp\\"+ bean.getOperNumber());
+                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
+                            //File fileNumber = new File("/home/devadm/temp/"+ bean.getOperNumber());
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -882,15 +888,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            //File fileDir = new File(RELATIVE_PATH + proNumber);
-            File fileDir = new File("C:\\home\\devadm\\temp\\" + proNumber);
+            File fileDir = new File(RELATIVE_PATH + proNumber);
+           // File fileDir = new File("C:\\home\\devadm\\temp\\sysopr\\"+ proNumber);
             File[] pkgFile=fileDir.listFiles();
-            for (File f : pkgFile){
-                System.out.println(f);
+            if(pkgFile==null){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("系统操作附件未上传！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             //压缩包名称
-            //String zipPath = "/home/devadm/temp/propkg/";
-            String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
+            String zipPath = "/home/devadm/temp/propkg/";
+            //String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
             String zipName =DateUtil.date2String(new java.util.Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
@@ -922,10 +930,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
             bufferedOutPut.flush();
             // 删除文件
-            //zip.delete();
+            zip.delete();
         } catch (Exception e) {
             e.printStackTrace();
-            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }
 
@@ -940,10 +947,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
-                        String demandName = srcfile[i].getPath().substring(34, srcfile[i].getPath().length());
-                        String name = demandName.substring(0, demandName.indexOf("\\"));
-                        String path = demandName.substring(demandName.lastIndexOf("\\") + 1);
-                        out.putNextEntry(new ZipEntry(name + "\\" + path));
+                        System.err.println(srcfile[i].getPath());
+                        String path = srcfile[i].getPath().substring(srcfile[i].getPath().lastIndexOf("/") + 1);
+                        out.putNextEntry(new ZipEntry( path));
                     } else {
                         out.putNextEntry(new ZipEntry(srcfile[i].getPath()));
                     }
@@ -959,7 +965,6 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
-            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
 
         return "";
