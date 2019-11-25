@@ -46,8 +46,8 @@ public class ReqMonitorTimer {
 	/**
 	 *  每周一更新投产时间
 	 */
-	//@Scheduled(cron = "0 0 1 ? * 2")
-	@Scheduled(cron = "0 0 12 * * ?")
+	@Scheduled(cron = "0 0 1 ? * 2")
+	//@Scheduled(cron = "0 0 12 * * ?")
 	public void updateProductTime() {
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM-dd");
