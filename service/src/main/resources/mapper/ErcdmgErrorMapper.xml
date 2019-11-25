@@ -77,7 +77,12 @@
         <!--<result property="fieldName"        jdbcType="VARCHAR"      column="name"/>-->
         <!--<result property="fieldValue"       jdbcType="VARCHAR"      column="value"/>-->
     <!--</resultMap>-->
-    
+    <resultMap id="errorRecordBeanMap" type="com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO">
+        <result property="errorCode" jdbcType="VARCHAR" column="error_code"/>
+        <result property="envirCode" jdbcType="VARCHAR" column="envir_code"/>
+        <result property="timeStmp" jdbcType="VARCHAR" column="time_stmp"/>
+    </resultMap>
+
     <sql id="user_Column_List">
 		   seq_id
 		  ,user_id
@@ -124,77 +129,81 @@
         syn_flg,
         cr
     </sql>
+    <insert id="insertErrorRecordBean" parameterType="com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO">
+       INSERT INTO t_error_record (error_code,envir_code,time_stmp)
+       VALUES( #{errorCode}, #{envirCode}, #{timeStmp} )
+    </insert>
     <!-- 新增 -->
-    <!--<insert id="insert" useGeneratedKeys="true" keyProperty="error_cd">-->
-        <!--INSERT INTO t_ercdmg_error (-->
-        	<!--id,-->
-            <!--error_cd,-->
-            <!--prod_mod,-->
-            <!--app_scen,-->
-            <!--tech_tip,-->
-            <!--busn_tip,-->
-            <!--curt_state,-->
-            <!--error_state,-->
-            <!--tech_user_name,-->
-            <!--tech_user_id,-->
-            <!--prod_user_id,-->
-            <!--prod_user_name,-->
-            <!--audi_role_name,-->
-            <!--entry_date,-->
-            <!--update_date,-->
-            <!--create_datetime,-->
-            <!--remark,-->
-            <!--update_no,-->
-            <!--last_update_date-->
-            <!--<if test="buscnl!=null">-->
-             <!--,bus_cnl-->
-             <!--</if> -->
-              <!--<if test="createUserId!=null">-->
-             <!--,create_UserId-->
-             <!--</if>-->
-              <!--<if test="synflg!=null">-->
-             <!--,syn_flg-->
-             <!--</if>-->
-              <!--<if test="cr!=null">-->
-             <!--,cr-->
-             <!--</if>-->
-              <!---->
-             <!---->
-        <!--)VALUES(-->
-            <!--#{id},-->
-            <!--#{errorCd},-->
-            <!--#{prodMod},-->
-            <!--#{appScen},-->
-            <!--#{techTip},-->
-            <!--#{busnTip},-->
-            <!--#{curtState},-->
-            <!--#{errorState},-->
-            <!--#{techUserName},-->
-            <!--#{techUserId},-->
-            <!--#{prodUserId},-->
-            <!--#{prodUserName},-->
-            <!--#{audiRoleName},-->
-            <!--#{entryDate},-->
-            <!--#{updateDate},-->
-            <!--#{createDatetime},-->
-            <!--#{remark},-->
-            <!--#{updateNo},-->
-            <!--#{lastUpdateDate}-->
-           <!--<if test="buscnl!=null">-->
-             <!--,#{buscnl}-->
-             <!--</if> -->
-             <!--<if test="createUserId!=null">-->
-            <!--,#{createUserId}-->
-            <!--</if> -->
-             <!--<if test="synflg!=null">-->
-            <!--,#{synflg}-->
-            <!--</if> -->
-             <!--<if test="cr!=null">-->
-            <!--,#{cr}-->
-            <!--</if> -->
-             <!---->
-        <!--)-->
-    <!--</insert>-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="error_cd">
+        INSERT INTO t_ercdmg_error (
+        	id,
+            error_cd,
+            prod_mod,
+            app_scen,
+            tech_tip,
+            busn_tip,
+            curt_state,
+            error_state,
+            tech_user_name,
+            tech_user_id,
+            prod_user_id,
+            prod_user_name,
+            audi_role_name,
+            entry_date,
+            update_date,
+            create_datetime,
+            remark,
+            update_no,
+            last_update_date
+            <if test="buscnl!=null">
+             ,bus_cnl
+             </if>
+              <if test="createUserId!=null">
+             ,create_UserId
+             </if>
+              <if test="synflg!=null">
+             ,syn_flg
+             </if>
+              <if test="cr!=null">
+             ,cr
+             </if>
+
+
+        )VALUES(
+            #{id},
+            #{errorCd},
+            #{prodMod},
+            #{appScen},
+            #{techTip},
+            #{busnTip},
+            #{curtState},
+            #{errorState},
+            #{techUserName},
+            #{techUserId},
+            #{prodUserId},
+            #{prodUserName},
+            #{audiRoleName},
+            #{entryDate},
+            #{updateDate},
+            #{createDatetime},
+            #{remark},
+            #{updateNo},
+            #{lastUpdateDate}
+           <if test="buscnl!=null">
+             ,#{buscnl}
+             </if>
+             <if test="createUserId!=null">
+            ,#{createUserId}
+            </if>
+             <if test="synflg!=null">
+            ,#{synflg}
+            </if>
+             <if test="cr!=null">
+            ,#{cr}
+            </if>
+
+        )
+    </insert>
     
      <!-- 备份错误码历史表 -->
     <!--<insert id="insertErrorlg" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
@@ -254,60 +263,60 @@
         <!--)-->
     <!--</insert>-->
     <!---->
-    <!--&lt;!&ndash; 新增PUBTMSG &ndash;&gt;-->
-    <!--<insert id="insertPubtmsg" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--INSERT INTO pubtmsg(-->
-            <!--MSG_CD,-->
-            <!--MSG_TYP,-->
-            <!--ATH_LVL1,-->
-            <!--ATH_LVL2,-->
-            <!--MSG_INF,-->
-            <!--MON_FLG,-->
-            <!--MSG_DESC,-->
-            <!--last_upd_opr,-->
-            <!--upd_dt,-->
-            <!--TM_SMP-->
-        <!--)VALUES(-->
-            <!--#{errorCd},-->
-            <!--'E',-->
-            <!--'0',-->
-            <!--'0',-->
-            <!--#{techTip},-->
-            <!--0,-->
-            <!--#{appScen},-->
-            <!--#{techUserId},-->
-            <!--to_char(sysdate,'yyyymmdd'),-->
-           <!--to_char(sysdate,'yyyymmddhh24miss')-->
-        <!--)-->
-    <!--</insert>-->
-    <!--&lt;!&ndash; 新增PUBTTMS &ndash;&gt;-->
-    <!--<insert id="insertPubttms" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--INSERT INTO PUBTTMS(-->
-            <!--MSG_CD,-->
-            <!--BUS_CNL,-->
-            <!--MSG_INF,-->
-            <!--MSG_DESC,-->
-            <!--BUS_TYP,-->
-            <!--last_upd_opr,-->
-            <!--upd_dt,-->
-            <!--TM_SMP-->
-        <!--)VALUES(-->
-            <!--#{errorCd},-->
-            <!--#{buscnl},-->
-            <!--#{busnTip},-->
-            <!--#{appScen},-->
-            <!--'*',-->
-            <!--#{techUserId},-->
-            <!--to_char(sysdate,'yyyymmdd'),-->
-            <!--to_char(sysdate,'yyyymmddhh24miss')-->
-        <!--)-->
-    <!--</insert>-->
-    <!--<select id="selectPubtmsg" parameterType="java.lang.String"  resultType="java.lang.String" >-->
-         <!--select MSG_CD FROM pubtmsg where MSG_CD=#{errorCd}  -->
-    <!--</select>-->
-    <!--<select id="selectPubttms" parameterType="java.lang.String"  resultType="java.lang.String">-->
-         <!--select MSG_CD FROM pubttms where MSG_CD=#{errorCd} and  bus_cnl=#{buscnl}   -->
-    <!--</select>-->
+    <!-- 新增PUBTMSG -->
+    <insert id="insertPubtmsg" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        INSERT INTO pubtmsg(
+            MSG_CD,
+            MSG_TYP,
+            ATH_LVL1,
+            ATH_LVL2,
+            MSG_INF,
+            MON_FLG,
+            MSG_DESC,
+            last_upd_opr,
+            upd_dt,
+            TM_SMP
+        )VALUES(
+            #{errorCd},
+            'E',
+            '0',
+            '0',
+            #{techTip},
+            0,
+            #{appScen},
+            #{techUserId},
+            #{updDt},
+            #{tmSmp}
+        )
+    </insert>
+    <!-- 新增PUBTTMS -->
+    <insert id="insertPubttms" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        INSERT INTO PUBTTMS(
+            MSG_CD,
+            BUS_CNL,
+            MSG_INF,
+            MSG_DESC,
+            BUS_TYP,
+            last_upd_opr,
+            upd_dt,
+            TM_SMP
+        )VALUES(
+            #{errorCd},
+            #{buscnl},
+            #{busnTip},
+            #{appScen},
+            '*',
+            #{techUserId},
+            #{updDt},
+            #{tmSmp}
+        )
+    </insert>
+    <select id="selectPubtmsg" parameterType="java.lang.String"  resultType="java.lang.String" >
+         select MSG_CD FROM pubtmsg where MSG_CD=#{errorCd}
+    </select>
+    <select id="selectPubttms" parameterType="java.lang.String"  resultType="java.lang.String">
+         select MSG_CD FROM pubttms where MSG_CD=#{errorCd} and  bus_cnl=#{buscnl}
+    </select>
     <!--<update id="updatePubtmsg">-->
         <!--update Pubtmsg-->
           <!--<set>-->
@@ -762,12 +771,12 @@
         <!--where id =#{id} -->
     <!--</select>-->
     <!---->
-   <!--<select id="checkErrorCodeExist" parameterType="map" resultMap="rm" >-->
-        <!--SELECT -->
-        <!--<include refid="Base_Column_List" />-->
-        <!--from t_ercdmg_error -->
-         <!--where error_cd =#{errorCd}  and  bus_cnl=#{buscnl}-->
-    <!--</select>-->
+   <select id="checkErrorCodeExist" parameterType="map" resultMap="rm" >
+        SELECT
+        <include refid="Base_Column_List" />
+        from t_ercdmg_error
+         where error_cd =#{errorCd}  and  bus_cnl=#{buscnl}
+    </select>
     <!---->
      <!--&lt;!&ndash; 插入待上传表 &ndash;&gt;-->
     <!--<insert id="insertForUpload" parameterType="com.hisun.persistence.beans.ErcdmgError">-->

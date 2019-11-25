@@ -59,7 +59,9 @@ public class ErrorController {
     @RequestMapping("/add")
     public GenericRspDTO addError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
         System.err.println(reqDTO);
-        System.err.println(1111111);
+        ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
+        BeanConvertUtils.convert(errorComditionBO, reqDTO);
+        errorService.addError(errorComditionBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**
@@ -70,7 +72,9 @@ public class ErrorController {
     @RequestMapping("/update")
     public GenericRspDTO updateError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
         System.err.println(reqDTO);
-        System.err.println(1111111);
+        ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
+        BeanConvertUtils.convert(errorComditionBO, reqDTO);
+        errorService.updateError(errorComditionBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 }

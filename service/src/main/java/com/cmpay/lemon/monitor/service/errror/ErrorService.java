@@ -14,4 +14,17 @@ public interface ErrorService {
      * @return
      */
     ErcdmgErrorComditionRspBO searchErroeList (ErcdmgErrorComditionBO ercdmgErrorComditionBO);
+
+    /**
+     * 新增
+     *
+     * @param ercdmgErrorComditionBO
+     */
+    void addError(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
+    /**
+     * 修改
+     *
+     * @param ercdmgErrorComditionBO
+     */
+    void updateError(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
 }

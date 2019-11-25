@@ -40,8 +40,29 @@ public class ErcdmgErrorComditionDO extends BaseDO {
     private String strDateStr;
     private String endDateStr;
     private String desc;
+    private String updDt;
+    private String tmSmp;
+
 
     public ErcdmgErrorComditionDO() {
+    }
+
+    public String getUpdDt() {
+        return updDt;
+    }
+
+    public void setUpdDt(String updDt) {
+        this.updDt = updDt;
+    }
+
+    @Override
+    public String getTmSmp() {
+        return tmSmp;
+    }
+
+    @Override
+    public void setTmSmp(String tmSmp) {
+        this.tmSmp = tmSmp;
     }
 
     public String getId() {
