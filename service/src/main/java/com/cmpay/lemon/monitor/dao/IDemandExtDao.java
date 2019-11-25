@@ -33,7 +33,8 @@ public interface IDemandExtDao extends IDemandDao {
      * 插入存量需求
      */
     void insertStockReq(DemandDO demand);
-
+    //需求计划页面update
+    void updateReqPlanJsp(DemandDO bean);
     /**
      * 插入存量需求
      */

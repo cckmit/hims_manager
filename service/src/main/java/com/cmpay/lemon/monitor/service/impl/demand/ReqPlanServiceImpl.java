@@ -301,7 +301,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandBO.setReqSts("20");
                 }
             }
-            demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
+            setDefaultUser(demandBO);
+            demandDao.updateReqPlanJsp(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);

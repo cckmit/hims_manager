@@ -889,9 +889,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
             File fileDir = new File(RELATIVE_PATH + proNumber);
-            //File fileDir = new File("/home/devadm/temp/" + proNumber);
+           // File fileDir = new File("C:\\home\\devadm\\temp\\sysopr\\"+ proNumber);
             File[] pkgFile=fileDir.listFiles();
-            if(pkgFile==null&&pkgFile.length==0){
+            if(pkgFile==null){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("系统操作附件未上传！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -933,9 +933,6 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             zip.delete();
         } catch (Exception e) {
             e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("系统操作附件下载失败！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
     }
 
@@ -950,10 +947,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
-                        String demandName = srcfile[i].getPath().substring(25, srcfile[i].getPath().length());
-                        String name = demandName.substring(0, demandName.indexOf("\\"));
-                        String path = demandName.substring(demandName.lastIndexOf("\\") + 1);
-                        out.putNextEntry(new ZipEntry(name + "\\" + path));
+                        System.err.println(srcfile[i].getPath());
+                        String path = srcfile[i].getPath().substring(srcfile[i].getPath().lastIndexOf("/") + 1);
+                        out.putNextEntry(new ZipEntry( path));
                     } else {
                         out.putNextEntry(new ZipEntry(srcfile[i].getPath()));
                     }
@@ -969,9 +965,6 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("系统操作附件下载失败！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
         return "";
