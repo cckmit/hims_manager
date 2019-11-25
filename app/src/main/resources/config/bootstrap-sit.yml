@@ -41,7 +41,7 @@ lemon:
       driverClassName: com.mysql.jdbc.Driver
       url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
       username: hims
-      password: 'hims2016'
+      password: 'hims2019'
   idgen:
     redis:
       password: '*****'

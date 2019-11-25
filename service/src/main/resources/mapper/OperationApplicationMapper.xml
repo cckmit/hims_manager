@@ -67,6 +67,21 @@
     		)
     </insert>
 
+	<select id="getSystemEntryVerificationIsNotTimelyList" resultMap="rm"  >
+		select
+		<include refid="Base_Column_List" />
+		from t_operational_application_detail
+		<where >
+			<if test="operStatus != null" >
+				and oper_status = #{operStatus,jdbcType=BIGINT}
+			</if>
+			<if test="proposeDate != null" >
+				and propose_date > #{proposeDate,jdbcType=VARCHAR}
+			</if>
+			ORDER BY application_sector,oper_applicant,propose_date desc
+		</where>
+	</select>
+
     <update id="updateAllOperationalApplication" parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
     	UPDATE t_operational_application_detail
     	<set>

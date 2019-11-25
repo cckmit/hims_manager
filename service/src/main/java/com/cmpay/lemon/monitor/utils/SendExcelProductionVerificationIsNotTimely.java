@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.utils;
 
+import com.cmpay.lemon.monitor.entity.OperationApplicationDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
 import jxl.Workbook;
 import jxl.format.Alignment;
@@ -17,14 +18,14 @@ import java.util.Date;
 import java.util.List;
 
 public class SendExcelProductionVerificationIsNotTimely {
-	public  String createExcel(String path, List<ProductionDO> list, List<ProductionDO> listTotal) throws Exception {
+	public  String createExcel(String path, List<ProductionDO> list, List<ProductionDO> listTotal, List<OperationApplicationDO> listTwo) throws Exception {
 
 		File file = new File(path);
 		WritableWorkbook book = null;
 		book = Workbook.createWorkbook(file);
 		WritableSheet sheet = book.createSheet(file.getName(), 0);
 		setHeader(sheet);
-		String[] params = setBody(sheet, list); // 设置Excel内容主体信息
+		String[] params = setBody(sheet, list,listTwo); // 设置Excel内容主体信息
 		setTotal(sheet, listTotal,params); // 设置Excel内容主体信息
 		book.write();
 		book.close();
@@ -33,7 +34,7 @@ public class SendExcelProductionVerificationIsNotTimely {
 	
 	private  void setHeader(WritableSheet sheet) throws WriteException {
 		String[] headerNames = new String[]{
-				"投产编号","需求名称及内容简述","投产类型","计划投产日期","申请部门","产品经理","已投产天数"
+				"投产编号/系统操作编号","投产/操作内容简述","投产/操作类型","投产/操作日期","申请部门","验证人","已投产/操作天数"
 			/*	"投产编号","需求名称及内容简述","投产类型","计划投产日期","申请部门","投产申请人","申请人联系方式",
 				"产品所属模块","业务需求提出人","基地负责人","产品经理","投产状态","是否更新数据库数据","是否更新数据库（表）结构（包含DDL语句）","投产后是否需要运维监控",
 				"是否涉及证书","是否预投产验证","不能预投产验证原因","预投产验证结果","验证人 ","验证人联系方式"
@@ -60,7 +61,7 @@ public class SendExcelProductionVerificationIsNotTimely {
 		}
 	}
 	
-	private  String[] setBody(WritableSheet sheet, List<ProductionDO> rowList) throws Exception {
+	private  String[] setBody(WritableSheet sheet, List<ProductionDO> rowList,List<OperationApplicationDO> listTwo) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setAlignment(Alignment.LEFT); // 水平居中对齐
 		bodyFormat.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
@@ -70,10 +71,12 @@ public class SendExcelProductionVerificationIsNotTimely {
 		bodyFormatLeft.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
 		bodyFormatLeft.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);		
 		ProductionDO msb = null;
+		OperationApplicationDO msb2=null;
 		int totalRow = 0;
 		BigDecimal totalWorkloadPoint = new BigDecimal(0.0);
 		BigDecimal currentWorkloadPoint = new BigDecimal(0.0);
 		String [] params = new String[3];
+
 		for (int i = 0; i < rowList.size(); i++) {
 			msb = rowList.get(i);
 			int k = -1;
@@ -93,7 +96,7 @@ public class SendExcelProductionVerificationIsNotTimely {
 			addCell(sheet, i+1, ++k, msb.getApplicationDept(), bodyFormat,0,15);
 
 			//产品经理
-			addCell(sheet, i+1, ++k, msb.getProManager(), bodyFormat,0,20);
+			addCell(sheet, i+1, ++k, msb.getIdentifier(), bodyFormat,0,20);
 			//已投产天数
 			Calendar c1 = Calendar.getInstance();
 			Calendar c2 = Calendar.getInstance();
@@ -102,6 +105,35 @@ public class SendExcelProductionVerificationIsNotTimely {
 			long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(msb.getProDate())).getTime()) / (24 * 60 * 60 * 1000);
 			addCell(sheet, i+1, ++k, String.valueOf(day), bodyFormat,0,20);
 		}
+        for (int i = rowList.size(); i < listTwo.size()+rowList.size(); i++) {
+            int k = -1;
+			msb2 = listTwo.get(i- rowList.size());
+			//投产编号
+			addCell(sheet, i+1, ++k, msb2.getOperNumber(), bodyFormat,0,20);
+			//需求名称及内容简述
+			addCell(sheet, i+1, ++k, msb2.getOperRequestContent(), bodyFormat,0,50);
+			//投产类型
+			addCell(sheet, i+1, ++k, msb2.getSysOperType(), bodyFormat,0,15);
+			//计划投产日期
+			// 日期转换
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			if(msb2.getProposeDate()!=null)
+				addCell(sheet, i+1, ++k, sdf.format(msb2.getProposeDate()), bodyFormat,0,20);
+			//申请部门
+			addCell(sheet, i+1, ++k, msb2.getApplicationSector(), bodyFormat,0,15);
+
+			//产品经理
+			addCell(sheet, i+1, ++k, msb2.getIdentifier(), bodyFormat,0,20);
+			//已投产天数
+			Calendar c1 = Calendar.getInstance();
+			Calendar c2 = Calendar.getInstance();
+			c1.setTime(sdf.parse(sdf.format(new Date())));
+			c2.setTime(sdf.parse(sdf.format(msb2.getProposeDate())));
+			long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(msb2.getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
+			addCell(sheet, i+1, ++k, String.valueOf(day), bodyFormat,0,20);
+		}
+
+
 		params[0]=String.valueOf(totalRow);
 		params[1]=String.valueOf(totalWorkloadPoint);
 		params[2]=String.valueOf(currentWorkloadPoint);

@@ -677,7 +677,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public void productionVerificationIsNotTimely() {
         String date="2019-10-01";
+        //获得投产验证不及时清单
         List<ProductionDO> productionDOList = getProductionVerificationIsNotTimely(date);
+        //获得系统录入验证不及时清单
+        List<OperationApplicationDO> operationApplicationDOList = getSystemEntryVerificationIsNotTimelyList(date);
         Map<String, Integer> map = new HashMap<>();
         productionDOList.forEach(m->{
             String applicationDept = m.getApplicationDept();
@@ -688,32 +691,58 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 map.put(applicationDept,1);
             }
         });
-
-        String body="投产验证不及时清单汇总"+"\n"
-            ;
+        String body="投产验证不及时清单汇总"+"\n";
         for(Map.Entry<String, Integer> entry : map.entrySet()){
             String mapKey = entry.getKey();
             Integer mapValue = entry.getValue();
             body=body+ mapKey+":"+mapValue+"条"+"\n";
         }
+        body=body+ "\n";
+        if(!operationApplicationDOList.isEmpty()) {
+            operationApplicationDOList.forEach(m -> {
+                String applicationDept = m.getApplicationSector();
+                boolean exist = map.containsKey(applicationDept);
+                if (exist) {
+                    map.put(applicationDept, map.get(applicationDept) + 1);
+                } else {
+                    map.put(applicationDept, 1);
+                }
+            });
+            body = body + "操作录入不及时验证清单汇总" + "\n";
+            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                String mapKey = entry.getKey();
+                Integer mapValue = entry.getValue();
+                body = body + mapKey + ":" + mapValue + "条" +"\n";
+            }
+        }
         body=body+"详情如下";
         SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
         File file=null;
         try{
-            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("D:\\投产验证不及时清单.xls", productionDOList, null);
-            file=new File("D:\\投产验证不及时清单.xls");
+            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("/abcefg.xls", productionDOList, null,operationApplicationDOList);
+            file=new File("/abcefg.xls");
         }catch (Exception e){
             e.printStackTrace();
         }
-        boardcastScheduler.test(body,file);
-        file.delete();
-
-
-
+       boardcastScheduler.test(body,file);
+       // file.delete();
     }
+    private List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date) {
+        OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
+        try {
+            operationApplicationDO.setOperStatus("操作完成");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            operationApplicationDO.setProposeDate(new java.sql.Date(date1.getTime()));
+        }catch ( Exception e){
+            e.printStackTrace();
+        }
+        return operationApplicationDao.getSystemEntryVerificationIsNotTimelyList(operationApplicationDO);
+    }
+
     /**
-     * @param date 天数
-     *  计算天数内投产验证不及时清单
+     * @param date 日期
+     *  计算日期之后投产验证不及时清单
      */
     @Override
     public List<ProductionDO> getProductionVerificationIsNotTimely(String date) {
@@ -2072,7 +2101,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDO);
         productionBO.setMailRecipient(bean.getMailRecipient());
         productionBO.setMailCopyPerson(bean.getMailCopyPerson());
