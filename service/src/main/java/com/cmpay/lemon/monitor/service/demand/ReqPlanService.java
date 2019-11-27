@@ -1,6 +1,5 @@
 package com.cmpay.lemon.monitor.service.demand;
 
-import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ProjectStartBO;
@@ -110,4 +109,6 @@ public interface ReqPlanService {
      * @param file
      */
     void doBatchImport(MultipartFile file);
+
+    List<DemandBO> getNormalExecutionDemand(DemandDO demandDO);
 }

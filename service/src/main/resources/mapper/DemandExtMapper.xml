@@ -550,13 +550,13 @@
                 AND a.req_sts = #{reqSts}
             </if>
             <if test="reqAbnorType !=null  and reqAbnorType != '' and reqAbnorType eq '01'">
-                AND NOT ( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
-                OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
-                OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
-                AND req_sts not in ('30','40','60')
-                AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
-                OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )
-            </if>
+            AND NOT ( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
+            OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
+            OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
+            AND req_sts not in ('30','40','60')
+            AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+            OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )
+        </if>
             <if test="reqAbnorType !=null and reqAbnorType != '' and reqAbnorType eq '02'">
                 AND( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
                 OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
@@ -585,6 +585,63 @@
             </if>
             <if test="endMonRemark eq '02'">
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
+        </where>
+        ORDER BY a.req_inner_seq desc
+    </select>
+
+
+    <select id="getNormalExecutionDemand" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            req_sts not in ('30','40','60')
+            and  req_abnor_type ='01'
+            <if test="isMonthSer != null and isMonthSer != ''">
+                AND -a.pre_cur_period > -a.cur_mon_target
+            </if>
+            <if test="reqNm != null and reqNm != ''">
+                AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
+            </if>
+            <if test="reqNo != null and reqNo != ''">
+                AND a.req_no LIKE CONCAT('%',#{reqNo},'%')
+            </if>
+            <if test="reqType != null and reqType != ''">
+                AND a.req_type = #{reqType}
+            </if>
+            <if test="preCurPeriod != null and preCurPeriod != ''">
+                AND a.pre_cur_period = #{preCurPeriod}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''">
+                AND a.req_start_mon = #{reqStartMon}
+            </if>
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                AND a.devp_lead_dept = #{devpLeadDept}
+            </if>
+            <if test="devpCoorDept != null and devpCoorDept != ''">
+                AND a.devp_coor_dept LIKE CONCAT('%',#{devpCoorDept},'%')
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon = #{reqImplMon}
+            </if>
+            <if test="reqPrdLine !=null and reqPrdLine != ''">
+                AND a.req_prd_line = #{reqPrdLine}
+            </if>
+            <if test="reqMnger !=null and reqMnger != ''">
+                AND a.req_mnger LIKE CONCAT('%',#{reqMnger},'%')
+            </if>
+            <if test="projectMng != null and projectMng != ''">
+                AND a.project_mng = #{projectMng}
+            </if>
+            <if test="productMng != null and productMng != ''">
+                AND a.product_mng = #{productMng}
+            </if>
+            <if test="isSvnBuild != null and isSvnBuild != ''">
+                AND a.is_svn_build = #{isSvnBuild}
+            </if>
+            <if test="reqSts !=null and reqSts != ''">
+                AND a.req_sts = #{reqSts}
             </if>
         </where>
         ORDER BY a.req_inner_seq desc

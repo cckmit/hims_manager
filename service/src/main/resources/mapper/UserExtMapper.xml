@@ -26,4 +26,47 @@
         from sys_user
         where username = #{username,jdbcType=VARCHAR}
     </select>
+
+    <select id="search" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.UserDO" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_user
+        <where >
+            <if test="userNo != null" >
+                and user_no = #{userNo,jdbcType=BIGINT}
+            </if>
+            <if test="username != null" >
+                and fullname like CONCAT('%',#{username},'%')
+                or username like CONCAT('%',#{username},'%')
+            </if>
+            <if test="password != null" >
+                and password = #{password,jdbcType=VARCHAR}
+            </if>
+            <if test="salt != null" >
+                and salt = #{salt,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="fullname != null" >
+                and fullname = #{fullname,jdbcType=VARCHAR}
+            </if>
+            <if test="email != null" >
+                and email = #{email,jdbcType=VARCHAR}
+            </if>
+            <if test="mobile != null" >
+                and mobile = #{mobile,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null" >
+                and status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="createUserNo != null" >
+                and create_user_no = #{createUserNo,jdbcType=BIGINT}
+            </if>
+            <if test="createTime != null" >
+                and create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+    </select>
+
 </mapper>

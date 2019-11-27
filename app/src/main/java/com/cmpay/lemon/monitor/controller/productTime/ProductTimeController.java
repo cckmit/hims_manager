@@ -10,8 +10,8 @@ import com.cmpay.lemon.monitor.dto.ProductionTimeDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeReqDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.impl.timer.ReqMonitorTimer;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
-import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +33,7 @@ public class ProductTimeController {
     @Autowired
     private ProductTimeService productTimeService;
     @Autowired
-    private OperationProductionService operationProductionService;
+    ReqMonitorTimer reqMonitorTimer;
     @RequestMapping("/list")
     public GenericRspDTO<ProductionTimeRspDTO> list(GenericDTO<NoBody> req){
         ProductionTimeRspDTO productionTimeRspDTO = new ProductionTimeRspDTO();
@@ -54,8 +54,6 @@ public class ProductTimeController {
         // 设置投产日最大值
         productionTimeRspDTO.setMaxProDate(sdf.format(cal.getTime()));
 
-        //todo 先放着测试用
-        operationProductionService.productionVerificationIsNotTimely();
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, productionTimeRspDTO);
     }
 

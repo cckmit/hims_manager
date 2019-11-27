@@ -16,6 +16,7 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,7 +70,6 @@ public class SystemUserController {
         UserInfoQueryBO userInfoQueryBO = new UserInfoQueryBO();
         BeanUtils.copyProperties(userInfoQueryBO, userInfoQueryReqDTO);
         PageInfo<UserDO> page = systemUserService.findUsers(userInfoQueryBO);
-
         List<UserInfoDTO> userInfos = BeanConvertUtils.convertList(page.getList(), UserInfoDTO.class);
         UserInfoQueryRspDTO userInfoQueryRspDTO = new UserInfoQueryRspDTO();
         userInfoQueryRspDTO.setList(userInfos);
@@ -163,5 +163,20 @@ public class SystemUserController {
         List<Long> roleIds = systemRoleService.getRolesByUserNo(userNo);
         userInfoDTO.setRoleIds(roleIds);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, userInfoDTO);
+    }
+
+    /**
+     * 获得操作者fullname（姓名全称）
+     *
+     * @param name
+     * @return
+     */
+    @PostMapping("/getFullName")
+    public GenericRspDTO<String> getFullName(String name) {
+        if(StringUtils.isEmpty(name)){
+            name = SecurityUtils.getLoginName();
+        }
+        String fullName = systemUserService.getFullname(name);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, fullName);
     }
 }

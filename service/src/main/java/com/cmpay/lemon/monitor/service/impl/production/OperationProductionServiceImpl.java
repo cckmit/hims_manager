@@ -136,7 +136,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
             // 设置excel的文件名称
             String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
-            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+                       response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             workbook.write(bufferedOutPut);
             bufferedOutPut.flush();
@@ -669,65 +669,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         operationProductionDao.updateMailGroup(mailGroupDO);
     }
 
-    /*
-    *投产不及时验证清单发送企业微信
-    * */
-    //TODO 添加定时
-   // @Scheduled
-    @Override
-    public void productionVerificationIsNotTimely() {
-        String date="2019-10-01";
-        //获得投产验证不及时清单
-        List<ProductionDO> productionDOList = getProductionVerificationIsNotTimely(date);
-        //获得系统录入验证不及时清单
-        List<OperationApplicationDO> operationApplicationDOList = getSystemEntryVerificationIsNotTimelyList(date);
-        Map<String, Integer> map = new HashMap<>();
-        productionDOList.forEach(m->{
-            String applicationDept = m.getApplicationDept();
-            boolean exist = map.containsKey(applicationDept);
-            if(exist){
-                map.put(applicationDept,map.get(applicationDept)+1);
-            }else{
-                map.put(applicationDept,1);
-            }
-        });
-        String body="投产验证不及时清单汇总"+"\n";
-        for(Map.Entry<String, Integer> entry : map.entrySet()){
-            String mapKey = entry.getKey();
-            Integer mapValue = entry.getValue();
-            body=body+ mapKey+":"+mapValue+"条"+"\n";
-        }
-        body=body+ "\n";
-        if(!operationApplicationDOList.isEmpty()) {
-            operationApplicationDOList.forEach(m -> {
-                String applicationDept = m.getApplicationSector();
-                boolean exist = map.containsKey(applicationDept);
-                if (exist) {
-                    map.put(applicationDept, map.get(applicationDept) + 1);
-                } else {
-                    map.put(applicationDept, 1);
-                }
-            });
-            body = body + "操作录入不及时验证清单汇总" + "\n";
-            for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                String mapKey = entry.getKey();
-                Integer mapValue = entry.getValue();
-                body = body + mapKey + ":" + mapValue + "条" +"\n";
-            }
-        }
-        body=body+"详情如下";
-        SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
-        File file=null;
-        try{
-            String excel = sendExcelProductionVerificationIsNotTimely.createExcel("\\abcefg.xls", productionDOList, null,operationApplicationDOList);
-            file=new File("\\abcefg.xls");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-       boardcastScheduler.test(body,file);
-        file.delete();
-    }
-    private List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date) {
+
+    public List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date) {
         OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
         try {
             operationApplicationDO.setOperStatus("操作完成");

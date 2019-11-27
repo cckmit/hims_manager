@@ -1,20 +1,27 @@
 package com.cmpay.lemon.monitor.service.impl.timer;
 
 
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
+import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.OperationApplicationDO;
+import com.cmpay.lemon.monitor.entity.ProductionDO;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
+import com.cmpay.lemon.monitor.service.production.OperationProductionService;
+import com.cmpay.lemon.monitor.utils.DateUtil;
+import com.cmpay.lemon.monitor.utils.SendExcelProductionVerificationIsNotTimely;
+import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ReqMonitorTimer {
@@ -26,6 +33,11 @@ public class ReqMonitorTimer {
 
 	@Autowired
 	private ProductTimeService productTimeService;
+	@Autowired
+	private OperationProductionService operationProductionService;
+	@Autowired
+	private BoardcastScheduler boardcastScheduler;
+
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -46,8 +58,7 @@ public class ReqMonitorTimer {
 	/**
 	 *  每周一更新投产时间
 	 */
-	@Scheduled(cron = "0 0 1 ? * 2")
-	//@Scheduled(cron = "0 0 12 * * ?")
+	@Scheduled(cron = "0 0 1 ? * 1")
 	public void updateProductTime() {
 		Calendar c = Calendar.getInstance();
 		SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM-dd");
@@ -67,7 +78,66 @@ public class ReqMonitorTimer {
 		productionTimeBO.setTime(day);
 		productTimeService.updateProductTime(productionTimeBO);
 	}
-	
+
+
+	/*
+	 *投产不及时验证清单发送企业微信
+	 *每天中午12点执行
+	 * */
+	@Scheduled(cron = "0 0 12 * * ?")
+	public void productionVerificationIsNotTimely() {
+		String date="2019-10-01";
+		//获得投产验证不及时清单
+		List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
+		//获得系统录入验证不及时清单
+		List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList(date);
+		Map<String, Integer> map = new HashMap<>();
+		productionDOList.forEach(m->{
+			String applicationDept = m.getApplicationDept();
+			boolean exist = map.containsKey(applicationDept);
+			if(exist){
+				map.put(applicationDept,map.get(applicationDept)+1);
+			}else{
+				map.put(applicationDept,1);
+			}
+		});
+		String body="投产验证不及时清单汇总"+"\n";
+		for(Map.Entry<String, Integer> entry : map.entrySet()){
+			String mapKey = entry.getKey();
+			Integer mapValue = entry.getValue();
+			body=body+ mapKey+":"+mapValue+"条"+"\n";
+		}
+		body=body+ "\n";
+		if(!operationApplicationDOList.isEmpty()) {
+			operationApplicationDOList.forEach(m -> {
+				String applicationDept = m.getApplicationSector();
+				boolean exist = map.containsKey(applicationDept);
+				if (exist) {
+					map.put(applicationDept, map.get(applicationDept) + 1);
+				} else {
+					map.put(applicationDept, 1);
+				}
+			});
+			body = body + "操作录入不及时验证清单汇总" + "\n";
+			for (Map.Entry<String, Integer> entry : map.entrySet()) {
+				String mapKey = entry.getKey();
+				Integer mapValue = entry.getValue();
+				body = body + mapKey + ":" + mapValue + "条" +"\n";
+			}
+		}
+		body=body+"详情如下";
+		SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
+		File file=null;
+		try{
+			String excel = "Unverified_List_" + DateUtil.date2String(new Date(), "yyyyMMdd") + ".xls";
+			file=new File(excel);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
+		boardcastScheduler.pushValidationNotTimelyChecklist(body,file);
+		file.delete();
+	}
 
 	/**
 	 * 需求月底反馈 每月1号 系统统计月底实际完成阶段未达到月初预计完成阶段的需求，并邮件通知产品经理对需求目标未完成情况进行原因反馈，
@@ -202,7 +272,108 @@ public class ReqMonitorTimer {
 			e.printStackTrace();
 			logger.error("需求异常状态监控失败："+e.getMessage());
 		}
-		
+	}
+
+
+	//todo
+	// 需求预警 ：“需求定稿时间”或“UAT更新时间”或“测试完成时间”或“预投产时间”、“投产时间”小于1天，系统每日发送微信推送。
+	// 日终，根据系统当前时间离关键里程碑计划完成时间剩余天数小于等于1且进度滞后于里程碑阶段的需求，每日上午8点-8点30分发送需求预警邮件通知
+	//
+	@Scheduled(cron = "0 0 12 * * ?")
+	public void progressAlertPush() {
+		DemandDO demandDO = new DemandDO();
+		String month = DateUtil.date2String(new Date(), "yyyy-MM");
+		demandDO.setReqImplMon(month);
+		List<DemandBO> demandBOlist = reqPlanService.getNormalExecutionDemand(demandDO);
+		demandBOlist.forEach(m->{
+			if(StringUtils.isEmpty(m.getPreCurPeriod())){
+				return;
+			}else {
+				int PreCurPeriod = Integer.parseInt(m.getPreCurPeriod());
+				//需求定稿
+				if (PreCurPeriod<30) {
+					if(StringUtils.isEmpty(m.getPrdFinshTm())) {
+						return;
+					}else{
+						int date =dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getPrdFinshTm());
+						if(date==1){
+							String body =m.getReqNo() +"\n"+ m.getReqNm()+"\n"+"计划于明日达到阶段性目标【需求定稿】，请按时更新状态或提交文档，若计划有变，请及时变更";
+							boardcastScheduler.pushTimeOutWarning(body);
+						}
+					}
+
+				}
+				//UAT更新
+				else if (PreCurPeriod<120) {
+					if(StringUtils.isEmpty(m.getUatUpdateTm())) {
+						return;
+					}else{
+						int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getUatUpdateTm());
+						if(date==1){
+							String body =m.getReqNo() +"\n"+ m.getReqNm()+"\n"+"计划于明日达到阶段性目标【UAT更新】，请按时更新状态或提交文档，若计划有变，请及时变更";
+							boardcastScheduler.pushTimeOutWarning(body);
+						}
+					}
+
+				}
+				//测试完成
+				else if (PreCurPeriod<130) {
+					if(StringUtils.isEmpty(m.getTestFinshTm())) {
+						return;
+					}else{
+						int date =dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"),	m.getTestFinshTm());
+						if(date==1){
+							String body =m.getReqNo() +"\n"+ m.getReqNm()+"\n"+"计划于明日达到阶段性目标【UAT测试完成】，请按时更新状态或提交文档，若计划有变，请及时变更";
+							boardcastScheduler.pushTimeOutWarning(body);
+						}
+					}
+
+				}
+				//预投产
+				else if (PreCurPeriod<160) {
+					if(StringUtils.isEmpty(m.getPreTm())) {
+						return;
+					}else{
+						int date =dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"),	m.getPreTm());
+						if(date==1){
+							String body =m.getReqNo() +"\n"+ m.getReqNm()+"\n"+"计划于明日达到阶段性目标【预投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
+							boardcastScheduler.pushTimeOutWarning(body);
+						}
+					}
+				}
+				//投产时间
+				else if (PreCurPeriod<180) {
+					if(StringUtils.isEmpty(m.getExpPrdReleaseTm())) {
+						return;
+					}else{
+						int date =dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"),	m.getExpPrdReleaseTm());
+						if(date==1){
+							String body =m.getReqNo() +"\n"+ m.getReqNm()+"\n"+"计划于明日达到阶段性目标【投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
+							boardcastScheduler.pushTimeOutWarning(body);
+						}
+					}
+				}
+			}
+		});
+
+	}
+
+	private int  dateDifference(String date1,String date2) {
+		int betweenDate =0;
+		try {
+			//设置转换的日期格式
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			//开始时间
+			Date startDate = sdf.parse(date1);
+			//结束时间
+			Date endDate = sdf.parse(date2);
+			//得到相差的天数 betweenDate
+			 betweenDate = (int)(endDate.getTime() - startDate.getTime()) / (60 * 60 * 24 * 1000);
+			//打印控制台相差的天数
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return betweenDate;
 	}
 
 	// 需求预警 ：当系统时间与PRD完成时间、UAT更新时间、测试完成时间小于2天，系统每日发送提示邮件。
@@ -218,7 +389,7 @@ public class ReqMonitorTimer {
 //			String name = reqTask.getReqNo() + reqTask.getReqNm();
 //			String subject = name + "需求实施进度预警通知";
 //			String content = dailyProcessContent(name, reqTask.getPrdFinshTm(), "需求定稿", reqTask.getProductMng());
-//			reqPlanService.sendMail(sendTo, null, content, subject, null);
+//			//reqPlanService.sendMail(sendTo, null, content, subject, null);
 //		}
 //		List<DemandBO> uatUpdateWarnList = reqTaskService.getUatUpdateWarn();
 //		for (int i = 0; i < uatUpdateWarnList.size(); i++) {
@@ -226,7 +397,7 @@ public class ReqMonitorTimer {
 //			String name = reqTask.getReqNo() + reqTask.getReqNm();
 //			String subject = name + "需求实施进度预警通知";
 //			String content = dailyProcessContent(name, reqTask.getUatUpdateTm(), "uat更新", reqTask.getProjectMng());
-//			reqPlanService.sendMail(sendTo, null, content.toString(), subject, null);
+//			//reqPlanService.sendMail(sendTo, null, content.toString(), subject, null);
 //		}
 //		List<DemandBO> testFinishWarnList = reqTaskService.getTestFnishWarn();
 //		for (int i = 0; i < testFinishWarnList.size(); i++) {
@@ -234,7 +405,7 @@ public class ReqMonitorTimer {
 //			String name = reqTask.getReqNo() + reqTask.getReqNm();
 //			String subject = name + "需求实施进度预警通知";
 //			String content = dailyProcessContent(name, reqTask.getTestFinshTm(), "uat测试", reqTask.getTestEng());
-//			reqPlanService.sendMail(sendTo, null, content.toString(), subject, null);
+//			//reqPlanService.sendMail(sendTo, null, content.toString(), subject, null);
 //		}
 //	}
 
@@ -293,5 +464,7 @@ public class ReqMonitorTimer {
 		content.append("如有问题请及时向您的主管领导或主导部门寻求帮助，感谢您的辛苦付出！");
 		return content.toString();
 	}
+
+
 
 }

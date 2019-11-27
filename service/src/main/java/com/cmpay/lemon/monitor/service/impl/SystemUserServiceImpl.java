@@ -89,7 +89,7 @@ public class SystemUserServiceImpl implements SystemUserService {
         if(JudgeUtils.isBlank(userDO.getUsername())){
             userDO.setUsername(null);
         }
-        PageInfo<UserDO> pageInfo = PageUtils.pageQueryWithCount(queryBO.getPageNum(), queryBO.getPageSize(), () -> iUserDao.find(userDO));
+        PageInfo<UserDO> pageInfo = PageUtils.pageQueryWithCount(queryBO.getPageNum(), queryBO.getPageSize(), () -> iUserDao.search(userDO));
         return pageInfo;
     }
 

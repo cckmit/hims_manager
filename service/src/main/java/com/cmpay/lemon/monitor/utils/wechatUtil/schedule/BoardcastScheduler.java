@@ -26,13 +26,20 @@ public class BoardcastScheduler {
     private BoardcastExecutor boardcastExecutor;
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void test(String body , File file){
-
+    public void pushValidationNotTimelyChecklist(String body , File file){
         boardcastExecutor.getAccessToken(corpid, corpsecret);
+        //todo 固定接收人
         boardcastExecutor.sendTextMessage("WuLiangRui", body);
         String fileID = boardcastExecutor.sendUploadFile(file);
-        //
         boardcastExecutor.sendFileMessage("WuLiangRui", fileID);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void pushTimeOutWarning(String body){
+        boardcastExecutor.getAccessToken(corpid, corpsecret);
+        //todo 固定接收人
+        boardcastExecutor.sendTextMessage("@all", body);
+
     }
 
 

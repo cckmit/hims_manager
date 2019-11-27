@@ -3,6 +3,8 @@ package com.cmpay.lemon.monitor.dao;
 import com.cmpay.lemon.monitor.entity.UserDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * @author: zhou_xiong
  */
@@ -15,4 +17,7 @@ public interface IUserExtDao extends IUserDao {
      * @return
      */
     UserDO getUserByUserName(String username);
+
+    List<UserDO> search(UserDO entity);
+
 }

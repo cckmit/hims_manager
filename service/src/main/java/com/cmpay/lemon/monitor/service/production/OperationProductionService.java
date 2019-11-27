@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.production;
 
 
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.entity.OperationApplicationDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
 import com.cmpay.lemon.monitor.entity.ProductionPicDO;
 import com.cmpay.lemon.monitor.entity.ScheduleDO;
@@ -98,7 +99,7 @@ public interface OperationProductionService {
 
     void updateMailGroup(MailGroupBO mailGroupBO);
 
-    void productionVerificationIsNotTimely();
+    List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date);
     List<ProductionDO> getProductionVerificationIsNotTimely(String number);
 
 }

@@ -2123,6 +2123,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         jiraOperationService.batchCreateEpic(demandDOS);
     }
+
+    @Override
+    public List<DemandBO> getNormalExecutionDemand(DemandDO demandDO) {
+        List<DemandBO> demandBOList = BeanConvertUtils.convertList(demandDao.getNormalExecutionDemand(demandDO), DemandBO.class);
+        return demandBOList;
+    }
+
     /**
      * 设置用户
      *
