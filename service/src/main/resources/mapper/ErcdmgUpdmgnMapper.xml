@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IErcdmgUpdmgnDao">
+    <resultMap id="rm" type="com.cmpay.lemon.monitor.entity.ErcdmgUpdmgnDO">
+        <result property="updateNo" jdbcType="VARCHAR" column="update_no"/>
+        <result property="prodUserId" jdbcType="VARCHAR" column="prod_user_id"/>
+        <result property="prodUserName" jdbcType="VARCHAR" column="user_name"/>
+        <result property="updateDate" jdbcType="TIMESTAMP" column="update_date"/>
+        <result property="content" jdbcType="VARCHAR" column="content"/>
+        <result property="count" jdbcType="VARCHAR" column="count"/>
+        <result property="curtState" jdbcType="VARCHAR" column="curt_state"/>
+        <result property="curtStateName" jdbcType="VARCHAR" column="curt_state_name"/>
+        <result property="createTime" jdbcType="TIMESTAMP" column="create_time"/>
+    </resultMap>
+    <resultMap id="rm1" type="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        <result property="errorCd" jdbcType="VARCHAR" column="error_cd"/>
+        <result property="prodMod" jdbcType="VARCHAR" column="prod_mod"/>
+        <result property="appScen" jdbcType="VARCHAR" column="app_scen"/>
+        <result property="techTip" jdbcType="VARCHAR" column="tech_tip"/>
+        <result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>
+        <result property="errorState" jdbcType="VARCHAR" column="error_state"/>
+        <result property="entryDate" jdbcType="TIMESTAMP" column="entry_date"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+		a.update_no,
+		a.prod_user_id,
+		a.update_date,
+		a.content,
+		a.count,
+		a.curt_state,
+		a.create_time
+    </sql>
+    
+    
+    <!-- 分页查询   -->
+    <!--<select id="findErcdmgUpdmgnList" resultMap="rm" parameterType="map">-->
+        <!--SELECT -->
+        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,-->
+        <!--<include refid="Base_Column_List" />-->
+        <!--from t_ercdmg_updmgn a, t_permi_user b-->
+        <!--WHERE a.prod_user_id= b.user_id-->
+        <!--<if test="strDate != null">-->
+             <!--AND a.update_date &gt;= #{strDate} -->
+        <!--</if>-->
+        <!--<if test="endDate != null">-->
+             <!--AND a.update_date &lt;= #{endDate} -->
+        <!--</if>-->
+        <!--<if test="curtState != null and curtState != ''">-->
+    		<!--and a.curt_state = #{curtState}-->
+    	<!--</if>-->
+    	<!--<if test="prodUserName != null and prodUserName != ''">-->
+    		<!--and b.user_name like "%"#{prodUserName}"%"-->
+    	<!--</if>-->
+    	<!--ORDER BY a.create_time DESC-->
+    <!--</select>-->
+    <!--<select id="findErcdmgUpdmgnNumber" resultType="java.lang.Integer" parameterType="map">-->
+        <!--select COUNT(1) -->
+        <!--from t_ercdmg_updmgn a, t_permi_user b-->
+        <!--WHERE a.prod_user_id= b.user_id-->
+        <!--<if test="strDate != null">-->
+             <!--AND a.update_date &gt;= #{strDate} -->
+        <!--</if>-->
+        <!--<if test="endDate != null">-->
+             <!--AND a.update_date &lt;= #{endDate} -->
+        <!--</if>-->
+        <!--<if test="curtState != null and curtState != ''">-->
+    		<!--and a.curt_state = #{curtState}-->
+    	<!--</if>-->
+    	<!--<if test="prodUserName != null and prodUserName != ''">-->
+    		<!--and b.user_name like "%"#{prodUserName}"%"-->
+    	<!--</if>-->
+    <!--</select>-->
+    <select id="searchSingleUpdmgn" resultMap="rm" parameterType="java.lang.String">
+        select 
+       (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,
+        b.user_name,
+        a.curt_state,
+		a.count
+        from t_ercdmg_updmgn a,t_permi_user b
+        where a.prod_user_id= b.user_id 
+        and a.update_no=#{updateNo} 
+    </select>
+    
+    <delete id="delUpdmgn" parameterType="java.lang.String">
+        delete from t_ercdmg_updmgn 
+        where update_no=#{updateNo}
+    </delete>
+    <delete id="delErrorLg" parameterType="java.lang.String">
+        delete from t_ercdmg_errorlg
+        where update_no=#{updateNo}
+    </delete>
+    <insert id="insertUpdmgn" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgUpdmgnDO">
+       INSERT INTO t_ercdmg_updmgn (
+            update_no,
+			prod_user_id,
+			update_date,
+			content,
+			count,
+			curt_state,
+			create_time
+            )VALUES(
+            #{updateNo},
+			#{prodUserId},
+			#{updateDate},
+			#{content},
+			#{count},
+			#{curtState},
+			#{createTime}
+           )
+    </insert>
+    <update id="updateUpdmgnState">
+         update t_ercdmg_updmgn set curt_state='02'
+         <where>  
+          update_no in (
+          <foreach item="updateNo" index="index" collection="array" separator=","> 
+           #{updateNo}
+           </foreach> 
+          )
+        </where>  
+    </update>
+    <update id="updateErrorState">
+         update t_ercdmg_error set curt_state='5'
+         <where>  
+           update_no in (
+           <foreach item="updateNo" index="index" collection="array" separator=","> 
+           #{updateNo}
+           </foreach> 
+           )
+        </where>  
+    </update>
+    <update id="updateUpdmgnCount" parameterType="java.util.HashMap">
+        update t_ercdmg_updmgn set count=#{countStr} where update_no=#{updateNo}
+    </update>
+    <select id="selectUpdateCount" parameterType="java.lang.String" resultType="java.lang.String">
+       select count from t_ercdmg_updmgn where update_no=#{updateNo}
+    </select>
+    <select id="searchUpdmgnList" resultMap="rm">
+       SELECT 
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_updmgn a
+        <where>  
+          a.update_no in (
+          <foreach item="updateNo" index="index" collection="array" separator=","> 
+           #{updateNo} </foreach> 
+          )
+        </where> 
+    </select>
+</mapper>

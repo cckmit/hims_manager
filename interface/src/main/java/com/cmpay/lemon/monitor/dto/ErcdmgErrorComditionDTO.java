@@ -43,6 +43,25 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
     private String endDateStr;
     private String desc;
 
+    private String taskIdStr;
+    private String status;
+
+    public String getTaskIdStr() {
+        return taskIdStr;
+    }
+
+    public void setTaskIdStr(String taskIdStr) {
+        this.taskIdStr = taskIdStr;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     /**
      * 页数
      */

@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.controller.error;
 
+import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
@@ -12,11 +13,15 @@ import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.errror.ErrorService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
 /**
  * @author: zhou_xiong
@@ -77,4 +82,34 @@ public class ErrorController {
         errorService.updateError(errorComditionBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
+
+    /**
+     * 删除
+     * @param id 错误码id
+     * @return
+     */
+    @RequestMapping("/delete")
+    public GenericRspDTO deleteError(@RequestParam("ids") String id){
+        System.err.println(id);
+        errorService.deleteError(id);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    /**
+     * 错误码导入
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        errorService.doBatchImport(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    @RequestMapping("/goback")
+    public GenericRspDTO gobackError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getStatus());
+        errorService.goback(reqDTO.getTaskIdStr(),reqDTO.getStatus());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
 }
