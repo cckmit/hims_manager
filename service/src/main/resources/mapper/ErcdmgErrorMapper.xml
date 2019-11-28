@@ -284,7 +284,7 @@
             #{techTip},
             0,
             #{appScen},
-            #{techUserId},
+            #{techUserId , jdbcType = VARCHAR},
             #{updDt},
             #{tmSmp}
         )
@@ -306,7 +306,7 @@
             #{busnTip},
             #{appScen},
             '*',
-            #{techUserId},
+            #{techUserId , jdbcType = VARCHAR},
             #{updDt},
             #{tmSmp}
         )

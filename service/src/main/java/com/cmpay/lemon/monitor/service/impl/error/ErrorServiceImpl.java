@@ -57,6 +57,7 @@ public class ErrorServiceImpl implements ErrorService {
     private IErcdmgUpdmgnDao iErcdmgUpdmgnDao;
     @Autowired
     SystemUserService userService;
+
     @Override
     public ErcdmgErrorComditionRspBO searchErroeList (ErcdmgErrorComditionBO ercdmgErrorComditionBO){
         PageInfo<ErcdmgErrorComditionBO> pageInfo = getPageInfo(ercdmgErrorComditionBO);
@@ -75,13 +76,8 @@ public class ErrorServiceImpl implements ErrorService {
                 () -> BeanConvertUtils.convertList(iErcdmgErorDao.findErcdmgErrorList(demandDO), ErcdmgErrorComditionBO.class));
         return pageInfo;
     }
-    /**
-     * 新增错误码
-     * @param ercdmgErrorComditionBO 错误码对象
-     */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void addError(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+    public ErcdmgErrorComditionBO checkErrorCodeExist(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
         ErcdmgErrorComditionDO ercdmgErrorbean = iErcdmgErorDao.checkErrorCodeExist(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
         if (ercdmgErrorbean != null) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -101,27 +97,59 @@ public class ErrorServiceImpl implements ErrorService {
             ercdmgErrorComditionBO.setTechUserId(SecurityUtils.getLoginName());//技术负责人id
             ercdmgErrorComditionBO.setTechUserName(currentUser);//技术负责人名称
         }
-        // 查询sit错误码数据库并新增
-         String sit = selectSitMsg(ercdmgErrorComditionBO);
-         System.err.println(sit);
-//        // 查询uat错误码并新增
-        //String uat = selectUatMsg(ercdmgErrorComditionBO);
-        // 新增考核错误码
-        addErcdmgError(ercdmgErrorComditionBO);
-        // 记录错误码导入记录
-        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");//设置日期格式
-        ErrorRecordBeanDO errorRecordBean = new ErrorRecordBeanDO();
-        errorRecordBean.setErrorCode(ercdmgErrorComditionBO.getErrorCd());
-        if("SIT" == sit){
-            errorRecordBean.setTimeStmp(df.format(new Date()));
-            errorRecordBean.setEnvirCode("SIT");
-            iErcdmgErorDao.insertErrorRecordBean(errorRecordBean);
-        }
-//        if("UAT" == uat){
+        return ercdmgErrorComditionBO;
+    }
+    /**
+     * 新增错误码
+     * @param ercdmgErrorComditionBO 错误码对象
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void addError(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+//        ErcdmgErrorComditionDO ercdmgErrorbean = iErcdmgErorDao.checkErrorCodeExist(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
+//        if (ercdmgErrorbean != null) {
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"已存在，请重新输入后再试");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
+//        // 获取当前操作人信息
+//        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+//        // 生成id
+//        ercdmgErrorComditionBO.setId(CreateSequence.getSequence());
+//        ercdmgErrorComditionBO.setCurtState("1");
+//        ercdmgErrorComditionBO.setCreateUserId(SecurityUtils.getLoginName());//技术负责人id
+//        if(ercdmgErrorComditionBO.getTechUserName()!=null){
+//            ercdmgErrorComditionBO.setTechUserId(SecurityUtils.getLoginName());//技术负责人id
+//            ercdmgErrorComditionBO.setTechUserName(ercdmgErrorComditionBO.getTechUserName());//技术负责人名称
+//        }else{
+//            ercdmgErrorComditionBO.setTechUserId(SecurityUtils.getLoginName());//技术负责人id
+//            ercdmgErrorComditionBO.setTechUserName(currentUser);//技术负责人名称
+//        }
+//        // 查询sit错误码数据库并新增
+//         String sit = selectSitMsg(ercdmgErrorComditionBO);
+//         System.err.println(sit);
+////        // 查询uat错误码并新增
+////        String uat = selectUatMsg(ercdmgErrorComditionBO);
+//        // 新增考核错误码
+//        addErcdmgError(ercdmgErrorComditionBO);
+//        // 记录错误码导入记录
+//        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");//设置日期格式
+//        ErrorRecordBeanDO errorRecordBean = new ErrorRecordBeanDO();
+//        errorRecordBean.setErrorCode(ercdmgErrorComditionBO.getErrorCd());
+//        if("SIT" == sit){
 //            errorRecordBean.setTimeStmp(df.format(new Date()));
-//            errorRecordBean.setEnvirCode("UAT");
+//            errorRecordBean.setEnvirCode("SIT");
 //            iErcdmgErorDao.insertErrorRecordBean(errorRecordBean);
 //        }
+////        if("UAT" == uat){
+////            errorRecordBean.setTimeStmp(df.format(new Date()));
+////            errorRecordBean.setEnvirCode("UAT");
+////            iErcdmgErorDao.insertErrorRecordBean(errorRecordBean);
+////        }
+    }
+    @Override
+    public void insertErrorRecordBean(ErrorRecordBeanDO errorRecordBean){
+        iErcdmgErorDao.insertErrorRecordBean(errorRecordBean);
     }
     // 判断是否为角色权限
     public boolean isDepartmentManager(Long juese ){
@@ -136,7 +164,7 @@ public class ErrorServiceImpl implements ErrorService {
         }
         return false ;
     }
-
+    @Override
     public void addErcdmgError(ErcdmgErrorComditionBO ercdmgError) {
         if(ercdmgError.getErrorCd()==null){
             //throw new ServiceException("你输入的错误码为空");
@@ -166,6 +194,7 @@ public class ErrorServiceImpl implements ErrorService {
     /**
      * 查询sit错误码
      */
+    @Override
     @TargetDataSource("dsSit")
     public String selectSitMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO) {
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -217,6 +246,7 @@ public class ErrorServiceImpl implements ErrorService {
     /**
      * 查询Uat错误码
      */
+    @Override
     @TargetDataSource("dsUat")
     public String selectUatMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO) {
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -261,14 +291,8 @@ public class ErrorServiceImpl implements ErrorService {
         }
         return "";
     }
-
-    /**
-     * 修改错误码
-     * @param ercdmgErrorComditionBO 错误码对象
-     */
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void updateError(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+    public void checkErrorUP(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
         ErcdmgErrorComditionDO ercdmgError = new ErcdmgErrorComditionDO();
         BeanConvertUtils.convert(ercdmgError, ercdmgErrorComditionBO);
         ErcdmgErrorComditionDO errorSingle=iErcdmgErorDao.selectErrorSingle(ercdmgErrorComditionBO.getId());
@@ -277,15 +301,32 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("输入错误码"+ercdmgError.getErrorCd()+"不存在");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        updateSitMsg(ercdmgErrorComditionBO);
-        updateUatMsg(ercdmgErrorComditionBO);
-        updateErcdmgError(ercdmgError);
+    }
+    /**
+     * 修改错误码
+     * @param ercdmgErrorComditionBO 错误码对象
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void updateError(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+//        ErcdmgErrorComditionDO ercdmgError = new ErcdmgErrorComditionDO();
+//        BeanConvertUtils.convert(ercdmgError, ercdmgErrorComditionBO);
+//        ErcdmgErrorComditionDO errorSingle=iErcdmgErorDao.selectErrorSingle(ercdmgErrorComditionBO.getId());
+//        if (errorSingle==null){
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("输入错误码"+ercdmgError.getErrorCd()+"不存在");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
+//        updateSitMsg(ercdmgErrorComditionBO);
+//        updateUatMsg(ercdmgErrorComditionBO);
+//        updateErcdmgError(ercdmgErrorComditionBO);
     }
     /**
      * 修改sit数据库
      * @param ercdmgErrorComditionBO
      * @return
      */
+    @Override
     @TargetDataSource("dsSit")
     public void updateSitMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO) {
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -345,6 +386,7 @@ public class ErrorServiceImpl implements ErrorService {
      * @param ercdmgErrorComditionBO
      * @return
      */
+    @Override
     @TargetDataSource("dsUat")
     public void updateUatMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO) {
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -395,8 +437,10 @@ public class ErrorServiceImpl implements ErrorService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
     }
-    public void updateErcdmgError(ErcdmgErrorComditionDO ercdmgError) {
-
+    @Override
+    public void updateErcdmgError(ErcdmgErrorComditionBO ercdmgErrorComditionBO) {
+        ErcdmgErrorComditionDO ercdmgError = new ErcdmgErrorComditionDO();
+        BeanConvertUtils.convert(ercdmgError, ercdmgErrorComditionBO);
         if(ercdmgError.getErrorCd()==null){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("错误码编号为空");
@@ -427,10 +471,8 @@ public class ErrorServiceImpl implements ErrorService {
         ercdmgError.setLastUpdateDate(LocalDateTime.now());
         iErcdmgErorDao.update(ercdmgError);
     }
-
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void deleteError(String id){
+    public ErcdmgErrorComditionBO checkErrorDelete(String id){
         ErcdmgErrorComditionDO errorSingle=iErcdmgErorDao.selectErrorSingle(id);
         if(errorSingle!=null){
             if(!SecurityUtils.getLoginName().equals(errorSingle.getCreateUserId())){
@@ -444,20 +486,41 @@ public class ErrorServiceImpl implements ErrorService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        //删除sit
-        deleteSMsg(errorSingle);
-        //删除uat
-        deleteUatMsg(errorSingle);
-        // 删除考核数据库
-        delErcdmgError(id,errorSingle);
+        ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
+        BeanConvertUtils.convert(errorComditionBO, errorSingle);
+        return errorComditionBO;
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void deleteError(String id){
+//        ErcdmgErrorComditionDO errorSingle=iErcdmgErorDao.selectErrorSingle(id);
+//        if(errorSingle!=null){
+//            if(!SecurityUtils.getLoginName().equals(errorSingle.getCreateUserId())){
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("只能删除自己新增的数据");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//            if(errorSingle.getCurtState().equals("5")){
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("不能删除已生效数据");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//        }
+//        //删除sit
+//        deleteSMsg(errorSingle);
+//        //删除uat
+//        deleteUatMsg(errorSingle);
+//        // 删除考核数据库
+//        delErcdmgError(id,errorSingle);
     }
     /**
      * 删除sit数据库
      * @param errorSingle
      * @return
      */
+    @Override
     @TargetDataSource("dsSit")
-    public void deleteSMsg(ErcdmgErrorComditionDO errorSingle) {
+    public void deleteSMsg(ErcdmgErrorComditionBO errorSingle) {
         try {
             iErcdmgErorDao.deletePubtmsg(errorSingle.getErrorCd());
             iErcdmgErorDao.deletePubttms(errorSingle.getErrorCd(),errorSingle.getBuscnl());
@@ -474,8 +537,9 @@ public class ErrorServiceImpl implements ErrorService {
      * @param errorSingle
      * @return
      */
+    @Override
     @TargetDataSource("dsUat")
-    public void deleteUatMsg(ErcdmgErrorComditionDO errorSingle) {
+    public void deleteUatMsg(ErcdmgErrorComditionBO errorSingle) {
         try {
             iErcdmgErorDao.deletePubtmsg(errorSingle.getErrorCd());
             iErcdmgErorDao.deletePubttms(errorSingle.getErrorCd(),errorSingle.getBuscnl());
@@ -490,7 +554,8 @@ public class ErrorServiceImpl implements ErrorService {
     /**
      * 单个删除错误码
      */
-    public void delErcdmgError(String id,ErcdmgErrorComditionDO e)  {
+    @Override
+    public void delErcdmgError(String id,ErcdmgErrorComditionBO e)  {
         // 备份至错误码历史表
         searchBackErrorCd(id);
         //查询是否有更新批次信息
