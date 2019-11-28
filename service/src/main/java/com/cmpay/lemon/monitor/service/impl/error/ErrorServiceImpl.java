@@ -10,6 +10,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
+import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.dao.IErcdmgErorDao;
 import com.cmpay.lemon.monitor.dao.IErcdmgUpdmgnDao;
 import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
@@ -183,8 +184,14 @@ public class ErrorServiceImpl implements ErrorService {
         ercdmgError.setCreateDatetime(LocalDateTime.now());
         ercdmgError.setAudiRoleName("审核人员");//默认审核人员角色
         ercdmgError.setErrorState("正常");
+        TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(ercdmgError.getProdUserName());
+        if(tPermiUser==null){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的产品经理名称:"+ercdmgError.getProdUserName()+"不存在，请重新输入后再试");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
 //        ercdmgError.setProdUserId(tPermiUser.getUserId());
-        ercdmgError.setProdUserId( SecurityUtils.getLoginName());
+        ercdmgError.setProdUserId( tPermiUser.getUserId());
 
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
         BeanConvertUtils.convert(errorComditionDO, ercdmgError);
@@ -657,7 +664,7 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void goback(String ids,String status)  {
-        String[] strArray=ids.split("~");;
+        String[] strArray=ids.split("~");
         List<ErcdmgErrorComditionDO> elist = iErcdmgErorDao.selectErcdmgByErrorList(strArray);
         for(ErcdmgErrorComditionDO ercdmgError :elist){
             if(!ercdmgError.getCurtState().equals(status)){
@@ -701,5 +708,23 @@ public class ErrorServiceImpl implements ErrorService {
         int backStatus=Integer.parseInt(status)-1;
         //批量更新
         iErcdmgErorDao.updateErrorCurtState(""+backStatus,id);
+    }
+    @Override
+    public ErcdmgErrorComditionRspBO forwardpord (String ids){
+        String[] strArray=ids.split("~");
+        List<ErcdmgErrorComditionBO> elist = BeanConvertUtils.convertList(iErcdmgErorDao.selectErcdmgByErrorList(strArray), ErcdmgErrorComditionBO.class);
+        for(ErcdmgErrorComditionBO ercdmgError :elist){
+            if(ercdmgError.getCurtState()!="1"&&!ercdmgError.getCurtState().equals("1")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择状态为：已录入的错误码！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectPordUser(iErcdmgErorDao.selectErcdmgByErrorList(strArray));
+        List<ErcdmgPordUserBO> ercdmgPordUserBOList = BeanConvertUtils.convertList(pordUserList, ErcdmgPordUserBO.class);
+        ErcdmgErrorComditionRspBO productionRspBO = new ErcdmgErrorComditionRspBO();
+        productionRspBO.setErcdmgErrorComditionBOList(elist);
+        productionRspBO.setErcdmgPordUserDTOList(ercdmgPordUserBOList);
+        return  productionRspBO;
     }
 }

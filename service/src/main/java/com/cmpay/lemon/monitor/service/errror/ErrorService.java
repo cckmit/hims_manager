@@ -70,4 +70,12 @@ public interface ErrorService {
     void deleteUatMsg(ErcdmgErrorComditionBO errorSingle);
     // 删除考核数据库
     void delErcdmgError(String id,ErcdmgErrorComditionBO errorSingle);
+
+    /**
+     * 调转转交产品经理
+     *
+     * @param ids 错误码id字符串
+     * @return
+     */
+    ErcdmgErrorComditionRspBO forwardpord (String ids);
 }

@@ -230,8 +230,15 @@ public class ErrorController {
      */
     @PostMapping("/template/download")
     public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
-        doWrite("static/error.xlsx", response);
+        doWrite("static/errorcode.xlsx", response);
         return GenericRspDTO.newSuccessInstance();
     }
-
+    @RequestMapping("/forwardpord")
+    public GenericRspDTO<ErcdmgErrorComditionRspDTO>  forwardpord(@RequestParam("ids") String ids){
+        ErcdmgErrorComditionRspBO demandRspBO = errorService.forwardpord(ids);
+        ErcdmgErrorComditionRspDTO rspDTO = new ErcdmgErrorComditionRspDTO();
+        rspDTO.setErrorComditionDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgErrorComditionBOList(), ErcdmgErrorComditionDTO.class));
+        rspDTO.setErcdmgPordUserDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgPordUserDTOList(), ErcdmgPordUserDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 }
