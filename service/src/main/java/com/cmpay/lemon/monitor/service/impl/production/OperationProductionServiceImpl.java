@@ -70,8 +70,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     SystemUserService userService;
     @Autowired
     private BoardcastScheduler boardcastScheduler;
-    @Autowired
-    private IDemandExtDao demandDao;
 
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
