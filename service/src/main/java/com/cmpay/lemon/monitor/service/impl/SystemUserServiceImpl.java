@@ -26,6 +26,7 @@ import com.cmpay.lemon.monitor.utils.CryptoUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -107,6 +108,7 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public Long add(UserInfoBO user) {
         String salt = RandomStringUtils.randomAlphanumeric(20);
         String password = CryptoUtils.sha256Hash(user.getPassword(), salt);
@@ -157,6 +159,13 @@ public class SystemUserServiceImpl implements SystemUserService {
     public void delete(Long userNo) {
         if (userNo == MonitorConstants.SUPER_ADMIN) {
             BusinessException.throwBusinessException(MsgEnum.SUPER_ADMIN_CANNNOT_DELETE);
+        }
+        UserDO userDO =iUserDao.get(userNo);
+        PermiUserDO permiUserDO = new PermiUserDO();
+        permiUserDO.setUserId(userDO.getUsername());
+        List<PermiUserDO> permiUserDOS = iPermiUserDao.find(permiUserDO);
+        if(permiUserDOS!=null) {
+            iPermiUserDao.delete(permiUserDOS.get(0).getSeqId());
         }
         int res = iUserDao.delete(userNo);
         if (res != 1) {
@@ -240,5 +249,55 @@ public class SystemUserServiceImpl implements SystemUserService {
         UserDO userDO = new UserDO();
         UserDO userByUserName = iUserDao.getUserByUserName(loginname);
         return  userByUserName.getFullname();
+    }
+
+    //同步老表人员数据信息到新表
+    @Override
+    public void syncOldTable() {
+        PermiUserDO permiUserDO = new PermiUserDO();
+        //查找所有旧表人员
+        List<PermiUserDO> permiUserDOList = iPermiUserDao.find(permiUserDO);
+        //遍历同步
+        permiUserDOList.forEach(m->{
+            UserInfoBO user = new UserInfoBO();
+            //用户账号
+            user.setUsername(m.getUserId());
+            //查找新表是否已经有该用户数据，已有则跳过
+            List<UserDO> userDOList = new LinkedList<>();
+            userDOList = iUserDao.find(BeanUtils.copyPropertiesReturnDest(new UserDO(), user));
+            System.err.println(userDOList.size());
+            if(!userDOList.isEmpty()){
+                return;
+            }
+            //固定初始密码12345678
+            user.setPassword("12345678");
+            //邮箱
+            user.setEmail(m.getEmail());
+            //用户名
+            user.setFullname(m.getUserName());
+            //手机号
+            user.setMobile(m.getMobileNum());
+            //部门
+            user.setDepartment(m.getDeptName());
+            //部门
+            user.setStatus((byte)1);
+
+            String salt = RandomStringUtils.randomAlphanumeric(20);
+            String password = CryptoUtils.sha256Hash(user.getPassword(), salt);
+            String id = IdGenUtils.generateId(MonitorConstants.PUBLIC_SEQUENCE_NAME);
+            Long userNo = Long.valueOf(id);
+            user.setUserNo(userNo);
+            user.setSalt(salt);
+            user.setPassword(password);
+            user.setCreateTime(LocalDateTime.now());
+            user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
+            UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
+            iUserDao.insert(userDO);
+            //这是普通员工
+            UserRoleDO userRoleDO = new UserRoleDO();
+            userRoleDO.setUserNo(userNo);
+            userRoleDO.setRoleId((long)4001);
+            iUserRoleDao.insert(userRoleDO);
+        });
     }
 }

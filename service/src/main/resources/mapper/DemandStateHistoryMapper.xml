@@ -7,6 +7,7 @@
         <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
         <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="old_req_sts" property="oldReqSts" jdbcType="VARCHAR" />
         <result column="req_sts" property="reqSts" jdbcType="VARCHAR" />
         <result column="remarks" property="remarks" jdbcType="VARCHAR" />
         <result column="identification" property="identification" jdbcType="VARCHAR" />
@@ -15,8 +16,8 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_inner_seq, req_no, req_nm, req_sts, remarks, identification, creat_user, 
-        creat_time
+        id, req_inner_seq, req_no, req_nm, old_req_sts, req_sts, remarks, identification, 
+        creat_user, creat_time
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -45,6 +46,9 @@
             </if>
             <if test="reqNm != null" >
                 req_nm,
+            </if>
+            <if test="oldReqSts != null" >
+                old_req_sts,
             </if>
             <if test="reqSts != null" >
                 req_sts,
@@ -75,6 +79,9 @@
             <if test="reqNm != null" >
                 #{reqNm,jdbcType=VARCHAR},
             </if>
+            <if test="oldReqSts != null" >
+                #{oldReqSts,jdbcType=VARCHAR},
+            </if>
             <if test="reqSts != null" >
                 #{reqSts,jdbcType=VARCHAR},
             </if>
@@ -104,6 +111,9 @@
             </if>
             <if test="reqNm != null" >
                 req_nm = #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqSts != null" >
+                old_req_sts = #{oldReqSts,jdbcType=VARCHAR},
             </if>
             <if test="reqSts != null" >
                 req_sts = #{reqSts,jdbcType=VARCHAR},
@@ -140,6 +150,9 @@
             </if>
             <if test="reqNm != null" >
                 and req_nm = #{reqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="oldReqSts != null" >
+                and old_req_sts = #{oldReqSts,jdbcType=VARCHAR}
             </if>
             <if test="reqSts != null" >
                 and req_sts = #{reqSts,jdbcType=VARCHAR}

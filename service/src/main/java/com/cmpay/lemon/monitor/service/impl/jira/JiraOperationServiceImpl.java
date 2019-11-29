@@ -81,7 +81,6 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
         createIssueEpicRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
         //获取部门管理人员
-        System.err.println(demandBO.getDevpLeadDept());
         JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
         //未获得部门管理人员则为配置jira对应数据错误
         if(JudgeUtils.isNull(jiraDepartmentDO)){
@@ -236,6 +235,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
         //添加开发主导部门
         developmentDepartmenList.add(demandBO.getDevpLeadDept());
+        System.err.println(developmentDepartmenList.size());
         developmentDepartmenList.forEach(m->{
             this.CreateJiraMasterTask(m,demandBO,demandJiraDO,DEVELOPMAINTASK);
         });

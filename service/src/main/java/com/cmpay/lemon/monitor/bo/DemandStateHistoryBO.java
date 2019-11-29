@@ -30,6 +30,10 @@ public class DemandStateHistoryBO extends BaseDO {
      */
     private String reqNm;
     /**
+     * @Fields oldReqSts 修改前需求状态
+     */
+    private String oldReqSts;
+    /**
      * @Fields reqSts 需求状态
      */
     private String reqSts;
@@ -120,5 +124,13 @@ public class DemandStateHistoryBO extends BaseDO {
 
     public void setCreatTime(LocalDateTime creatTime) {
         this.creatTime = creatTime;
+    }
+
+    public String getOldReqSts() {
+        return oldReqSts;
+    }
+
+    public void setOldReqSts(String oldReqSts) {
+        this.oldReqSts = oldReqSts;
     }
 }

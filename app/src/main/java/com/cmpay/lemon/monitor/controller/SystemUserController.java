@@ -66,7 +66,6 @@ public class SystemUserController {
      */
     @GetMapping("/list")
     public GenericRspDTO<UserInfoQueryRspDTO> getUserInfoPage(@QueryBody UserInfoQueryReqDTO userInfoQueryReqDTO) {
-
         UserInfoQueryBO userInfoQueryBO = new UserInfoQueryBO();
         BeanUtils.copyProperties(userInfoQueryBO, userInfoQueryReqDTO);
         PageInfo<UserDO> page = systemUserService.findUsers(userInfoQueryBO);

@@ -274,7 +274,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String startdata = demandBO.getReqImplMon()+"-01";
         String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
         if("180".equals(demandBO.getCurMonTarget())){
-            System.err.println(demandBO.getExpPrdReleaseTm());
             if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");

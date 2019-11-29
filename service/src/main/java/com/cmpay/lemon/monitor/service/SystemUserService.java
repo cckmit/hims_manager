@@ -106,4 +106,6 @@ public interface SystemUserService {
      * @return
      */
     String  getFullname(String loginname);
+
+     void syncOldTable();
 }

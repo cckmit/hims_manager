@@ -64,6 +64,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     ITPermiDeptDao permiDeptDao;
     @Autowired
+    IDemandExtDao demandDao;
+
+    @Autowired
     SystemUserService userService;
     @Autowired
     private BoardcastScheduler boardcastScheduler;
@@ -699,6 +702,33 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             e.printStackTrace();
         }
         return operationProductionDao.getProductionVerificationIsNotTimely(productionDO);
+    }
+
+    @Override
+    public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
+        //查询该是编号是否已经投产
+        ProductionBO productionBO = this.searchProdutionDetail(proNumber);
+        if(productionBO!=null){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        //未投产,且是req前缀投产编号则查询该编号对应的需求计划
+        DemandDO demandDO = new DemandDO();
+        if(proNumber.startsWith("REQ")) {
+            demandDO.setReqNo(proNumber);
+            demandDO.setReqSts("20");
+            List<DemandDO> demandDOList = demandDao.find(demandDO);
+            if(demandDOList.isEmpty()){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }else {
+                demandDO = demandDOList.get(0);
+            }
+        }
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
+        return demandBO;
     }
 
 
@@ -2022,7 +2052,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         PermiUserDO permiUserDO = new PermiUserDO();
         String loginName = SecurityUtils.getLoginName();
         permiUserDO.setUserId(loginName);
-        System.err.println(loginName);
         List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
         if(permiUserDOS.isEmpty()){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("操作人信息未同步，请联系管理员");

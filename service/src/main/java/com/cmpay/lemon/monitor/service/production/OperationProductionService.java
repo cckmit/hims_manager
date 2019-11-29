@@ -102,4 +102,5 @@ public interface OperationProductionService {
     List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date);
     List<ProductionDO> getProductionVerificationIsNotTimely(String number);
 
+    DemandBO verifyAndQueryTheProductionNumber(String proNumber);
 }

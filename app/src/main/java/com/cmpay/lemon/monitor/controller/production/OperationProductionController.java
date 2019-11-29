@@ -199,13 +199,11 @@ public class OperationProductionController {
 
     // 查询需求编号
     @RequestMapping("/findOne")
-    public GenericRspDTO<ProductionDTO> findOne(@RequestParam("pro_number") String proNumber){
-        ProductionBO productionBO = operationProductionService.searchProdutionDetail(proNumber);
-        ProductionDTO rspDTO = null;
-        if(productionBO!=null) {
-            rspDTO = BeanUtils.copyPropertiesReturnDest(new ProductionDTO(), productionBO);
-        }
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    public GenericRspDTO<DemandDTO> findOne(@RequestParam("pro_number") String proNumber){
+        //验证并查询需求编号
+        DemandBO demandBO = operationProductionService.verifyAndQueryTheProductionNumber(proNumber);
+        DemandDTO demandDTO = BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandDTO);
     }
     // 下载投产包
     @RequestMapping("/pkgDownload")

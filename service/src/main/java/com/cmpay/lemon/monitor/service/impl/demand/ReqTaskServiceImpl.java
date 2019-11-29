@@ -933,13 +933,29 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public void updateReqSts(String reqInnerSeq, String reqNo,String reqSts, String reqStsRemarks,String reqNm) {
         if(!permissionCheck(reqInnerSeq)){
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能删除");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能进行操作");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         if(JudgeUtils.isEmpty(reqInnerSeq)||JudgeUtils.isEmpty(reqSts)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("输入数据不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
+        DemandDO demandDO1 = demandDao.get(reqInnerSeq);
+        if(demandDO1.getReqSts().equals("50")){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("需求状态为已完成时，不允许修改需求状态");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(reqSts.equals("50")){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("不允许手动将状态变更为已完成");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(demandDO1.getReqSts().equals(reqSts)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("状态并未修改，请确定修改状态选项后再执行此操作");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        demandDO1.getReqSts();
+
+
         DemandDO demandDO = new DemandDO();
         demandDO.setReqInnerSeq(reqInnerSeq);
         demandDO.setReqSts(reqSts);
@@ -948,6 +964,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setReqNm(reqNm);
         demandStateHistoryDO.setReqInnerSeq(reqInnerSeq);
         demandStateHistoryDO.setRemarks(reqStsRemarks);
+        demandStateHistoryDO.setOldReqSts(reqStsCheck(demandDO1.getReqSts()));
         reqSts = reqStsCheck(reqSts);
         demandStateHistoryDO.setReqSts(reqSts);
         demandStateHistoryDO.setReqNo(reqNo);
@@ -1046,6 +1063,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //有主导部门，无产品经理,判断该操作员是否是该开发部门项目经理 devpLeadDept
             if(!StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng))){
                 permiDeptDO.setDeptName(devpLeadDept);
+
                 //获得开发主导部门查询该部门部门经理
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
                 String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
@@ -1059,6 +1077,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
+                System.err.println(devpLeadDept);
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
                 String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
                 if(deptManagerName.equals(userName)||productMng.equals(userName)) {
@@ -1106,7 +1125,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
-            System.err.println(identification);
             demandStateHistoryDO.setIdentification(identification);
             PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
                     () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
