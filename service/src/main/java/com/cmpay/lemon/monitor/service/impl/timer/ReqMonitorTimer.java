@@ -212,10 +212,12 @@ public class ReqMonitorTimer {
 				Map<String, String>  map = reqPlanService.getMailbox(reqTask.getReqInnerSeq());
 				sendTo = map.get("proMemberEmail");
 				copyTo = map.get("devpEmail") + map.get("testDevpEmail") + "xiao_hua@hisuntech.com;wujinyan@hisuntech.com;";
+				System.err.println(sendTo);
+				System.err.println(copyTo);
 //				sendTo = "tu_yi@hisuntech.com";
 //				copyTo = "wu_lr@hisuntech.com";
 				//发送邮件
-				reqPlanService.sendMail(sendTo, copyTo, content.toString(), subject, null);
+				reqPlanService.sendMail("tu_yi@hisuntech.com", "tu_yi@hisuntech.com", content.toString(), subject, null);
 				//设置异常类型
 				if (reqTask.getReqAbnorType().indexOf("01") != -1) {
 					reqTask.setReqAbnorType("03,");

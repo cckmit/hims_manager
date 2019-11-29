@@ -237,6 +237,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         //添加开发主导部门
         developmentDepartmenList.add(demandBO.getDevpLeadDept());
         developmentDepartmenList.forEach(m->{
+            if(m.isEmpty()){
+                return;
+            }
             this.CreateJiraMasterTask(m,demandBO,demandJiraDO,DEVELOPMAINTASK);
         });
         //添加测试主任务
