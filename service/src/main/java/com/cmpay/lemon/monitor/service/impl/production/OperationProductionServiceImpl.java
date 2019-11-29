@@ -70,6 +70,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     SystemUserService userService;
     @Autowired
     private BoardcastScheduler boardcastScheduler;
+    @Autowired
+    private IDemandExtDao demandDao;
 
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
@@ -318,6 +320,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         for (int j = 2; j < pro_number_list.length; ++j) {
             String status = operationProductionDao.findProductionBean(pro_number_list[j]).getProStatus();
+            SimpleDateFormat sdfmonth =new SimpleDateFormat("yyyy-MM");
+            String month = sdfmonth.format(operationProductionDao.findProductionBean(pro_number_list[j]).getProDate());
             scheduleBean.setProNumber(pro_number_list[j]);
             scheduleBean.setPreOperation(status);
 
@@ -557,22 +561,41 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
             operationProductionDao.insertSchedule(scheduleBean);
             operationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
-
-            DemandDO demand = reqTaskService.findById1(pro_number_list[j]);
-            if (!JudgeUtils.isNull(demand)) {
-                //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
-                if (pro_status_after.equals("投产待部署")) {
-                    demand.setPreCurPeriod("170");
-                    DemandBO demandBO =  new DemandBO();
-                    BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                    reqTaskService.update(demandBO);
-                }else if (pro_status_after.equals("投产验证完成")) {
-                    //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
-                    demand.setPreCurPeriod("180");
-                    demand.setReqSts("50");
-                    DemandBO demandBO =  new DemandBO();
-                    BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                    reqTaskService.update(demandBO);
+            // 根据编号查询需求信息
+            DemandDO demanddo = new DemandDO();
+            demanddo.setReqNo(pro_number_list[j]);
+            List<DemandDO> demandBOList = demandDao.find(demanddo);
+            if(!demandBOList.isEmpty()){
+                for(int i=0;i<demandBOList.size();i++){
+                    // 投产月份  = 需求实施月份时 ，改变需求状态
+                    if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
+                        DemandDO demand = demandBOList.get(i);
+                        System.err.println(demand);
+                        System.err.println(pro_status_after+"==="+pro_status_before);
+                        if (!JudgeUtils.isNull(demand)) {
+                            //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
+                            if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
+                                demand.setPreCurPeriod("170");
+                                demand.setReqSts("20");
+                                DemandBO demandBO =  new DemandBO();
+                                BeanUtils.copyPropertiesReturnDest(demandBO, demand);
+                                reqTaskService.update(demandBO);
+                            }
+                            if (pro_status_after.equals("部署完成待验证")) {
+                                //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
+                                demand.setPreCurPeriod("180");
+                                demand.setReqSts("50");
+                                DemandBO demandBO =  new DemandBO();
+                                BeanUtils.copyPropertiesReturnDest(demandBO, demand);
+                                reqTaskService.update(demandBO);
+                            }
+                        }
+                    }
+                    // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
+                    if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
+                        DemandDO demand = demandBOList.get(i);
+                        demandDao.delete(demand.getReqInnerSeq());
+                    }
                 }
             }
             if (!(isSend)) {

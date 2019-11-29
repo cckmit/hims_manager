@@ -37,36 +37,36 @@
         <!--<result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>-->
         <!--<result property="buscnl" jdbcType="VARCHAR" column="bus_cnl"/>-->
     <!--</resultMap>-->
-    <!--<resultMap id="rm1" type="com.hisun.persistence.beans.ErcdmgPordUser">-->
-        <!--<result property="prodUserId" jdbcType="VARCHAR" column="user_id"/>-->
-        <!--<result property="prodUserName" jdbcType="VARCHAR" column="user_name"/>-->
-        <!--<result property="email" jdbcType="VARCHAR" column="email"/>-->
-        <!--<result property="emailPassword" jdbcType="VARCHAR" column="email_password"/>-->
-        <!--<result property="audiUserId" jdbcType="VARCHAR" column="audi_user_id"/>-->
-        <!--<result property="audiUserName" jdbcType="VARCHAR" column="audi_user_name"/>-->
-    <!--</resultMap>-->
+    <resultMap id="rm1" type="com.cmpay.lemon.monitor.entity.ErcdmgPordUserDO">
+        <result property="prodUserId" jdbcType="VARCHAR" column="user_id"/>
+        <result property="prodUserName" jdbcType="VARCHAR" column="user_name"/>
+        <result property="email" jdbcType="VARCHAR" column="email"/>
+        <result property="emailPassword" jdbcType="VARCHAR" column="email_password"/>
+        <result property="audiUserId" jdbcType="VARCHAR" column="audi_user_id"/>
+        <result property="audiUserName" jdbcType="VARCHAR" column="audi_user_name"/>
+    </resultMap>
     <!---->
-    <!--<resultMap id="userMap" type="com.hisun.persistence.beans.TPermiUser">-->
-        <!--<id property="userId" jdbcType="VARCHAR" column="user_id"></id>-->
-        <!--<result property="seqId" jdbcType="BIGINT" column="seq_id"/>-->
-        <!--<result property="userName" jdbcType="VARCHAR" column="user_name"/>-->
-        <!--<result property="password" jdbcType="VARCHAR" column="password"/>-->
-        <!--<result property="deptName" jdbcType="VARCHAR" column="dept_name"/>-->
-        <!--<result property="deptId" jdbcType="VARCHAR" column="dept_id"/>-->
-        <!--<result property="mobileNum" jdbcType="VARCHAR" column="mobile_num"/>-->
-        <!--<result property="registerIp" jdbcType="VARCHAR" column="register_ip"/>-->
-        <!--<result property="email" jdbcType="VARCHAR" column="email"/>-->
-        <!--<result property="loginIp" jdbcType="VARCHAR" column="login_ip"/>-->
-        <!--<result property="isEnabled" jdbcType="BIT" column="is_enabled"/>-->
-        <!--<result property="isLocked" jdbcType="BIT" column="is_locked"/>-->
-        <!--<result property="loginCount" jdbcType="INTEGER" column="login_count"/>-->
-        <!--<result property="loginFailureCount" jdbcType="BIGINT" column="login_failure_count"/>-->
-        <!--<result property="registerTime" jdbcType="TIMESTAMP" column="register_time"/>-->
-        <!--<result property="createDate" jdbcType="TIMESTAMP" column="create_date"/>-->
-        <!--<result property="updateDate" jdbcType="TIMESTAMP" column="update_date"/>-->
-        <!--<result property="lockedDate" jdbcType="TIMESTAMP" column="locked_date"/>-->
-        <!--<result property="loginDate" jdbcType="TIMESTAMP" column="login_date"/>      -->
-    <!--</resultMap>-->
+    <resultMap id="userMap" type="com.cmpay.lemon.monitor.entity.TPermiUser">
+        <id property="userId" jdbcType="VARCHAR" column="user_id"></id>
+        <result property="seqId" jdbcType="BIGINT" column="seq_id"/>
+        <result property="userName" jdbcType="VARCHAR" column="user_name"/>
+        <result property="password" jdbcType="VARCHAR" column="password"/>
+        <result property="deptName" jdbcType="VARCHAR" column="dept_name"/>
+        <result property="deptId" jdbcType="VARCHAR" column="dept_id"/>
+        <result property="mobileNum" jdbcType="VARCHAR" column="mobile_num"/>
+        <result property="registerIp" jdbcType="VARCHAR" column="register_ip"/>
+        <result property="email" jdbcType="VARCHAR" column="email"/>
+        <result property="loginIp" jdbcType="VARCHAR" column="login_ip"/>
+        <result property="isEnabled" jdbcType="BIT" column="is_enabled"/>
+        <result property="isLocked" jdbcType="BIT" column="is_locked"/>
+        <result property="loginCount" jdbcType="INTEGER" column="login_count"/>
+        <result property="loginFailureCount" jdbcType="BIGINT" column="login_failure_count"/>
+        <result property="registerTime" jdbcType="TIMESTAMP" column="register_time"/>
+        <result property="createDate" jdbcType="TIMESTAMP" column="create_date"/>
+        <result property="updateDate" jdbcType="TIMESTAMP" column="update_date"/>
+        <result property="lockedDate" jdbcType="TIMESTAMP" column="locked_date"/>
+        <result property="loginDate" jdbcType="TIMESTAMP" column="login_date"/>
+    </resultMap>
     <!--<resultMap id="rm2" type="com.hisun.persistence.beans.Dictionary">-->
         <!--<result property="fieldId"          jdbcType="VARCHAR"      column="id"/>-->
         <!--<result property="fieldName"        jdbcType="VARCHAR"      column="name"/>-->
@@ -206,62 +206,62 @@
     </insert>
     
      <!-- 备份错误码历史表 -->
-    <!--<insert id="insertErrorlg" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--INSERT INTO t_ercdmg_errorlg (-->
-        	<!--id,-->
-            <!--error_cd,-->
-            <!--prod_mod,-->
-            <!--app_scen,-->
-            <!--tech_tip,-->
-            <!--busn_tip,-->
-            <!--curt_state,-->
-            <!--error_state,-->
-            <!--tech_user_name,-->
-            <!--tech_user_id,-->
-            <!--prod_user_id,-->
-            <!--prod_user_name,-->
-            <!--audi_role_name,-->
-            <!--entry_date,-->
-            <!--update_date,-->
-            <!--create_datetime,-->
-            <!--remark,-->
-            <!--update_no,-->
-            <!--last_update_date-->
-            <!--<if test="buscnl!=null">-->
-             <!--,bus_cnl-->
-             <!--</if> -->
-              <!--<if test="createUserId!=null">-->
-            <!--,create_UserId-->
-            <!--</if> -->
-        <!--)VALUES(-->
-            <!--#{id},-->
-            <!--#{errorCd},-->
-            <!--#{prodMod},-->
-            <!--#{appScen},-->
-            <!--#{techTip},-->
-            <!--#{busnTip},-->
-            <!--#{curtState},-->
-            <!--#{errorState},-->
-            <!--#{techUserName},-->
-            <!--#{techUserId},-->
-            <!--#{prodUserId},-->
-            <!--#{prodUserName},-->
-            <!--#{audiRoleName},-->
-            <!--#{entryDate},-->
-            <!--#{updateDate},-->
-            <!--#{createDatetime},-->
-            <!--#{remark},-->
-            <!--#{updateNo},-->
-            <!--#{lastUpdateDate}-->
-          <!---->
-            <!--<if test="buscnl!=null">-->
-             <!--,#{buscnl}-->
-             <!--</if> -->
-              <!--<if test="createUserId!=null">-->
-            <!--,#{createUserId}-->
-            <!--</if> -->
-        <!--)-->
-    <!--</insert>-->
+    <insert id="insertErrorlg" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        INSERT INTO t_ercdmg_errorlg (
+        	id,
+            error_cd,
+            prod_mod,
+            app_scen,
+            tech_tip,
+            busn_tip,
+            curt_state,
+            error_state,
+            tech_user_name,
+            tech_user_id,
+            prod_user_id,
+            prod_user_name,
+            audi_role_name,
+            entry_date,
+            update_date,
+            create_datetime,
+            remark,
+            update_no,
+            last_update_date
+            <if test="buscnl!=null">
+             ,bus_cnl
+             </if>
+              <if test="createUserId!=null">
+            ,create_UserId
+            </if>
+        )VALUES(
+            #{id},
+            #{errorCd},
+            #{prodMod},
+            #{appScen},
+            #{techTip},
+            #{busnTip},
+            #{curtState},
+            #{errorState},
+            #{techUserName},
+            #{techUserId},
+            #{prodUserId},
+            #{prodUserName},
+            #{audiRoleName},
+            #{entryDate},
+            #{updateDate},
+            #{createDatetime},
+            #{remark},
+            #{updateNo},
+            #{lastUpdateDate}
+
+            <if test="buscnl!=null">
+             ,#{buscnl}
+             </if>
+              <if test="createUserId!=null">
+            ,#{createUserId}
+            </if>
+        )
+    </insert>
     <!---->
     <!-- 新增PUBTMSG -->
     <insert id="insertPubtmsg" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
@@ -284,7 +284,7 @@
             #{techTip},
             0,
             #{appScen},
-            #{techUserId},
+            #{techUserId , jdbcType = VARCHAR},
             #{updDt},
             #{tmSmp}
         )
@@ -306,7 +306,7 @@
             #{busnTip},
             #{appScen},
             '*',
-            #{techUserId},
+            #{techUserId , jdbcType = VARCHAR},
             #{updDt},
             #{tmSmp}
         )
@@ -317,111 +317,111 @@
     <select id="selectPubttms" parameterType="java.lang.String"  resultType="java.lang.String">
          select MSG_CD FROM pubttms where MSG_CD=#{errorCd} and  bus_cnl=#{buscnl}
     </select>
-    <!--<update id="updatePubtmsg">-->
-        <!--update Pubtmsg-->
-          <!--<set>-->
-                <!--<if test="techTip!=null">-->
-                 <!--MSG_INF =#{techTip},-->
-                <!--</if>-->
-                <!--<if test="appScen!=null">-->
-                 <!--MSG_DESC =#{appScen},-->
-                <!--</if> -->
-                 <!--UPD_DT=to_char(sysdate,'yyyymmdd')-->
-            <!--</set>-->
-            <!--WHERE -->
-            <!--MSG_CD = #{errorCd}-->
-    <!--</update>-->
-    <!--<update id="updatePubttms">-->
-    	<!--update PUBTTMS -->
-    	 <!--<set>-->
-            <!--<if test="techTip!=null">-->
-             <!--MSG_INF =#{busnTip},-->
-            <!--</if>-->
-            <!--<if test="appScen!=null">-->
-             <!--MSG_DESC =#{appScen},-->
-            <!--</if> -->
-             <!--UPD_DT=to_char(sysdate,'yyyymmdd')-->
-         <!--</set>-->
-          <!--WHERE -->
-          <!--MSG_CD = #{errorCd}  and  bus_cnl=#{buscnl} -->
-    <!--</update>-->
+    <update id="updatePubtmsg">
+        update Pubtmsg
+          <set>
+                <if test="techTip!=null">
+                 MSG_INF =#{techTip},
+                </if>
+                <if test="appScen!=null">
+                 MSG_DESC =#{appScen},
+                </if>
+                 UPD_DT=#{updDt}
+            </set>
+            WHERE
+            MSG_CD = #{errorCd}
+    </update>
+    <update id="updatePubttms">
+    	update PUBTTMS
+    	 <set>
+            <if test="techTip!=null">
+             MSG_INF =#{busnTip},
+            </if>
+            <if test="appScen!=null">
+             MSG_DESC =#{appScen},
+            </if>
+             UPD_DT=#{updDt}
+         </set>
+          WHERE
+          MSG_CD = #{errorCd}  and  bus_cnl=#{buscnl}
+    </update>
     <!--&lt;!&ndash; 更新 &ndash;&gt;-->
-    <!--<update id="update" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--UPDATE t_ercdmg_error -->
-            <!--<set>-->
-                <!--<if test="prodMod!=null">-->
-                <!--prod_mod = #{prodMod}-->
-                <!--</if>-->
-                <!--<if test="appScen!=null">-->
-                <!--,app_scen = #{appScen}-->
-                <!--</if>                -->
-                <!--<if test="techTip!=null">-->
-                <!--,tech_tip = #{techTip}-->
-                <!--</if>-->
-                  <!--<if test="buscnl!=null">-->
-                <!--,bus_cnl = #{buscnl}-->
-                <!--</if>-->
-                <!--<if test="busnTip!=null">-->
-                <!--,busn_tip = #{busnTip}-->
-                <!--</if>-->
-                <!--<if test="prodUserId!=null">-->
-                <!--,prod_user_id = #{prodUserId}-->
-                <!--</if>-->
-                <!--<if test="prodUserName!=null">-->
-                <!--,prod_user_name = #{prodUserName}-->
-                <!--</if>-->
-                <!--<if test="updateDate!=null">-->
-                <!--,update_date = #{updateDate}-->
-                <!--</if>-->
-                <!--<if test="remark!=null">-->
-                <!--,remark = #{remark}-->
-                <!--</if>-->
-                <!--<if test="lastUpdateDate!=null">-->
-                 <!--,last_update_date = #{lastUpdateDate}-->
-                <!--</if>-->
-                 <!--<if test="cr!=null">-->
-                 <!--,cr = #{cr}-->
-                <!--</if>-->
-            <!--</set>-->
-            <!--WHERE -->
-            <!--id = #{id}-->
-    <!--</update>    -->
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        UPDATE t_ercdmg_error
+            <set>
+                <if test="prodMod!=null">
+                prod_mod = #{prodMod}
+                </if>
+                <if test="appScen!=null">
+                ,app_scen = #{appScen}
+                </if>
+                <if test="techTip!=null">
+                ,tech_tip = #{techTip}
+                </if>
+                  <if test="buscnl!=null">
+                ,bus_cnl = #{buscnl}
+                </if>
+                <if test="busnTip!=null">
+                ,busn_tip = #{busnTip}
+                </if>
+                <if test="prodUserId!=null">
+                ,prod_user_id = #{prodUserId}
+                </if>
+                <if test="prodUserName!=null">
+                ,prod_user_name = #{prodUserName}
+                </if>
+                <if test="updateDate!=null">
+                ,update_date = #{updateDate}
+                </if>
+                <if test="remark!=null">
+                ,remark = #{remark}
+                </if>
+                <if test="lastUpdateDate!=null">
+                 ,last_update_date = #{lastUpdateDate}
+                </if>
+                 <if test="cr!=null">
+                 ,cr = #{cr}
+                </if>
+            </set>
+            WHERE
+            id = #{id}
+    </update>
     <!--&lt;!&ndash; 查询产品经理接受人 &ndash;&gt;-->
-    <!--<select id="selectPordUser" resultMap="rm1" parameterType="java.util.List">-->
-        <!--select distinct user_id,user_name,email from -->
-        <!--t_permi_user -->
-        <!--<where>-->
-         <!--user_id in (-->
-         <!--<foreach item="item" index="index" collection="list" separator=","> -->
-         <!--#{item.prodUserId} -->
-         <!--</foreach> -->
-         <!--)-->
-        <!--</where>  -->
-    <!--</select>-->
+    <select id="selectPordUser" resultMap="rm1" parameterType="java.util.List">
+        select distinct user_id,user_name,email from
+        t_permi_user
+        <where>
+         user_id in (
+         <foreach item="item" index="index" collection="list" separator=",">
+         #{item.prodUserId}
+         </foreach>
+         )
+        </where>
+    </select>
     <!--&lt;!&ndash; 单个查询 &ndash;&gt;-->
     <!---->
-    <!--<select id="selectErrorSingle" parameterType="java.lang.String" resultMap="rm" >-->
-        <!--SELECT -->
-        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
-        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
-        <!--<include refid="Base_Column_List" />-->
-        <!--from t_ercdmg_error -->
-        <!--where id =#{id}-->
-    <!--</select>-->
+    <select id="selectErrorSingle" parameterType="java.lang.String" resultMap="rm" >
+    SELECT
+    (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,
+    (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,
+    <include refid="Base_Column_List" />
+    from t_ercdmg_error
+    where id =#{id}
+</select>
     <!---->
-    <!--<select id="selectErcdmgByErrorList" resultMap="rm" >-->
-        <!--SELECT  -->
-        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
-        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,-->
-        <!--<include refid="Base_Column_List" />-->
-        <!--from t_ercdmg_error-->
-        <!--<where>  -->
-         <!--id in (-->
-         <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
-         <!--#{errorCd} </foreach> -->
-         <!--)-->
-        <!--</where>  -->
-    <!--</select>-->
+    <select id="selectErcdmgByErrorList" resultMap="rm" >
+        SELECT
+        (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_error
+        <where>
+         id in (
+         <foreach item="errorCd" index="index" collection="array" separator=",">
+         #{errorCd} </foreach>
+         )
+        </where>
+    </select>
      <!--<update id="updateSYNState" >-->
         <!--update t_ercdmg_error set syn_flg=1 -->
          <!--<where>  -->
@@ -489,19 +489,19 @@
     <!--</select> -->
     <!---->
     <!--&lt;!&ndash; 删除 &ndash;&gt;-->
-    <!--<delete id="deleteError" parameterType="java.lang.String">-->
-        <!--DELETE FROM t_ercdmg_error-->
-        <!--where id =#{id}-->
-    <!--</delete>  -->
-    <!--<delete id="deletePubtmsg" parameterType="java.lang.String">-->
-        <!--DELETE FROM Pubtmsg-->
-        <!--where msg_cd =#{errorCd} 	-->
-    <!--</delete> -->
+    <delete id="deleteError" parameterType="java.lang.String">
+        DELETE FROM t_ercdmg_error
+        where id =#{id}
+    </delete>
+    <delete id="deletePubtmsg" parameterType="java.lang.String">
+        DELETE FROM Pubtmsg
+        where msg_cd =#{errorCd}
+    </delete>
     <!---->
-    <!--<delete id="deletePubttms" parameterType="map">-->
-        <!--DELETE FROM Pubttms-->
-        <!--where msg_cd =#{errorCd}  and  bus_cnl=#{buscnl}-->
-    <!--</delete> -->
+    <delete id="deletePubttms" parameterType="map">
+        DELETE FROM Pubttms
+        where msg_cd =#{errorCd}  and  bus_cnl=#{buscnl}
+    </delete>
     <!-- 分页查询 -->
     <select id="findErcdmgErrorList" resultMap="rm" parameterType="map">
         SELECT
@@ -608,16 +608,16 @@
             <!--)-->
         <!--</if>-->
     <!--</select>-->
-    <!--<update id="updateErrorCurtState" parameterType="java.util.HashMap">-->
-        <!--update t_ercdmg_error set curt_state=#{curtState} -->
-         <!--<where>  -->
-          <!--id in (-->
-          <!--<foreach item="errorCd" index="index" collection="errorCdsArr" separator=","> -->
-           <!--#{errorCd}-->
-           <!--</foreach> -->
-          <!--)-->
-        <!--</where>  -->
-    <!--</update>-->
+    <update id="updateErrorCurtState">
+        update t_ercdmg_error set curt_state=#{curtState}
+         <where>
+          id in (
+          <foreach item="errorCd" index="index" collection="errorCdsArr" separator=",">
+           #{errorCd}
+           </foreach>
+          )
+        </where>
+    </update>
     <!--<update id="updateErrorUpdateNo" parameterType="map">-->
         <!--update t_ercdmg_error set update_no=#{updateNo} -->
         <!--<where>  -->
@@ -658,24 +658,24 @@
    		 <!--where a.user_id=b.user_id and b.role_id=c.role_id-->
    		 <!--and c.role_name=#{roleName}-->
     <!--</select> -->
-    <!--<select id="selectProdUserbyErrorCds"  resultMap="rm1">-->
-         <!--select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b-->
-         <!--<where>  -->
-          <!--a.user_id=b.prod_user_id and b.id in (-->
-          <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
-           <!--#{errorCd} </foreach> -->
-          <!--)-->
-        <!--</where>  -->
-    <!--</select>-->
-     <!--<select id="selectTechUserbyErrorCds"  resultMap="rm1">-->
-         <!--select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b-->
-         <!--<where>  -->
-          <!--a.user_name=b.tech_user_name and b.id in (-->
-          <!--<foreach item="errorCd" index="index" collection="array" separator=","> -->
-           <!--#{errorCd} </foreach> -->
-          <!--)-->
-        <!--</where>  -->
-    <!--</select>-->
+    <select id="selectProdUserbyErrorCds"  resultMap="rm1">
+         select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b
+         <where>
+          a.user_id=b.prod_user_id and b.id in (
+          <foreach item="errorCd" index="index" collection="array" separator=",">
+           #{errorCd} </foreach>
+          )
+        </where>
+    </select>
+     <select id="selectTechUserbyErrorCds"  resultMap="rm1">
+         select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b
+         <where>
+          a.user_name=b.tech_user_name and b.id in (
+          <foreach item="errorCd" index="index" collection="array" separator=",">
+           #{errorCd} </foreach>
+          )
+        </where>
+    </select>
     <!--<select id="selectProdUserId"  resultMap="rm1" >-->
          <!--select DISTINCT prod_user_id user_id ,prod_user_name user_name from t_ercdmg_error -->
          <!--<where>  -->
@@ -708,9 +708,9 @@
 		 <!--#{errorCd}</foreach> -->
 		 <!--)-->
     <!--</select> -->
-    <!--<select id="selectUpdateErrorCd" parameterType="java.lang.String"  resultType="java.lang.String" >-->
-         <!--select update_no from t_ercdmg_error where id=#{id}-->
-    <!--</select>-->
+    <select id="selectUpdateErrorCd" parameterType="java.lang.String"  resultType="java.lang.String" >
+         select update_no from t_ercdmg_error where id=#{id}
+    </select>
     <!--<select id="searchErcdmgErrorList" resultMap="rm" parameterType="java.lang.String">-->
         <!--(select -->
         <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
@@ -754,10 +754,10 @@
     <!--<select id="findPordmod" resultMap="rm2">-->
         <!--SELECT CONCAT(NAME,'_',description) name,NAME as value FROM t_ercdmg_busmod order by name asc-->
     <!--</select>-->
-    <!--<select id="findByUsername" parameterType="java.lang.String" resultMap="userMap">-->
-          <!--select <include refid="user_Column_List" />-->
-          <!--from t_permi_user where user_name = #{userName} limit 1-->
-    <!--</select>-->
+    <select id="findByUsername" parameterType="java.lang.String" resultMap="userMap">
+          select <include refid="user_Column_List" />
+          from t_permi_user where user_name = #{userName} limit 1
+    </select>
     <!--<select id="findDictionary"  resultMap="rm_bus_cnl" >-->
          <!--SELECT CONCAT(NAME,'_',CASE WHEN description = '*' THEN '全渠道' else description END ) as name,NAME as value-->
           <!--FROM t_ercdmg_buscnl order by name asc-->
@@ -779,29 +779,27 @@
     </select>
     <!---->
      <!--&lt;!&ndash; 插入待上传表 &ndash;&gt;-->
-    <!--<insert id="insertForUpload" parameterType="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--INSERT INTO t_ercdmg_forftp(-->
-        	<!--error_id,-->
-            <!--error_cd,-->
-            <!--bus_cnl,-->
-            <!--prod_mod,-->
-            <!--tech_tip,-->
-            <!--busn_tip,-->
-            <!--cur_status-->
-            <!---->
-        <!--)VALUES(-->
-            <!--#{id},-->
-            <!--#{errorCd},-->
-            <!--#{buscnl},-->
-            <!--#{prodMod},-->
-            <!--#{techTip},-->
-            <!--#{busnTip},-->
-            <!--#{ftpUploadStatus}-->
-            <!---->
-            <!---->
-        <!--)-->
-    <!--</insert>-->
-    <!---->
+    <insert id="insertForUpload" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        INSERT INTO t_ercdmg_forftp(
+        	error_id,
+            error_cd,
+            bus_cnl,
+            prod_mod,
+            tech_tip,
+            busn_tip,
+            cur_status
+
+        )VALUES(
+            #{id},
+            #{errorCd},
+            #{buscnl},
+            #{prodMod},
+            #{techTip},
+            #{busnTip},
+            #{ftpUploadStatus}
+        )
+    </insert>
+
       <!---->
     <!--<select id="queryForUpload"  resultMap="rm5">-->
          <!--SELECT id,error_Cd,tech_Tip,busn_Tip,bus_cnl FROM t_ercdmg_forftp  where cur_status='0'   order by tm_smp asc-->
