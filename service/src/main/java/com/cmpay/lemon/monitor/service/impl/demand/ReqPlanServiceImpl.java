@@ -10,9 +10,7 @@ import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.ProjectStartBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
@@ -121,6 +119,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private JiraOperationService jiraOperationService;
     @Autowired
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+    @Autowired
+    IDemandTimeFrameHistoryDao demandTimeFrameHistoryDao;
 
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
@@ -131,6 +131,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private ReqTaskService reqTaskService;
     @Autowired
     SystemUserService userService;
+
+
 
 
     @Override
@@ -301,12 +303,45 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 }
             }
             setDefaultUser(demandBO);
+
+            if(!demandBO.getRevisionTimeNote().isEmpty()){
+                registrationTimeNodeHistoryTable(demandBO);
+            }
             demandDao.updateReqPlanJsp(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
+
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
         jiraOperationService.createEpic(demandBO);
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void registrationTimeNodeHistoryTable(DemandBO demandBO) {
+        DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
+
+        DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+        demandTimeFrameHistoryDO.setReqInnerSeq(demandDO.getReqInnerSeq());
+        demandTimeFrameHistoryDO.setReqNo(demandDO.getReqNo());
+        demandTimeFrameHistoryDO.setReqNm(demandDO.getReqNm());
+        demandTimeFrameHistoryDO.setReqNm(demandDO.getReqNm());
+        demandTimeFrameHistoryDO.setOldPrdFinshTm(demandDO.getPrdFinshTm());
+        demandTimeFrameHistoryDO.setOldExpPrdReleaseTm(demandDO.getExpPrdReleaseTm());
+        demandTimeFrameHistoryDO.setOldUatUpdateTm(demandDO.getUatUpdateTm());
+        demandTimeFrameHistoryDO.setOldTestFinshTm(demandDO.getTestFinshTm());
+        demandTimeFrameHistoryDO.setOldPreTm(demandDO.getPreTm());
+
+        demandTimeFrameHistoryDO.setPrdFinshTm(demandBO.getPrdFinshTm());
+        demandTimeFrameHistoryDO.setExpPrdReleaseTm(demandBO.getExpPrdReleaseTm());
+        demandTimeFrameHistoryDO.setUatUpdateTm(demandBO.getUatUpdateTm());
+        demandTimeFrameHistoryDO.setTestFinshTm(demandBO.getTestFinshTm());
+        demandTimeFrameHistoryDO.setPreTm(demandBO.getPreTm());
+        demandTimeFrameHistoryDO.setRemarks(demandBO.getRevisionTimeNote());
+        demandTimeFrameHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+        demandTimeFrameHistoryDO.setCreatTime(LocalDateTime.now());
+        String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandBO.getReqInnerSeq());
+        demandTimeFrameHistoryDO.setIdentification(identification);
+        demandTimeFrameHistoryDao.insert(demandTimeFrameHistoryDO);
     }
 
     @Override
@@ -2127,6 +2162,60 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public List<DemandBO> getNormalExecutionDemand(DemandDO demandDO) {
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(demandDao.getNormalExecutionDemand(demandDO), DemandBO.class);
         return demandBOList;
+    }
+
+    @Override
+    public DemandTimeFrameHistoryRspBO findTimeNodeModificationDetails(DemandTimeFrameHistoryBO demandTimeFrameHistoryBO) {
+        //todo
+        if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&!demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只需要传一个条件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandTimeFrameHistoryBO.getReqInnerSeq());
+            if(identification==null){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+            demandTimeFrameHistoryDO.setIdentification(identification);
+            PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandTimeFrameHistoryDao.find(demandTimeFrameHistoryDO), DemandTimeFrameHistoryBO.class));
+            List<DemandTimeFrameHistoryBO> demandTimeFrameHistoryBOS = BeanConvertUtils.convertList(pageInfo.getList(), DemandTimeFrameHistoryBO.class);
+            DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = new DemandTimeFrameHistoryRspBO();
+            demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
+            demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
+            return demandTimeFrameHistoryRspBO;
+        }else if(demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&!demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+            DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+            demandChangeDetailsDO.setReqNo(demandTimeFrameHistoryBO.getReqNo());
+            List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
+            demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
+            if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
+            DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+            demandTimeFrameHistoryDO.setIdentification(identification);
+            PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandTimeFrameHistoryDao.find(demandTimeFrameHistoryDO), DemandTimeFrameHistoryBO.class));
+            List<DemandTimeFrameHistoryBO> demandTimeFrameHistoryBOS = BeanConvertUtils.convertList(pageInfo.getList(), DemandTimeFrameHistoryBO.class);
+            DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = new DemandTimeFrameHistoryRspBO();
+            demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
+            demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
+            return demandTimeFrameHistoryRspBO;
+        }else{
+            //未传参数 输出所有
+            DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+            PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandTimeFrameHistoryDao.find(demandTimeFrameHistoryDO), DemandTimeFrameHistoryBO.class));
+            List<DemandTimeFrameHistoryBO> demandTimeFrameHistoryBOS = BeanConvertUtils.convertList(pageInfo.getList(), DemandTimeFrameHistoryBO.class);
+            DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = new DemandTimeFrameHistoryRspBO();
+            demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
+            demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
+            return demandTimeFrameHistoryRspBO;
+        }
     }
 
     /**

@@ -190,7 +190,9 @@ public class ReqTaskController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
-
+    /**
+     *需求状态修改明细
+     */
     @PostMapping("/demandTaskStatusBreakdown")
     public GenericRspDTO<DemandStateHistoryRspDTO> demandTaskStatusBreakdown (@RequestBody DemandChangeDetailsReqDTO req) {
         DemandStateHistoryRspDTO rspDTO = new DemandStateHistoryRspDTO();

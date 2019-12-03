@@ -77,6 +77,7 @@ public class ReqMonitorTimer {
 		productionTimeBO.setId(Integer.valueOf(4));
 		productionTimeBO.setTime(day);
 		productTimeService.updateProductTime(productionTimeBO);
+		boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
 	}
 
 
@@ -129,12 +130,13 @@ public class ReqMonitorTimer {
 		SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
 		File file=null;
 		try{
-			String excel = "Unverified_List_" + DateUtil.date2String(new Date(), "yyyyMMdd") + ".xls";
+			String excel = "\\Unverified_List_" + DateUtil.date2String(new Date(), "yyyyMMdd") + ".xls";
+			sendExcelProductionVerificationIsNotTimely.createExcel(excel, productionDOList, null, operationApplicationDOList);
 			file=new File(excel);
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-
 		boardcastScheduler.pushValidationNotTimelyChecklist(body,file);
 		file.delete();
 	}

@@ -4,10 +4,7 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.DictionaryBO;
-import com.cmpay.lemon.monitor.bo.ProjectStartBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -119,6 +116,7 @@ public class ReqPlanController {
      */
     @RequestMapping("/update")
     public GenericRspDTO update(@RequestBody DemandDTO demandDTO) {
+
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqPlanService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
@@ -252,5 +250,24 @@ public class ReqPlanController {
         MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
         reqPlanService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
+    }
+
+
+    /**
+     *需求计划变更明细
+     */
+    @PostMapping("/detailsOfDemandPlanChanges")
+    public GenericRspDTO<DemandTimeFrameHistoryRspDTO> detailsOfDemandPlanChanges (@RequestBody DemandTimeFrameHistoryReqDTO req) {
+        DemandTimeFrameHistoryRspDTO rspDTO = new DemandTimeFrameHistoryRspDTO();
+        DemandTimeFrameHistoryBO demandTimeFrameHistoryBO = BeanUtils.copyPropertiesReturnDest(new DemandTimeFrameHistoryBO(), req);
+        DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = reqPlanService.findTimeNodeModificationDetails(demandTimeFrameHistoryBO);
+
+
+        rspDTO.setDemandTimeFrameHistoryDTOList(BeanConvertUtils.convertList(demandTimeFrameHistoryRspBO.getDemandTimeFrameHistoryBOList(), DemandTimeFrameHistoryDTO.class));
+        rspDTO.setPageNum(demandTimeFrameHistoryRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(demandTimeFrameHistoryRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(demandTimeFrameHistoryRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(demandTimeFrameHistoryRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }

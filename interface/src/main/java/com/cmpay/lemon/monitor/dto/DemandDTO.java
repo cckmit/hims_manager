@@ -89,6 +89,8 @@ public class DemandDTO extends GenericDTO {
     private String updateUser;
     private String reqAbnorType;
 
+    private String revisionTimeNote;
+
     /**
      * 页数
      */
@@ -737,6 +739,18 @@ public class DemandDTO extends GenericDTO {
     public void setJiraKey(String jiraKey) {
         this.jiraKey = jiraKey;
     }
+
+    public String getRevisionTimeNote() {
+        return revisionTimeNote;
+    }
+
+    public void setRevisionTimeNote(String revisionTimeNote) {
+        this.revisionTimeNote = revisionTimeNote;
+    }
+
+
+
+
 
     @Override
     public String toString() {

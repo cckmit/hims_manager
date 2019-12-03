@@ -90,6 +90,7 @@ public class DemandBO {
     private String updateUser;
     private String reqAbnorType;
 
+    private String revisionTimeNote;
     /**
      * 页数
      */
@@ -720,6 +721,14 @@ public class DemandBO {
 
     public void setJiraKey(String jiraKey) {
         this.jiraKey = jiraKey;
+    }
+
+    public String getRevisionTimeNote() {
+        return revisionTimeNote;
+    }
+
+    public void setRevisionTimeNote(String revisionTimeNote) {
+        this.revisionTimeNote = revisionTimeNote;
     }
 
     @Override

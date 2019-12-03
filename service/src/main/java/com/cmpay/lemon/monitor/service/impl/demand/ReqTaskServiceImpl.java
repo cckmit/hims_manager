@@ -14,6 +14,7 @@ import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
+import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -89,6 +90,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     @Autowired
     private ReqTaskService reqTaskService;
+
+    @Autowired
+    private ReqPlanService reqPlanService;
 
     @Autowired
     private JiraOperationService jiraOperationService;
@@ -372,8 +376,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         setReqSts(demandBO);
 
         try {
+            //如果修改了需求节点计划时间
+            if(!demandBO.getRevisionTimeNote().isEmpty()){
+                reqPlanService.registrationTimeNodeHistoryTable(demandBO);
+            }
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
         } catch (Exception e) {
+            e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
         jiraOperationService.createEpic(demandBO);
@@ -388,8 +397,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public List<DemandBO> getReqTaskByUK(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanUtils.copyPropertiesReturnDest(demandDO, demandBO);
-        System.err.println(11111);
-        System.err.println(demandBO.toString());
         return BeanConvertUtils.convertList(demandDao.getReqTaskByUK(demandDO), DemandBO.class);
     }
 

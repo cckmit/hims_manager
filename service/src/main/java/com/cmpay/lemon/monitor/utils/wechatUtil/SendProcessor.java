@@ -75,7 +75,6 @@ public class SendProcessor {
     public String uploadTempFile(File file, String url) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        System.err.println(MediaType.MULTIPART_FORM_DATA);
         FileSystemResource resource = new FileSystemResource(file);
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
         parts.add("file", resource);
@@ -90,6 +89,7 @@ public class SendProcessor {
         System.err.println(body.toString());
         if ((int) body.get(ERRCODE) != OK) {
             LOGGER.error("wechatUtil query:[{}] failed", url);
+            System.err.println(MsgEnum.WECHAT_QUERY_FAILED.getMsgInfo());
             BusinessException.throwBusinessException(MsgEnum.WECHAT_QUERY_FAILED);
         }
         return (String) body.get("media_id");

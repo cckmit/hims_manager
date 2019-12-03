@@ -1,8 +1,6 @@
 package com.cmpay.lemon.monitor.service.demand;
 
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.ProjectStartBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -111,4 +109,8 @@ public interface ReqPlanService {
     void doBatchImport(MultipartFile file);
 
     List<DemandBO> getNormalExecutionDemand(DemandDO demandDO);
+
+    DemandTimeFrameHistoryRspBO findTimeNodeModificationDetails(DemandTimeFrameHistoryBO demandTimeFrameHistoryBO);
+
+    void registrationTimeNodeHistoryTable(DemandBO demandBO);
 }
