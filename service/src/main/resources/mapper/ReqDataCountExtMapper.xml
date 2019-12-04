@@ -341,7 +341,7 @@
 					sum( CASE WHEN req_abnor_type not like '%01%' THEN 1 ELSE 0 END ) req_abnormal
 				FROM
 					t_demand_info
-				WHERE req_impl_mon =#{0}
+				WHERE req_impl_mon =#{0} and req_sts!='60'
 		)a
 	</select>
 
@@ -366,7 +366,7 @@
 					sum( CASE WHEN req_abnor_type not like '%01%' THEN 1 ELSE 0 END ) req_abnormal
 				FROM
 					t_demand_info
-				WHERE req_impl_mon = #{0}
+				WHERE req_impl_mon = #{0} and req_sts!='60'
 				GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
 		)a
 	</select>
@@ -380,7 +380,7 @@
 			sum( CASE WHEN req_type = '04' THEN 1 ELSE 0 END ) req_jump
 		FROM
 			t_demand_info
-		WHERE req_impl_mon = #{0}
+		WHERE req_impl_mon = #{0} and req_sts!='60'
 	</select>
 
 	<select id="getProduction" resultMap="sm">
