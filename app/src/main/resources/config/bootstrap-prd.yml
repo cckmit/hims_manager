@@ -1,41 +1,55 @@
 eureka:
   client:
     registerWithEureka: false
-    healthcheck:
-      enabled: false
     serviceUrl:
-      zone-csse2x: http://172.29.63.11:9002/eureka/,http://172.29.63.12:9002/eureka/,http://172.29.63.13:9002/eureka/
+      zone-csse2x: http://172.16.49.77:9002/eureka/
 
 spring:
   redis:
     cluster:
-      nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+      nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
     password:  '*****'
-
 lemon:
   alerting:
     redis:
       cluster:
-        nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
-      password:  '*****'
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+        password:  '*****'
   dataSources:
     primary:
+      type: com.alibaba.druid.pool.DruidDataSource
       driverClassName: com.mysql.jdbc.Driver
       url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
       username: hims
       password: 'hims2019'
+    dsSit:
+      type: com.alibaba.druid.pool.DruidDataSource
+      validationQuery: 'select 1 from dual'
+      driverClassName: oracle.jdbc.driver.OracleDriver
+      url: jdbc:oracle:thin:@172.16.49.65:1521:motion
+      username: pubadm
+      password: 'pub#123a'
+    dsUat:
+      type: com.alibaba.druid.pool.DruidDataSource
+      validationQuery: 'select 1 from dual'
+      driverClassName: oracle.jdbc.driver.OracleDriver
+      url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
+      username: payadm
+      password: 'vse0#sf3'
+    #dynamic datasource
+  dynamicDataSource:
+    enabled: true
+    defaultDataSource: primary
   idgen:
     redis:
       password: '*****'
       cluster:
-        nodes: 172.29.46.32:2000,172.29.46.32:2001,172.29.46.33:2000,172.29.46.33:2001,172.29.46.34:2000,172.29.46.34:2001
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
   cache:
     redis:
       password: '*****'
       cluster:
-        nodes: 172.29.46.24:6379,172.29.46.25:6379,172.29.46.26:6379,172.29.46.24:6380,172.29.46.25:6380,172.29.46.26:6380
+        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
 
-monitor:
-  elasticsearch:
-    nodes:
-    - 172.27.136.18:9200
+
+
