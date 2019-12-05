@@ -513,7 +513,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     public DemandBO getMaxInnerSeq() {
-        return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDao.getMaxInnerSeq());
+        DemandDO demandDO= null;
+        demandDO= demandDao.getMaxInnerSeq();
+        if(demandDO != null){
+            return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
+        }else {
+            return null;
+        }
+
     }
 
     @Override
