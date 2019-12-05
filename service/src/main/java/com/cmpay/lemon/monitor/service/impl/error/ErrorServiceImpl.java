@@ -21,6 +21,7 @@ import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.errror.ErrorService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.CreateSequence;
+import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,10 +46,12 @@ import java.util.*;
 public class ErrorServiceImpl implements ErrorService {
     //超级管理员
     private static final Long SUPERADMINISTRATOR =(long)10506;
-    //团队主管
-    private static final Long SUPERADMINISTRATOR1 =(long)5004;
-    //运维部署组
-    private static final Long SUPERADMINISTRATOR2 =(long)5005;
+    //错误码审核人
+    private static final Long SUPERADMINISTRATOR1 =(long)16001;
+    //产品经理
+    private static final Long SUPERADMINISTRATOR2 =(long)5002;
+    //技术负责人
+    private static final Long SUPERADMINISTRATOR3 =(long)5006;
 
     @Autowired
     private IErcdmgErorDao iErcdmgErorDao;
@@ -151,19 +154,6 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     public void insertErrorRecordBean(ErrorRecordBeanDO errorRecordBean){
         iErcdmgErorDao.insertErrorRecordBean(errorRecordBean);
-    }
-    // 判断是否为角色权限
-    public boolean isDepartmentManager(Long juese ){
-        //查询该操作员角色
-        UserRoleDO userRoleDO = new UserRoleDO();
-        userRoleDO.setRoleId(juese);
-        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
-        List<UserRoleDO> userRoleDOS =new LinkedList<>();
-        userRoleDOS  = userRoleExtDao.find(userRoleDO);
-        if (!userRoleDOS.isEmpty()){
-            return true ;
-        }
-        return false ;
     }
     @Override
     public void addErcdmgError(ErcdmgErrorComditionBO ercdmgError) {
@@ -477,6 +467,12 @@ public class ErrorServiceImpl implements ErrorService {
         ercdmgError.setProdUserId( SecurityUtils.getLoginName());
         ercdmgError.setLastUpdateDate(LocalDateTime.now());
         iErcdmgErorDao.update(ercdmgError);
+        //已生效同步生产修改
+        if(ercdmgError.getCurtState().equals("5")){
+            ercdmgError.setFtpUploadStatus("0");
+            iErcdmgErorDao.insertForUpload(ercdmgError);
+
+        }
     }
     @Override
     public ErcdmgErrorComditionBO checkErrorDelete(String id){
@@ -710,6 +706,7 @@ public class ErrorServiceImpl implements ErrorService {
         iErcdmgErorDao.updateErrorCurtState(""+backStatus,id);
     }
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public ErcdmgErrorComditionRspBO forwardpord (String ids){
         String[] strArray=ids.split("~");
         List<ErcdmgErrorComditionBO> elist = BeanConvertUtils.convertList(iErcdmgErorDao.selectErcdmgByErrorList(strArray), ErcdmgErrorComditionBO.class);
@@ -726,5 +723,226 @@ public class ErrorServiceImpl implements ErrorService {
         productionRspBO.setErcdmgErrorComditionBOList(elist);
         productionRspBO.setErcdmgPordUserDTOList(ercdmgPordUserBOList);
         return  productionRspBO;
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void pordsubmit(String ids,String emails,String emailContent) {
+        String[] errorArr = ids.split("~");
+        iErcdmgErorDao.updateErrorCurtState("2",errorArr);
+        List<ErcdmgErrorComditionDO> elist = iErcdmgErorDao.selectErcdmgByErrorList(errorArr);
+        String errcds="";
+        for(ErcdmgErrorComditionDO e:elist){
+            errcds+=e.getErrorCd()+",";
+        }
+
+        String emailCont="错误码："+errcds+"<br/>"+emailContent;
+        // 发邮件至对应产品经理
+       // String[] emailsArr = emails.split("~");
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        for (int i = 0; i < emailsArr.length; i++) {
+            if (null == emailsArr[i] || "".equals(emailsArr[i])){
+                continue;
+            }
+            SendErrorEmail.sendEmail("错误码提交给产品经理复核提醒", Constant.EMAIL_NAME,  Constant.EMAIL_PSWD,emailsArr[i], emailCont);
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public ErcdmgErrorComditionRspBO forwardaudi (String ids){
+        String[] strArray=ids.split("~");
+        List<ErcdmgErrorComditionBO> elist = BeanConvertUtils.convertList(iErcdmgErorDao.selectErcdmgByErrorList(strArray), ErcdmgErrorComditionBO.class);
+        for(ErcdmgErrorComditionBO ercdmgError :elist){
+            if(ercdmgError.getCurtState()!="2"&&!ercdmgError.getCurtState().equals("2")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择状态为：待产品复核的错误码！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectUserByRole("审核人员");
+        List<ErcdmgPordUserBO> ercdmgPordUserBOList = BeanConvertUtils.convertList(pordUserList, ErcdmgPordUserBO.class);
+        ErcdmgErrorComditionRspBO productionRspBO = new ErcdmgErrorComditionRspBO();
+        productionRspBO.setErcdmgErrorComditionBOList(elist);
+        productionRspBO.setErcdmgPordUserDTOList(ercdmgPordUserBOList);
+        return  productionRspBO;
+    }
+
+    //下一步，审核人员
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void audisubmit(String ids, String emails, String emailContent, Date updateDate){
+        String dateStr= DateUtil.date2String(updateDate,DateUtil.PATTERN_DATE);
+        String[] strArray = ids.split("~");
+        List<ErcdmgErrorComditionDO> elist = iErcdmgErorDao.selectErcdmgByErrorList(strArray);
+        String errcds = "";
+        for(ErcdmgErrorComditionDO e:elist){
+            errcds+=e.getErrorCd()+",";
+        }
+        //发送邮件
+        String emailCont="错误码："+errcds+"<br/>"+emailContent+dateStr;
+        iErcdmgErorDao.updateErrorCurtState("3", strArray);
+        // 更新期望更新时间
+        iErcdmgErorDao.updateErrorUpdDate(updateDate,strArray);
+        // 发邮件至对应产品经理
+        //String[] emailsArr = emails.split("~");
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        for (int i = 0; i < emailsArr.length; i++) {
+            if (null == emailsArr[i] || "".equals(emailsArr[i])){
+                continue;
+            }
+            SendErrorEmail.sendEmail("错误码提交给待审核人验证提醒", Constant.EMAIL_NAME,  Constant.EMAIL_PSWD,emailsArr[i], emailCont);
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public  void audiSubmitUpdmgn(String ids){
+        String[] errorArr = ids.split("~");
+        List<ErcdmgErrorComditionDO> errorList = iErcdmgErorDao.selectErcdmgByErrorList(errorArr);
+        //检验错误码状态为待审核人验证
+        for(ErcdmgErrorComditionDO ercdmgError :errorList){
+            if(ercdmgError.getCurtState()!="3" &&!ercdmgError.getCurtState().equals("3")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择状态为：待审核人验证的错误码！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        //2、根据错误码更新错误码管理表（t_ercdmg_error）当前状态字段为：待提交
+        iErcdmgErorDao.updateErrorCurtState("4", errorArr);
+        //4、根据错误码查询错误码管理表（t_ercdmg_error）输入产品经理列表
+        List<ErcdmgPordUserDO> prodUserIdList = iErcdmgErorDao.selectPordUser(iErcdmgErorDao.selectErcdmgByErrorList(errorArr));
+        //5、根据产品经理列表循环新增更新管理表（t_ercdmg_updmgn）信息
+        for(ErcdmgPordUserDO prodUser :prodUserIdList){
+            //3、创建更新批次号
+            String updateNo=CreateSequence.getSequence();//创建批次号
+            //查找期望更新时间
+            Date updateDate = iErcdmgErorDao.selectErrorUpdDate(prodUser.getProdUserId(),errorArr);
+            //查询数量
+            String count=iErcdmgErorDao.selectErrorCount(prodUser.getProdUserId(),errorArr);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date dt=new Date();
+            String dateStr=sdf.format(dt);
+            String content=dateStr+"( "+prodUser.getProdUserName()+" )提交待更新的错误提示";
+            ErcdmgUpdmgnDO ercdmgUpdmgn =new ErcdmgUpdmgnDO();
+            ercdmgUpdmgn.setUpdateNo(updateNo);
+            ercdmgUpdmgn.setProdUserId(prodUser.getProdUserId());
+            ercdmgUpdmgn.setUpdateDate(updateDate);
+            ercdmgUpdmgn.setContent(content);
+            ercdmgUpdmgn.setCount(count);
+            ercdmgUpdmgn.setCurtState("01");
+            ercdmgUpdmgn.setCreateTime(new Date());
+            iErcdmgUpdmgnDao.insertUpdmgn(ercdmgUpdmgn);
+            //6、根据错误码编号更新错误码管理表（t_ercdmg_error）更新批次号字段
+            updateErrorUpdateNo(updateNo,prodUser.getProdUserId(),errorArr);
+        }
+    }
+    public void updateErrorUpdateNo(String updateNo, String prodUserId,String[] errorCds) {
+        Map<String, Object> map = new HashMap<String,Object>();
+        map.put("updateNo", updateNo);
+        map.put("prodUserId", prodUserId);
+        map.put("errorCds",errorCds);
+        iErcdmgErorDao.updateErrorUpdateNo(map);
+    }
+    //新增渠道
+    @Override
+    public ErcdmgErrorComditionBO addCnlCheckErrorCode(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+        ErcdmgErrorComditionDO errorSingle=iErcdmgErorDao.selectErrorSingle(ercdmgErrorComditionBO.getId());
+        ErcdmgErrorComditionDO ercdmgErrorbean = iErcdmgErorDao.checkErrorCodeExist(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
+        if (ercdmgErrorbean != null) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"已存在，请重新输入后再试");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 获取当前操作人信息
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        // 生成id
+        ercdmgErrorComditionBO.setId(CreateSequence.getSequence());
+        ercdmgErrorComditionBO.setCreateUserId(SecurityUtils.getLoginName());
+        ercdmgErrorComditionBO.setTechUserId(errorSingle.getTechUserId());//技术负责人id
+        ercdmgErrorComditionBO.setTechUserName(errorSingle.getTechUserName());//技术负责人名称
+        ercdmgErrorComditionBO.setCurtState("2");
+        return ercdmgErrorComditionBO;
+    }
+    //新增渠道新增sit数据库
+    @Override
+    @TargetDataSource("dsSit")
+    public void addCnlSitMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+        ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
+        BeanConvertUtils.convert(errorComditionDO, ercdmgErrorComditionBO);
+        Date ss = new Date();
+        SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd");//设置日期格式
+        SimpleDateFormat df2 = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
+        errorComditionDO.setUpdDt(df1.format(ss));
+        errorComditionDO.setTmSmp(df2.format(ss));
+        String sittsg_cd= iErcdmgErorDao.selectPubttms(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
+        System.err.println("查询sit"+sittsg_cd);
+        if(sittsg_cd!=null){
+            //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在SIT数控库pubttms表中已存在");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        iErcdmgErorDao.insertPubttms(errorComditionDO);
+    }
+    //新增渠道新增uat数据库
+    @Override
+    @TargetDataSource("dsUat")
+    public void addCnlUatMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO){
+        ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
+        BeanConvertUtils.convert(errorComditionDO, ercdmgErrorComditionBO);
+        Date ss = new Date();
+        SimpleDateFormat df1 = new SimpleDateFormat("yyyyMMdd");//设置日期格式
+        SimpleDateFormat df2 = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
+        errorComditionDO.setUpdDt(df1.format(ss));
+        errorComditionDO.setTmSmp(df2.format(ss));
+        String uattsg_cd= iErcdmgErorDao.selectPubttms(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
+        System.err.println("uat:"+uattsg_cd);
+        if(uattsg_cd!=null){
+            //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在UAT数控库pubttms表中已存在");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        iErcdmgErorDao.insertPubttms(errorComditionDO);
+    }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
+
+    /**
+     * 角色控制
+     * @return
+     */
+    @Override
+    public ErcdmgPordUserBO access(){
+        String access ="";
+        //判断是否是技术负责人
+        if(isDepartmentManager(SUPERADMINISTRATOR3)){
+            access +="3";
+        }
+        //判断是否是产品经理
+        if(isDepartmentManager(SUPERADMINISTRATOR2)){
+            access +="2";
+        }
+        //判断是否是错误码审核人
+        if(isDepartmentManager(SUPERADMINISTRATOR1)){
+            access +="1";
+        }
+        //判断是否是超级管理员
+        if(isDepartmentManager(SUPERADMINISTRATOR)){
+            access +="0";
+        }
+        System.err.println(access);
+        ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
+        ercdmgPordUserBO.setUserAcesss(access);
+        return ercdmgPordUserBO;
     }
 }

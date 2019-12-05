@@ -16,6 +16,13 @@ import java.util.Map;
 @Mapper
 public interface IErcdmgUpdmgnDao extends BaseDao<ErcdmgUpdmgnDO, String> {
 
+    /**
+     * 查询分页列表
+     * @param vo
+     * @return
+     */
+    List<ErcdmgUpdmgnDO> findErcdmgUpdmgnList(ErcdmgErrorComditionDO vo);
+
     public ErcdmgUpdmgnDO searchSingleUpdmgn(String updateNo);
 
 

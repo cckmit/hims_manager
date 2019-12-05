@@ -30,13 +30,14 @@
         <result property="cr" jdbcType="VARCHAR" column="cr"/>
         
     </resultMap>
-     <!--<resultMap id="rm5" type="com.hisun.persistence.beans.ErcdmgError">-->
-        <!--<result property="id"      jdbcType="VARCHAR"      column="id"/>-->
-        <!--<result property="errorCd" jdbcType="VARCHAR" column="error_cd"/>-->
-        <!--<result property="techTip" jdbcType="VARCHAR" column="tech_tip"/>-->
-        <!--<result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>-->
-        <!--<result property="buscnl" jdbcType="VARCHAR" column="bus_cnl"/>-->
-    <!--</resultMap>-->
+     <resultMap id="rm5" type="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
+        <result property="id"      jdbcType="VARCHAR"      column="id"/>
+        <result property="errorCd" jdbcType="VARCHAR" column="error_cd"/>
+        <result property="techTip" jdbcType="VARCHAR" column="tech_tip"/>
+        <result property="busnTip" jdbcType="VARCHAR" column="busn_tip"/>
+        <result property="buscnl" jdbcType="VARCHAR" column="bus_cnl"/>
+    </resultMap>
+
     <resultMap id="rm1" type="com.cmpay.lemon.monitor.entity.ErcdmgPordUserDO">
         <result property="prodUserId" jdbcType="VARCHAR" column="user_id"/>
         <result property="prodUserName" jdbcType="VARCHAR" column="user_name"/>
@@ -446,47 +447,47 @@
            <!--)-->
           <!--</where> -->
     <!--</select> -->
-    <!--<select id="selectErrorByUpdateNoAndCR"  resultMap="rm" >-->
-          <!--SELECT  -->
-	      <!--<include refid="Base_Column_List" />-->
-	      <!--from t_ercdmg_error-->
-          <!--<where>  -->
-           <!--update_no in (-->
-          <!--<foreach item="updateNo" index="index" collection="updateNosArr" separator=","> -->
-           <!--#{updateNo} </foreach> -->
-           <!--)-->
-           <!--<if test="cr != null and cr != ''">-->
-    		 <!--and cr=#{cr}-->
-    		<!--</if>-->
-           <!---->
-          <!--</where> -->
-          <!---->
-    <!--</select> -->
+    <select id="selectErrorByUpdateNoAndCR"  resultMap="rm" >
+          SELECT
+	      <include refid="Base_Column_List" />
+	      from t_ercdmg_error
+          <where>
+           update_no in (
+          <foreach item="updateNo" index="index" collection="updateNosArr" separator=",">
+           #{updateNo} </foreach>
+           )
+           <if test="cr != null and cr != ''">
+    		 and cr=#{cr}
+    		</if>
+
+          </where>
+
+    </select>
     <!---->
-     <!--<select id="selectCRByUpdateNo"  resultType="String" >-->
-          <!--SELECT  -->
-	      <!--distinct cr-->
-	      <!--from t_ercdmg_error-->
-          <!--<where>  -->
-           <!--update_no in (-->
-          <!--<foreach item="updateNo" index="index" collection="array" separator=","> -->
-           <!--#{updateNo} </foreach> -->
-           <!--)-->
-          <!--</where> -->
-          <!--order by cr desc-->
-    <!--</select> -->
+     <select id="selectCRByUpdateNo"  resultType="String" >
+          SELECT
+	      distinct cr
+	      from t_ercdmg_error
+          <where>
+           update_no in (
+          <foreach item="updateNo" index="index" collection="array" separator=",">
+           #{updateNo} </foreach>
+           )
+          </where>
+          order by cr desc
+    </select>
     <!---->
-    <!--<select id="selectUserForEmail"  resultType="String" >-->
-          <!--SELECT  distinct p.email-->
-	      <!--from t_ercdmg_error e, t_permi_user p-->
-          <!--<where>  -->
-           <!--e.update_no in (-->
-          <!--<foreach item="updateNo" index="index" collection="array" separator=","> -->
-           <!--#{updateNo} </foreach> -->
-           <!--)-->
-           <!--and (e.prod_user_id=p.user_id or e.tech_user_id=p.user_id )-->
-          <!--</where> -->
-    <!--</select> -->
+    <select id="selectUserForEmail"  resultType="String" >
+          SELECT  distinct p.email
+	      from t_ercdmg_error e, t_permi_user p
+          <where>
+           e.update_no in (
+          <foreach item="updateNo" index="index" collection="array" separator=",">
+           #{updateNo} </foreach>
+           )
+           and (e.prod_user_id=p.user_id or e.tech_user_id=p.user_id )
+          </where>
+    </select>
     <!---->
     <!--&lt;!&ndash; 删除 &ndash;&gt;-->
     <delete id="deleteError" parameterType="java.lang.String">
@@ -618,24 +619,24 @@
           )
         </where>
     </update>
-    <!--<update id="updateErrorUpdateNo" parameterType="map">-->
-        <!--update t_ercdmg_error set update_no=#{updateNo} -->
-        <!--<where>  -->
-         <!--prod_user_id= #{prodUserId} and id in (-->
-          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
-           <!--#{errorCd} </foreach> -->
-          <!--)-->
-        <!--</where>  -->
-    <!--</update>-->
-    <!--<update id="updateErrorUpdDate" parameterType="map">-->
-        <!--update t_ercdmg_error set update_date=#{updateDate} -->
-         <!--<where>  -->
-          <!--id in (-->
-          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
-           <!--#{errorCd} </foreach> -->
-          <!--)-->
-        <!--</where>  -->
-    <!--</update>-->
+    <update id="updateErrorUpdateNo" parameterType="map">
+        update t_ercdmg_error set update_no=#{updateNo}
+        <where>
+         prod_user_id= #{prodUserId} and id in (
+          <foreach item="errorCd" index="index" collection="errorCds" separator=",">
+           #{errorCd} </foreach>
+            )
+        </where>
+    </update>
+    <update id="updateErrorUpdDate" parameterType="map">
+        update t_ercdmg_error set update_date=#{updateDate}
+         <where>
+          id in (
+          <foreach item="errorCd" index="index" collection="errorCds" separator=",">
+           #{errorCd} </foreach>
+          )
+        </where>
+    </update>
 
 
     <!--<select id="searchUserEmailById"   resultMap="rm1" parameterType="java.lang.String">-->
@@ -652,12 +653,12 @@
    		 <!--where ur.role_id = r.role_id and ur.user_id =#{userId} and r.role_name='验证产品经理'-->
     <!--</select> -->
     <!---->
-    <!--<select id="selectUserByRole"  parameterType="java.lang.String"  resultMap="rm1">-->
-         <!--select DISTINCT a.user_id as audi_user_id ,a.user_name as audi_user_name ,a.email-->
-   		 <!--from t_permi_user a,t_permi_user_role b,t_permi_role c -->
-   		 <!--where a.user_id=b.user_id and b.role_id=c.role_id-->
-   		 <!--and c.role_name=#{roleName}-->
-    <!--</select> -->
+    <select id="selectUserByRole"  parameterType="java.lang.String"  resultMap="rm1">
+         select DISTINCT a.user_id as audi_user_id ,a.user_name as audi_user_name ,a.email
+   		 from t_permi_user a,t_permi_user_role b,t_permi_role c
+   		 where a.user_id=b.user_id and b.role_id=c.role_id
+   		 and c.role_name=#{roleName}
+    </select>
     <select id="selectProdUserbyErrorCds"  resultMap="rm1">
          select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b
          <where>
@@ -685,60 +686,41 @@
           <!--)-->
         <!--</where>  -->
     <!--</select> -->
-    <!--<select id="selectErrorUpdDate" parameterType="java.util.HashMap" resultType="java.util.Date">-->
-         <!--select DISTINCT update_date from t_ercdmg_error -->
-		 <!--<where>  -->
-          <!--prod_user_id=#{pordUserId} and id in  (-->
-          <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
-           <!--#{errorCd} -->
-           <!--</foreach> -->
-          <!--)-->
-          <!--ORDER BY update_date DESC-->
-          <!--limit 1-->
-         <!--</where>  -->
-         <!---->
-    <!--</select> -->
+    <select id="selectErrorUpdDate" parameterType="java.util.HashMap" resultType="java.util.Date">
+         select DISTINCT update_date from t_ercdmg_error
+		 <where>
+          prod_user_id=#{pordUserId} and id in  (
+          <foreach item="errorCd" index="index" collection="errorCds" separator=",">
+           #{errorCd}
+           </foreach>
+          )
+          ORDER BY update_date DESC
+          limit 1
+         </where>
+
+    </select>
     <!---->
-    <!--<select id="selectErrorCount"  resultType="java.lang.String" parameterType="java.util.HashMap">-->
-         <!--select COUNT(1) from t_ercdmg_error -->
-         <!--where prod_user_id=#{pordUserId}-->
-         <!--and id in-->
-         <!--(   -->
-		 <!--<foreach item="errorCd" index="index" collection="errorCds" separator=","> -->
-		 <!--#{errorCd}</foreach> -->
-		 <!--)-->
-    <!--</select> -->
+    <select id="selectErrorCount"  resultType="java.lang.String" parameterType="java.util.HashMap">
+         select COUNT(1) from t_ercdmg_error
+         where prod_user_id=#{pordUserId}
+         and id in
+         (
+		 <foreach item="errorCd" index="index" collection="errorCds" separator=",">
+		 #{errorCd}</foreach>
+		 )
+    </select>
     <select id="selectUpdateErrorCd" parameterType="java.lang.String"  resultType="java.lang.String" >
          select update_no from t_ercdmg_error where id=#{id}
     </select>
-    <!--<select id="searchErcdmgErrorList" resultMap="rm" parameterType="java.lang.String">-->
-        <!--(select -->
-        <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
-        <!--a.error_cd,-->
-        <!--a.prod_mod,-->
-	    <!--a.app_scen,-->
-	    <!--a.tech_tip,-->
-	    <!--a.busn_tip,-->
-	    <!--a.error_state,-->
-	    <!--a.entry_date,-->
-	    <!--a.cr-->
-        <!--from t_ercdmg_error a-->
-        <!--where -->
-        <!--a.update_no=#{updateNo}-->
-		<!--)UNION (-->
-		<!--select -->
-		<!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
-        <!--b.error_cd,-->
-        <!--b.prod_mod,-->
-	    <!--b.app_scen,-->
-	    <!--b.tech_tip,-->
-	    <!--b.busn_tip,-->
-	    <!--b.error_state,-->
-	    <!--b.entry_date-->
-        <!--from t_ercdmg_errorlg b-->
-        <!--where -->
-        <!--b.update_no=#{updateNo})-->
-    <!--</select>-->
+    <select id="searchErcdmgErrorList" resultMap="rm" parameterType="java.lang.String">
+        SELECT
+        (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_error a
+        where
+        a.update_no=#{updateNo}
+    </select>
     <!--<select id="selectErrorUpdateNo" resultMap="rm" parameterType="java.lang.String">-->
         <!--select -->
         <!--(SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,-->
@@ -801,21 +783,21 @@
     </insert>
 
       <!---->
-    <!--<select id="queryForUpload"  resultMap="rm5">-->
-         <!--SELECT id,error_Cd,tech_Tip,busn_Tip,bus_cnl FROM t_ercdmg_forftp  where cur_status='0'   order by tm_smp asc-->
-    <!--</select> -->
+    <select id="queryForUpload"  resultMap="rm5">
+         SELECT id,error_Cd,tech_Tip,busn_Tip,bus_cnl FROM t_ercdmg_forftp  where cur_status='0'   order by tm_smp asc
+    </select>
     <!---->
-    <!--<update id="updateForUpload" parameterType="java.util.List">-->
-        <!--update t_ercdmg_forftp set cur_status='1' -->
-         <!--<where>  -->
-          <!--id in (-->
-          <!--<foreach item="id" index="index" collection="list" separator=","> -->
-           		<!--#{id}-->
-           <!--</foreach> -->
-          <!--)-->
-          <!--and cur_status='0'-->
-        <!---->
-        <!--</where>  -->
-    <!--</update>-->
+    <update id="updateForUpload" parameterType="java.util.List">
+        update t_ercdmg_forftp set cur_status='1'
+         <where>
+          id in (
+          <foreach item="id" index="index" collection="list" separator=",">
+           		#{id}
+           </foreach>
+          )
+          and cur_status='0'
+
+        </where>
+    </update>
     
 </mapper>

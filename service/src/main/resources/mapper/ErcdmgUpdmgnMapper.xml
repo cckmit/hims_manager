@@ -33,26 +33,26 @@
     
     
     <!-- 分页查询   -->
-    <!--<select id="findErcdmgUpdmgnList" resultMap="rm" parameterType="map">-->
-        <!--SELECT -->
-        <!--(SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,-->
-        <!--<include refid="Base_Column_List" />-->
-        <!--from t_ercdmg_updmgn a, t_permi_user b-->
-        <!--WHERE a.prod_user_id= b.user_id-->
-        <!--<if test="strDate != null">-->
-             <!--AND a.update_date &gt;= #{strDate} -->
-        <!--</if>-->
-        <!--<if test="endDate != null">-->
-             <!--AND a.update_date &lt;= #{endDate} -->
-        <!--</if>-->
-        <!--<if test="curtState != null and curtState != ''">-->
-    		<!--and a.curt_state = #{curtState}-->
-    	<!--</if>-->
-    	<!--<if test="prodUserName != null and prodUserName != ''">-->
-    		<!--and b.user_name like "%"#{prodUserName}"%"-->
-    	<!--</if>-->
-    	<!--ORDER BY a.create_time DESC-->
-    <!--</select>-->
+    <select id="findErcdmgUpdmgnList" resultMap="rm" parameterType="map">
+        SELECT
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_updmgn a, t_permi_user b
+        WHERE a.prod_user_id= b.user_id
+        <if test="strDate != null">
+             AND a.update_date &gt;= #{strDate}
+        </if>
+        <if test="endDate != null">
+             AND a.update_date &lt;= #{endDate}
+        </if>
+        <if test="curtState != null and curtState != ''">
+    		and a.curt_state = #{curtState}
+    	</if>
+    	<if test="prodUserName != null and prodUserName != ''">
+    		and b.user_name LIKE CONCAT('%',#{prodUserName},'%')
+    	</if>
+    	ORDER BY a.create_time DESC
+    </select>
     <!--<select id="findErcdmgUpdmgnNumber" resultType="java.lang.Integer" parameterType="map">-->
         <!--select COUNT(1) -->
         <!--from t_ercdmg_updmgn a, t_permi_user b-->
@@ -71,13 +71,11 @@
     	<!--</if>-->
     <!--</select>-->
     <select id="searchSingleUpdmgn" resultMap="rm" parameterType="java.lang.String">
-        select 
-       (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,
-        b.user_name,
-        a.curt_state,
-		a.count
-        from t_ercdmg_updmgn a,t_permi_user b
-        where a.prod_user_id= b.user_id 
+        SELECT
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='UPD_CURT_STATE') AS curt_state_name,
+        <include refid="Base_Column_List" />
+        from t_ercdmg_updmgn a, t_permi_user b
+        WHERE a.prod_user_id= b.user_id
         and a.update_no=#{updateNo} 
     </select>
     

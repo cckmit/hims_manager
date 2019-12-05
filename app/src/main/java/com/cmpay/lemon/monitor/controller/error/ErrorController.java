@@ -8,6 +8,7 @@ import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
+import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO;
@@ -239,6 +240,78 @@ public class ErrorController {
         ErcdmgErrorComditionRspDTO rspDTO = new ErcdmgErrorComditionRspDTO();
         rspDTO.setErrorComditionDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgErrorComditionBOList(), ErcdmgErrorComditionDTO.class));
         rspDTO.setErcdmgPordUserDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgPordUserDTOList(), ErcdmgPordUserDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+    /**
+     * 下一步转产品
+     * @param reqDTO
+     * @return
+     */
+    @RequestMapping("/pordsubmit")
+    public GenericRspDTO pordsubmit(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getEmails()+"=="+reqDTO.getEmailContent());
+        errorService.pordsubmit(reqDTO.getTaskIdStr(),reqDTO.getEmails(),reqDTO.getEmailContent());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    @RequestMapping("/forwardaudi")
+    public GenericRspDTO<ErcdmgErrorComditionRspDTO>  forwardaudi(@RequestParam("ids") String ids){
+        ErcdmgErrorComditionRspBO demandRspBO = errorService.forwardaudi(ids);
+        ErcdmgErrorComditionRspDTO rspDTO = new ErcdmgErrorComditionRspDTO();
+        rspDTO.setErrorComditionDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgErrorComditionBOList(), ErcdmgErrorComditionDTO.class));
+        rspDTO.setErcdmgPordUserDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgPordUserDTOList(), ErcdmgPordUserDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+    /**
+     * 下一步转产品
+     * @param reqDTO
+     * @return
+     */
+    @RequestMapping("/audisubmit")
+    public GenericRspDTO audisubmit(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getEmails()+"=="+reqDTO.getEmailContent());
+        errorService.audisubmit(reqDTO.getTaskIdStr(),reqDTO.getEmails(),reqDTO.getEmailContent(),reqDTO.getUpdateDateSH());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /**
+     * 保存至更新管理
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/audiSubmitUpdmgn")
+    public GenericRspDTO audiSubmitUpdmgn(@RequestParam("ids") String ids){
+        errorService.audiSubmitUpdmgn(ids);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    @RequestMapping("/addCnl")
+    public GenericRspDTO addCnl(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
+        System.err.println(reqDTO);
+        ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
+        BeanConvertUtils.convert(errorComditionBO, reqDTO);
+        addCnl(errorComditionBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    //多数据源添加错误码
+    public void addCnl(ErcdmgErrorComditionBO errorComditionBO){
+        errorComditionBO = errorService.addCnlCheckErrorCode(errorComditionBO);
+        // 新增渠道sit
+       errorService.addCnlSitMsg(errorComditionBO);
+        // 新增渠道uat
+        errorService.addCnlUatMsg(errorComditionBO);
+        // 本地库 新增考核错误码
+        errorService.addErcdmgError(errorComditionBO);
+    }
+    /*
+    * 角色权限控制
+    * 技术负责人，产品经理，错误码审核人access
+    * */
+    @RequestMapping("/access")
+    public GenericRspDTO<ErcdmgPordUserDTO> access(){
+        ErcdmgPordUserBO ercdmgPordUserBO = errorService.access();
+        ErcdmgPordUserDTO rspDTO =  new ErcdmgPordUserDTO();
+        BeanConvertUtils.convert(rspDTO, ercdmgPordUserBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }
