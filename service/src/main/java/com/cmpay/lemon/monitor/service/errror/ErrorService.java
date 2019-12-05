@@ -5,6 +5,9 @@ import com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO;
 import com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
  * @author: tu_yi
  */
@@ -78,4 +81,15 @@ public interface ErrorService {
      * @return
      */
     ErcdmgErrorComditionRspBO forwardpord (String ids);
+    void pordsubmit(String id,String emails,String emailContent);
+    // 产品跳转审核
+    ErcdmgErrorComditionRspBO forwardaudi (String ids);
+    //下一步，审核人员
+    void audisubmit(String id, String emails, String emailContent, Date updateDate);
+    void audiSubmitUpdmgn(String ids);
+    ErcdmgErrorComditionBO addCnlCheckErrorCode(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
+    void addCnlSitMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
+    void addCnlUatMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
+
+    ErcdmgPordUserBO access();
 }

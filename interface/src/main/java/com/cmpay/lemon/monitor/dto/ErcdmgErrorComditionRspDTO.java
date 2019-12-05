@@ -13,7 +13,8 @@ public class ErcdmgErrorComditionRspDTO extends PageableRspDTO {
     private List<ErcdmgPordUserDTO> ercdmgPordUserDTOS = new ArrayList<>();
     //错误码信息
     private List<ErcdmgErrorComditionDTO> errorComditionDTOS = new ArrayList<>();
-
+    //错误码更新信息
+    private List<ErcdmgUpdmgnDTO> ercdmgUpdmgnDTOS = new ArrayList<>();
     public List<ErcdmgErrorComditionDTO> getErrorComditionDTOS() {
         return errorComditionDTOS;
     }
@@ -30,11 +31,20 @@ public class ErcdmgErrorComditionRspDTO extends PageableRspDTO {
         this.ercdmgPordUserDTOS = ercdmgPordUserDTOS;
     }
 
+    public List<ErcdmgUpdmgnDTO> getErcdmgUpdmgnDTOS() {
+        return ercdmgUpdmgnDTOS;
+    }
+
+    public void setErcdmgUpdmgnDTOS(List<ErcdmgUpdmgnDTO> ercdmgUpdmgnDTOS) {
+        this.ercdmgUpdmgnDTOS = ercdmgUpdmgnDTOS;
+    }
+
     @Override
     public String toString() {
         return "ErcdmgErrorComditionRspDTO{" +
                 "ercdmgPordUserDTOS=" + ercdmgPordUserDTOS +
                 ", errorComditionDTOS=" + errorComditionDTOS +
+                ", ercdmgUpdmgnDTOS=" + ercdmgUpdmgnDTOS +
                 '}';
     }
 }

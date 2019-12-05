@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -95,4 +96,31 @@ public interface IErcdmgErorDao extends BaseDao<ErcdmgErrorComditionDO, String> 
      * @return
      */
     TPermiUser findByUsername(String username);
+    /**
+     * 根据角色查分配的用户
+     * @param roleName
+     * @return
+     */
+    public List<ErcdmgPordUserDO> selectUserByRole(String roleName);
+
+    //更新期望更新时间
+    public void updateErrorUpdDate(@Param("updateDate") Date statas , @Param("errorCds") String[] id);
+
+    /**
+     * 查询期望更新
+     * @return
+     */
+    public Date selectErrorUpdDate(@Param("pordUserId") String pordUserId , @Param("errorCds") String[] errorCds);
+    //查询数量
+    public String selectErrorCount(@Param("pordUserId") String pordUserId , @Param("errorCds") String[] errorCds);
+    // 更新
+    void updateErrorUpdateNo(Map<String, Object> map);
+
+    public List<ErcdmgErrorComditionDO>searchErcdmgErrorList(String updateNo);
+
+    public List<String> selectUserForEmail(String[] updateNosArr);
+    public List<String> selectCRByUpdateNo(String[] updateNos);
+    public List<ErcdmgErrorComditionDO> selectErrorByUpdateNoAndCR( @Param("updateNosArr") String[] updateNosArr,@Param("cr") String cr );
+    public List<ErcdmgErrorComditionDO> queryForUpload();
+    public void updateForUpload( List<String> list);
 }

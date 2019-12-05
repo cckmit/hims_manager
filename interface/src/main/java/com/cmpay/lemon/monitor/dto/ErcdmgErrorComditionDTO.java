@@ -46,6 +46,34 @@ public class ErcdmgErrorComditionDTO extends GenericDTO {
     private String taskIdStr;
     private String status;
 
+    private String emails;
+    private String emailContent;
+    private java.util.Date updateDateSH;//期望更新时间
+
+    public java.util.Date getUpdateDateSH() {
+        return updateDateSH;
+    }
+
+    public void setUpdateDateSH(java.util.Date updateDateSH) {
+        this.updateDateSH = updateDateSH;
+    }
+
+    public String getEmails() {
+        return emails;
+    }
+
+    public void setEmails(String emails) {
+        this.emails = emails;
+    }
+
+    public String getEmailContent() {
+        return emailContent;
+    }
+
+    public void setEmailContent(String emailContent) {
+        this.emailContent = emailContent;
+    }
+
     public String getTaskIdStr() {
         return taskIdStr;
     }

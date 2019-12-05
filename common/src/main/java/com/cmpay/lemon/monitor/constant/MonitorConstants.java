@@ -69,6 +69,11 @@ public class MonitorConstants {
      * 错误码管理uri
      */
     public static final String ERROR_PATH = BASE_URI + "/error";
+    /**
+     * 错误码更新管理uri
+     */
+    public static final String UPDMGN_PATH = BASE_URI + "/updmgn";
+
 
     /**
      * 投产查询管理uri

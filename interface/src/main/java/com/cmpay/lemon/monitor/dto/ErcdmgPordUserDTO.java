@@ -10,7 +10,15 @@ public class ErcdmgPordUserDTO  extends GenericDTO {
 	private String emailPassword;
 	private String audiUserId;
 	private String audiUserName;
-	
+	private String userAcesss;
+
+	public String getUserAcesss() {
+		return userAcesss;
+	}
+
+	public void setUserAcesss(String userAcesss) {
+		this.userAcesss = userAcesss;
+	}
 
 	public String getProdUserId() {
 		return prodUserId;
