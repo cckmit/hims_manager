@@ -102,7 +102,8 @@ public class Constant {
 	/**错误码管理*/
 	public static final String EMAIL_NAME="code_review@hisuntech.com";
 	public static final String EMAIL_PSWD="hisun@248!@#";
-	public static final String VERSION="version_it@hisuntech.com";
+	//public static final String VERSION="version_it@hisuntech.com";
+	public static final String VERSION="liu_jia3@hisuntech.com";
 	
 	/**投产管理*/
 	/*public static final String P_EMAIL_NAME="deliver_sys@hisuntech.com";
