@@ -8,6 +8,7 @@ import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.BaseWorkloadBO;
 import com.cmpay.lemon.monitor.bo.DemandBO;
@@ -568,8 +569,19 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 
             OutputStream os = null;
             response.reset();
+
+            String path="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                path= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                path= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             try {
-                String path = "/home/devadm/temp/propkg/";
                 String fileName = "summarize.xls";
                 String filePath = path + fileName;
                 ReqWorkLoadExcelUtil util = new ReqWorkLoadExcelUtil();

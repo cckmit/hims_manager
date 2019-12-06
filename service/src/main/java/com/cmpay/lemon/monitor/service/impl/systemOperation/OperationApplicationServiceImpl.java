@@ -5,6 +5,7 @@ import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
 import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
@@ -66,7 +67,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
     @Autowired
     IOperationApplicationDao operationApplicationDao;
 
-    public final static String RELATIVE_PATH = "/home/devadm/temp/sysopr/";
+    public final static String RELATIVE_PATH_DEVADM = "/home/devadm/temp/sysopr/";
+
+    public final static String RELATIVE_PATH_DEVMS = "/home/devms/temp/sysopr/";
 
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
@@ -110,8 +113,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     try {
+                        File fileNumber=null;
                         //归类文件，创建编号文件夹
-                        File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
+                        if(LemonUtils.getEnv().equals("SIT")) {
+                             fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                        }
+                        else if(LemonUtils.getEnv().equals("DEV")) {
+                             fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+
                       //  File fileNumber = new File("D:\\home\\devadm\\temp");
                         fileNumber.mkdir();
                         // 文件保存路径
@@ -387,8 +401,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         OutputStream os = null;
         response.reset();
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
+            String path="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                path= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                path= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createCzlcExcel(filePath, list,null);
@@ -575,8 +598,18 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                  * 附件
                  */
                 //获取邮件附件
-                 File motherFile=new File( RELATIVE_PATH +bean.getOperNumber());
-                //File motherFile=new File("C:\\home\\devadm\\temp\\propkg\\wlr重构测试31");
+                File motherFile=null;
+                //归类文件，创建编号文件夹
+                if(LemonUtils.getEnv().equals("SIT")) {
+                    motherFile = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                }
+                else if(LemonUtils.getEnv().equals("DEV")) {
+                    motherFile = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File[] childFile=motherFile.listFiles();
                 if(childFile!=null){
                     for(File file:childFile){
@@ -803,8 +836,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            //File fileNumber = new File("/home/devadm/temp/" + bean.getOperNumber());
+                            File fileNumber=null;
+                            //归类文件，创建编号文件夹
+                            if(LemonUtils.getEnv().equals("SIT")) {
+                                fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                            }
+                            else if(LemonUtils.getEnv().equals("DEV")) {
+                                fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -843,8 +887,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            //File fileNumber = new File("/home/devadm/temp/"+ bean.getOperNumber());
+                            File fileNumber=null;
+                            //归类文件，创建编号文件夹
+                            if(LemonUtils.getEnv().equals("SIT")) {
+                                fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                            }
+                            else if(LemonUtils.getEnv().equals("DEV")) {
+                                fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -888,8 +943,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            File fileDir = new File(RELATIVE_PATH + proNumber);
-           // File fileDir = new File("C:\\home\\devadm\\temp\\sysopr\\"+ proNumber);
+            //File fileDir = new File(RELATIVE_PATH + proNumber);
+            File fileDir=null;
+            //归类文件，创建编号文件夹
+            if(LemonUtils.getEnv().equals("SIT")) {
+                fileDir = new File(RELATIVE_PATH_DEVMS + proNumber);
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                fileDir = new File(RELATIVE_PATH_DEVADM + proNumber);
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             File[] pkgFile=fileDir.listFiles();
             if(pkgFile==null){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -897,8 +963,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             //压缩包名称
-            String zipPath = "/home/devadm/temp/propkg/";
-            //String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
+            String zipPath="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                zipPath= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                zipPath= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String zipName =DateUtil.date2String(new java.util.Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
