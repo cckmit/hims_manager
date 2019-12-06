@@ -917,6 +917,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
+                        //todo
                         String demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
                         String name = demandName.substring(0, demandName.indexOf("/"));
                         String path = demandName.substring(demandName.lastIndexOf("/") + 1);
@@ -983,7 +984,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setReqSts(reqSts);
         demandStateHistoryDO.setReqNo(reqNo);
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
-        //依据内部需求编号查唯一标识
+        //依据内部需求编号，同一需求查统一标识
         String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
         if(identificationByReqInnerSeq==null){
             identificationByReqInnerSeq=reqInnerSeq;

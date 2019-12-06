@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.service.impl.error;
 
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.utils.LemonUtils;
@@ -234,10 +235,10 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 String dateStr = df.format(calendar.getTime());
                 PrintWriter pw =null;
                 try {
-                    if(LemonUtils.getEnv().equals("SIT")) {
+                    if(LemonUtils.getEnv().equals(Env.SIT)) {
                         pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("/home/devms/temp/upload/errcd/" + File.separator+ dateStr+"_mail.txt"),"gbk"));
                     }
-                    else if(LemonUtils.getEnv().equals("DEV")) {
+                    else if(LemonUtils.getEnv().equals(Env.DEV)) {
                         pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("/home/devadm/temp/upload/errcd/" + File.separator+ dateStr+"_mail.txt"),"gbk"));
                     }else {
                         MsgEnum.ERROR_CUSTOM.setMsgInfo("");

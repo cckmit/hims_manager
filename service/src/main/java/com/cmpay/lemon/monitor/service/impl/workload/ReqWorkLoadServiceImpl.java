@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.impl.workload;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
@@ -571,10 +572,10 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             response.reset();
 
             String path="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path= "/home/devms/temp/propkg/";
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path= "/home/devadm/temp/propkg/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");

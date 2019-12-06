@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.service.impl.systemOperation;
 
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
@@ -115,10 +116,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     try {
                         File fileNumber=null;
                         //归类文件，创建编号文件夹
-                        if(LemonUtils.getEnv().equals("SIT")) {
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
                              fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
                         }
-                        else if(LemonUtils.getEnv().equals("DEV")) {
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
                              fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
                         }else {
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -402,10 +403,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         response.reset();
         try {
             String path="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path= "/home/devms/temp/propkg/";
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path= "/home/devadm/temp/propkg/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -600,10 +601,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 //获取邮件附件
                 File motherFile=null;
                 //归类文件，创建编号文件夹
-                if(LemonUtils.getEnv().equals("SIT")) {
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
                     motherFile = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
                 }
-                else if(LemonUtils.getEnv().equals("DEV")) {
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
                     motherFile = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
                 }else {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -838,10 +839,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                             //归类文件，创建编号文件夹
                             File fileNumber=null;
                             //归类文件，创建编号文件夹
-                            if(LemonUtils.getEnv().equals("SIT")) {
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
                                 fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
                             }
-                            else if(LemonUtils.getEnv().equals("DEV")) {
+                            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                                 fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
                             }else {
                                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -889,10 +890,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                             //归类文件，创建编号文件夹
                             File fileNumber=null;
                             //归类文件，创建编号文件夹
-                            if(LemonUtils.getEnv().equals("SIT")) {
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
                                 fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
                             }
-                            else if(LemonUtils.getEnv().equals("DEV")) {
+                            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                                 fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
                             }else {
                                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -946,10 +947,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             //File fileDir = new File(RELATIVE_PATH + proNumber);
             File fileDir=null;
             //归类文件，创建编号文件夹
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 fileDir = new File(RELATIVE_PATH_DEVMS + proNumber);
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 fileDir = new File(RELATIVE_PATH_DEVADM + proNumber);
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -964,10 +965,10 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             }
             //压缩包名称
             String zipPath="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 zipPath= "/home/devms/temp/propkg/";
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 zipPath= "/home/devadm/temp/propkg/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");

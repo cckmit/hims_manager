@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
@@ -676,10 +677,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
             String path="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path=  SvnConstant.ProjectTemplatePathdevms;
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path=  SvnConstant.ProjectTemplatePathdevadm;
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1172,9 +1173,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         int start=reqNo.indexOf("-")+1;
         String reqMonth=reqNo.substring(start,start+6);
         String monthDir="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + reqMonth;
-        }else  if(LemonUtils.getEnv().equals("DEV")) {
+        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
             monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + reqMonth;
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1189,9 +1190,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
         String localSvnPath="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName;
-        }else  if(LemonUtils.getEnv().equals("DEV")) {
+        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
             localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName;
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1346,9 +1347,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             return map;
                         }
                         if(fileName.contains("评审表")){
-                            if(LemonUtils.getEnv().equals("SIT")) {
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
                                 loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName + "/评审文档/";
-                            }else  if(LemonUtils.getEnv().equals("DEV")) {
+                            }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
                                 loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName + "/评审文档/";
                             }else {
                                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");

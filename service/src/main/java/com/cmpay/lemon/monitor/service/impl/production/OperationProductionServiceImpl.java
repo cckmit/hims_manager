@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.impl.production;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
@@ -622,10 +623,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/import/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/import/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -655,10 +656,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //todo 写死路径
             //String path="D:\\home\\devadm\\temp\\import";
             String path="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+
+            if(Env.SIT.equals(LemonUtils.getEnv())) {
                 path= "/home/devms/temp/import/";
-            }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            } else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path= "/home/devadm/temp/import/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -792,10 +793,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -819,10 +820,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1191,10 +1192,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file=null;
         //依据环境配置路径
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1237,10 +1238,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     else {
                         //依据环境配置路径
                         String path="";
-                        if(LemonUtils.getEnv().equals("SIT")) {
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
                             path= "/home/devms/temp/propkg/";
                         }
-                        else if(LemonUtils.getEnv().equals("DEV")) {
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
                             path= "/home/devadm/temp/propkg/";
                         }else {
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1372,10 +1373,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         response.reset();
         //依据环境配置路径
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1450,10 +1451,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
        // String path="D:\\home\\devadm\\temp\\import";
         //依据环境配置路径
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/import/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/import/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1900,10 +1901,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
         //依据环境配置路径
         String path="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path= "/home/devms/temp/upload/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path= "/home/devadm/temp/upload/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -1939,10 +1940,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         //依据环境配置路径
         String path1="";
-        if(LemonUtils.getEnv().equals("SIT")) {
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
             path1= "/home/devms/temp/upload/propkg/";
         }
-        else if(LemonUtils.getEnv().equals("DEV")) {
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
             path1= "/home/devadm/temp/upload/propkg/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -2092,10 +2093,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
             //依据环境配置路径
             String path="";
-            if(LemonUtils.getEnv().equals("SIT")) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path= "/home/devms/temp/upload/propkg/";
             }
-            else if(LemonUtils.getEnv().equals("DEV")) {
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path= "/home/devadm/temp/upload/propkg/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
