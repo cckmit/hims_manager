@@ -738,7 +738,7 @@ public class ErrorServiceImpl implements ErrorService {
         String emailCont="错误码："+errcds+"<br/>"+emailContent;
         // 发邮件至对应产品经理
        // String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -784,7 +784,7 @@ public class ErrorServiceImpl implements ErrorService {
         iErcdmgErorDao.updateErrorUpdDate(updateDate,strArray);
         // 发邮件至对应产品经理
         //String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;

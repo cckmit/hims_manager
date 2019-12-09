@@ -269,7 +269,7 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 mailInfo.setContent(email);
                 //mailInfo.setCcs(bothReceivers);
                 System.err.println(bothReceivers);
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
                 mailInfo.setCcs(mailToAddress);
 
 
@@ -308,7 +308,7 @@ public class UpdmgnServiceImpl implements UpdmgnService {
 //        if (currentUser.getEmail() != null && currentUser.getEmail().trim().equals("")) {
 //            bothReceivers = concat(config.getErroCodeMailTo(), new String[]{currentUser.getEmail().trim()});
 //        }
-        bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com"});
+        bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com","liujia3@hisuntech.com"});
 
         // 获取投产更新表信息
         List<ErcdmgErrorComditionDO> errorList = iErcdmgErorDao.queryForUpload();
