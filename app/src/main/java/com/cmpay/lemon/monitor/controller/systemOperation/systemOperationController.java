@@ -31,6 +31,7 @@ public class systemOperationController {
     @Autowired
     private OperationApplicationService operationApplicationService;
 
+    //系统操作录入
     @RequestMapping("/entry")
     public GenericRspDTO<NoBody> systemOperationEntry(OperationApplicationDTO operationApplicationDTO, HttpServletRequest request) {
         List<MultipartFile> files=null;

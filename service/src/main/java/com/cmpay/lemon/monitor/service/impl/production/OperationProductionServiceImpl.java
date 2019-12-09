@@ -8,6 +8,7 @@ import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -667,10 +668,20 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                    List<ProductionBO> list)  {
         String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/import/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/import/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
             //todo 写死路径
             //String path="D:\\home\\devadm\\temp\\import";
-            String path = "/home/devadm/temp/import/";
             String filePath = path + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
             util.createExcel(filePath, list,null);
@@ -690,7 +701,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             //todo 写死路径
             //String path="D:\\home\\devadm\\temp\\import";
-            String path = "/home/devadm/temp/import/";
+            String path="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                path= "/home/devms/temp/import/";
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                path= "/home/devadm/temp/import/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String filePath = path + fileName;
             ExcelUrgentListUtil util = new ExcelUrgentListUtil();
             util.createExcel(filePath, list,null);
@@ -817,9 +838,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File sendExportExcel_Result(List<ProductionDO> list){
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
             //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProductionUtil util = new SendExcelOperationResultProductionUtil();
             util.createExcel(filePath, list,null);
@@ -834,9 +865,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File sendExportExcel_out(List<ProductionDO> list){
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationProductionUtil util = new SendExcelOperationProductionUtil();
             util.createExcel(filePath, list,null);
@@ -1196,9 +1236,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File exportExcel_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
         String fileName = "每周投产通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
             util.createExcel(filePath, list,null,proBeanList,userName);
@@ -1231,9 +1281,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     bean = operationProductionDao.findProductionBean(s);
                     if (bean.getProPkgStatus().equals("待上传"))
                         s1+=s+",";
-                    else
-                        command.append("cp ~/home/devadm/temp/propkg/"+s+"/"+bean.getProPkgName()
-                                +" ~/tomcat/webapps/hims/hckeck/ver/\n");
+                    else {
+                        //依据环境配置路径
+                        String path="";
+                        if(LemonUtils.getEnv().equals("SIT")) {
+                            path= "/home/devms/temp/propkg/";
+                        }
+                        else if(LemonUtils.getEnv().equals("DEV")) {
+                            path= "/home/devadm/temp/propkg/";
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+                        command.append("cp ~"+path + s + "/" + bean.getProPkgName()
+                                + " ~/tomcat/webapps/hims/hckeck/ver/\n");
+                    }
                 }
                 if(!s1.equals("")){
                     s1 = s1.substring(0, s1.length()-1);
@@ -1354,9 +1417,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "投产操作明细表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         OutputStream os = null;
         response.reset();
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
             //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
+            //String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createExcel(filePath, list,null);
@@ -1420,7 +1495,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //todo 先改成本机写死路径
 
        // String path="D:\\home\\devadm\\temp\\import";
-        String path = "/home/devadm/temp/import/";
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/import/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/import/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String fileName = file.getOriginalFilename();
         File tmp_file = new File(path + File.separator + bean.getProNumber() + "_" + fileName);
         try {
@@ -1440,7 +1526,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     //
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
-        System.err.println(bean.toString());
         boolean isSend = false;
         //后台判断数据
         if (!bean.getProNumber().matches(".*[a-zA-z].*")) {
@@ -1860,7 +1945,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         //File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
-        File fileDir = new File("/home/devadm/temp/upload/propkg/" + reqNumber);
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path= "/home/devms/temp/upload/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path= "/home/devadm/temp/upload/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        File fileDir = new File(path + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
         if(fileDir.exists()){
             File[] oldFile = fileDir.listFiles();
@@ -1886,7 +1983,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         bean.setProPkgName(file.getOriginalFilename());
         StringBuffer command = new StringBuffer();
         command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
-        command.append("cp ~/home/devadm/temp/upload/propkg/" + reqNumber + "/" + bean.getProPkgName()
+
+        //依据环境配置路径
+        String path1="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            path1= "/home/devms/temp/upload/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals("DEV")) {
+            path1= "/home/devadm/temp/upload/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+
+        command.append("cp ~"+ path1+ reqNumber + "/" + bean.getProPkgName()
                 + " ~/tomcat/webapps/hims/hckeck/ver/\n");
         command.append("sh zck.sh " + bean.getProPkgName() + "\n");
         Map<String,String> map = execCommand(command.toString());
@@ -2024,7 +2136,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
            // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            File fileDir = new File("/home/devadm/temp/upload/propkg/" + proNumber);
+
+            //依据环境配置路径
+            String path="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                path= "/home/devms/temp/upload/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                path= "/home/devadm/temp/upload/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+            File fileDir = new File(path + proNumber);
             File[] pkgFile=fileDir.listFiles();
             File fileSend=null;
             if(pkgFile!=null&&pkgFile.length>0){

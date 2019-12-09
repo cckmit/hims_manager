@@ -9,6 +9,7 @@ import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -674,7 +675,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 return "";
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
-            String path = SvnConstant.ProjectTemplatePath;
+            String path="";
+            if(LemonUtils.getEnv().equals("SIT")) {
+                path=  SvnConstant.ProjectTemplatePathdevms;
+            }
+            else if(LemonUtils.getEnv().equals("DEV")) {
+                path=  SvnConstant.ProjectTemplatePathdevadm;
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             File file = new File(path);
             // 导入文件夹
             SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
@@ -1160,15 +1171,33 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         int start=reqNo.indexOf("-")+1;
         String reqMonth=reqNo.substring(start,start+6);
+        String monthDir="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + reqMonth;
+        }else  if(LemonUtils.getEnv().equals("DEV")) {
+            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + reqMonth;
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
 
-        String monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH+reqMonth;
         if(!(new File(monthDir).exists())){
             FileUtils.createDirectory(monthDir);
         }
         String directoryName = reqMonth+"/"+reqNo+"_" + reqPlan.getReqNm();
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
-        String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
+        String localSvnPath="";
+        if(LemonUtils.getEnv().equals("SIT")) {
+            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName;
+        }else  if(LemonUtils.getEnv().equals("DEV")) {
+            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName;
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
         if (!StringUtils.isEmpty(checOutMsg)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo(checOutMsg);
@@ -1317,7 +1346,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             return map;
                         }
                         if(fileName.contains("评审表")){
-                            loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName + "/评审文档/";
+                            if(LemonUtils.getEnv().equals("SIT")) {
+                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName + "/评审文档/";
+                            }else  if(LemonUtils.getEnv().equals("DEV")) {
+                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName + "/评审文档/";
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
                             svnPath = SvnConstant.SvnPath+directoryName + "/评审文档/";
                         }
                         // 文件保存路径
