@@ -923,6 +923,8 @@ public class ErrorServiceImpl implements ErrorService {
      */
     @Override
     public ErcdmgPordUserBO access(){
+        // 获取当前操作人信息
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         String access ="";
         //判断是否是技术负责人
         if(isDepartmentManager(SUPERADMINISTRATOR3)){
@@ -943,6 +945,7 @@ public class ErrorServiceImpl implements ErrorService {
         System.err.println(access);
         ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
         ercdmgPordUserBO.setUserAcesss(access);
+        ercdmgPordUserBO.setProdUserName(currentUser);
         return ercdmgPordUserBO;
     }
 }
