@@ -235,7 +235,7 @@ public class ErrorServiceImpl implements ErrorService {
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
@@ -283,7 +283,7 @@ public class ErrorServiceImpl implements ErrorService {
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
