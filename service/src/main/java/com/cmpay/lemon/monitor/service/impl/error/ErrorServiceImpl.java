@@ -758,7 +758,7 @@ public class ErrorServiceImpl implements ErrorService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectUserByRole("审核人员");
+        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectUserByRole();
         List<ErcdmgPordUserBO> ercdmgPordUserBOList = BeanConvertUtils.convertList(pordUserList, ErcdmgPordUserBO.class);
         ErcdmgErrorComditionRspBO productionRspBO = new ErcdmgErrorComditionRspBO();
         productionRspBO.setErcdmgErrorComditionBOList(elist);

@@ -653,11 +653,10 @@
    		 <!--where ur.role_id = r.role_id and ur.user_id =#{userId} and r.role_name='验证产品经理'-->
     <!--</select> -->
     <!---->
-    <select id="selectUserByRole"  parameterType="java.lang.String"  resultMap="rm1">
-         select DISTINCT a.user_id as audi_user_id ,a.user_name as audi_user_name ,a.email
-   		 from t_permi_user a,t_permi_user_role b,t_permi_role c
-   		 where a.user_id=b.user_id and b.role_id=c.role_id
-   		 and c.role_name=#{roleName}
+    <select id="selectUserByRole"    resultMap="rm1">
+         SELECT DISTINCT username as audi_user_id ,fullname as audi_user_name , email
+         FROM sys_user t2 where  t2.user_no in
+         ( SELECT t1.user_no FROM  sys_user_role  t1 WHERE t1.role_id= 16001)
     </select>
     <select id="selectProdUserbyErrorCds"  resultMap="rm1">
          select DISTINCT a.user_id ,a.user_name,a.email from t_permi_user a,t_ercdmg_error b
