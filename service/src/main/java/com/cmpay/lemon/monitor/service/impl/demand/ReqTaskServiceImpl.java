@@ -2,12 +2,14 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -788,7 +790,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             File srcfile[] = (File[]) resMap.get("srcfile");
             //压缩包名称
-            String zipPath = "/home/devadm/temp/propkg/";
+            String zipPath="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                zipPath= "/home/devms/temp/propkg/";
+            } else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                zipPath= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String zipName =DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
@@ -862,10 +873,21 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
-              //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
-                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
-
+                String path="";
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
+                    path= "/home/devms/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                    path=  "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File file1 = new File(path + "/开发技术文档/");
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();
@@ -917,9 +939,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
-                        //todo
-                        String demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
-                        String name = demandName.substring(0, demandName.indexOf("/"));
+                        String demandName="";
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
+                            demandName = srcfile[i].getPath().substring(35, srcfile[i].getPath().length());
+                        }
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                            demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+                          String name = demandName.substring(0, demandName.indexOf("/"));
                         String path = demandName.substring(demandName.lastIndexOf("/") + 1);
                         out.putNextEntry(new ZipEntry(name + "/" + path));
                     } else {

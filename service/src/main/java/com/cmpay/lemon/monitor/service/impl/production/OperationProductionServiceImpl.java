@@ -704,7 +704,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //String path="D:\\home\\devadm\\temp\\import";
             String path="";
 
-            if(Env.SIT.equals(LemonUtils.getEnv())) {
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path= "/home/devms/temp/import/";
             } else if(LemonUtils.getEnv().equals(Env.DEV)) {
                 path= "/home/devadm/temp/import/";
@@ -851,7 +851,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
             String filePath = path + fileName;
             SendExcelOperationResultProductionUtil util = new SendExcelOperationResultProductionUtil();
             util.createExcel(filePath, list,null);
@@ -1340,8 +1339,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String result="检查失败";
 
         try{
-            session = jsch.getSession("devadm", "10.9.10.116", 22);
-            session.setPassword("devadm@hisun");
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                session = jsch.getSession("devms", "10.9.10.116", 22);
+                session.setPassword("devms@dev1234");
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                session = jsch.getSession("devadm", "10.9.10.116", 22);
+                session.setPassword("devadm@hisun");
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
@@ -1487,9 +1496,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
 
     }
-
-
-
 
 
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
