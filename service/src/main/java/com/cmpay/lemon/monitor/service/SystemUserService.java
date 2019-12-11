@@ -47,12 +47,12 @@ public interface SystemUserService {
      */
     Long add(UserInfoBO user);
 
-//    /**
-//     * 用户新增
-//     *
-//     * @param user
-//     */
-//    Long addP(UserInfoBO user);
+    /**
+     * 用户新增
+     *
+     * @param user
+     */
+    Long addP(UserInfoBO user);
 
     /**
      * 添加用户角色

@@ -143,88 +143,87 @@ public class SystemUserServiceImpl implements SystemUserService {
         return userNo;
     }
 
-//    @Override
-//    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
-//    public Long addP(UserInfoBO user) {
-//        String salt = RandomStringUtils.randomAlphanumeric(20);
-//        String password = CryptoUtils.sha256Hash(user.getPassword(), salt);
-//        String id = IdGenUtils.generateId(MonitorConstants.PUBLIC_SEQUENCE_NAME);
-//        Long userNo = Long.valueOf(id);
-//        user.setUserNo(userNo);
-//        user.setSalt(salt);
-//        user.setPassword(password);
-//        user.setCreateTime(LocalDateTime.now());
-//        user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
-//        UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
-//
-//        //同步老表
-//        PermiUserDO permiUserDO = new PermiUserDO();
-//        permiUserDO.setUserId(userDO.getUsername());
-//        permiUserDO.setUserName(userDO.getFullname());
-//        permiUserDO.setMobileNum(userDO.getMobile());
-//        permiUserDO.setEmail(userDO.getEmail());
-//        permiUserDO.setDeptName(userDO.getDepartment());
-//        if("总经办".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("001");
-//        }else if("资金归集项目组".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("002");
-//        }else if("银行合作研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("003");
-//        }else if("营销服务研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("004");
-//        }else if("移动支付研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("005");
-//        }else if("团体组织交费项目组".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("006");
-//        }else if("设计项目组".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("007");
-//        }else if("产品测试部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("008");
-//        }else if("前端技术研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("009");
-//        }else if("平台架构部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0010");
-//        }else if("客户端研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0011");
-//        }else if("客服中间层项目组".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0012");
-//        }else if("基础应用研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0013");
-//        }else if("互联网金融研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0014");
-//        }else if("公共缴费研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0015");
-//        }else if("风控大数据研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0016");
-//        }else if("电商支付研发部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0017");
-//        }else if("产品测试部".equals(userDO.getDepartment())){
-//            permiUserDO.setDeptId("0018");
-//        }
-//        permiUserDO.setIsEnabled(true);
-//        permiUserDO.setPassword(DigestUtils.md5Hex("123456"));
-//        permiUserDO.setCreateDate(LocalDateTime.now());
-//        permiUserDO.setUpdateDate(LocalDateTime.now());
-//        permiUserDO.setIsEnabled(true);
-//        permiUserDO.setIsLocked(false);
-//        permiUserDO.setRegisterTime(LocalDateTime.now());
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
+    public Long addP(UserInfoBO user) {
+        String salt = RandomStringUtils.randomAlphanumeric(20);
+        String password = CryptoUtils.sha256Hash(user.getPassword(), salt);
+        String id = IdGenUtils.generateId(MonitorConstants.PUBLIC_SEQUENCE_NAME);
+        Long userNo = Long.valueOf(id);
+        user.setUserNo(userNo);
+        user.setSalt(salt);
+        user.setPassword(password);
+        user.setCreateTime(LocalDateTime.now());
+        user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
+        UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
+
+        //同步老表
+        PermiUserDO permiUserDO = new PermiUserDO();
+        permiUserDO.setUserId(userDO.getUsername());
+        permiUserDO.setUserName(userDO.getFullname());
+        permiUserDO.setMobileNum(userDO.getMobile());
+        permiUserDO.setEmail(userDO.getEmail());
+        permiUserDO.setDeptName(userDO.getDepartment());
+        if("总经办".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("001");
+        }else if("资金归集项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("002");
+        }else if("银行合作研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("003");
+        }else if("营销服务研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("004");
+        }else if("移动支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("005");
+        }else if("团体组织交费项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("006");
+        }else if("设计项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("007");
+        }else if("产品测试部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("008");
+        }else if("前端技术研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("009");
+        }else if("平台架构部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0010");
+        }else if("客户端研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0011");
+        }else if("客服中间层项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0012");
+        }else if("基础应用研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0013");
+        }else if("互联网金融研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0014");
+        }else if("公共缴费研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0015");
+        }else if("风控大数据研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0016");
+        }else if("电商支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0017");
+        }
+
+        permiUserDO.setIsEnabled(true);
+        permiUserDO.setPassword(DigestUtils.md5Hex("123456"));
+        permiUserDO.setCreateDate(LocalDateTime.now());
+        permiUserDO.setUpdateDate(LocalDateTime.now());
+        permiUserDO.setIsEnabled(true);
+        permiUserDO.setIsLocked(false);
+        permiUserDO.setRegisterTime(LocalDateTime.now());
 //        if(user.getRoleIds().size()>1){
 //            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
 //            iPermiUserDao.insertUserRole(userDO.getUsername(),"201401010002");
 //        }else{
 //            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
 //        }
-//        int res;
-//        res= iPermiUserDao.insert(permiUserDO);
-//        if (res != 1) {
-//            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
-//        }
-//        res = iUserDao.insert(userDO);
-//        if (res != 1) {
-//            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
-//        }
-//        return userNo;
-//    }
+        int res;
+        res= iPermiUserDao.insert(permiUserDO);
+        if (res != 1) {
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        res = iUserDao.insert(userDO);
+        if (res != 1) {
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        return userNo;
+    }
 
     @Override
     public void addUserRole(Long userNo, List<Long> roleIds) {
