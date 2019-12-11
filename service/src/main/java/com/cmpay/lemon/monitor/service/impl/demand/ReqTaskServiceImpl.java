@@ -377,7 +377,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         try {
             //如果修改了需求节点计划时间
-            if(!demandBO.getRevisionTimeNote().isEmpty()){
+            if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
             }
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));

@@ -235,7 +235,7 @@ public class ErrorServiceImpl implements ErrorService {
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
@@ -283,7 +283,7 @@ public class ErrorServiceImpl implements ErrorService {
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
@@ -738,7 +738,7 @@ public class ErrorServiceImpl implements ErrorService {
         String emailCont="错误码："+errcds+"<br/>"+emailContent;
         // 发邮件至对应产品经理
        // String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -784,7 +784,7 @@ public class ErrorServiceImpl implements ErrorService {
         iErcdmgErorDao.updateErrorUpdDate(updateDate,strArray);
         // 发邮件至对应产品经理
         //String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -923,6 +923,8 @@ public class ErrorServiceImpl implements ErrorService {
      */
     @Override
     public ErcdmgPordUserBO access(){
+        // 获取当前操作人信息
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         String access ="";
         //判断是否是技术负责人
         if(isDepartmentManager(SUPERADMINISTRATOR3)){
@@ -943,6 +945,7 @@ public class ErrorServiceImpl implements ErrorService {
         System.err.println(access);
         ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
         ercdmgPordUserBO.setUserAcesss(access);
+        ercdmgPordUserBO.setProdUserName(currentUser);
         return ercdmgPordUserBO;
     }
 }

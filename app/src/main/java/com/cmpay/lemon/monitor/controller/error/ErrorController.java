@@ -39,7 +39,6 @@ import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 /**
- * @author: zhou_xiong
  * 需求月反馈
  */
 @RestController
@@ -56,8 +55,8 @@ public class ErrorController {
     /**
      * 分页需求列表
      *
-     * @param reqDTO
-     * @return
+     * @param reqDTO 查询条件
+     * @return 错误码列表
      */
     @RequestMapping("/list")
     public GenericRspDTO<ErcdmgErrorComditionRspDTO> getUserInfoPage(@RequestBody ErcdmgErrorComditionReqDTO reqDTO) {
@@ -76,14 +75,12 @@ public class ErrorController {
     //多数据源添加错误码
     public void addError1(ErcdmgErrorComditionBO errorComditionBO){
         errorComditionBO = errorService.checkErrorCodeExist(errorComditionBO);
-        // 查询sit错误码数据库并新增
-        String sit = errorService.selectSitMsg(errorComditionBO);
-        System.err.println(sit);
-        // 查询uat错误码数据库并新增
-        String uat = errorService.selectUatMsg(errorComditionBO);
-        System.err.println(uat);
         // 本地库 新增考核错误码
         errorService.addErcdmgError(errorComditionBO);
+        // 查询sit错误码数据库并新增
+        String sit = errorService.selectSitMsg(errorComditionBO);
+        // 查询uat错误码数据库并新增
+        String uat = errorService.selectUatMsg(errorComditionBO);
         // 记录错误码导入记录
         SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");//设置日期格式
         ErrorRecordBeanDO errorRecordBean = new ErrorRecordBeanDO();
@@ -152,6 +149,7 @@ public class ErrorController {
     @PostMapping("/batch/import")
     public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
         MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        System.err.println(file.getOriginalFilename());
         File f = null;
         List<ErcdmgErrorComditionBO> demandDOS=new ArrayList<>();
         try {
@@ -183,6 +181,7 @@ public class ErrorController {
                 demandDO.setTechTip(map.get(i).get(5).toString());
                 demandDO.setAppScen(map.get(i).get(6).toString());
                 demandDO.setProdUserName(map.get(i).get(7).toString());
+                System.err.println(demandDO);
                 demandDOS.add(demandDO);
             }
         } catch (BusinessException e) {
@@ -203,16 +202,16 @@ public class ErrorController {
             int i = demandDOS.indexOf(m)+2;
             updateList.add(m);
         });
-        try {
+//        try {
             //更新数据库
             updateList.forEach(m -> {
                 addError1(m);
             });
-        } catch (Exception e) {
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("批量新增错误码失败");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        } catch (Exception e) {
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("批量新增错误码失败");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
         //errorService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
     }

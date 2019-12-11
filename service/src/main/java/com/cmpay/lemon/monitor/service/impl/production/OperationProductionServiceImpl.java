@@ -39,6 +39,7 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -72,6 +73,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     SystemUserService userService;
     @Autowired
     private BoardcastScheduler boardcastScheduler;
+    @Autowired
+    private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+    @Autowired
+    private IDemandStateHistoryDao demandStateHistoryDao;
 
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
@@ -577,6 +582,28 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
                                 demand.setPreCurPeriod("170");
                                 demand.setReqSts("20");
+                                if(pro_status_after.equals("投产回退")){
+                                    // 登记需求变更明细表
+                                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
+                                    demandStateHistoryDO.setReqSts("提出");
+                                    demandStateHistoryDO.setRemarks("投产回退");
+                                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                                    //依据内部需求编号查唯一标识
+                                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                                    if(identificationByReqInnerSeq==null){
+                                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                                    }
+                                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                                    //登记需求状态历史表
+                                    //获取当前操作员
+                                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                                    demandStateHistoryDao.insert(demandStateHistoryDO);
+                                }
+
                                 DemandBO demandBO =  new DemandBO();
                                 BeanUtils.copyPropertiesReturnDest(demandBO, demand);
                                 reqTaskService.update(demandBO);
@@ -585,6 +612,26 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
                                 demand.setPreCurPeriod("180");
                                 demand.setReqSts("50");
+                                // 登记需求变更明细表
+                                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                                demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                                demandStateHistoryDO.setReqNo(demand.getReqNo());
+                                demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
+                                demandStateHistoryDO.setReqSts("已完成");
+                                demandStateHistoryDO.setRemarks("部署完成待验证");
+                                demandStateHistoryDO.setReqNm(demand.getReqNm());
+                                //依据内部需求编号查唯一标识
+                                String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                                if(identificationByReqInnerSeq==null){
+                                    identificationByReqInnerSeq=demand.getReqInnerSeq();
+                                }
+                                demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                                //登记需求状态历史表
+                                //获取当前操作员
+                                demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                                demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                                demandStateHistoryDao.insert(demandStateHistoryDO);
+
                                 DemandBO demandBO =  new DemandBO();
                                 BeanUtils.copyPropertiesReturnDest(demandBO, demand);
                                 reqTaskService.update(demandBO);
