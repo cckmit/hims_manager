@@ -2,11 +2,13 @@ package com.cmpay.lemon.monitor.controller;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.annotation.QueryBody;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
 import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.UserInfoQueryBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -16,11 +18,21 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
 /**
  * 用户控制器
@@ -178,4 +190,91 @@ public class SystemUserController {
         String fullName = systemUserService.getFullname(name);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, fullName);
     }
+
+//    /**
+//     * 人员批量导入
+//     *
+//     * @return
+//     */
+//    @PostMapping("/batch/import")
+//    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+//        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+//        System.err.println(file.getOriginalFilename());
+//        File f = null;
+//        List<UserInfoBO> demandDOS=new ArrayList<>();
+//        try {
+//            //MultipartFile转file
+//            String originalFilename = file.getOriginalFilename();
+//            //获取后缀名
+//            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+//            if(suffix.equals("xls")){
+//                suffix=".xls";
+//            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
+//                suffix=".xlsx";
+//            }else {
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//            f=File.createTempFile("tmp", suffix);
+//            file.transferTo(f);
+//            String filepath = f.getPath();
+//            //excel转java类
+//            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+//            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+//            for (int i = 1; i <= map.size(); i++) {
+//                UserInfoBO demandDO = new UserInfoBO();
+//                System.err.println(map.get(i).get(0).toString());
+//                //部门
+//                demandDO.setDepartment(map.get(i).get(1).toString());
+//                System.err.println(map.get(i).get(1).toString());
+//                demandDO.setUsername(map.get(i).get(2).toString());
+//                System.err.println(map.get(i).get(2).toString());
+//                demandDO.setFullname(map.get(i).get(3).toString());
+//                System.err.println(map.get(i).get(3).toString());
+//                demandDO.setEmail(map.get(i).get(4).toString());
+//                System.err.println(map.get(i).get(4).toString());
+//                System.err.println(map.get(i).get(5).toString());
+//                List<Long> list = new ArrayList<Long>();
+//                list.add((long)4001);
+//                if("产品经理".equals(map.get(i).get(5).toString())){
+//                    list.add((long)5002);
+//                }
+//                demandDO.setRoleIds(list);
+//                demandDO.setPassword("12345678");
+//                demandDO.setStatus((byte)1);
+//                System.err.println(map.get(i).get(6).toString());
+//                demandDOS.add(demandDO);
+//            }
+//        } catch (BusinessException e) {
+//            e.printStackTrace();
+//            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+//        }catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+//        }catch (Exception e) {
+//            e.printStackTrace();
+//            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+//        }finally {
+//            f.delete();
+//        }
+//
+//        List<UserInfoBO> updateList = new ArrayList<>();
+//        demandDOS.forEach(m -> {
+//            int i = demandDOS.indexOf(m)+2;
+//            updateList.add(m);
+//        });
+////        try {
+//        //更新数据库
+//        updateList.forEach(m -> {
+//            Long userNo = systemUserService.addP(m);
+//            systemUserService.addUserRole(userNo, m.getRoleIds());
+//        });
+////        } catch (Exception e) {
+////            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+////            MsgEnum.ERROR_CUSTOM.setMsgInfo("批量新增错误码失败");
+////            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+////        }
+//        //errorService.doBatchImport(file);
+//        return GenericRspDTO.newSuccessInstance();
+//    }
 }

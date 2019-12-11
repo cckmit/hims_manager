@@ -315,4 +315,14 @@
             </if>
         </where>
     </select>
+
+    <insert id = "insertUserRole">
+		insert into t_permi_user_role (
+			user_id,
+			role_id
+		) values (
+			#{userId},
+			#{roleId}
+	    )
+    </insert>
 </mapper>

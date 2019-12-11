@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.bo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 描述
@@ -32,6 +33,16 @@ public class UserInfoBO {
      * @Fields createTime 创建时间
      */
     private LocalDateTime createTime;
+
+//    private List<Long> roleIds;
+//
+//    public List<Long> getRoleIds() {
+//        return roleIds;
+//    }
+//
+//    public void setRoleIds(List<Long> roleIds) {
+//        this.roleIds = roleIds;
+//    }
 
     public Long getUserNo() {
         return userNo;
