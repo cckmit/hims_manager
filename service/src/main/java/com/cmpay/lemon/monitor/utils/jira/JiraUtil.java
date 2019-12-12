@@ -32,4 +32,17 @@ public class JiraUtil {
         }*/
         return response;
     }
+
+
+    /*
+    *删除jira任务脚本
+    * */
+    public static void main(String[] args) {
+        for(int i=320;i<370;i++) {
+            Response response = given()
+                    .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                    .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                    .delete(CREATEISSUEURL + "/CMPAY-"+i);
+        }
+    }
 }

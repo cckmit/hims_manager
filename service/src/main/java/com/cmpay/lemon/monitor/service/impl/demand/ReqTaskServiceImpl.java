@@ -1227,9 +1227,19 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
-                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
-
+                String path="";
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
+                    path= "/home/devms/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                    path= "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File file1 = new File(path + "/开发技术文档/");
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();
