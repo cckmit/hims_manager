@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @author: ty
@@ -18,7 +19,7 @@ public interface IPlanDao extends IDemandDao {
     DemandDO findBaseChargeEmailByName(String req_inner_seq);
 
     //根据条件查询部门主管邮箱
-    DemandDO findDevpEmail(String req_inner_seq);
+    DemandDO findDevpEmail(@Param("devpCoorDepts") String[] devpCoorDepts , @Param("reqInnerSeq") String req_inner_seq);
     //根据功能点文档更新工作量
     void updateReqWorkLoad(DemandDO bean);
 }

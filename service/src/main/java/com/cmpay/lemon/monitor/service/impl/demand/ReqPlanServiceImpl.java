@@ -539,11 +539,18 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (demandDO != null) {
             jdEmail = demandDO.getMonRemark() + ";";
         }
+        String[] devpCoorDepts = null;
+        if(StringUtils.isNotEmpty(bean.getDevpCoorDept())){
+             devpCoorDepts  = bean.getDevpCoorDept().split(",");
+        }else{
+            devpCoorDepts = new String[1];
+        }
         //查询部门邮箱(主导部门和配合部门，去除配合部门测试部)
-        demandDO = planDao.findDevpEmail(reqInnerSeq);
+        demandDO = planDao.findDevpEmail(devpCoorDepts  ,reqInnerSeq);
         if (demandDO != null) {
             devpEmail = demandDO.getMonRemark() + ";";
         }
+        System.err.println(devpEmail);
         //测试部邮箱(田群、吴暇、谭杰、张勇、左娟)
         MailGroupDO mailBean = operationProductionDao.findMailGroupBeanDetail("4");
         testDevpEmail += mailBean.getMailUser();
