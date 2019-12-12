@@ -13,7 +13,6 @@ eureka:
       zone-csse2x: http://127.0.0.1:9002/eureka/
 
 server:
-  port: 6005
   tomcat:
     accept-count: 10
     max-connections: 5000
