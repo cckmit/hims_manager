@@ -1910,11 +1910,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = null;
         bean = operationProductionDao.findProductionBean(reqNumber);
-//        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
-//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//        }
+        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(bean.getProType().equals("正常投产")){
 
             if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
