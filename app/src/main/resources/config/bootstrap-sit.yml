@@ -38,7 +38,6 @@ lemon:
       url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
       username: payadm
       password: 'vse0#sf3'
-    dynamic datasource
   dynamicDataSource:
     enabled: true
     defaultDataSource: primary
