@@ -198,6 +198,8 @@ public class SystemUserServiceImpl implements SystemUserService {
             permiUserDO.setDeptId("0016");
         }else if("电商支付研发部".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("0017");
+        }else if("运维团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0018");
         }
 
         permiUserDO.setIsEnabled(true);
@@ -209,7 +211,7 @@ public class SystemUserServiceImpl implements SystemUserService {
         permiUserDO.setRegisterTime(LocalDateTime.now());
 //        if(user.getRoleIds().size()>1){
 //            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
-//            iPermiUserDao.insertUserRole(userDO.getUsername(),"201401010002");
+//            iPermiUserDao.insertUserRole(userDO.getUsername(),"20170104120156100443");
 //        }else{
 //            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
 //        }
