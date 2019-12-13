@@ -1770,7 +1770,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 这个类主要来发送邮件
             SimpleMailSender sms = new SimpleMailSender();
             isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), "wu_lr@hisuntech.com"));
+            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
             if (unusualFile.isFile() && unusualFile.exists()) {
                 unusualFile.delete();
             }

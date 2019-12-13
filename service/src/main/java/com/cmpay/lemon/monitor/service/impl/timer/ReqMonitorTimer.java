@@ -220,7 +220,7 @@ public class ReqMonitorTimer {
 //				sendTo = "tu_yi@hisuntech.com";
 //				copyTo = "wu_lr@hisuntech.com";
 				//发送邮件
-				reqPlanService.sendMail("tu_yi@hisuntech.com", "tu_yi@hisuntech.com", content.toString(), subject, null);
+				reqPlanService.sendMail(sendTo, copyTo, content.toString(), subject, null);
 				//设置异常类型
 				if (reqTask.getReqAbnorType().indexOf("01") != -1) {
 					reqTask.setReqAbnorType("03,");

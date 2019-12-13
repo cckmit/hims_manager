@@ -654,8 +654,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     }
                 }
 
-                //String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 if(copyToMail!=null){
                     mailInfo.setCcs(copyToMail.split(";"));
@@ -721,10 +721,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
-
-               // mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
+               // String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+               // mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb=new StringBuffer();
 
                 mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
@@ -790,8 +789,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     /**
                      * 收件人邮箱
                      */
-                    //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                    String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                    String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                    //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                     mailInfo.setToAddress(mailToAddress);
                     mailInfo.setSubject("【系统操作("+mess+")结果反馈】");
                     mailInfo.setContent("你好:<br/>由于【"+pro_number_list[1]+"】,您的"
