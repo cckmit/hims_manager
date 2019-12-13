@@ -342,7 +342,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandTimeFrameHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandTimeFrameHistoryDO.setCreatTime(LocalDateTime.now());
         String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandBO.getReqInnerSeq());
-        demandTimeFrameHistoryDO.setIdentification(identification);
+        if(identification!=null){
+            demandTimeFrameHistoryDO.setIdentification(identification);
+        }else {
+            demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryDO.getReqInnerSeq());
+        }
         demandTimeFrameHistoryDao.insert(demandTimeFrameHistoryDO);
     }
 
@@ -2229,8 +2233,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&demandTimeFrameHistoryBO.getReqNo().isEmpty()){
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandTimeFrameHistoryBO.getReqInnerSeq());
             if(identification==null){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+                demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryBO.getReqInnerSeq());
+                PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
+                        () -> BeanConvertUtils.convertList(demandTimeFrameHistoryDao.find(demandTimeFrameHistoryDO), DemandTimeFrameHistoryBO.class));
+                List<DemandTimeFrameHistoryBO> demandTimeFrameHistoryBOS = BeanConvertUtils.convertList(pageInfo.getList(), DemandTimeFrameHistoryBO.class);
+                DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = new DemandTimeFrameHistoryRspBO();
+                System.err.println(demandTimeFrameHistoryBOS.size());
+                demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
+                demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
+                return demandTimeFrameHistoryRspBO;
             }
             DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
             demandTimeFrameHistoryDO.setIdentification(identification);
@@ -2247,7 +2259,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
             demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
             if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());

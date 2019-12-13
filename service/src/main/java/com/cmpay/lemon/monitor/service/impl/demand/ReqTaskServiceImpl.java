@@ -1167,8 +1167,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&demandChangeDetailsBO.getReqNo().isEmpty()){
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsBO.getReqInnerSeq());
             if(identification==null){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                demandStateHistoryDO.setIdentification(demandChangeDetailsBO.getReqInnerSeq());
+                PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                        () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
+                List<DemandStateHistoryBO> demandStateHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandStateHistoryBO.class);
+                DemandStateHistoryRspBO demandStateHistoryRspBO = new DemandStateHistoryRspBO();
+                demandStateHistoryRspBO.setDemandStateHistoryBOList(demandStateHistoryBOList);
+                demandStateHistoryRspBO.setPageInfo(pageInfo);
+                return demandStateHistoryRspBO;
             }
             DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
             demandStateHistoryDO.setIdentification(identification);
@@ -1185,7 +1192,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
             demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
             if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
