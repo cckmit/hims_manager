@@ -52,6 +52,8 @@ public class ErrorServiceImpl implements ErrorService {
     private static final Long SUPERADMINISTRATOR2 =(long)5002;
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
+    //普通员工
+    private static final Long SUPERADMINISTRATOR4 =(long)4001;
 
     @Autowired
     private IErcdmgErorDao iErcdmgErorDao;
@@ -920,21 +922,21 @@ public class ErrorServiceImpl implements ErrorService {
         // 获取当前操作人信息
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         String access ="";
-        //判断是否是技术负责人
-        if(isDepartmentManager(SUPERADMINISTRATOR3)){
-            access +="3";
+        //判断是否是普通员工
+        if(isDepartmentManager(SUPERADMINISTRATOR4)){
+            access ="3";
         }
         //判断是否是产品经理
         if(isDepartmentManager(SUPERADMINISTRATOR2)){
-            access +="2";
+            access ="2";
         }
         //判断是否是错误码审核人
         if(isDepartmentManager(SUPERADMINISTRATOR1)){
-            access +="1";
+            access ="1";
         }
         //判断是否是超级管理员
         if(isDepartmentManager(SUPERADMINISTRATOR)){
-            access +="0";
+            access ="0";
         }
         System.err.println(access);
         ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
