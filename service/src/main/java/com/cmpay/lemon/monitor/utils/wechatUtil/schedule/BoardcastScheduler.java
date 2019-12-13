@@ -29,9 +29,9 @@ public class BoardcastScheduler {
     public void pushValidationNotTimelyChecklist(String body , File file){
        boardcastExecutor.getAccessToken(corpid, corpsecret);
         //todo 固定接收人
-        boardcastExecutor.sendTextMessage("WuLiangRui", body);
+        boardcastExecutor.sendTextMessage("@All", body);
         String fileID = boardcastExecutor.sendUploadFile(file);
-        boardcastExecutor.sendFileMessage("WuLiangRui", fileID);
+        boardcastExecutor.sendFileMessage("@All", fileID);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)

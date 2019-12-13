@@ -681,8 +681,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         try {
-            //todo 写死路径
-            //String path="D:\\home\\devadm\\temp\\import";
             String filePath = path + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
             util.createExcel(filePath, list,null);
@@ -700,10 +698,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "救火更新申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         try {
-            //todo 写死路径
-            //String path="D:\\home\\devadm\\temp\\import";
             String path="";
-
             if(LemonUtils.getEnv().equals(Env.SIT)) {
                 path= "/home/devms/temp/import/";
             } else if(LemonUtils.getEnv().equals(Env.DEV)) {
@@ -1499,9 +1494,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
 
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
-        //todo 先改成本机写死路径
-
-       // String path="D:\\home\\devadm\\temp\\import";
         //依据环境配置路径
         String path="";
         if(LemonUtils.getEnv().equals(Env.SIT)) {
@@ -1681,17 +1673,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com";
+            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)
+               //     +";wu_lr@hisuntech.com";
             //todo 收件人需要添加两人必选先注释 先用自己的邮件代替
-            //+";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
+            +";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
             MailFlowBean bnb = new MailFlowBean("【投产录入审批申请】", Constant.P_EMAIL_NAME, receiver_mail, "");
             bean.setMailRecipient(receiver_mail);
             //todo 抄送人需要添加两人必选先注释 先用自己的邮件代替
-            //bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
-            bean.setMailCopyPerson("wu_lr@hisuntech.com");
+            bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
+            //bean.setMailCopyPerson("wu_lr@hisuntech.com");
             mailInfo.setToAddress(receiver_mail.split(";"));
             mailInfo.setSubject("【投产录入审批申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于超过正常投产录入时间，投产无法正常录入，现申请投产审批，烦请审批！");
