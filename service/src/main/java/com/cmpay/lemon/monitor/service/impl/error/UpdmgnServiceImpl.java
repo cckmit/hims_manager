@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service.impl.error;
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.framework.page.PageInfo;
+import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
@@ -14,6 +15,7 @@ import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO;
 import com.cmpay.lemon.monitor.entity.ErcdmgUpdmgnDO;
+import com.cmpay.lemon.monitor.entity.TPermiUser;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.entity.sendemail.SendEmailConfig;
@@ -268,10 +270,10 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 mailInfo.setToAddress(Constant.VERSION);
                 mailInfo.setSubject("和包错误码在线更新通知(新增)");
                 mailInfo.setContent(email);
-                //mailInfo.setCcs(bothReceivers);
-                System.err.println(bothReceivers);
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
-                mailInfo.setCcs(mailToAddress);
+                mailInfo.setCcs(bothReceivers);
+//                System.err.println(bothReceivers);
+//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
+//                mailInfo.setCcs(mailToAddress);
 
 
 
@@ -300,16 +302,16 @@ public class UpdmgnServiceImpl implements UpdmgnService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updatePro() {
-        // 获取当前登录人信息
-        //UserPrincipal currentUser = (UserPrincipal) SecurityUtils.getSubject().getPrincipal();
+        //获取登录用户名
+        String userName = userService.getFullname(SecurityUtils.getLoginName());
+        TPermiUser currentUser =iErcdmgErorDao.findByUsername(userName);
         // 收件人信息
         SendEmailConfig config = new SendEmailConfig();
-        System.err.println(config.getErroCodeMailTo());
         String[] bothReceivers = config.getErroCodeMailTo();
-//        if (currentUser.getEmail() != null && currentUser.getEmail().trim().equals("")) {
-//            bothReceivers = concat(config.getErroCodeMailTo(), new String[]{currentUser.getEmail().trim()});
-//        }
-        bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com","liujia3@hisuntech.com"});
+        if (currentUser.getEmail() != null && currentUser.getEmail().trim().equals("")) {
+            bothReceivers = concat(config.getErroCodeMailTo(), new String[]{currentUser.getEmail().trim()});
+        }
+      //  bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com","liujia3@hisuntech.com"});
 
         // 获取投产更新表信息
         List<ErcdmgErrorComditionDO> errorList = iErcdmgErorDao.queryForUpload();

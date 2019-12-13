@@ -180,7 +180,6 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的产品经理名称:"+ercdmgError.getProdUserName()+"不存在，请重新输入后再试");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-//        ercdmgError.setProdUserId(tPermiUser.getUserId());
         ercdmgError.setProdUserId( tPermiUser.getUserId());
 
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -453,18 +452,13 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("产品模块长度不超过3位");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        //检查输入产品经理是否存在
-//        TPermiUser tPermiUser=ercdmgErrorMapper.findByUsername(ercdmgError.getProdUserName());
-//        if(tPermiUser==null){
-//            throw new ServiceException("你输入的产品经理名称不存在，请重新输入后再试");
-//        }
-//        //检查用户角色
-//        String roleName=ercdmgErrorMapper.searchUserRoleProd(tPermiUser.getUserId());
-//
-//        if (!ErrerConstant.PORD.equals(roleName)||roleName==null){
-//            throw new ServiceException("你输入的用户"+tPermiUser.getUserName()+"非产品经理角色，请重新输入后再试");
-//        }
-        ercdmgError.setProdUserId( SecurityUtils.getLoginName());
+        TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(ercdmgError.getProdUserName());
+        if(tPermiUser==null){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的产品经理名称:"+ercdmgError.getProdUserName()+"不存在，请重新输入后再试");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ercdmgError.setProdUserId( tPermiUser.getUserId());
         ercdmgError.setLastUpdateDate(LocalDateTime.now());
         iErcdmgErorDao.update(ercdmgError);
         //已生效同步生产修改
@@ -737,8 +731,8 @@ public class ErrorServiceImpl implements ErrorService {
 
         String emailCont="错误码："+errcds+"<br/>"+emailContent;
         // 发邮件至对应产品经理
-       // String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
+        String[] emailsArr = emails.split("~");
+        //String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -783,8 +777,8 @@ public class ErrorServiceImpl implements ErrorService {
         // 更新期望更新时间
         iErcdmgErorDao.updateErrorUpdDate(updateDate,strArray);
         // 发邮件至对应产品经理
-        //String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
+        String[] emailsArr = emails.split("~");
+        //String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;

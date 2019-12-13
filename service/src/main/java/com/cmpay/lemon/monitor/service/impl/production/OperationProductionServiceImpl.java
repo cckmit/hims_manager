@@ -354,8 +354,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setPassword(Constant.P_EMAIL_PSWD);
                 mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
 
-                //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
@@ -407,8 +407,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -497,8 +497,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = productionBean.getMailRecipient().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
                 mailInfo.setToAddress(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();
@@ -985,8 +985,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
@@ -1144,8 +1144,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddress);
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
@@ -1209,8 +1209,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file2=exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
-        //String[] mailToAddresss = mp.getMailUser().split(";");
-        String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+        String[] mailToAddresss = mp.getMailUser().split(";");
+        //String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
         mailInfo.setToAddress(mailToAddresss);
         /**
          * 附件
@@ -1681,7 +1681,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com";
+            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com"+";tian_qun@hisuntech.com;huang_jh@hisuntech.com";;
             //todo 收件人需要添加两人必选先注释 先用自己的邮件代替
             //+";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
@@ -1690,8 +1690,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             MailFlowBean bnb = new MailFlowBean("【投产录入审批申请】", Constant.P_EMAIL_NAME, receiver_mail, "");
             bean.setMailRecipient(receiver_mail);
             //todo 抄送人需要添加两人必选先注释 先用自己的邮件代替
-            //bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
-            bean.setMailCopyPerson("wu_lr@hisuntech.com");
+            bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
+            //bean.setMailCopyPerson("wu_lr@hisuntech.com");
             mailInfo.setToAddress(receiver_mail.split(";"));
             mailInfo.setSubject("【投产录入审批申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于超过正常投产录入时间，投产无法正常录入，现申请投产审批，烦请审批！");

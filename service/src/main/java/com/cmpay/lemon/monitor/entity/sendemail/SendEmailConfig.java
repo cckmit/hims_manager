@@ -1,4 +1,9 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
+import com.cmpay.lemon.common.Env;
+import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.framework.utils.LemonUtils;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
+
 import java.util.Properties;
 
 /**
@@ -34,7 +39,17 @@ public class SendEmailConfig {
 	
 	public SendEmailConfig(){
 		//以前是从配置文件获取,重构没有引入配置文件
-		this.env="DEV";
+		if(LemonUtils.getEnv().equals(Env.SIT)) {
+			this.env= "PRO";
+		} else if(LemonUtils.getEnv().equals(Env.DEV)) {
+			this.env= "DEV";
+		}else {
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+
+
 		/*Properties p;
 		try {
 			p = PropertiesUtils.loadProperties("set.properties");
