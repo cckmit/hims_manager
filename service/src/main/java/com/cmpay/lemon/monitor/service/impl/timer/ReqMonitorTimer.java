@@ -83,9 +83,9 @@ public class ReqMonitorTimer {
 
 	/*
 	 *投产不及时验证清单发送企业微信
-	 *每天中午12点执行
+	 *每天中午12点10秒执行，避免和别的微信推送内容冲突
 	 * */
-	@Scheduled(cron = "1 0 12 * * ?")
+	@Scheduled(cron = "10 0 12 * * ?")
 	public void productionVerificationIsNotTimely() {
 		//项目启动日期开始当天计算
 		String date="2019-12-13";
