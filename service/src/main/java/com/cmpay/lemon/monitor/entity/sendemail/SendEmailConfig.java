@@ -15,8 +15,8 @@ public class SendEmailConfig {
 	private String env;
 
 	//todo 先改成发给自己
-	//private String devMail="liu_chang@hisuntech.com";
-	private String devMail="wu_lr@hisuntech.com";
+	private String devMail="liu_chang@hisuntech.com";
+	//private String devMail="wu_lr@hisuntech.com";
 	public static final String SEND_MAIL = "sendmail.properties";
 	/**
 	 * 
