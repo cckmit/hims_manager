@@ -325,4 +325,8 @@
 			#{roleId}
 	    )
     </insert>
+
+    <delete id="deleteUserRole">
+        delete from t_permi_user_role where user_id = #{userId}
+    </delete>
 </mapper>

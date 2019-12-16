@@ -15,4 +15,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface IPermiUserDao extends BaseDao<PermiUserDO, Long> {
     void insertUserRole(@Param("userId")String  userId,@Param("roleId") String roleId);
+    void deleteUserRole(@Param("userId")String  userId);
 }

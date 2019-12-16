@@ -60,7 +60,7 @@ public interface SystemUserService {
      * @param userNo
      * @param roleIds
      */
-    void addUserRole(Long userNo, List<Long> roleIds);
+    void addUserRole(Long userNo, List<Long> roleIds,String username);
 
     /**
      * 用户删除
@@ -97,7 +97,7 @@ public interface SystemUserService {
      * @param userNo
      * @param roleIds
      */
-    void updateUserRole(Long userNo, List<Long> roleIds);
+    void updateUserRole(Long userNo, List<Long> roleIds,String username);
 
     /**
      * 查询所有用户
