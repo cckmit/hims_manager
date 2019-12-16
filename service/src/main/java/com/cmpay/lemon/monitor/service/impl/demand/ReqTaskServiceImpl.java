@@ -334,6 +334,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void delete(String reqInnerSeq) {
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        if(StringUtils.isNotEmpty(demandDO.getReqNo())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("已有REQ需求编号的需求，禁止删除");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(permissionCheck(reqInnerSeq)){
             demandDao.logicDelete(reqInnerSeq);
         }

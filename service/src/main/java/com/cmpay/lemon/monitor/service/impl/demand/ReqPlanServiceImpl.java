@@ -248,6 +248,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void delete(String req_inner_seq) {
         try {
+            DemandDO demandDO = demandDao.get(req_inner_seq);
+            if(StringUtils.isNotEmpty(demandDO.getReqNo())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("已有REQ需求编号的需求，禁止删除");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             demandDao.delete(req_inner_seq);
             demandJiraDao.delete(req_inner_seq);
         } catch (Exception e) {
