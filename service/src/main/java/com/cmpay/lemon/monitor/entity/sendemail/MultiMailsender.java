@@ -1,6 +1,10 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
 
+import com.cmpay.lemon.common.Env;
+import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.entity.Constant;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
 import org.apache.log4j.Logger;
 
 import javax.activation.DataHandler;
@@ -150,7 +154,17 @@ public class MultiMailsender {
 
                 if (mailInfo.getSubject().startsWith("和包错误码在线更新通知")) {
                     MimeBodyPart mdpFile = new MimeBodyPart();
-                    FileDataSource fds = new FileDataSource("/home/devadm/alert-redis.sh");
+                    FileDataSource fds =null;
+                    if(LemonUtils.getEnv().equals(Env.SIT)) {
+                       fds = new FileDataSource("/home/devms/alert-redis.sh");
+                     }
+                    else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                        fds = new FileDataSource("/home/devadm/alert-redis.sh");
+                    }else {
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
                     mdpFile.setDataHandler(new DataHandler(fds));
                     //这个方法可以解决乱码问题
                     String fileName1 = MimeUtility.encodeText(fds.getName());
