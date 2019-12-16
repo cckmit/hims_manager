@@ -793,7 +793,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
         //查询该是编号是否已经投产
         ProductionBO productionBO = this.searchProdutionDetail(proNumber);
-        if(productionBO!=null){
+        if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
