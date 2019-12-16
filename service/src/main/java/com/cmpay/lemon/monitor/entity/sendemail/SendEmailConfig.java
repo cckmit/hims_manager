@@ -251,7 +251,7 @@ public class SendEmailConfig {
             });
         if(env.equals("PRO"))
             return (new String[] {
-                "dong_jm@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com", "liu_chang@hisuntech.com"
+                "dong_jm@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com"
             });
         else
             return null;
