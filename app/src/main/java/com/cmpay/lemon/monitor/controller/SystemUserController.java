@@ -113,7 +113,7 @@ public class SystemUserController {
     public GenericRspDTO add(@RequestBody UserAddReqDTO addReqDTO) {
         UserInfoBO userInfoBO = BeanUtils.copyPropertiesReturnDest(new UserInfoBO(), addReqDTO);
         Long userNo = systemUserService.add(userInfoBO);
-        systemUserService.addUserRole(userNo, addReqDTO.getRoleIds());
+        systemUserService.addUserRole(userNo, addReqDTO.getRoleIds(),userInfoBO.getUsername());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
@@ -141,7 +141,7 @@ public class SystemUserController {
         userInfoBO.setDepartment(updateReqDTO.getDepartment());
         userInfoBO.setFullname(updateReqDTO.getFullname());
         systemUserService.update(userInfoBO);
-        systemUserService.updateUserRole(userInfoBO.getUserNo(), updateReqDTO.getRoleIds());
+        systemUserService.updateUserRole(userInfoBO.getUserNo(), updateReqDTO.getRoleIds(),userInfoBO.getUsername());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 
