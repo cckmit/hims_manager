@@ -791,16 +791,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
-        //查询该是编号是否已经投产
-        ProductionBO productionBO = this.searchProdutionDetail(proNumber);
-        if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")){
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
-        //未投产,且是req前缀投产编号则查询该编号对应的需求计划
+        //未投产,req前缀投产编号则查询该编号对应的需求计划
         DemandDO demandDO = new DemandDO();
         if(proNumber.startsWith("REQ")) {
+            //查询该是编号是否已经投产
+            ProductionBO productionBO = this.searchProdutionDetail(proNumber);
+            if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")&& !productionBO.getProStatus().equals("投产打回")&& !productionBO.getProStatus().equals("投产回退")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             demandDO.setReqNo(proNumber);
             demandDO.setReqSts("20");
             List<DemandDO> demandDOList = demandDao.find(demandDO);
