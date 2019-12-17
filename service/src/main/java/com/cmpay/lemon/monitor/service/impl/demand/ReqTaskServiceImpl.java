@@ -54,6 +54,10 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 public class ReqTaskServiceImpl implements ReqTaskService {
     //超级管理员
     private static final Long SUPERADMINISTRATOR =(long)10506;
+    //团队主管
+    private static final Long SUPERADMINISTRATOR1 =(long)5004;
+    //技术负责人
+    private static final Long SUPERADMINISTRATOR3 =(long)5006;
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -87,6 +91,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     SystemUserService userService;
     @Autowired
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+    @Autowired
+    private IErcdmgErorDao iErcdmgErorDao;
+    @Autowired
+    private IUserExtDao iUserDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -372,12 +380,39 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         int maxDate = a.get(Calendar.DATE);
         return maxDate;
     }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese , Long userid){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(userid);
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
         //校验数据
         checkReqTask(demandBO);
-
+        // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
+        if(StringUtils.isNotBlank(demandBO.getProjectMng())){
+            TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
+            if(tPermiUser==null){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:"+demandBO.getProjectMng()+"在系统中不存在，请确定后重新输入");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
+            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         //设置默认值
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
