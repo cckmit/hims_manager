@@ -25,7 +25,7 @@ spring:
       force: true
     multipart:
       enabled: true
-      max-file-size: 20MB
+      max-file-size: 200MB
       max-request-size: 1000MB
   mvc:
     throw-exception-if-no-handler-found: true
