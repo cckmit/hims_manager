@@ -26,20 +26,20 @@ lemon:
       url: jdbc:mysql://10.9.10.16:3306/hims?useSSL=false
       username: hims
       password: 'hims2019'
-    dsSit:
-      type: com.alibaba.druid.pool.DruidDataSource
-      validationQuery: 'select 1 from dual'
-      driverClassName: oracle.jdbc.driver.OracleDriver
-      url: jdbc:oracle:thin:@172.16.49.65:1521:motion
-      username: pubadm
-      password: 'pub#123a'
-    dsUat:
-      type: com.alibaba.druid.pool.DruidDataSource
-      validationQuery: 'select 1 from dual'
-      driverClassName: oracle.jdbc.driver.OracleDriver
-      url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
-      username: payadm
-      password: 'vse0#sf3'
+#    dsSit:
+#      type: com.alibaba.druid.pool.DruidDataSource
+#      validationQuery: 'select 1 from dual'
+#      driverClassName: oracle.jdbc.driver.OracleDriver
+#      url: jdbc:oracle:thin:@172.16.49.65:1521:motion
+#      username: pubadm
+#      password: 'pub#123a'
+#    dsUat:
+#      type: com.alibaba.druid.pool.DruidDataSource
+#      validationQuery: 'select 1 from dual'
+#      driverClassName: oracle.jdbc.driver.OracleDriver
+#      url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
+#      username: payadm
+#      password: 'vse0#sf3'
   dynamicDataSource:
     enabled: true
     defaultDataSource: primary
