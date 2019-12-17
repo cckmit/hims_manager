@@ -1802,14 +1802,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 收件人邮箱
             String base_receiver_mail = bean.getMailRecipient();
             if (bean.getIsAdvanceProduction().equals("是")) {
-                base_receiver_mail +=  config.getFireMailTo(true);
+                base_receiver_mail += config.getFireMailTo(true);
             } else {
                 receiver_users.add(bean.getProManager());
                 receiver_users.add(bean.getDevelopmentLeader());
                 base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
+            // todo 添加申请人邮箱地址
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
             //去重
-            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users);
+            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users)+";"+mflow.getEmployeeEmail();
             String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
             // 抄送人邮箱
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
