@@ -75,6 +75,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private static final Long SUPERADMINISTRATOR =(long)10506;
     //团队主管
     private static final Long SUPERADMINISTRATOR1 =(long)5004;
+    //配置管理员
+    private static final Long SUPERADMINISTRATOR2 =(long)5003;
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
     //30 需求状态为暂停
@@ -294,6 +296,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return false ;
     }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
@@ -316,21 +331,25 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
-        if(StringUtils.isNotBlank(demandBO.getProjectMng())){
-            TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
-            if(tPermiUser==null){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:"+demandBO.getProjectMng()+"在系统中不存在，请确定后重新输入");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-            UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
-            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        // 如果是超级管理员或者配置管理员，不验证
+        if(!isDepartmentManager(SUPERADMINISTRATOR)&&!isDepartmentManager(SUPERADMINISTRATOR2)){
+            // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
+            if(StringUtils.isNotBlank(demandBO.getProjectMng())){
+                TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
+                if(tPermiUser==null){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:"+demandBO.getProjectMng()+"在系统中不存在，请确定后重新输入");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+                UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
+                if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
             }
         }
+
         try {
             if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
                 //修改需求状态
