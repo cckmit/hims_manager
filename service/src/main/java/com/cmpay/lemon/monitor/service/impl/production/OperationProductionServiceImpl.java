@@ -113,7 +113,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         ScheduleRspBO productionRspBO = new ScheduleRspBO();
-        System.err.println(scheduleBOList.size());
         productionRspBO.setScheduleList(scheduleBOList);
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
@@ -575,8 +574,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     // 投产月份  = 需求实施月份时 ，改变需求状态
                     if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
                         DemandDO demand = demandBOList.get(i);
-                        System.err.println(demand);
-                        System.err.println(pro_status_after+"==="+pro_status_before);
                         if (!JudgeUtils.isNull(demand)) {
                             //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {

@@ -1,15 +1,12 @@
 package com.cmpay.lemon.monitor.service.impl.error;
 
 import com.cmpay.lemon.common.exception.BusinessException;
-import com.cmpay.lemon.common.utils.JudgeUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.datasource.TargetDataSource;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
+import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.dao.IErcdmgErorDao;
 import com.cmpay.lemon.monitor.dao.IErcdmgUpdmgnDao;
@@ -31,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -228,9 +224,7 @@ public class ErrorServiceImpl implements ErrorService {
             //连接
             sit_connection.connect();
             int sit_responseCode = sit_connection.getResponseCode();
-            System.err.println(sit_responseCode);
             if(sit_responseCode != HttpURLConnection.HTTP_OK){
-                System.err.println("SITTTTTTTTTTTTTTTTTT");
                 return "SIT";
             }
         } catch (Exception e) {

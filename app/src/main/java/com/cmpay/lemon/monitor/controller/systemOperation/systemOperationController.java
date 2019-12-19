@@ -89,7 +89,6 @@ public class systemOperationController {
 
     @RequestMapping("/updateAllOperationApplication")
     public GenericRspDTO<NoBody> updateAllOperationApplication(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response) {
-        System.err.println(taskIdStr);
         operationApplicationService.updateAllOperationApplication(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }

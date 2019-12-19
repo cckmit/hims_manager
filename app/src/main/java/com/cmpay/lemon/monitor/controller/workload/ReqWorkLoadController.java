@@ -135,7 +135,6 @@ public class ReqWorkLoadController {
      */
     @GetMapping("/getPerDeptWorkLoad1")
     public GenericRspDTO<DictionaryRspDTO> getPerDeptWorkLoad1(@RequestParam("reqInnerSeq") String reqInnerSeq, GenericDTO<NoBody> req) {
-        System.err.println("工作量内部编号"+reqInnerSeq);
         DemandBO bean = reqPlanService.findById(reqInnerSeq);
         DictionaryBO dictionaryBO = new DictionaryBO();
         String leadDeptPro = bean.getLeadDeptPro();
@@ -186,7 +185,6 @@ public class ReqWorkLoadController {
      */
     @GetMapping("/getPerDeptWorkLoad2")
     public GenericRspDTO<DictionaryRspDTO> getPerDeptWorkLoad2(@RequestParam("reqInnerSeq") String reqInnerSeq, GenericDTO<NoBody> req) {
-        System.err.println("工作量内部编号"+reqInnerSeq);
         DemandBO bean = reqPlanService.findById(reqInnerSeq);
         DictionaryBO dictionaryBO = new DictionaryBO();
         String leadDeptPro = bean.getLeadDeptPro();

@@ -1,36 +1,29 @@
 package com.cmpay.lemon.monitor.controller.demand;
 
-import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
-import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.ReqDataCountBO;
 import com.cmpay.lemon.monitor.bo.ReqMngBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.*;
+import com.cmpay.lemon.monitor.dto.DemandDTO;
+import com.cmpay.lemon.monitor.dto.DemandReqDTO;
+import com.cmpay.lemon.monitor.dto.ReqIndexCountRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
-import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.*;
-
-import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
-import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
 
 @RestController
@@ -72,7 +65,6 @@ public class ReqIndexController {
         ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
         rspDTO.setLi(li);
         rspDTO.setTotle((reMap.get("totle")).toString());
-        System.err.println(list.toString());
         rspDTO.setList(list);
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());
@@ -120,7 +112,6 @@ public class ReqIndexController {
         ReqIndexCountRspDTO rspDTO = new ReqIndexCountRspDTO();
         rspDTO.setLi(li);
         rspDTO.setTotle((reMap.get("totle")).toString());
-        System.err.println(list.toString());
         rspDTO.setList(list);
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());

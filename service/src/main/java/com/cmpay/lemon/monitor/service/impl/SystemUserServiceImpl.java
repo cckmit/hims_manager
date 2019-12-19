@@ -412,7 +412,6 @@ public class SystemUserServiceImpl implements SystemUserService {
             //查找新表是否已经有该用户数据，已有则跳过
             List<UserDO> userDOList = new LinkedList<>();
             userDOList = iUserDao.find(BeanUtils.copyPropertiesReturnDest(new UserDO(), user));
-            System.err.println(userDOList.size());
             if(!userDOList.isEmpty()){
                 return;
             }

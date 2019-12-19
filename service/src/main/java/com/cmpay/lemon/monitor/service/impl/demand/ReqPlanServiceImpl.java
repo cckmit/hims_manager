@@ -159,7 +159,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        System.err.println("需求月份"+demandBO.getReqImplMon());
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
@@ -598,7 +597,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (demandDO != null) {
             devpEmail = demandDO.getMonRemark() + ";";
         }
-        System.err.println(devpEmail);
         //测试部邮箱(田群、吴暇、谭杰、张勇、左娟)
         MailGroupDO mailBean = operationProductionDao.findMailGroupBeanDetail("4");
         testDevpEmail += mailBean.getMailUser();
@@ -1050,7 +1048,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             Date date = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
             String month = df.format(date);
-            System.err.println("当前月份："+month);
             //获取登录用户ID
             String update_user = SecurityUtils.getLoginName();
             for (int i = 0; i < ids.size(); i++) {
