@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -162,9 +163,11 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         MailFlowConditionDO vo = new MailFlowConditionDO();
         vo.setEmployeeName(bean.getOperApplicant());
         MailFlowDO mflow = operationProductionService.searchUserEmail(vo);
-        System.err.println( mflow.getEmployeeEmail());
+        if(ObjectUtils.isEmpty(mflow)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("申请人输入有误，无法查找对应邮箱");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String[] mailToAddressDemo = null;
-        System.err.println(bean.getMailRecipient());
         if (bean.getMailRecipient() != null && !bean.getMailRecipient().equals("")) {
             mailToAddressDemo = (bean.getMailRecipient() + ";" + config.getExcuteMailTo() + ";" + mflow.getEmployeeEmail()).split(";");
         } else {
