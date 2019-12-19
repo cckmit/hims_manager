@@ -1161,22 +1161,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             sb.append("<td >"+bean.getProManager()+"</td>");//产品经理
             sb.append("<td >"+bean.getValidation()+"</td>");//生产验证方式
             //验证结果
-            if(bean.getValidation().equals("当晚验证")){
-                if(bean.getProStatus().equals("投产验证完成")){
-                    sb.append("<td >验证通过</td></tr>");//验证结果
-                }else{
-                    sb.append("<td >验证未通过</td></tr>");//验证结果
-                }
-            }
-            if(bean.getValidation().equals("隔日验证")){
-                if(bean.getProStatus().equals("投产验证完成")){
-                    sb.append("<td >验证通过</td></tr>");//验证结果
-                }else{
-                    sb.append("<td >隔日验证</td></tr>");//验证结果
-                }
-            }
-            if(bean.getValidation().equals("待业务触发验证")){
-                sb.append("<td >待业务触发验证</td></tr>");//验证结果
+            if(bean.getProStatus().equals("投产验证完成")){
+                sb.append("<td >验证通过</td></tr>");//验证结果
+            }else{
+                sb.append("<td >隔日验证</td></tr>");//验证结果
             }
 
         }
