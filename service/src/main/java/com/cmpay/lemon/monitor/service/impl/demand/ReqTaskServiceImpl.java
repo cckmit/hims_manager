@@ -57,10 +57,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     //团队主管
     private static final Long SUPERADMINISTRATOR1 =(long)5004;
 
-    //配置管理员
-    private static final Long SUPERADMINISTRATOR2 =(long)5003;
+    //需求管理员
+    private static final Long SUPERADMINISTRATOR2 =(long)5001;
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
+    //产品经理
+    private static final Long SUPERADMINISTRATOR4 =(long)5002;
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -414,9 +416,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void update(DemandBO demandBO) {
         //校验数据
         checkReqTask(demandBO);
-        // 如果是超级管理员或者配置管理员，不验证
+        // 如果是超级管理员或者需求管理员，不验证
         if(!isDepartmentManager(SUPERADMINISTRATOR)&&!isDepartmentManager(SUPERADMINISTRATOR2)) {
-            // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
+            // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管或产品经理，否则报错
             if (StringUtils.isNotBlank(demandBO.getProjectMng())) {
                 TPermiUser tPermiUser = iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
                 if (tPermiUser == null) {
@@ -425,7 +427,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
-                if (!isDepartmentManager(SUPERADMINISTRATOR1, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR3, userByUserName.getUserNo())) {
+                if (!isDepartmentManager(SUPERADMINISTRATOR1, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR3, userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR4, userByUserName.getUserNo())) {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);

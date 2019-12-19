@@ -75,10 +75,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private static final Long SUPERADMINISTRATOR =(long)10506;
     //团队主管
     private static final Long SUPERADMINISTRATOR1 =(long)5004;
-    //配置管理员
-    private static final Long SUPERADMINISTRATOR2 =(long)5003;
+    //产品经理
+    private static final Long SUPERADMINISTRATOR2 =(long)5002;
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
+
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -326,7 +327,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
-            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())){
+            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR2,userByUserName.getUserNo())){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
