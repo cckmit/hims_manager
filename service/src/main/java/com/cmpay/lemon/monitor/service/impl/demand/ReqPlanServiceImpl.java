@@ -622,7 +622,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         String req_inner_seq = projectStartBO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(req_inner_seq);
-        DemandDO bean = new DemandDO();
+        DemandDO bean = demandDao.get(req_inner_seq);
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (null == reqPlan) {
             //"项目启动失败，找不到该需求对应信息!"
