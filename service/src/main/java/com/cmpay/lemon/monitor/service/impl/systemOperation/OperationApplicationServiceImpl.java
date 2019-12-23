@@ -624,17 +624,14 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"审核】",Constant.P_EMAIL_NAME, receiverMail,"");
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 /**
                  * 收件人邮箱
@@ -658,8 +655,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 }
 
                 String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mailToAddress);
                 if(copyToMail!=null){
                     mailInfo.setCcs(copyToMail.split(";"));
                 }
@@ -689,8 +685,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
                 mailInfo.setContent("各位领导好！<br/>&nbsp;&nbsp;以下"+operName+"，烦请审批，谢谢！<br/>"+sb.toString());
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 if(!isSend){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("审批邮件发送失败!");
@@ -710,23 +705,18 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 vo.setEmployeeName(bean.getOperApplicant());
                 MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
-                mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
-               // String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-               // mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mflow.getEmployeeEmail().split(";"));
                 StringBuffer sb=new StringBuffer();
 
                 mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
@@ -747,8 +737,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次系统操作实施完成，请知悉。谢谢！<br/>"+sb.toString());
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 if(!isSend){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件通知申请人发送失败!");
@@ -778,29 +767,25 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     }
 
                     MailFlowDO bnb=new MailFlowDO("【系统操作("+mess+")结果反馈】",Constant.P_EMAIL_NAME, mfba.getEmployeeEmail(),"");
-                    MailSenderInfo mailInfo = new MailSenderInfo();
-                    // 设置邮件服务器类型
+                    // 创建邮件信息
+                    MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                     mailInfo.setMailServerHost("smtp.qiye.163.com");
-                    //设置端口号
                     mailInfo.setMailServerPort("25");
-                    //设置是否验证
                     mailInfo.setValidate(true);
-                    //设置用户名、密码、发送人地址
-                    mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                    mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                    mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                    mailInfo.setUsername(Constant.EMAIL_NAME);
+                    mailInfo.setPassword(Constant.EMAIL_PSWD);
+                    mailInfo.setFromAddress(Constant.EMAIL_NAME);
                     /**
                      * 收件人邮箱
                      */
                     String[] mailToAddress = mfba.getEmployeeEmail().split(";");
                     //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                    mailInfo.setToAddress(mailToAddress);
+                    mailInfo.setReceivers(mailToAddress);
                     mailInfo.setSubject("【系统操作("+mess+")结果反馈】");
                     mailInfo.setContent("你好:<br/>由于【"+pro_number_list[1]+"】,您的"
                             +operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]).getOperRequestContent()+",此系统操作中止审批流程");
                     // 这个类主要来发送邮件
-                    SimpleMailSender sms = new SimpleMailSender();
-                    boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                    boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                     if(isSend){
                         operationProductionDao.addMailFlow(bnb);
                     }

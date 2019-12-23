@@ -1,6 +1,8 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
 
+import java.io.File;
 import java.util.Properties;
+import java.util.Vector;
 
 public  class MultiMailSenderInfo {
 	private String mailServerHost;// 服务器ip  
@@ -12,17 +14,37 @@ public  class MultiMailSenderInfo {
     private boolean validate = false;// 是否需要身份验证  
     private String subject;// 邮件主题  
     private String content;// 邮件内容  
-    private String[] attachFileNames;// 附件名称  
-      
+    private String[] attachFileNames;// 附件名称
+    // 邮件附件的文件名
+    private String fileName = "" ;
+    //附件文件集合
+    private Vector<File> file = new Vector<File>() ;
+
     public Properties getProperties() {  
         Properties p = new Properties();  
         p.put("mail.smtp.host", this.mailServerHost);  
         p.put("mail.smtp.port", this.mailServerPort);  
         p.put("mail.smtp.auth", validate ? "true" : "false");  
         return p;  
-    }  
+    }
 
-    public String getMailServerHost() {  
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public Vector<File> getFile() {
+        return file;
+    }
+
+    public void setFile(Vector<File> file) {
+        this.file = file;
+    }
+
+    public String getMailServerHost() {
         return mailServerHost;  
     }  
 

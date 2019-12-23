@@ -156,7 +156,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        //UserPrincipal currentUser = (UserPrincipal) SecurityUtils.getSubject().getPrincipal();
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
@@ -340,22 +339,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[j]);
                 MailFlowDO bnb = new MailFlowDO("投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                // 您的邮箱密码
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
                     mess = pro_status_after;
@@ -371,8 +365,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setContent("你好:<br/>由于【" + pro_number_list[1] + "】，您的" + pro_number_list[j] + bean.getProNeed() + ",中止投产流程。");
 
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
             }
@@ -394,21 +387,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 File file = sendExportExcel_Result(bean);
 
                 MailFlowDO bnb = new MailFlowDO("投产部署完成待验证结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail() + ";" + mfaa.getEmployeeEmail(), file.getName(), "");
-                MailSenderInfo mailInfo = new MailSenderInfo();
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
                 mailInfo.setMailServerPort("25");
                 mailInfo.setValidate(true);
-                mailInfo.setUserName("code_review@hisuntech.com");
-                mailInfo.setPassword("hisun@248!@#");
-                mailInfo.setFromAddress("code_review@hisuntech.com");
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 Vector filesv = new Vector();
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
                 String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
-                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
                     mailInfo.setSubject("【救火更新部署完成待验证结果通知】-" + productionBean.getProNeed() + "-" + productionBean.getProNumber() + "-" + productionBean.getProApplicant());
@@ -464,8 +457,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产部署完成，请知悉。谢谢！<br/>" + sb.toString());
 
-                SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
@@ -480,17 +472,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 MailFlowDO bnb = new MailFlowDO("投产申请结果反馈", "code_review@hisuntech.com", productionBean.getMailRecipient(), file.getName(), "");
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-
                 mailInfo.setMailServerPort("25");
-
                 mailInfo.setValidate(true);
-
-                mailInfo.setUserName("code_review@hisuntech.com");
-                mailInfo.setPassword("hisun@248!@#");
-                mailInfo.setFromAddress("code_review@hisuntech.com");
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 Vector filesv = new Vector();
                 filesv.add(file);
@@ -498,7 +487,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 String[] mailToAddress = productionBean.getMailRecipient().split(";");
                 //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -556,7 +545,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产验证完成，请知悉。谢谢！<br/>" + sb.toString());
 
                 SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
@@ -935,17 +924,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         File file=sendExportExcel_out(list);
         MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("1");
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         /**
          * 附件
          */
@@ -978,8 +964,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddress);
+        mailInfo.setReceivers(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产清单通报",Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, "" ,"");
@@ -1049,8 +1034,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是"+change+"本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +
                 "本周产品投产更新牵头负责人是"+pro_number_list[1]+",请各生产验证负责人将验证结果反馈给"+pro_number_list[1]+"。无特殊原因，投产后验证工作需在投产当晚完成，请知晓。<br/>如有任何问题请及时反馈与沟通。<br/>"+sb.toString());
-        SimpleMailSender sms = new SimpleMailSender();
-        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if(isSend){
             operationProductionDao.addMailFlow(bn);
             if(file.isFile() && file.exists()){
@@ -1093,17 +1077,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file=sendExportExcel_Result(list);
         MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
 
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         /**
          * 附件
          */
@@ -1137,8 +1118,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddress);
+        mailInfo.setReceivers(mailToAddress);
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
         //添加发送内容
@@ -1168,8 +1148,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("</table>");
         mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！"+sb.toString());
         // 这个类主要来发送邮件
-        SimpleMailSender sms = new SimpleMailSender();
-        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionDao.addMailFlow(bn);
         if(isSend){
             if(file.isFile() && file.exists()){
@@ -1190,8 +1169,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
         String[] mailToAddresss = mp.getMailUser().split(";");
-        //String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddresss);
+        mailInfo.setReceivers(mailToAddresss);
         /**
          * 附件
          */
@@ -1200,7 +1178,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         mailInfo.setFile(file1) ;
         mailInfo.setSubject("【每周投产通报"+sdf.format(new Date())+"】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情请参见附件<br/><br/>");
-        boolean isSends=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if(isSends){
             operationProductionDao.addMailFlow(bfn);
             if(file2.isFile() && file2.exists()){
@@ -1637,17 +1615,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
 
         //发邮件通知
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         SendEmailConfig config = new SendEmailConfig();
         //投产日正常投产，是否超时11点需要审批的投产
         if (isApproveProduct && bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是")) {
@@ -1670,12 +1644,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //todo 抄送人需要添加两人必选先注释 先用自己的邮件代替
             bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
             //bean.setMailCopyPerson("wu_lr@hisuntech.com");
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setSubject("【投产录入审批申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于超过正常投产录入时间，投产无法正常录入，现申请投产审批，烦请审批！");
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(bnb);
         }
         //正常投产；投产日投产；不投产验证
@@ -1695,12 +1668,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //投产信息记录邮箱
             bean.setMailRecipient(receiver_mail);
             //记录邮箱信息
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setSubject("【预投产不验证申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于" + bean.getNotAdvanceReason() + "，预投产无法验证，现申请预投产不验证，烦请审批！");
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【预投产不验证申请】", Constant.P_EMAIL_NAME, receiver_mail, ""));
         }
         //非投产日正常投产
@@ -1747,14 +1719,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //投产信息记录邮箱
             bean.setMailRecipient(receiver_mail);
             bean.setMailCopyPerson(copy_mail);
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
             mailInfo.setSubject("【正常投产(非投产日)审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             //拼接邮件内容
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
             if (unusualFile.isFile() && unusualFile.exists()) {
                 unusualFile.delete();
@@ -1811,7 +1782,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setMailRecipient(receiver_mail);
             bean.setMailCopyPerson(copy_mail);
             //记录邮箱信息
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
@@ -1819,8 +1790,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean));
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            //SimpleMailSender sms = new SimpleMailSender();
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
