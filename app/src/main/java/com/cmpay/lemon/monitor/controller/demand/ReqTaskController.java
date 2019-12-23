@@ -205,4 +205,16 @@ public class ReqTaskController {
         rspDTO.setPageSize(demandStateHistoryRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+    /**
+     *测试主任务批量修改
+     */
+    @PostMapping("/jiraTestMainTaskUpload")
+    public GenericRspDTO<NoBody> jiraTestMainTaskUpload(HttpServletRequest request, GenericDTO<NoBody> req) {
+        System.err.println(1);
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        System.err.println(file.getOriginalFilename());
+        jiraOperationService.jiraTestMainTaskBatchEdit(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
 }

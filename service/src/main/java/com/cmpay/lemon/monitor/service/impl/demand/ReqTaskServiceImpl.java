@@ -220,6 +220,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     public void getReqTask(HttpServletResponse response,DemandBO demandBO) {
         List<DemandDO> demandDOList = reqTask(demandBO);
+
+        //todo 添加测试需要的数据
+        jiraOperationService.getJiraIssue(demandDOList);
+
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
