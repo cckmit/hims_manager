@@ -147,17 +147,14 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             }
         }
         //发邮件通知
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         //添加申请人邮箱地址
         SendEmailConfig config = new SendEmailConfig();
         MailFlowConditionDO vo = new MailFlowConditionDO();
@@ -338,24 +335,12 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
          */
         //记录邮箱信息
         MailFlowBean bnb = new MailFlowBean("【" + bean.getSysOperType() + "审批】-" + bean.getOperRequestContent() + "-" + bean.getOperApplicant(), Constant.P_EMAIL_NAME, mManager.getEmployeeEmail() + ";" + mflow.getEmployeeEmail(), "");
-     /*   MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
-        mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
-        mailInfo.setMailServerPort("25");
-        //设置是否验证
-        mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);*/
-        mailInfo.setToAddress(mManager.getEmployeeEmail().split(";"));
+        mailInfo.setReceivers(mManager.getEmployeeEmail().split(";"));
         mailInfo.setCcs(mflow.getEmployeeEmail().split(";"));
         mailInfo.setSubject("【" + bean.getSysOperType() + "审批】-" + bean.getOperRequestContent() + "-" + bean.getOperApplicant());
         mailInfo.setContent("你好！<br/>&nbsp;&nbsp;你的部门新增了【" + bean.getSysOperType() + "-" + bean.getOperRequestContent() + "】一类系统操作申请，烦请及时去线上审批，谢谢！<br/>");
         // 这个类主要来发送邮件
-        SimpleMailSender sms = new SimpleMailSender();
-        boolean isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionService.addMailFlow(bnb);
         if (!isSend) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 邮件发送失败");

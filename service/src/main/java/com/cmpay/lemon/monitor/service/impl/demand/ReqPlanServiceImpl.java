@@ -16,10 +16,7 @@ import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
-import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
+import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -826,20 +823,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         MailFlowDO bnb = new MailFlowDO(subject, Constant.P_EMAIL_NAME, sendTo, content);
 
         // 发邮件通知
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        // 您的邮箱密码
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         sendTo=sendTo.replaceAll("；", ";");
-        mailInfo.setToAddress(sendTo.split(";"));
+        mailInfo.setReceivers(sendTo.split(";"));
         if (StringUtils.isNotBlank(copyTo)) {
             copyTo=copyTo.replaceAll("；", ";");
             mailInfo.setCcs(copyTo.split(";"));
@@ -850,9 +843,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         mailInfo.setSubject(subject);
         mailInfo.setContent(content);
         // 这个类主要来发送邮件
-        SimpleMailSender sms = new SimpleMailSender();
-
-        boolean isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if (isSend) {
             operationProductionDao.addMailFlow(bnb);
         } else {
