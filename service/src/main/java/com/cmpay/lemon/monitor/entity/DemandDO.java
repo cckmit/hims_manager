@@ -125,6 +125,12 @@ public class DemandDO extends BaseDO {
     public String getIsMonthSer() {
         return isMonthSer;
     }
+    @Excel(name = "测试主任务经办人")
+    private String assignee;
+    @Excel(name = "测试主任务计划开始时间")
+    private String planStartTime;
+    @Excel(name = "测试主任务计划完成时间")
+    private String planEndTime;
 
     public void setIsMonthSer(String isMonthSer) {
         this.isMonthSer = isMonthSer;
@@ -703,6 +709,30 @@ public class DemandDO extends BaseDO {
 
     public void setActProductionUploadTm(String actProductionUploadTm) {
         this.actProductionUploadTm = actProductionUploadTm;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public String getPlanStartTime() {
+        return planStartTime;
+    }
+
+    public void setPlanStartTime(String planStartTime) {
+        this.planStartTime = planStartTime;
+    }
+
+    public String getPlanEndTime() {
+        return planEndTime;
+    }
+
+    public void setPlanEndTime(String planEndTime) {
+        this.planEndTime = planEndTime;
     }
 
     public Date getCreatTime() {

@@ -164,7 +164,6 @@ import java.util.List;
         productionLista.forEach(m->{
                     ProductionDTO productionDTO = new ProductionDTO();
                     reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(productionDTO, m));
-                    System.err.println(productionDTO.getDayNumber());
         }
         );
         rspDTO.setProductionList(reqDataCountDTOListA);

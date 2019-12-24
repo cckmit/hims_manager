@@ -1,42 +1,41 @@
 package com.cmpay.lemon.monitor.service.impl.error;
 
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
-import com.cmpay.lemon.framework.datasource.TargetDataSource;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
-import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgUpdmgnBO;
 import com.cmpay.lemon.monitor.dao.IErcdmgErorDao;
 import com.cmpay.lemon.monitor.dao.IErcdmgUpdmgnDao;
 import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
-import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.Constant;
+import com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO;
+import com.cmpay.lemon.monitor.entity.ErcdmgUpdmgnDO;
+import com.cmpay.lemon.monitor.entity.TPermiUser;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.entity.sendemail.SendEmailConfig;
-import com.cmpay.lemon.monitor.entity.sendemail.SendErrorEmail;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
-import com.cmpay.lemon.monitor.service.errror.ErrorService;
 import com.cmpay.lemon.monitor.service.errror.UpdmgnService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.CreateSequence;
-import com.cmpay.lemon.monitor.utils.DateUtil;
-import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * 需求计划
@@ -238,8 +237,16 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 String dateStr = df.format(calendar.getTime());
                 PrintWriter pw =null;
                 try {
-                    pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("/home/devadm/temp/upload/errcd/" + File.separator+ dateStr+"_mail.txt"),"gbk"));
-                    //pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("C:\\home\\devadm\\temp\\upload\\errcd\\" + File.separator+ dateStr+"_mail.txt"),"gbk"));
+                    if(LemonUtils.getEnv().equals(Env.SIT)) {
+                        pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("/home/devms/temp/upload/errcd/" + File.separator+ dateStr+"_mail.txt"),"gbk"));
+                    }
+                    else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                        pw= new PrintWriter(new OutputStreamWriter(new FileOutputStream("/home/devadm/temp/upload/errcd/" + File.separator+ dateStr+"_mail.txt"),"gbk"));
+                    }else {
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
                     pw.print(email);
                     pw.flush();
                     if (pw != null) {
@@ -263,10 +270,10 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 mailInfo.setToAddress(Constant.VERSION);
                 mailInfo.setSubject("和包错误码在线更新通知(新增)");
                 mailInfo.setContent(email);
-                //mailInfo.setCcs(bothReceivers);
-                System.err.println(bothReceivers);
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setCcs(mailToAddress);
+                mailInfo.setCcs(bothReceivers);
+//                System.err.println(bothReceivers);
+//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
+//                mailInfo.setCcs(mailToAddress);
 
 
 
@@ -295,16 +302,16 @@ public class UpdmgnServiceImpl implements UpdmgnService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updatePro() {
-        // 获取当前登录人信息
-        //UserPrincipal currentUser = (UserPrincipal) SecurityUtils.getSubject().getPrincipal();
+        //获取登录用户名
+        String userName = userService.getFullname(SecurityUtils.getLoginName());
+        TPermiUser currentUser =iErcdmgErorDao.findByUsername(userName);
         // 收件人信息
         SendEmailConfig config = new SendEmailConfig();
-        System.err.println(config.getErroCodeMailTo());
         String[] bothReceivers = config.getErroCodeMailTo();
-//        if (currentUser.getEmail() != null && currentUser.getEmail().trim().equals("")) {
-//            bothReceivers = concat(config.getErroCodeMailTo(), new String[]{currentUser.getEmail().trim()});
-//        }
-        bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com"});
+        if (currentUser.getEmail() != null && currentUser.getEmail().trim().equals("")) {
+            bothReceivers = concat(config.getErroCodeMailTo(), new String[]{currentUser.getEmail().trim()});
+        }
+      //  bothReceivers = concat(config.getErroCodeMailTo(), new String[]{"tu_yi@hisuntech.com","liujia3@hisuntech.com"});
 
         // 获取投产更新表信息
         List<ErcdmgErrorComditionDO> errorList = iErcdmgErorDao.queryForUpload();

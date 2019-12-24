@@ -31,6 +31,7 @@ public class systemOperationController {
     @Autowired
     private OperationApplicationService operationApplicationService;
 
+    //系统操作录入
     @RequestMapping("/entry")
     public GenericRspDTO<NoBody> systemOperationEntry(OperationApplicationDTO operationApplicationDTO, HttpServletRequest request) {
         List<MultipartFile> files=null;
@@ -88,7 +89,6 @@ public class systemOperationController {
 
     @RequestMapping("/updateAllOperationApplication")
     public GenericRspDTO<NoBody> updateAllOperationApplication(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response) {
-        System.err.println(taskIdStr);
         operationApplicationService.updateAllOperationApplication(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }

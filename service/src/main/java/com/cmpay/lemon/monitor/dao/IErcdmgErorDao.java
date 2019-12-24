@@ -98,10 +98,9 @@ public interface IErcdmgErorDao extends BaseDao<ErcdmgErrorComditionDO, String> 
     TPermiUser findByUsername(String username);
     /**
      * 根据角色查分配的用户
-     * @param roleName
      * @return
      */
-    public List<ErcdmgPordUserDO> selectUserByRole(String roleName);
+    public List<ErcdmgPordUserDO> selectUserByRole();
 
     //更新期望更新时间
     public void updateErrorUpdDate(@Param("updateDate") Date statas , @Param("errorCds") String[] id);

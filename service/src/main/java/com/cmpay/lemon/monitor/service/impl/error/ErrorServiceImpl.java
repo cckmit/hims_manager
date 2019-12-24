@@ -1,15 +1,12 @@
 package com.cmpay.lemon.monitor.service.impl.error;
 
 import com.cmpay.lemon.common.exception.BusinessException;
-import com.cmpay.lemon.common.utils.JudgeUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.datasource.TargetDataSource;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
+import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.dao.IErcdmgErorDao;
 import com.cmpay.lemon.monitor.dao.IErcdmgUpdmgnDao;
@@ -31,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -52,6 +48,8 @@ public class ErrorServiceImpl implements ErrorService {
     private static final Long SUPERADMINISTRATOR2 =(long)5002;
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
+    //普通员工
+    private static final Long SUPERADMINISTRATOR4 =(long)4001;
 
     @Autowired
     private IErcdmgErorDao iErcdmgErorDao;
@@ -180,7 +178,6 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的产品经理名称:"+ercdmgError.getProdUserName()+"不存在，请重新输入后再试");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-//        ercdmgError.setProdUserId(tPermiUser.getUserId());
         ercdmgError.setProdUserId( tPermiUser.getUserId());
 
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
@@ -227,15 +224,13 @@ public class ErrorServiceImpl implements ErrorService {
             //连接
             sit_connection.connect();
             int sit_responseCode = sit_connection.getResponseCode();
-            System.err.println(sit_responseCode);
             if(sit_responseCode != HttpURLConnection.HTTP_OK){
-                System.err.println("SITTTTTTTTTTTTTTTTTT");
                 return "SIT";
             }
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
@@ -283,7 +278,7 @@ public class ErrorServiceImpl implements ErrorService {
         } catch (Exception e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return "";
@@ -453,18 +448,13 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("产品模块长度不超过3位");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        //检查输入产品经理是否存在
-//        TPermiUser tPermiUser=ercdmgErrorMapper.findByUsername(ercdmgError.getProdUserName());
-//        if(tPermiUser==null){
-//            throw new ServiceException("你输入的产品经理名称不存在，请重新输入后再试");
-//        }
-//        //检查用户角色
-//        String roleName=ercdmgErrorMapper.searchUserRoleProd(tPermiUser.getUserId());
-//
-//        if (!ErrerConstant.PORD.equals(roleName)||roleName==null){
-//            throw new ServiceException("你输入的用户"+tPermiUser.getUserName()+"非产品经理角色，请重新输入后再试");
-//        }
-        ercdmgError.setProdUserId( SecurityUtils.getLoginName());
+        TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(ercdmgError.getProdUserName());
+        if(tPermiUser==null){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的产品经理名称:"+ercdmgError.getProdUserName()+"不存在，请重新输入后再试");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ercdmgError.setProdUserId( tPermiUser.getUserId());
         ercdmgError.setLastUpdateDate(LocalDateTime.now());
         iErcdmgErorDao.update(ercdmgError);
         //已生效同步生产修改
@@ -737,8 +727,8 @@ public class ErrorServiceImpl implements ErrorService {
 
         String emailCont="错误码："+errcds+"<br/>"+emailContent;
         // 发邮件至对应产品经理
-       // String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = emails.split("~");
+        //String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -758,7 +748,7 @@ public class ErrorServiceImpl implements ErrorService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectUserByRole("审核人员");
+        List<ErcdmgPordUserDO> pordUserList = iErcdmgErorDao.selectUserByRole();
         List<ErcdmgPordUserBO> ercdmgPordUserBOList = BeanConvertUtils.convertList(pordUserList, ErcdmgPordUserBO.class);
         ErcdmgErrorComditionRspBO productionRspBO = new ErcdmgErrorComditionRspBO();
         productionRspBO.setErcdmgErrorComditionBOList(elist);
@@ -783,8 +773,8 @@ public class ErrorServiceImpl implements ErrorService {
         // 更新期望更新时间
         iErcdmgErorDao.updateErrorUpdDate(updateDate,strArray);
         // 发邮件至对应产品经理
-        //String[] emailsArr = emails.split("~");
-        String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        String[] emailsArr = emails.split("~");
+        //String[] emailsArr = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","liujia3@hisuntech.com"};
         for (int i = 0; i < emailsArr.length; i++) {
             if (null == emailsArr[i] || "".equals(emailsArr[i])){
                 continue;
@@ -923,26 +913,29 @@ public class ErrorServiceImpl implements ErrorService {
      */
     @Override
     public ErcdmgPordUserBO access(){
+        // 获取当前操作人信息
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         String access ="";
-        //判断是否是技术负责人
-        if(isDepartmentManager(SUPERADMINISTRATOR3)){
-            access +="3";
+        //判断是否是普通员工
+        if(isDepartmentManager(SUPERADMINISTRATOR4)){
+            access ="3";
         }
         //判断是否是产品经理
         if(isDepartmentManager(SUPERADMINISTRATOR2)){
-            access +="2";
+            access ="2";
         }
         //判断是否是错误码审核人
         if(isDepartmentManager(SUPERADMINISTRATOR1)){
-            access +="1";
+            access ="1";
         }
         //判断是否是超级管理员
         if(isDepartmentManager(SUPERADMINISTRATOR)){
-            access +="0";
+            access ="0";
         }
         System.err.println(access);
         ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
         ercdmgPordUserBO.setUserAcesss(access);
+        ercdmgPordUserBO.setProdUserName(currentUser);
         return ercdmgPordUserBO;
     }
 }

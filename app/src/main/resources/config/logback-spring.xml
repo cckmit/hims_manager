@@ -116,7 +116,7 @@
             <appender-ref ref="FILE"/>
             <appender-ref ref="ERROR-FILE"/>
         </springProfile>
-        <springProfile name="dev,sit">
+        <springProfile name="dev,sit,uat, str, pre, prd">
             <appender-ref ref="STDOUT"/>
         </springProfile>
     </root>

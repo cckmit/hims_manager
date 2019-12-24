@@ -23,6 +23,7 @@ import com.cmpay.lemon.monitor.service.SystemMenuService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.CryptoUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -128,6 +129,43 @@ public class SystemUserServiceImpl implements SystemUserService {
         permiUserDO.setMobileNum(userDO.getMobile());
         permiUserDO.setEmail(userDO.getEmail());
         permiUserDO.setDeptName(userDO.getDepartment());
+        if("总经办".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("001");
+        }else if("资金归集项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("002");
+        }else if("银行合作研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("003");
+        }else if("营销服务研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("004");
+        }else if("移动支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("005");
+        }else if("团体组织交费项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("006");
+        }else if("设计项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("007");
+        }else if("产品测试部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("008");
+        }else if("前端技术研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("009");
+        }else if("平台架构部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0010");
+        }else if("客户端研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0011");
+        }else if("客服中间层项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0012");
+        }else if("基础应用研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0013");
+        }else if("互联网金融研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0014");
+        }else if("公共缴费研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0015");
+        }else if("风控大数据研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0016");
+        }else if("电商支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0017");
+        }else if("运维团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0018");
+        }
         permiUserDO.setIsEnabled(true);
         permiUserDO.setPassword("123456");
         int res;
@@ -143,16 +181,111 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
-    public void addUserRole(Long userNo, List<Long> roleIds) {
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
+    public Long addP(UserInfoBO user) {
+        String salt = RandomStringUtils.randomAlphanumeric(20);
+        String password = CryptoUtils.sha256Hash(user.getPassword(), salt);
+        String id = IdGenUtils.generateId(MonitorConstants.PUBLIC_SEQUENCE_NAME);
+        Long userNo = Long.valueOf(id);
+        user.setUserNo(userNo);
+        user.setSalt(salt);
+        user.setPassword(password);
+        user.setCreateTime(LocalDateTime.now());
+        user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
+        UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
+
+        //同步老表
+        PermiUserDO permiUserDO = new PermiUserDO();
+        permiUserDO.setUserId(userDO.getUsername());
+        permiUserDO.setUserName(userDO.getFullname());
+        permiUserDO.setMobileNum(userDO.getMobile());
+        permiUserDO.setEmail(userDO.getEmail());
+        permiUserDO.setDeptName(userDO.getDepartment());
+        if("总经办".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("001");
+        }else if("资金归集项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("002");
+        }else if("银行合作研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("003");
+        }else if("营销服务研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("004");
+        }else if("移动支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("005");
+        }else if("团体组织交费项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("006");
+        }else if("设计项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("007");
+        }else if("产品测试部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("008");
+        }else if("前端技术研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("009");
+        }else if("平台架构部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0010");
+        }else if("客户端研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0011");
+        }else if("客服中间层项目组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0012");
+        }else if("基础应用研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0013");
+        }else if("互联网金融研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0014");
+        }else if("公共缴费研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0015");
+        }else if("风控大数据研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0016");
+        }else if("电商支付研发部".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0017");
+        }else if("运维团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0018");
+        }
+
+        permiUserDO.setIsEnabled(true);
+        permiUserDO.setPassword(DigestUtils.md5Hex("123456"));
+        permiUserDO.setCreateDate(LocalDateTime.now());
+        permiUserDO.setUpdateDate(LocalDateTime.now());
+        permiUserDO.setIsEnabled(true);
+        permiUserDO.setIsLocked(false);
+        permiUserDO.setRegisterTime(LocalDateTime.now());
+//        if(user.getRoleIds().size()>1){
+//            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
+//            iPermiUserDao.insertUserRole(userDO.getUsername(),"20170104120156100443");
+//        }else{
+//            iPermiUserDao.insertUserRole(userDO.getUsername(),"20140123162357100001");
+//        }
+        int res;
+        res= iPermiUserDao.insert(permiUserDO);
+        if (res != 1) {
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        res = iUserDao.insert(userDO);
+        if (res != 1) {
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
+        return userNo;
+    }
+
+    @Override
+    public void addUserRole(Long userNo, List<Long> roleIds, String username) {
         if (JudgeUtils.isNull(roleIds)) {
             return;
         }
         roleIds.forEach(id -> {
             UserRoleDO userRoleDO = new UserRoleDO();
             userRoleDO.setUserNo(userNo);
-            userRoleDO.setRoleId(id);
+            if(id == (long)5002 ){
+                userRoleDO.setRoleId(id);
+                iPermiUserDao.insertUserRole(username,"201401010002");
+            }
+            if(id == (long)5005){
+                userRoleDO.setRoleId(id);
+                iPermiUserDao.insertUserRole(username,"20170104120156100443");
+
+            }else{
+                userRoleDO.setRoleId(id);
+            }
             iUserRoleDao.insert(userRoleDO);
         });
+        iPermiUserDao.insertUserRole(username,"20140123162357100001");
     }
 
     @Override
@@ -166,6 +299,7 @@ public class SystemUserServiceImpl implements SystemUserService {
         List<PermiUserDO> permiUserDOS = iPermiUserDao.find(permiUserDO);
         if(permiUserDOS!=null) {
             iPermiUserDao.delete(permiUserDOS.get(0).getSeqId());
+            iPermiUserDao.deleteUserRole(permiUserDOS.get(0).getUserId());
         }
         int res = iUserDao.delete(userNo);
         if (res != 1) {
@@ -223,18 +357,31 @@ public class SystemUserServiceImpl implements SystemUserService {
         }
     }
     @Override
-    public void updateUserRole(Long userNo, List<Long> roleIds) {
+    public void updateUserRole(Long userNo, List<Long> roleIds,String username) {
         //删除用户拥有的角色
         iUserRoleDao.deleteUserRoleByUserNo(userNo);
+        iPermiUserDao.deleteUserRole(username);
         if (roleIds.size() <= 0) {
             return;
         }
+
         roleIds.forEach(id -> {
             UserRoleDO userRoleDO = new UserRoleDO();
             userRoleDO.setUserNo(userNo);
-            userRoleDO.setRoleId(id);
+            if(id == (long)5002 ){
+                userRoleDO.setRoleId(id);
+                iPermiUserDao.insertUserRole(username,"201401010002");
+            }
+            if(id == (long)5005){
+                userRoleDO.setRoleId(id);
+                iPermiUserDao.insertUserRole(username,"20170104120156100443");
+
+            }else{
+                userRoleDO.setRoleId(id);
+            }
             iUserRoleDao.insert(userRoleDO);
         });
+        iPermiUserDao.insertUserRole(username,"20140123162357100001");
     }
 
     @Override
@@ -265,7 +412,6 @@ public class SystemUserServiceImpl implements SystemUserService {
             //查找新表是否已经有该用户数据，已有则跳过
             List<UserDO> userDOList = new LinkedList<>();
             userDOList = iUserDao.find(BeanUtils.copyPropertiesReturnDest(new UserDO(), user));
-            System.err.println(userDOList.size());
             if(!userDOList.isEmpty()){
                 return;
             }

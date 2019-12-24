@@ -13,7 +13,7 @@ public class DemandUploadDocumentBO {
     private String projectStartTm;
     @Excel(name = "需求文档上传日期")
     private String actPrdUploadTm;
-    @Excel(name = "技术方案上传手机")
+    @Excel(name = "技术方案上传日期")
     private String actWorkloadUploadTm;
     @Excel(name = "sit测试报告上传时间")
     private String actSitUploadTm;

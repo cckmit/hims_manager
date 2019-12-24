@@ -1,19 +1,21 @@
 package com.cmpay.lemon.monitor.service.impl.jira;
 
+import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueEpicRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueMainTaskRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
+import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.dao.IDemandJiraDao;
 import com.cmpay.lemon.monitor.dao.IDemandJiraDevelopMasterTaskDao;
 import com.cmpay.lemon.monitor.dao.IJiraDepartmentDao;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.DemandJiraDO;
-import com.cmpay.lemon.monitor.entity.DemandJiraDevelopMasterTaskDO;
-import com.cmpay.lemon.monitor.entity.JiraDepartmentDO;
+import com.cmpay.lemon.monitor.dao.IUserExtDao;
+import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
+import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class JiraOperationServiceImpl implements JiraOperationService {
@@ -33,6 +39,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     IJiraDepartmentDao jiraDepartmentDao;
     @Autowired
     IDemandJiraDao demandJiraDao;
+    @Autowired
+    private IUserExtDao iUserDao;
     @Autowired
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     //jira项目类型 和包项目 jira编号
@@ -235,7 +243,6 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
         //添加开发主导部门
         developmentDepartmenList.add(demandBO.getDevpLeadDept());
-        System.err.println(developmentDepartmenList.size());
         developmentDepartmenList.forEach(m->{
             if(m.isEmpty()){
                 return;
@@ -244,6 +251,104 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         });
         //添加测试主任务
         this.CreateJiraMasterTask(TESTINGDIVISION,demandBO,demandJiraDO,TESTMAINTASK);
+    }
+
+    @Override
+    public void getJiraIssue(List<DemandDO> demandDOList) {
+        demandDOList.forEach(demandDO -> {
+            //获取jira epic key
+            DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
+            if(demandJiraDO==null){
+                return;
+            }
+            String epicKey = demandJiraDO.getJiraKey();
+
+            //获取jira epic key获取测试主任务
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
+            if(demandJiraDevelopMasterTaskDO==null){
+                return;
+            }
+            String jiraKey = demandJiraDevelopMasterTaskDO.getJiraKey();
+            JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(jiraKey);
+            demandDO.setAssignee(jiraTaskBodyBO.getAssignee());
+            demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanStartTime());
+            demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanEndTime());
+        });
+
+    }
+
+    /*
+     *开发主任务批量修改
+     */
+    @Async
+    @Override
+    public void jiraTestMainTaskBatchEdit(MultipartFile file) {
+        File f = null;
+        List<JiraTaskBodyBO> jiraTaskBodyBOS=new ArrayList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if(suffix.equals("xls")){
+                suffix=".xls";
+            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
+                suffix=".xlsx";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f=File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(12).toString());
+                if(!JudgeUtils.isEmpty(map.get(i).get(29).toString())) {
+                    jiraTaskBodyBO.setAssignee(map.get(i).get(29).toString());
+                }
+                if(!JudgeUtils.isEmpty(map.get(i).get(30).toString())) {
+                    jiraTaskBodyBO.setPlanStartTime(map.get(i).get(30).toString());
+                }
+                if(!JudgeUtils.isEmpty(map.get(i).get(31).toString())) {
+                    jiraTaskBodyBO.setPlanEndTime(map.get(i).get(31).toString());
+                }
+                jiraTaskBodyBOS.add(jiraTaskBodyBO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }finally {
+            f.delete();
+        }
+        jiraTaskBodyBOS.forEach(m->{
+            DemandJiraDO demandJiraDO = demandJiraDao.get(m.getReqInnerSeq());
+            String epicKey = demandJiraDO.getJiraKey();
+            //获取jira epic key获取测试主任务
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
+            if(demandJiraDevelopMasterTaskDO==null){
+                return;
+            }
+            String jiraKey = demandJiraDevelopMasterTaskDO.getJiraKey();
+            m.setJiraKey(jiraKey);
+            if(m.getAssignee()!=null) {
+                UserDO userDO = new UserDO();
+                userDO.setFullname(m.getAssignee());
+                List<UserDO> userDOS = iUserDao.find(userDO);
+                if(userDOS.isEmpty()){
+                    return;
+                }
+                m.setAssignee(userDOS.get(0).getUsername());
+                userDO.setFullname(m.getAssignee());
+            }
+            JiraUtil.EditTheTestMainTask(m);
+        });
     }
 
 

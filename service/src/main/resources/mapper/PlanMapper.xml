@@ -544,14 +544,14 @@
 	</select>
 
     <!-- 根据条件查询部门主管邮箱 -->
-    <select id="findDevpEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
-		SELECT group_concat(a.email separator';') as mon_remark
-		FROM  t_permi_user a, t_demand_info b,t_permi_user_role c,t_permi_role d
-		WHERE  (a.dept_name = b.devp_lead_dept OR a.dept_name = b.devp_coor_dept )
-		AND a.user_id = c.user_id AND c.role_id = d.role_id
-		AND req_inner_seq = #{req_inner_seq} AND (b.devp_coor_dept NOT like '%产品测试部%')
-		AND d.role_id='201401010003'
-	</select>
+    <select id="findDevpEmail" resultMap="BaseResultMap">
+        SELECT group_concat(a.email separator';') as mon_remark FROM sys_user a, t_demand_info b
+        where  a.fullname  in (SELECT t1.dept_manager_name FROM  t_permi_dept  t1
+        WHERE t1.dept_name = b.devp_lead_dept  or t1.dept_name in (
+        <foreach item="devpCoorDept" index="index" collection="devpCoorDepts" separator=",">
+            #{devpCoorDept} </foreach>
+        ) and t1.dept_name NOT like '%产品测试部%' ) AND b.req_inner_seq = #{reqInnerSeq}
+    </select>
     <!--根据功能点文档更新需求工作量-->
     <update id="updateReqWorkLoad" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         UPDATE t_demand_info

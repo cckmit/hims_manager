@@ -2,12 +2,14 @@ package com.cmpay.lemon.monitor.service.impl.workload;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.BaseWorkloadBO;
 import com.cmpay.lemon.monitor.bo.DemandBO;
@@ -568,8 +570,19 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 
             OutputStream os = null;
             response.reset();
+
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             try {
-                String path = "/home/devadm/temp/propkg/";
                 String fileName = "summarize.xls";
                 String filePath = path + fileName;
                 ReqWorkLoadExcelUtil util = new ReqWorkLoadExcelUtil();

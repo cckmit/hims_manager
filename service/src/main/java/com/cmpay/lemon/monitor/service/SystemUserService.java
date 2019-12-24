@@ -48,12 +48,19 @@ public interface SystemUserService {
     Long add(UserInfoBO user);
 
     /**
+     * 用户新增
+     *
+     * @param user
+     */
+    Long addP(UserInfoBO user);
+
+    /**
      * 添加用户角色
      *
      * @param userNo
      * @param roleIds
      */
-    void addUserRole(Long userNo, List<Long> roleIds);
+    void addUserRole(Long userNo, List<Long> roleIds,String username);
 
     /**
      * 用户删除
@@ -90,7 +97,7 @@ public interface SystemUserService {
      * @param userNo
      * @param roleIds
      */
-    void updateUserRole(Long userNo, List<Long> roleIds);
+    void updateUserRole(Long userNo, List<Long> roleIds,String username);
 
     /**
      * 查询所有用户

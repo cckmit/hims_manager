@@ -1,10 +1,12 @@
 package com.cmpay.lemon.monitor.service.impl.systemOperation;
 
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
 import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
@@ -29,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -66,7 +69,9 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
     @Autowired
     IOperationApplicationDao operationApplicationDao;
 
-    public final static String RELATIVE_PATH = "/home/devadm/temp/sysopr/";
+    public final static String RELATIVE_PATH_DEVADM = "/home/devadm/temp/sysopr/";
+
+    public final static String RELATIVE_PATH_DEVMS = "/home/devms/temp/sysopr/";
 
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
@@ -110,8 +115,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             for (MultipartFile file : files) {
                 if (!file.isEmpty()) {
                     try {
+                        File fileNumber=null;
                         //归类文件，创建编号文件夹
-                        File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
+                             fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                        }
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                             fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+
                       //  File fileNumber = new File("D:\\home\\devadm\\temp");
                         fileNumber.mkdir();
                         // 文件保存路径
@@ -147,9 +163,11 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         MailFlowConditionDO vo = new MailFlowConditionDO();
         vo.setEmployeeName(bean.getOperApplicant());
         MailFlowDO mflow = operationProductionService.searchUserEmail(vo);
-        System.err.println( mflow.getEmployeeEmail());
+        if(ObjectUtils.isEmpty(mflow)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("申请人输入有误，无法查找对应邮箱");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String[] mailToAddressDemo = null;
-        System.err.println(bean.getMailRecipient());
         if (bean.getMailRecipient() != null && !bean.getMailRecipient().equals("")) {
             mailToAddressDemo = (bean.getMailRecipient() + ";" + config.getExcuteMailTo() + ";" + mflow.getEmployeeEmail()).split(";");
         } else {
@@ -387,8 +405,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         OutputStream os = null;
         response.reset();
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createCzlcExcel(filePath, list,null);
@@ -575,8 +602,18 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                  * 附件
                  */
                 //获取邮件附件
-                 File motherFile=new File( RELATIVE_PATH +bean.getOperNumber());
-                //File motherFile=new File("C:\\home\\devadm\\temp\\propkg\\wlr重构测试31");
+                File motherFile=null;
+                //归类文件，创建编号文件夹
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
+                    motherFile = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                }
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                    motherFile = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File[] childFile=motherFile.listFiles();
                 if(childFile!=null){
                     for(File file:childFile){
@@ -587,17 +624,14 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"审核】",Constant.P_EMAIL_NAME, receiverMail,"");
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 /**
                  * 收件人邮箱
@@ -620,9 +654,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     }
                 }
 
-                //String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                String[] mailToAddress =(String[]) result.toArray(new String[result.size()]);
+                mailInfo.setReceivers(mailToAddress);
                 if(copyToMail!=null){
                     mailInfo.setCcs(copyToMail.split(";"));
                 }
@@ -652,8 +685,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
                 mailInfo.setContent("各位领导好！<br/>&nbsp;&nbsp;以下"+operName+"，烦请审批，谢谢！<br/>"+sb.toString());
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 if(!isSend){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("审批邮件发送失败!");
@@ -673,24 +705,18 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 vo.setEmployeeName(bean.getOperApplicant());
                 MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
-
-               // mailInfo.setToAddress(mflow.getEmployeeEmail().split(";"));
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                mailInfo.setReceivers(mflow.getEmployeeEmail().split(";"));
                 StringBuffer sb=new StringBuffer();
 
                 mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
@@ -711,8 +737,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次系统操作实施完成，请知悉。谢谢！<br/>"+sb.toString());
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 if(!isSend){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件通知申请人发送失败!");
@@ -742,29 +767,25 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     }
 
                     MailFlowDO bnb=new MailFlowDO("【系统操作("+mess+")结果反馈】",Constant.P_EMAIL_NAME, mfba.getEmployeeEmail(),"");
-                    MailSenderInfo mailInfo = new MailSenderInfo();
-                    // 设置邮件服务器类型
+                    // 创建邮件信息
+                    MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                     mailInfo.setMailServerHost("smtp.qiye.163.com");
-                    //设置端口号
                     mailInfo.setMailServerPort("25");
-                    //设置是否验证
                     mailInfo.setValidate(true);
-                    //设置用户名、密码、发送人地址
-                    mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                    mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-                    mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                    mailInfo.setUsername(Constant.EMAIL_NAME);
+                    mailInfo.setPassword(Constant.EMAIL_PSWD);
+                    mailInfo.setFromAddress(Constant.EMAIL_NAME);
                     /**
                      * 收件人邮箱
                      */
-                    //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                    String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                    mailInfo.setToAddress(mailToAddress);
+                    String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                    //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                    mailInfo.setReceivers(mailToAddress);
                     mailInfo.setSubject("【系统操作("+mess+")结果反馈】");
                     mailInfo.setContent("你好:<br/>由于【"+pro_number_list[1]+"】,您的"
                             +operationApplicationDao.findBaseOperationalApplicationInfo(pro_number_list[j]).getOperRequestContent()+",此系统操作中止审批流程");
                     // 这个类主要来发送邮件
-                    SimpleMailSender sms = new SimpleMailSender();
-                    boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+                    boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                     if(isSend){
                         operationProductionDao.addMailFlow(bnb);
                     }
@@ -803,8 +824,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            //File fileNumber = new File("/home/devadm/temp/" + bean.getOperNumber());
+                            File fileNumber=null;
+                            //归类文件，创建编号文件夹
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                                fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                            }
+                            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                                fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -843,8 +875,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                     if (!file.isEmpty()) {
                         try {
                             //归类文件，创建编号文件夹
-                            File fileNumber = new File(RELATIVE_PATH + bean.getOperNumber());
-                            //File fileNumber = new File("/home/devadm/temp/"+ bean.getOperNumber());
+                            File fileNumber=null;
+                            //归类文件，创建编号文件夹
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                                fileNumber = new File(RELATIVE_PATH_DEVMS + bean.getOperNumber());
+                            }
+                            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                                fileNumber = new File(RELATIVE_PATH_DEVADM + bean.getOperNumber());
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
+
                             fileNumber.mkdir();
                             // 文件保存路径
                             filePath = fileNumber.getPath() + "/" + file.getOriginalFilename();
@@ -888,8 +931,19 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
             // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            File fileDir = new File(RELATIVE_PATH + proNumber);
-           // File fileDir = new File("C:\\home\\devadm\\temp\\sysopr\\"+ proNumber);
+            //File fileDir = new File(RELATIVE_PATH + proNumber);
+            File fileDir=null;
+            //归类文件，创建编号文件夹
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                fileDir = new File(RELATIVE_PATH_DEVMS + proNumber);
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                fileDir = new File(RELATIVE_PATH_DEVADM + proNumber);
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             File[] pkgFile=fileDir.listFiles();
             if(pkgFile==null){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -897,8 +951,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             //压缩包名称
-            String zipPath = "/home/devadm/temp/propkg/";
-            //String zipPath = "C:\\home\\devadm\\temp\\propkg\\";
+            String zipPath="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                zipPath= "/home/devms/temp/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                zipPath= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String zipName =DateUtil.date2String(new java.util.Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);

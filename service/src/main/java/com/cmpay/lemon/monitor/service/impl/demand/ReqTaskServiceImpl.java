@@ -2,12 +2,14 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -52,6 +54,15 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 public class ReqTaskServiceImpl implements ReqTaskService {
     //超级管理员
     private static final Long SUPERADMINISTRATOR =(long)10506;
+    //团队主管
+    private static final Long SUPERADMINISTRATOR1 =(long)5004;
+
+    //需求管理员
+    private static final Long SUPERADMINISTRATOR2 =(long)5001;
+    //技术负责人
+    private static final Long SUPERADMINISTRATOR3 =(long)5006;
+    //产品经理
+    private static final Long SUPERADMINISTRATOR4 =(long)5002;
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -85,6 +96,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     SystemUserService userService;
     @Autowired
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+    @Autowired
+    private IErcdmgErorDao iErcdmgErorDao;
+    @Autowired
+    private IUserExtDao iUserDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -205,6 +220,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     public void getReqTask(HttpServletResponse response,DemandBO demandBO) {
         List<DemandDO> demandDOList = reqTask(demandBO);
+
+        //todo 添加测试需要的数据
+        jiraOperationService.getJiraIssue(demandDOList);
+
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
@@ -332,6 +351,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void delete(String reqInnerSeq) {
+        DemandDO demandDO = demandDao.get(reqInnerSeq);
+        if(StringUtils.isNotEmpty(demandDO.getReqNo())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("已有REQ需求编号的需求，禁止删除");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(permissionCheck(reqInnerSeq)){
             demandDao.logicDelete(reqInnerSeq);
         }
@@ -364,12 +389,55 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         int maxDate = a.get(Calendar.DATE);
         return maxDate;
     }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese , Long userid){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(userid);
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
         //校验数据
         checkReqTask(demandBO);
-
+        // 如果是超级管理员或者需求管理员，不验证
+        if(!isDepartmentManager(SUPERADMINISTRATOR)&&!isDepartmentManager(SUPERADMINISTRATOR2)) {
+            // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管或产品经理，否则报错
+            if (StringUtils.isNotBlank(demandBO.getProjectMng())) {
+                TPermiUser tPermiUser = iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
+                if (tPermiUser == null) {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:" + demandBO.getProjectMng() + "在系统中不存在，请确定后重新输入");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+                UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
+                if (!isDepartmentManager(SUPERADMINISTRATOR1, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR3, userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR4, userByUserName.getUserNo())) {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+        }
         //设置默认值
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
@@ -377,7 +445,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         try {
             //如果修改了需求节点计划时间
-            if(!demandBO.getRevisionTimeNote().isEmpty()){
+            if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
             }
             demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
@@ -513,7 +581,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     public DemandBO getMaxInnerSeq() {
-        return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDao.getMaxInnerSeq());
+        DemandDO demandDO= null;
+        demandDO= demandDao.getMaxInnerSeq();
+        if(demandDO != null){
+            return BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
+        }else {
+            return null;
+        }
+
     }
 
     @Override
@@ -781,7 +856,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             File srcfile[] = (File[]) resMap.get("srcfile");
             //压缩包名称
-            String zipPath = "/home/devadm/temp/propkg/";
+            String zipPath="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                zipPath= "/home/devms/temp/propkg/";
+            } else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                zipPath= "/home/devadm/temp/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String zipName =DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
@@ -855,10 +939,21 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
-              //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
-                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
-
+                String path="";
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
+                    path= "/home/devms/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                    path=  "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            //  String path = "D:\\home\\devadm\\temp\\Projectdoc" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File file1 = new File(path + "/开发技术文档/");
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();
@@ -910,8 +1005,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if (srcfile[i] != null) {
                     FileInputStream in = new FileInputStream(srcfile[i]);
                     if (flag) {
-                        String demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
-                        String name = demandName.substring(0, demandName.indexOf("/"));
+                        String demandName="";
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
+                            demandName = srcfile[i].getPath().substring(35, srcfile[i].getPath().length());
+                        }
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                            demandName = srcfile[i].getPath().substring(36, srcfile[i].getPath().length());
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+                          String name = demandName.substring(0, demandName.indexOf("/"));
                         String path = demandName.substring(demandName.lastIndexOf("/") + 1);
                         out.putNextEntry(new ZipEntry(name + "/" + path));
                     } else {
@@ -976,7 +1081,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setReqSts(reqSts);
         demandStateHistoryDO.setReqNo(reqNo);
         demandStateHistoryDO.setCreatTime(LocalDateTime.now());
-        //依据内部需求编号查唯一标识
+        //依据内部需求编号，同一需求查统一标识
         String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
         if(identificationByReqInnerSeq==null){
             identificationByReqInnerSeq=reqInnerSeq;
@@ -1128,8 +1233,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&demandChangeDetailsBO.getReqNo().isEmpty()){
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsBO.getReqInnerSeq());
             if(identification==null){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                demandStateHistoryDO.setIdentification(demandChangeDetailsBO.getReqInnerSeq());
+                PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                        () -> BeanConvertUtils.convertList(demandStateHistoryDao.find(demandStateHistoryDO), DemandStateHistoryBO.class));
+                List<DemandStateHistoryBO> demandStateHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandStateHistoryBO.class);
+                DemandStateHistoryRspBO demandStateHistoryRspBO = new DemandStateHistoryRspBO();
+                demandStateHistoryRspBO.setDemandStateHistoryBOList(demandStateHistoryBOList);
+                demandStateHistoryRspBO.setPageInfo(pageInfo);
+                return demandStateHistoryRspBO;
             }
             DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
             demandStateHistoryDO.setIdentification(identification);
@@ -1146,7 +1258,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
             demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
             if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
@@ -1188,9 +1300,19 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //要压缩的文件
             for (int i = 0; i < List.size(); i++) {
                 //需求说明书、技术方案、原子功能点评估表
-                String path = "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
-                        + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
-
+                String path="";
+                if(LemonUtils.getEnv().equals(Env.SIT)) {
+                    path= "/home/devms/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }
+                else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                    path= "/home/devadm/temp/Projectdoc/" + List.get(i).getReqStartMon() + "/"
+                            + List.get(i).getReqNo() + "_" + List.get(i).getReqNm();
+                }else {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
                 File file1 = new File(path + "/开发技术文档/");
                 if (!file1.exists() && !file1.isDirectory()) {
                     file1.mkdir();

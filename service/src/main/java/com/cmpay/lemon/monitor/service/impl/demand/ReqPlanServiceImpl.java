@@ -3,12 +3,14 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -71,6 +73,13 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 public class ReqPlanServiceImpl implements ReqPlanService {
     //超级管理员
     private static final Long SUPERADMINISTRATOR =(long)10506;
+    //团队主管
+    private static final Long SUPERADMINISTRATOR1 =(long)5004;
+    //产品经理
+    private static final Long SUPERADMINISTRATOR2 =(long)5002;
+    //技术负责人
+    private static final Long SUPERADMINISTRATOR3 =(long)5006;
+
     //30 需求状态为暂停
     private static final String REQSUSPEND ="30";
     //40 需求状态为取消
@@ -121,6 +130,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
     @Autowired
     IDemandTimeFrameHistoryDao demandTimeFrameHistoryDao;
+    @Autowired
+    private IErcdmgErorDao iErcdmgErorDao;
+    @Autowired
+    private IUserExtDao iUserDao;
 
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
@@ -147,7 +160,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
         String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
-        System.err.println("需求月份"+demandBO.getReqImplMon());
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
@@ -246,6 +258,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void delete(String req_inner_seq) {
         try {
+            DemandDO demandDO = demandDao.get(req_inner_seq);
+            if(StringUtils.isNotEmpty(demandDO.getReqNo())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("已有REQ需求编号的需求，禁止删除");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             demandDao.delete(req_inner_seq);
             demandJiraDao.delete(req_inner_seq);
         } catch (Exception e) {
@@ -265,7 +283,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         int maxDate = a.get(Calendar.DATE);
         return maxDate;
     }
-
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese , Long userid){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(userid);
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
@@ -288,6 +318,22 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
+        // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
+        if(StringUtils.isNotBlank(demandBO.getProjectMng())){
+            TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
+            if(tPermiUser==null){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:"+demandBO.getProjectMng()+"在系统中不存在，请确定后重新输入");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
+            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR2,userByUserName.getUserNo())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+
         try {
             if (!"30".equals(demandBO.getReqSts()) && !"40".equals(demandBO.getReqSts())) {
                 //修改需求状态
@@ -340,7 +386,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandTimeFrameHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandTimeFrameHistoryDO.setCreatTime(LocalDateTime.now());
         String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandBO.getReqInnerSeq());
-        demandTimeFrameHistoryDO.setIdentification(identification);
+        if(identification!=null){
+            demandTimeFrameHistoryDO.setIdentification(identification);
+        }else {
+            demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryDO.getReqInnerSeq());
+        }
         demandTimeFrameHistoryDao.insert(demandTimeFrameHistoryDO);
     }
 
@@ -537,8 +587,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (demandDO != null) {
             jdEmail = demandDO.getMonRemark() + ";";
         }
+        String[] devpCoorDepts = null;
+        if(StringUtils.isNotEmpty(bean.getDevpCoorDept())){
+             devpCoorDepts  = bean.getDevpCoorDept().split(",");
+        }else{
+            devpCoorDepts = new String[1];
+        }
         //查询部门邮箱(主导部门和配合部门，去除配合部门测试部)
-        demandDO = planDao.findDevpEmail(reqInnerSeq);
+        demandDO = planDao.findDevpEmail(devpCoorDepts  ,reqInnerSeq);
         if (demandDO != null) {
             devpEmail = demandDO.getMonRemark() + ";";
         }
@@ -567,7 +623,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         String req_inner_seq = projectStartBO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(req_inner_seq);
-        DemandDO bean = new DemandDO();
+        DemandDO bean = demandDao.get(req_inner_seq);
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         if (null == reqPlan) {
             //"项目启动失败，找不到该需求对应信息!"
@@ -674,7 +730,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 return "";
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
-            String path = SvnConstant.ProjectTemplatePath;
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path=  SvnConstant.ProjectTemplatePathdevms;
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path=  SvnConstant.ProjectTemplatePathdevadm;
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             File file = new File(path);
             // 导入文件夹
             SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
@@ -983,7 +1049,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             Date date = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
             String month = df.format(date);
-            System.err.println("当前月份："+month);
             //获取登录用户ID
             String update_user = SecurityUtils.getLoginName();
             for (int i = 0; i < ids.size(); i++) {
@@ -1160,15 +1225,33 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         int start=reqNo.indexOf("-")+1;
         String reqMonth=reqNo.substring(start,start+6);
+        String monthDir="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + reqMonth;
+        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
+            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + reqMonth;
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
 
-        String monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH+reqMonth;
         if(!(new File(monthDir).exists())){
             FileUtils.createDirectory(monthDir);
         }
         String directoryName = reqMonth+"/"+reqNo+"_" + reqPlan.getReqNm();
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
-        String localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName;
+        String localSvnPath="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName;
+        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
+            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName;
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String checOutMsg = checkOutSvnDir(directoryName, svnRoot, localSvnPath);
         if (!StringUtils.isEmpty(checOutMsg)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo(checOutMsg);
@@ -1317,7 +1400,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             return map;
                         }
                         if(fileName.contains("评审表")){
-                            loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH + directoryName + "/评审文档/";
+                            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName + "/评审文档/";
+                            }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
+                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName + "/评审文档/";
+                            }else {
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                            }
                             svnPath = SvnConstant.SvnPath+directoryName + "/评审文档/";
                         }
                         // 文件保存路径
@@ -1644,7 +1735,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 原子功能点文档转换
      */
     public String copyWorLoadFile(String importFilePath,HttpServletRequest request,String loacalpath) {
-        String tempPath= "/home/devadm/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        String tempPath="";
+
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            tempPath= "/home/devms/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        } else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            tempPath= "/home/devadm/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         //读取相关信息
         Map<String, Object> resMap;
         try {
@@ -2174,8 +2275,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&demandTimeFrameHistoryBO.getReqNo().isEmpty()){
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandTimeFrameHistoryBO.getReqInnerSeq());
             if(identification==null){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
+                demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryBO.getReqInnerSeq());
+                PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
+                        () -> BeanConvertUtils.convertList(demandTimeFrameHistoryDao.find(demandTimeFrameHistoryDO), DemandTimeFrameHistoryBO.class));
+                List<DemandTimeFrameHistoryBO> demandTimeFrameHistoryBOS = BeanConvertUtils.convertList(pageInfo.getList(), DemandTimeFrameHistoryBO.class);
+                DemandTimeFrameHistoryRspBO demandTimeFrameHistoryRspBO = new DemandTimeFrameHistoryRspBO();
+                System.err.println(demandTimeFrameHistoryBOS.size());
+                demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
+                demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
+                return demandTimeFrameHistoryRspBO;
             }
             DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
             demandTimeFrameHistoryDO.setIdentification(identification);
@@ -2192,7 +2301,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
             demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
             if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());

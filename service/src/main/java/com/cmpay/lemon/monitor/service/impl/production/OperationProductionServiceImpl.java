@@ -2,12 +2,14 @@ package com.cmpay.lemon.monitor.service.impl.production;
 
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
@@ -37,6 +39,7 @@ import java.io.*;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -70,6 +73,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     SystemUserService userService;
     @Autowired
     private BoardcastScheduler boardcastScheduler;
+    @Autowired
+    private IDemandChangeDetailsExtDao demandChangeDetailsDao;
+    @Autowired
+    private IDemandStateHistoryDao demandStateHistoryDao;
 
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
@@ -106,7 +113,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         ScheduleRspBO productionRspBO = new ScheduleRspBO();
-        System.err.println(scheduleBOList.size());
         productionRspBO.setScheduleList(scheduleBOList);
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
@@ -150,7 +156,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        //UserPrincipal currentUser = (UserPrincipal) SecurityUtils.getSubject().getPrincipal();
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
@@ -334,22 +339,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[j]);
                 MailFlowDO bnb = new MailFlowDO("投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-                // 设置邮件服务器类型
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-                //设置端口号
                 mailInfo.setMailServerPort("25");
-                //设置是否验证
                 mailInfo.setValidate(true);
-                //设置用户名、密码、发送人地址
-                mailInfo.setUserName(Constant.P_EMAIL_NAME);
-                // 您的邮箱密码
-                mailInfo.setPassword(Constant.P_EMAIL_PSWD);
-                mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
-                //String[] mailToAddress = mfba.getEmployeeEmail().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+                mailInfo.setReceivers(mailToAddress);
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
                     mess = pro_status_after;
@@ -365,8 +365,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setContent("你好:<br/>由于【" + pro_number_list[1] + "】，您的" + pro_number_list[j] + bean.getProNeed() + ",中止投产流程。");
 
                 // 这个类主要来发送邮件
-                SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
             }
@@ -388,21 +387,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 File file = sendExportExcel_Result(bean);
 
                 MailFlowDO bnb = new MailFlowDO("投产部署完成待验证结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail() + ";" + mfaa.getEmployeeEmail(), file.getName(), "");
-                MailSenderInfo mailInfo = new MailSenderInfo();
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
                 mailInfo.setMailServerPort("25");
                 mailInfo.setValidate(true);
-                mailInfo.setUserName("code_review@hisuntech.com");
-                mailInfo.setPassword("hisun@248!@#");
-                mailInfo.setFromAddress("code_review@hisuntech.com");
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 Vector filesv = new Vector();
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                mailInfo.setReceivers(mailToAddress);
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
                     mailInfo.setSubject("【救火更新部署完成待验证结果通知】-" + productionBean.getProNeed() + "-" + productionBean.getProNumber() + "-" + productionBean.getProApplicant());
@@ -458,8 +457,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产部署完成，请知悉。谢谢！<br/>" + sb.toString());
 
-                SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
@@ -474,25 +472,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 MailFlowDO bnb = new MailFlowDO("投产申请结果反馈", "code_review@hisuntech.com", productionBean.getMailRecipient(), file.getName(), "");
 
-                MailSenderInfo mailInfo = new MailSenderInfo();
-
+                // 创建邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
                 mailInfo.setMailServerHost("smtp.qiye.163.com");
-
                 mailInfo.setMailServerPort("25");
-
                 mailInfo.setValidate(true);
-
-                mailInfo.setUserName("code_review@hisuntech.com");
-                mailInfo.setPassword("hisun@248!@#");
-                mailInfo.setFromAddress("code_review@hisuntech.com");
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
                 Vector filesv = new Vector();
                 filesv.add(file);
                 mailInfo.setFile(filesv);
 
-                //String[] mailToAddress = productionBean.getMailRecipient().split(";");
-                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-                mailInfo.setToAddress(mailToAddress);
+                String[] mailToAddress = productionBean.getMailRecipient().split(";");
+                //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                mailInfo.setReceivers(mailToAddress);
                 mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
@@ -550,7 +545,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产验证完成，请知悉。谢谢！<br/>" + sb.toString());
 
                 SimpleMailSender sms = new SimpleMailSender();
-                isSend = sms.sendHtmlMail(mailInfo);
+                isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
                 if ((file.isFile()) && (file.exists())) {
@@ -568,13 +563,33 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     // 投产月份  = 需求实施月份时 ，改变需求状态
                     if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
                         DemandDO demand = demandBOList.get(i);
-                        System.err.println(demand);
-                        System.err.println(pro_status_after+"==="+pro_status_before);
                         if (!JudgeUtils.isNull(demand)) {
                             //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
                                 demand.setPreCurPeriod("170");
                                 demand.setReqSts("20");
+                                if(pro_status_after.equals("投产回退")){
+                                    // 登记需求变更明细表
+                                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
+                                    demandStateHistoryDO.setReqSts("提出");
+                                    demandStateHistoryDO.setRemarks("投产回退");
+                                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                                    //依据内部需求编号查唯一标识
+                                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                                    if(identificationByReqInnerSeq==null){
+                                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                                    }
+                                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                                    //登记需求状态历史表
+                                    //获取当前操作员
+                                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                                    demandStateHistoryDao.insert(demandStateHistoryDO);
+                                }
+
                                 DemandBO demandBO =  new DemandBO();
                                 BeanUtils.copyPropertiesReturnDest(demandBO, demand);
                                 reqTaskService.update(demandBO);
@@ -583,6 +598,26 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
                                 demand.setPreCurPeriod("180");
                                 demand.setReqSts("50");
+                                // 登记需求变更明细表
+                                DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                                demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                                demandStateHistoryDO.setReqNo(demand.getReqNo());
+                                demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
+                                demandStateHistoryDO.setReqSts("已完成");
+                                demandStateHistoryDO.setRemarks("部署完成待验证");
+                                demandStateHistoryDO.setReqNm(demand.getReqNm());
+                                //依据内部需求编号查唯一标识
+                                String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                                if(identificationByReqInnerSeq==null){
+                                    identificationByReqInnerSeq=demand.getReqInnerSeq();
+                                }
+                                demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                                //登记需求状态历史表
+                                //获取当前操作员
+                                demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                                demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                                demandStateHistoryDao.insert(demandStateHistoryDO);
+
                                 DemandBO demandBO =  new DemandBO();
                                 BeanUtils.copyPropertiesReturnDest(demandBO, demand);
                                 reqTaskService.update(demandBO);
@@ -620,10 +655,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                    List<ProductionBO> list)  {
         String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/import/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/import/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //todo 写死路径
-            //String path="D:\\home\\devadm\\temp\\import";
-            String path = "/home/devadm/temp/import/";
             String filePath = path + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
             util.createExcel(filePath, list,null);
@@ -641,9 +684,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "救火更新申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         try {
-            //todo 写死路径
-            //String path="D:\\home\\devadm\\temp\\import";
-            String path = "/home/devadm/temp/import/";
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path= "/home/devms/temp/import/";
+            } else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path= "/home/devadm/temp/import/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             String filePath = path + fileName;
             ExcelUrgentListUtil util = new ExcelUrgentListUtil();
             util.createExcel(filePath, list,null);
@@ -727,16 +777,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
-        //查询该是编号是否已经投产
-        ProductionBO productionBO = this.searchProdutionDetail(proNumber);
-        if(productionBO!=null){
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
-        //未投产,且是req前缀投产编号则查询该编号对应的需求计划
+        //未投产,req前缀投产编号则查询该编号对应的需求计划
         DemandDO demandDO = new DemandDO();
         if(proNumber.startsWith("REQ")) {
+            //查询该是编号是否已经投产
+            ProductionBO productionBO = this.searchProdutionDetail(proNumber);
+            if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")&& !productionBO.getProStatus().equals("投产打回")&& !productionBO.getProStatus().equals("投产回退")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             demandDO.setReqNo(proNumber);
             demandDO.setReqSts("20");
             List<DemandDO> demandDOList = demandDao.find(demandDO);
@@ -770,9 +820,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File sendExportExcel_Result(List<ProductionDO> list){
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProductionUtil util = new SendExcelOperationResultProductionUtil();
             util.createExcel(filePath, list,null);
@@ -787,9 +846,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File sendExportExcel_out(List<ProductionDO> list){
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationProductionUtil util = new SendExcelOperationProductionUtil();
             util.createExcel(filePath, list,null);
@@ -856,17 +924,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         File file=sendExportExcel_out(list);
         MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("1");
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         /**
          * 附件
          */
@@ -898,9 +963,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddress);
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        mailInfo.setReceivers(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产清单通报",Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, "" ,"");
@@ -970,8 +1034,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是"+change+"本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +
                 "本周产品投产更新牵头负责人是"+pro_number_list[1]+",请各生产验证负责人将验证结果反馈给"+pro_number_list[1]+"。无特殊原因，投产后验证工作需在投产当晚完成，请知晓。<br/>如有任何问题请及时反馈与沟通。<br/>"+sb.toString());
-        SimpleMailSender sms = new SimpleMailSender();
-        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if(isSend){
             operationProductionDao.addMailFlow(bn);
             if(file.isFile() && file.exists()){
@@ -1014,17 +1077,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file=sendExportExcel_Result(list);
         MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
 
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         /**
          * 附件
          */
@@ -1057,9 +1117,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-        //String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddress);
+        String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        mailInfo.setReceivers(mailToAddress);
         //记录邮箱信息
         MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
         //添加发送内容
@@ -1079,30 +1138,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             sb.append("<td >"+bean.getProManager()+"</td>");//产品经理
             sb.append("<td >"+bean.getValidation()+"</td>");//生产验证方式
             //验证结果
-            if(bean.getValidation().equals("当晚验证")){
-                if(bean.getProStatus().equals("投产验证完成")){
-                    sb.append("<td >验证通过</td></tr>");//验证结果
-                }else{
-                    sb.append("<td >验证未通过</td></tr>");//验证结果
-                }
-            }
-            if(bean.getValidation().equals("隔日验证")){
-                if(bean.getProStatus().equals("投产验证完成")){
-                    sb.append("<td >验证通过</td></tr>");//验证结果
-                }else{
-                    sb.append("<td >隔日验证</td></tr>");//验证结果
-                }
-            }
-            if(bean.getValidation().equals("待业务触发验证")){
-                sb.append("<td >待业务触发验证</td></tr>");//验证结果
+            if(bean.getProStatus().equals("投产验证完成")){
+                sb.append("<td >验证通过</td></tr>");//验证结果
+            }else{
+                sb.append("<td >隔日验证</td></tr>");//验证结果
             }
 
         }
         sb.append("</table>");
         mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！"+sb.toString());
         // 这个类主要来发送邮件
-        SimpleMailSender sms = new SimpleMailSender();
-        boolean isSend=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionDao.addMailFlow(bn);
         if(isSend){
             if(file.isFile() && file.exists()){
@@ -1122,9 +1168,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         File file2=exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
         MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
-        //String[] mailToAddresss = mp.getMailUser().split(";");
-        String[] mailToAddresss = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
-        mailInfo.setToAddress(mailToAddresss);
+        String[] mailToAddresss = mp.getMailUser().split(";");
+        mailInfo.setReceivers(mailToAddresss);
         /**
          * 附件
          */
@@ -1133,7 +1178,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         mailInfo.setFile(file1) ;
         mailInfo.setSubject("【每周投产通报"+sdf.format(new Date())+"】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情请参见附件<br/><br/>");
-        boolean isSends=sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if(isSends){
             operationProductionDao.addMailFlow(bfn);
             if(file2.isFile() && file2.exists()){
@@ -1149,9 +1194,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public File exportExcel_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
         String fileName = "每周投产通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
-            //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
             util.createExcel(filePath, list,null,proBeanList,userName);
@@ -1184,9 +1239,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     bean = operationProductionDao.findProductionBean(s);
                     if (bean.getProPkgStatus().equals("待上传"))
                         s1+=s+",";
-                    else
-                        command.append("cp ~/home/devadm/temp/propkg/"+s+"/"+bean.getProPkgName()
-                                +" ~/tomcat/webapps/hims/hckeck/ver/\n");
+                    else {
+                        //依据环境配置路径
+                        String path="";
+                        if(LemonUtils.getEnv().equals(Env.SIT)) {
+                            path= "/home/devms/temp/propkg/";
+                        }
+                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                            path= "/home/devadm/temp/propkg/";
+                        }else {
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                        }
+                        command.append("cp ~"+path + s + "/" + bean.getProPkgName()
+                                + " ~/tomcat/webapps/hims/hckeck/ver/\n");
+                    }
                 }
                 if(!s1.equals("")){
                     s1 = s1.substring(0, s1.length()-1);
@@ -1229,8 +1297,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String result="检查失败";
 
         try{
-            session = jsch.getSession("devadm", "10.9.10.116", 22);
-            session.setPassword("devadm@hisun");
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                session = jsch.getSession("devms", "10.9.10.116", 22);
+                session.setPassword("dev1234");
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                session = jsch.getSession("devadm", "10.9.10.116", 22);
+                session.setPassword("devadm@hisun");
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
             Properties config = new Properties();
             config.put("StrictHostKeyChecking", "no");
             session.setConfig(config);
@@ -1307,9 +1385,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String fileName = "投产操作明细表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         OutputStream os = null;
         response.reset();
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         try {
             //String path = "C:\\home\\devadm\\temp\\propkg";
-            String path = "/home/devadm/temp/propkg/";
+            //String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
             String createFile = util.createExcel(filePath, list,null);
@@ -1366,14 +1456,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
 
-
-
-
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
-        //todo 先改成本机写死路径
-
-       // String path="D:\\home\\devadm\\temp\\import";
-        String path = "/home/devadm/temp/import/";
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/import/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/import/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         String fileName = file.getOriginalFilename();
         File tmp_file = new File(path + File.separator + bean.getProNumber() + "_" + fileName);
         try {
@@ -1393,7 +1488,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     //
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
-        System.err.println(bean.toString());
         boolean isSend = false;
         //后台判断数据
         if (!bean.getProNumber().matches(".*[a-zA-z].*")) {
@@ -1521,17 +1615,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
 
         //发邮件通知
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);// 您的邮箱密码
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         SendEmailConfig config = new SendEmailConfig();
         //投产日正常投产，是否超时11点需要审批的投产
         if (isApproveProduct && bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是")) {
@@ -1542,23 +1632,23 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)+";wu_lr@hisuntech.com";
+            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)
+               //     +";wu_lr@hisuntech.com";
             //todo 收件人需要添加两人必选先注释 先用自己的邮件代替
-            //+";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
+            +";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
             MailFlowBean bnb = new MailFlowBean("【投产录入审批申请】", Constant.P_EMAIL_NAME, receiver_mail, "");
             bean.setMailRecipient(receiver_mail);
             //todo 抄送人需要添加两人必选先注释 先用自己的邮件代替
-            //bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
-            bean.setMailCopyPerson("wu_lr@hisuntech.com");
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
+            //bean.setMailCopyPerson("wu_lr@hisuntech.com");
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setSubject("【投产录入审批申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于超过正常投产录入时间，投产无法正常录入，现申请投产审批，烦请审批！");
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(bnb);
         }
         //正常投产；投产日投产；不投产验证
@@ -1578,12 +1668,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //投产信息记录邮箱
             bean.setMailRecipient(receiver_mail);
             //记录邮箱信息
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setSubject("【预投产不验证申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于" + bean.getNotAdvanceReason() + "，预投产无法验证，现申请预投产不验证，烦请审批！");
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【预投产不验证申请】", Constant.P_EMAIL_NAME, receiver_mail, ""));
         }
         //非投产日正常投产
@@ -1630,15 +1719,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //投产信息记录邮箱
             bean.setMailRecipient(receiver_mail);
             bean.setMailCopyPerson(copy_mail);
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
             mailInfo.setSubject("【正常投产(非投产日)审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             //拼接邮件内容
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
-            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), "wu_lr@hisuntech.com"));
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
             if (unusualFile.isFile() && unusualFile.exists()) {
                 unusualFile.delete();
             }
@@ -1670,14 +1758,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 收件人邮箱
             String base_receiver_mail = bean.getMailRecipient();
             if (bean.getIsAdvanceProduction().equals("是")) {
-                base_receiver_mail +=  config.getFireMailTo(true);
+                base_receiver_mail += config.getFireMailTo(true);
             } else {
                 receiver_users.add(bean.getProManager());
                 receiver_users.add(bean.getDevelopmentLeader());
                 base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
+            // todo 添加申请人邮箱地址
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
             //去重
-            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users);
+            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users)+";"+mflow.getEmployeeEmail();
             String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
             // 抄送人邮箱
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
@@ -1690,7 +1782,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setMailRecipient(receiver_mail);
             bean.setMailCopyPerson(copy_mail);
             //记录邮箱信息
-            mailInfo.setToAddress(receiver_mail.split(";"));
+            mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
@@ -1698,8 +1790,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean));
             // 这个类主要来发送邮件
-            SimpleMailSender sms = new SimpleMailSender();
-            isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+            //SimpleMailSender sms = new SimpleMailSender();
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
@@ -1771,11 +1863,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = null;
         bean = operationProductionDao.findProductionBean(reqNumber);
-//        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
-//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//        }
+        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         if(bean.getProType().equals("正常投产")){
 
             if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
@@ -1813,7 +1905,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         //File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
-        File fileDir = new File("/home/devadm/temp/upload/propkg/" + reqNumber);
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/upload/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/upload/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        File fileDir = new File(path + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
         if(fileDir.exists()){
             File[] oldFile = fileDir.listFiles();
@@ -1839,7 +1943,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         bean.setProPkgName(file.getOriginalFilename());
         StringBuffer command = new StringBuffer();
         command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
-        command.append("cp ~/home/devadm/temp/upload/propkg/" + reqNumber + "/" + bean.getProPkgName()
+
+        //依据环境配置路径
+        String path1="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path1= "/home/devms/temp/upload/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path1= "/home/devadm/temp/upload/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+
+        command.append("cp ~"+ path1+ reqNumber + "/" + bean.getProPkgName()
                 + " ~/tomcat/webapps/hims/hckeck/ver/\n");
         command.append("sh zck.sh " + bean.getProPkgName() + "\n");
         Map<String,String> map = execCommand(command.toString());
@@ -1977,7 +2096,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
            // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
-            File fileDir = new File("/home/devadm/temp/upload/propkg/" + proNumber);
+
+            //依据环境配置路径
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path= "/home/devms/temp/upload/propkg/";
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path= "/home/devadm/temp/upload/propkg/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+            File fileDir = new File(path + proNumber);
             File[] pkgFile=fileDir.listFiles();
             File fileSend=null;
             if(pkgFile!=null&&pkgFile.length>0){

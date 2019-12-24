@@ -1,6 +1,10 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
 
+import com.cmpay.lemon.common.Env;
+import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.entity.Constant;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
 import org.apache.log4j.Logger;
 
 import javax.activation.DataHandler;
@@ -67,7 +71,8 @@ public class MultiMailsender {
 	      mainPart.addBodyPart(html);      
 	      //向multipart中添加附件  
 	      Vector<File> file = mailInfo.getFile() ;  
-	      file.add(new File("C:/Users/Administrator/Desktop/新建文本文档1.txt"));
+	      //file.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
+	      file.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
 	      String fileName = mailInfo.getFileName() ;  
 	      Enumeration<File> efile = file.elements() ;  
 	      while(efile.hasMoreElements()){  
@@ -91,10 +96,106 @@ public class MultiMailsender {
           transport.close();
 	      
 	      return true;      
-	      } catch (Exception ex) {      
-	          ex.printStackTrace();      
+	      } catch (Exception ex) {
+	          ex.printStackTrace();
 	      }      
 	      return false;      
+    }
+
+    public static boolean sendMailtoMultiTest(MultiMailSenderInfo mailInfo){
+        MyAuthenticator authenticator = null;
+        if (mailInfo.isValidate()) {
+            authenticator = new MyAuthenticator(mailInfo.getUsername(),
+                    mailInfo.getPassword());
+        }
+        Session sendMailSession = Session.getInstance(mailInfo
+                .getProperties(), authenticator);
+        String fail_mail = "";
+        while (true) {
+            try {
+                Message mailMessage = new MimeMessage(sendMailSession);
+                // 创建邮件发送者地址
+                Address from = new InternetAddress(mailInfo.getFromAddress());
+                mailMessage.setFrom(from);
+                // 创建邮件的接收者地址，并设置到邮件消息中
+                String[] mailToAddress = mailInfo.getReceivers() ;
+                if (mailToAddress != null) {
+                    String mailTOAddressSTR = "";
+                    for (String toMailAddress : mailToAddress) {
+                        // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
+                        if (fail_mail.indexOf(toMailAddress) < 0)
+                            mailTOAddressSTR += toMailAddress + ";";
+                    }
+                    mailTOAddressSTR = mailTOAddressSTR.substring(0, mailTOAddressSTR.length() - 1);
+
+                    // 为每个邮件接收者创建一个地址
+                    Address[] toAddresses = new InternetAddress[mailTOAddressSTR.split(";").length];
+                    int i = 0;
+                    for (String ccAddStr : mailTOAddressSTR.split(";")) {
+                        toAddresses[i] = new InternetAddress(ccAddStr);
+                        i++;
+                    }
+                    mailMessage.setRecipients(Message.RecipientType.TO, toAddresses);
+                }
+                // 获取抄送者信息
+                String[] ccs = mailInfo.getCcs();
+                if (ccs != null) {
+                    String mailCCAddressSTR = "";
+                    for (String ccMailAddress : ccs) {
+                        // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
+                        if ( fail_mail.indexOf(ccMailAddress) < 0)
+                            mailCCAddressSTR += ccMailAddress + ";";
+                    }
+                    mailCCAddressSTR = mailCCAddressSTR.substring(0, mailCCAddressSTR.length() - 1);
+
+                    // 为每个邮件接收者创建一个地址
+                    Address[] ccAddresses = new InternetAddress[mailCCAddressSTR.split(";").length];
+                    int i = 0;
+                    for (String ccAddStr : mailCCAddressSTR.split(";")) {
+                        ccAddresses[i] = new InternetAddress(ccAddStr);
+                        i++;
+                    }
+                    // 	将抄送者信息设置到邮件信息中，注意类型为Message.RecipientType.CC
+                    mailMessage.setRecipients(Message.RecipientType.CC, ccAddresses);
+                }
+
+                mailMessage.setSubject(mailInfo.getSubject());
+                mailMessage.setSentDate(new Date());
+                // 设置邮件内容
+                Multipart mainPart = new MimeMultipart();
+                BodyPart html = new MimeBodyPart();
+                html.setContent(mailInfo.getContent(), "text/html; charset=GBK");
+                mainPart.addBodyPart(html);
+                //向multipart中添加附件
+                Vector<File> files = mailInfo.getFile() ;
+                String fileName = mailInfo.getFileName() ;
+                Enumeration<File> efile = files.elements() ;
+                while(efile.hasMoreElements()){
+                    MimeBodyPart mdpFile = new MimeBodyPart() ;
+                    fileName = efile.nextElement().toString() ;
+                    FileDataSource fds = new FileDataSource(fileName) ;
+                    mdpFile.setDataHandler(new DataHandler(fds)) ;
+                    //这个方法可以解决乱码问题
+                    String fileName1 = MimeUtility.encodeText(fds.getName()) ;
+                    mdpFile.setFileName(fileName1) ;
+                    mainPart.addBodyPart(mdpFile) ;
+                }
+                //files.removeAllElements() ;
+                // 将MiniMultipart对象设置为邮件内容
+                mailMessage.setContent(mainPart);
+                // 发送邮件
+                Transport transport = sendMailSession.getTransport("smtp");
+                transport.connect("smtp.qiye.163.com", Constant.P_EMAIL_NAME, Constant.P_EMAIL_PSWD);
+                transport.sendMessage(mailMessage, mailMessage.getAllRecipients());
+                transport.close();
+                return true;
+            } catch (Exception ex) {
+                String testStr = ex.getCause().toString();
+                String[] testarr = testStr.split(":");
+                fail_mail += fail_mail + testarr[testarr.length - 1].trim() + ";";
+                logger.error("邮件发送失败:" + testarr[testarr.length - 1].trim());
+            }
+        }
     }
     
 
@@ -150,7 +251,17 @@ public class MultiMailsender {
 
                 if (mailInfo.getSubject().startsWith("和包错误码在线更新通知")) {
                     MimeBodyPart mdpFile = new MimeBodyPart();
-                    FileDataSource fds = new FileDataSource("/home/devadm/alert-redis.sh");
+                    FileDataSource fds =null;
+                    if(LemonUtils.getEnv().equals(Env.SIT)) {
+                       fds = new FileDataSource("/home/devms/alert-redis.sh");
+                     }
+                    else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                        fds = new FileDataSource("/home/devadm/alert-redis.sh");
+                    }else {
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
                     mdpFile.setDataHandler(new DataHandler(fds));
                     //这个方法可以解决乱码问题
                     String fileName1 = MimeUtility.encodeText(fds.getName());
@@ -178,24 +289,27 @@ public class MultiMailsender {
         // 创建邮件信息
     	
     	System.out.println("ss");
-    	MailSenderInfo mailInfo = new MailSenderInfo();
-        mailInfo.setMailServerHost("smtp.qiye.163.com");  
-        mailInfo.setMailServerPort("25"); 
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
         mailInfo.setValidate(true);
-        
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         mailInfo.setSubject("不用管测试");
-        mailInfo.setContent("hahahahhah,测试\n\rMytestmail\n\r");
+        mailInfo.setContent("hahahahhah,测试\n\rMytestmail1111111111\n\r");
         
 
-        String[] receivers = new String[]{"liu_chang@hisuntech.com"};
-        String[] ccs=new String[]{"liu_chang@hisuntech.com"};
-        mailInfo.setToAddress(receivers);
+        String[] receivers = new String[]{"tu_yi@hisuntech.com","wu_lr1@hisuntech.com"};
+        String[] ccs=new String[]{"tu_yi1@hisuntech.com","wu_lr@hisuntech.com"};
+        mailInfo.setReceivers(receivers);
         mailInfo.setCcs(ccs);
-        
-        boolean isSend = MultiMailsender.sendMailtoMultiReceiver(mailInfo);
+        Vector<File> files = new Vector<File>() ;
+        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
+        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
+        mailInfo.setFile(files) ;
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         System.out.println(isSend);    
         
     }

@@ -13,7 +13,6 @@ eureka:
       zone-csse2x: http://127.0.0.1:9002/eureka/
 
 server:
-  port: 6005
   tomcat:
     accept-count: 10
     max-connections: 5000
@@ -26,7 +25,7 @@ spring:
       force: true
     multipart:
       enabled: true
-      max-file-size: 20MB
+      max-file-size: 200MB
       max-request-size: 1000MB
   mvc:
     throw-exception-if-no-handler-found: true

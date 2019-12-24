@@ -1,4 +1,9 @@
 package com.cmpay.lemon.monitor.entity.sendemail;
+import com.cmpay.lemon.common.Env;
+import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.framework.utils.LemonUtils;
+import com.cmpay.lemon.monitor.enums.MsgEnum;
+
 import java.util.Properties;
 
 /**
@@ -10,8 +15,8 @@ public class SendEmailConfig {
 	private String env;
 
 	//todo 先改成发给自己
-	//private String devMail="liu_chang@hisuntech.com";
-	private String devMail="wu_lr@hisuntech.com";
+	private String devMail="liu_chang@hisuntech.com";
+	//private String devMail="wu_lr@hisuntech.com";
 	public static final String SEND_MAIL = "sendmail.properties";
 	/**
 	 * 
@@ -34,7 +39,17 @@ public class SendEmailConfig {
 	
 	public SendEmailConfig(){
 		//以前是从配置文件获取,重构没有引入配置文件
-		this.env="DEV";
+		if(LemonUtils.getEnv().equals(Env.SIT)) {
+			this.env= "PRO";
+		} else if(LemonUtils.getEnv().equals(Env.DEV)) {
+			this.env= "DEV";
+		}else {
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+
+
 		/*Properties p;
 		try {
 			p = PropertiesUtils.loadProperties("set.properties");
@@ -236,7 +251,7 @@ public class SendEmailConfig {
             });
         if(env.equals("PRO"))
             return (new String[] {
-                "dong_jm@hisuntech.com", "liao_dan@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com", "liu_chang@hisuntech.com"
+                "dong_jm@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com"
             });
         else
             return null;

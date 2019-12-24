@@ -29,15 +29,15 @@ public class BoardcastScheduler {
     public void pushValidationNotTimelyChecklist(String body , File file){
        boardcastExecutor.getAccessToken(corpid, corpsecret);
         //todo 固定接收人
-        boardcastExecutor.sendTextMessage("WuLiangRui", body);
+        boardcastExecutor.sendTextMessage("@all", body);
         String fileID = boardcastExecutor.sendUploadFile(file);
-        boardcastExecutor.sendFileMessage("WuLiangRui", fileID);
+        boardcastExecutor.sendFileMessage("@all", fileID);
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void pushTimeOutWarning(String body){
         boardcastExecutor.getAccessToken(corpid, corpsecret);
-        //todo 固定接收人
+        //todo  投产日期定时变动，发给自己，固定接收人
         boardcastExecutor.sendTextMessage("WuLiangRui", body);
 
     }
