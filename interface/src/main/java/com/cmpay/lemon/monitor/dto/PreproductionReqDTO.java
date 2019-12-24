@@ -49,6 +49,8 @@ public class PreproductionReqDTO extends PageableRspDTO {
     private java.sql.Date proPkgTime;
     //@Excel(name = "预投产包名")
     private String proPkgName;
+   // @Excel(name = "预投产部署结果")
+    private String preductionDeploymentResult;
     /**
      * 页数
      */
@@ -111,9 +113,18 @@ public class PreproductionReqDTO extends PageableRspDTO {
                 ", remark='" + remark + '\'' +
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +
+                ", preductionDeploymentResult='" + preductionDeploymentResult + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
+    }
+
+    public String getPreductionDeploymentResult() {
+        return preductionDeploymentResult;
+    }
+
+    public void setPreductionDeploymentResult(String preductionDeploymentResult) {
+        this.preductionDeploymentResult = preductionDeploymentResult;
     }
 
     public String getPreNumber() {

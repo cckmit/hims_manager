@@ -618,38 +618,38 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 DemandDO demandDO = new DemandDO();
-                demandDO.setReqProDept(map.get(i).get(0).toString());
-                demandDO.setReqProposer(map.get(i).get(1).toString());
-                demandDO.setReqMnger(map.get(i).get(2).toString());
-                demandDO.setReqPrdLine(map.get(i).get(3).toString());
-                demandDO.setReqNm(map.get(i).get(4).toString());
-                demandDO.setReqDesc(map.get(i).get(5).toString());
-                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString())) {
-                    demandDO.setExpInput(Double.parseDouble(map.get(i).get(6).toString()));
+                demandDO.setReqProDept(map.get(i).get(0).toString().trim());
+                demandDO.setReqProposer(map.get(i).get(1).toString().trim());
+                demandDO.setReqMnger(map.get(i).get(2).toString().trim());
+                demandDO.setReqPrdLine(map.get(i).get(3).toString().trim());
+                demandDO.setReqNm(map.get(i).get(4).toString().trim());
+                demandDO.setReqDesc(map.get(i).get(5).toString().trim());
+                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString().trim())) {
+                    demandDO.setExpInput(Double.parseDouble(map.get(i).get(6).toString().trim()));
                 }
-                demandDO.setIsCut(map.get(i).get(7).toString());
-                demandDO.setMonRemark(map.get(i).get(8).toString());
-                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString());
-                demandDO.setPreMonPeriod(map.get(i).get(10).toString());
-                demandDO.setCurMonTarget(map.get(i).get(11).toString());
-                demandDO.setReqInnerSeq(map.get(i).get(12).toString());
-                demandDO.setReqNo(map.get(i).get(13).toString());
-                if(!JudgeUtils.isEmpty(map.get(i).get(14).toString())) {
-                    demandDO.setInputRes(Integer.parseInt( map.get(i).get(14).toString()));
+                demandDO.setIsCut(map.get(i).get(7).toString().trim());
+                demandDO.setMonRemark(map.get(i).get(8).toString().trim());
+                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString().trim());
+                demandDO.setPreMonPeriod(map.get(i).get(10).toString().trim());
+                demandDO.setCurMonTarget(map.get(i).get(11).toString().trim());
+                demandDO.setReqInnerSeq(map.get(i).get(12).toString().trim());
+                demandDO.setReqNo(map.get(i).get(13).toString().trim());
+                if(!JudgeUtils.isEmpty(map.get(i).get(14).toString().trim())) {
+                    demandDO.setInputRes(Integer.parseInt( map.get(i).get(14).toString().trim()));
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(15).toString())) {
-                    demandDO.setDevCycle(Integer.parseInt( map.get(i).get(15).toString()));
+                if(!JudgeUtils.isEmpty(map.get(i).get(15).toString().trim())) {
+                    demandDO.setDevCycle(Integer.parseInt( map.get(i).get(15).toString().trim()));
                 }
-                demandDO.setRiskFeedbackTm(map.get(i).get(16).toString());
-                demandDO.setPreCurPeriod(map.get(i).get(17).toString());
-                demandDO.setRiskSolution(map.get(i).get(18).toString());
-                demandDO.setPrdFinshTm(map.get(i).get(19).toString());
-                demandDO.setUatUpdateTm(map.get(i).get(20).toString());
-                demandDO.setDevpLeadDept(map.get(i).get(21).toString());
-                demandDO.setDevpCoorDept(map.get(i).get(22).toString());
-                demandDO.setProductMng(map.get(i).get(23).toString());
-                demandDO.setReqStartMon(map.get(i).get(24).toString());
-                demandDO.setReqImplMon(map.get(i).get(25).toString());
+                demandDO.setRiskFeedbackTm(map.get(i).get(16).toString().trim());
+                demandDO.setPreCurPeriod(map.get(i).get(17).toString().trim());
+                demandDO.setRiskSolution(map.get(i).get(18).toString().trim());
+                demandDO.setPrdFinshTm(map.get(i).get(19).toString().trim());
+                demandDO.setUatUpdateTm(map.get(i).get(20).toString().trim());
+                demandDO.setDevpLeadDept(map.get(i).get(21).toString().trim());
+                demandDO.setDevpCoorDept(map.get(i).get(22).toString().trim());
+                demandDO.setProductMng(map.get(i).get(23).toString().trim());
+                demandDO.setReqStartMon(map.get(i).get(24).toString().trim());
+                demandDO.setReqImplMon(map.get(i).get(25).toString().trim());
                 demandDOS.add(demandDO);
             }
         } catch (FileNotFoundException e) {

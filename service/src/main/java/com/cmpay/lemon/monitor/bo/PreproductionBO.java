@@ -50,7 +50,8 @@ public class PreproductionBO {
     private Date proPkgTime;
     //@Excel(name = "预投产包名")
     private String proPkgName;
-
+    //@Excel(name = "预投产部署结果")
+    private String preductionDeploymentResult;
     /**
      * 页数
      */
@@ -116,6 +117,14 @@ public class PreproductionBO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
+    }
+
+    public String getPreductionDeploymentResult() {
+        return preductionDeploymentResult;
+    }
+
+    public void setPreductionDeploymentResult(String preductionDeploymentResult) {
+        this.preductionDeploymentResult = preductionDeploymentResult;
     }
 
     public String getPreNumber() {

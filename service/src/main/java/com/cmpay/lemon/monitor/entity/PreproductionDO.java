@@ -51,6 +51,8 @@ public class PreproductionDO extends BaseDO {
     private String preStatus;
     @Excel(name = "预投产验证结果")
     private String preAdvanceResult;
+    @Excel(name = "预投产部署结果")
+    private String preductionDeploymentResult;
     @Excel(name = "备注")
     private String remark;
     @Excel(name = "预投产包上传时间")
@@ -59,6 +61,14 @@ public class PreproductionDO extends BaseDO {
     private String proPkgName;
 
     public PreproductionDO() {
+    }
+
+    public String getPreductionDeploymentResult() {
+        return preductionDeploymentResult;
+    }
+
+    public void setPreductionDeploymentResult(String preductionDeploymentResult) {
+        this.preductionDeploymentResult = preductionDeploymentResult;
     }
 
     public PreproductionDO(String preNumber, String preNeed, String preType, Date preDateStart, Date preDateEnd, Date preDate, String applicationDept, String preApplicant, String applicantTel, String preManager, String developmentLeader, String mailLeader, String identifier, String identifierTel, String prChecker, String checkerTel, String preStatus, String preAdvanceResult, String remark, Date proPkgTime, String proPkgName) {
@@ -106,6 +116,7 @@ public class PreproductionDO extends BaseDO {
                 ", checkerTel='" + checkerTel + '\'' +
                 ", preStatus='" + preStatus + '\'' +
                 ", preAdvanceResult='" + preAdvanceResult + '\'' +
+                ", preductionDeploymentResult='" + preductionDeploymentResult + '\'' +
                 ", remark='" + remark + '\'' +
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +

@@ -173,15 +173,14 @@ public class ErrorController {
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 ErcdmgErrorComditionBO demandDO = new ErcdmgErrorComditionBO();
-                demandDO.setCr(map.get(i).get(0).toString());
-                demandDO.setErrorCd(map.get(i).get(1).toString());
-                demandDO.setProdMod(map.get(i).get(2).toString());
-                demandDO.setBuscnl(map.get(i).get(3).toString());
-                demandDO.setBusnTip(map.get(i).get(4).toString());
-                demandDO.setTechTip(map.get(i).get(5).toString());
-                demandDO.setAppScen(map.get(i).get(6).toString());
-                demandDO.setProdUserName(map.get(i).get(7).toString());
-                System.err.println(demandDO);
+                demandDO.setCr(map.get(i).get(0).toString().trim());
+                demandDO.setErrorCd(map.get(i).get(1).toString().trim());
+                demandDO.setProdMod(map.get(i).get(2).toString().trim());
+                demandDO.setBuscnl(map.get(i).get(3).toString().trim());
+                demandDO.setBusnTip(map.get(i).get(4).toString().trim());
+                demandDO.setTechTip(map.get(i).get(5).toString().trim());
+                demandDO.setAppScen(map.get(i).get(6).toString().trim());
+                demandDO.setProdUserName(map.get(i).get(7).toString().trim());
                 demandDOS.add(demandDO);
             }
         } catch (BusinessException e) {
