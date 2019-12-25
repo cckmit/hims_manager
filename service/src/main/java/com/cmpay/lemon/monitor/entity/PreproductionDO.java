@@ -1,127 +1,97 @@
 /*
- * @ClassName CenterDO
+ * @ClassName PreproductionDO
  * @Description 
  * @version 1.0
- * @Date 2019-07-25 11:01:18
+ * @Date 2019-12-25 11:24:02
  */
 package com.cmpay.lemon.monitor.entity;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
+import java.time.LocalDate;
 
-import java.sql.Date;
-
-/**
- * 预投产DO
- */
 @DataObject
 public class PreproductionDO extends BaseDO {
-    @Excel(name = "预投产编号")
+    /**
+     * @Fields preNumber 预投产编号
+     */
     private String preNumber;
-    @Excel(name = "需求名称及内容简述")
+    /**
+     * @Fields preNeed 预投产名称
+     */
     private String preNeed;
-    @Excel(name = "预投产类型")
+    /**
+     * @Fields preType 预投产类型
+     */
     private String preType;
-    private Date preDateStart;
-    private Date preDateEnd;
-    @Excel(name = "预投产计划投产日期")
-    private Date preDate;
-    @Excel(name = "申请部门")
+    /**
+     * @Fields preDate 预计预投产时间
+     */
+    private LocalDate preDate;
+    /**
+     * @Fields applicationDept 申请部门
+     */
     private String applicationDept;
-    @Excel(name = "预投产申请人")
+    /**
+     * @Fields preApplicant 预投产申请人
+     */
     private String preApplicant;
-    @Excel(name = "申请人联系方式")
+    /**
+     * @Fields applicantTel 预投产申请人联系方式
+     */
     private String applicantTel;
-    @Excel(name = "产品经理")
+    /**
+     * @Fields preManager 产品经理
+     */
     private String preManager;
-    @Excel(name = "开发负责人")
-    private String developmentLeader;
-    @Excel(name = "开发负责人邮箱")
-    private String mailLeader;
-    @Excel(name = "验证人")
-    private String identifier;
-    @Excel(name = "验证人联系方式")
-    private String identifierTel;
-    @Excel(name = "验证复核人")
-    private String prChecker;
-    @Excel(name = "验证复核人联系方式")
-    private String checkerTel;
-    @Excel(name = "预投产需求状态")
+    /**
+     * @Fields preStatus 预投产状态
+     */
     private String preStatus;
-    @Excel(name = "预投产验证结果")
-    private String preAdvanceResult;
-    @Excel(name = "预投产部署结果")
-    private String preductionDeploymentResult;
-    @Excel(name = "备注")
-    private String remark;
-    @Excel(name = "预投产包上传时间")
-    private Date proPkgTime;
-    @Excel(name = "预投产包名")
+    /**
+     * @Fields productionDeploymentResult 预投产部署结果
+     */
+    private String productionDeploymentResult;
+    /**
+     * @Fields proAdvanceResult 预投产验证结果
+     */
+    private String proAdvanceResult;
+    /**
+     * @Fields proPkgTime 投产包上传时间
+     */
+    private LocalDate proPkgTime;
+    /**
+     * @Fields proPkgName 投产包名称
+     */
     private String proPkgName;
-
-    public PreproductionDO() {
-    }
-
-    public String getPreductionDeploymentResult() {
-        return preductionDeploymentResult;
-    }
-
-    public void setPreductionDeploymentResult(String preductionDeploymentResult) {
-        this.preductionDeploymentResult = preductionDeploymentResult;
-    }
-
-    public PreproductionDO(String preNumber, String preNeed, String preType, Date preDateStart, Date preDateEnd, Date preDate, String applicationDept, String preApplicant, String applicantTel, String preManager, String developmentLeader, String mailLeader, String identifier, String identifierTel, String prChecker, String checkerTel, String preStatus, String preAdvanceResult, String remark, Date proPkgTime, String proPkgName) {
-        this.preNumber = preNumber;
-        this.preNeed = preNeed;
-        this.preType = preType;
-        this.preDateStart = preDateStart;
-        this.preDateEnd = preDateEnd;
-        this.preDate = preDate;
-        this.applicationDept = applicationDept;
-        this.preApplicant = preApplicant;
-        this.applicantTel = applicantTel;
-        this.preManager = preManager;
-        this.developmentLeader = developmentLeader;
-        this.mailLeader = mailLeader;
-        this.identifier = identifier;
-        this.identifierTel = identifierTel;
-        this.prChecker = prChecker;
-        this.checkerTel = checkerTel;
-        this.preStatus = preStatus;
-        this.preAdvanceResult = preAdvanceResult;
-        this.remark = remark;
-        this.proPkgTime = proPkgTime;
-        this.proPkgName = proPkgName;
-    }
-
-    @Override
-    public String toString() {
-        return "PreproductionDO{" +
-                "preNumber='" + preNumber + '\'' +
-                ", preNeed='" + preNeed + '\'' +
-                ", preType='" + preType + '\'' +
-                ", preDateStart=" + preDateStart +
-                ", preDateEnd=" + preDateEnd +
-                ", preDate=" + preDate +
-                ", applicationDept='" + applicationDept + '\'' +
-                ", preApplicant='" + preApplicant + '\'' +
-                ", applicantTel='" + applicantTel + '\'' +
-                ", preManager='" + preManager + '\'' +
-                ", developmentLeader='" + developmentLeader + '\'' +
-                ", mailLeader='" + mailLeader + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", identifierTel='" + identifierTel + '\'' +
-                ", prChecker='" + prChecker + '\'' +
-                ", checkerTel='" + checkerTel + '\'' +
-                ", preStatus='" + preStatus + '\'' +
-                ", preAdvanceResult='" + preAdvanceResult + '\'' +
-                ", preductionDeploymentResult='" + preductionDeploymentResult + '\'' +
-                ", remark='" + remark + '\'' +
-                ", proPkgTime=" + proPkgTime +
-                ", proPkgName='" + proPkgName + '\'' +
-                '}';
-    }
+    /**
+     * @Fields developmentLeader 开发负责人
+     */
+    private String developmentLeader;
+    /**
+     * @Fields identifier 验证人
+     */
+    private String identifier;
+    /**
+     * @Fields identifierTel 验证人联系方式
+     */
+    private String identifierTel;
+    /**
+     * @Fields proChecker 验证复核人
+     */
+    private String proChecker;
+    /**
+     * @Fields checkerTel 验证复核人联系方式
+     */
+    private String checkerTel;
+    /**
+     * @Fields remark 备注
+     */
+    private String remark;
+    /**
+     * @Fields mailLeader 开发负责人邮箱
+     */
+    private String mailLeader;
 
     public String getPreNumber() {
         return preNumber;
@@ -147,27 +117,11 @@ public class PreproductionDO extends BaseDO {
         this.preType = preType;
     }
 
-    public Date getPreDateStart() {
-        return preDateStart;
-    }
-
-    public void setPreDateStart(Date preDateStart) {
-        this.preDateStart = preDateStart;
-    }
-
-    public Date getPreDateEnd() {
-        return preDateEnd;
-    }
-
-    public void setPreDateEnd(Date preDateEnd) {
-        this.preDateEnd = preDateEnd;
-    }
-
-    public Date getPreDate() {
+    public LocalDate getPreDate() {
         return preDate;
     }
 
-    public void setPreDate(Date preDate) {
+    public void setPreDate(LocalDate preDate) {
         this.preDate = preDate;
     }
 
@@ -203,20 +157,52 @@ public class PreproductionDO extends BaseDO {
         this.preManager = preManager;
     }
 
+    public String getPreStatus() {
+        return preStatus;
+    }
+
+    public void setPreStatus(String preStatus) {
+        this.preStatus = preStatus;
+    }
+
+    public String getProductionDeploymentResult() {
+        return productionDeploymentResult;
+    }
+
+    public void setProductionDeploymentResult(String productionDeploymentResult) {
+        this.productionDeploymentResult = productionDeploymentResult;
+    }
+
+    public String getProAdvanceResult() {
+        return proAdvanceResult;
+    }
+
+    public void setProAdvanceResult(String proAdvanceResult) {
+        this.proAdvanceResult = proAdvanceResult;
+    }
+
+    public LocalDate getProPkgTime() {
+        return proPkgTime;
+    }
+
+    public void setProPkgTime(LocalDate proPkgTime) {
+        this.proPkgTime = proPkgTime;
+    }
+
+    public String getProPkgName() {
+        return proPkgName;
+    }
+
+    public void setProPkgName(String proPkgName) {
+        this.proPkgName = proPkgName;
+    }
+
     public String getDevelopmentLeader() {
         return developmentLeader;
     }
 
     public void setDevelopmentLeader(String developmentLeader) {
         this.developmentLeader = developmentLeader;
-    }
-
-    public String getMailLeader() {
-        return mailLeader;
-    }
-
-    public void setMailLeader(String mailLeader) {
-        this.mailLeader = mailLeader;
     }
 
     public String getIdentifier() {
@@ -235,12 +221,12 @@ public class PreproductionDO extends BaseDO {
         this.identifierTel = identifierTel;
     }
 
-    public String getPrChecker() {
-        return prChecker;
+    public String getProChecker() {
+        return proChecker;
     }
 
-    public void setPrChecker(String prChecker) {
-        this.prChecker = prChecker;
+    public void setProChecker(String proChecker) {
+        this.proChecker = proChecker;
     }
 
     public String getCheckerTel() {
@@ -251,22 +237,6 @@ public class PreproductionDO extends BaseDO {
         this.checkerTel = checkerTel;
     }
 
-    public String getPreStatus() {
-        return preStatus;
-    }
-
-    public void setPreStatus(String preStatus) {
-        this.preStatus = preStatus;
-    }
-
-    public String getPreAdvanceResult() {
-        return preAdvanceResult;
-    }
-
-    public void setPreAdvanceResult(String preAdvanceResult) {
-        this.preAdvanceResult = preAdvanceResult;
-    }
-
     public String getRemark() {
         return remark;
     }
@@ -275,19 +245,11 @@ public class PreproductionDO extends BaseDO {
         this.remark = remark;
     }
 
-    public Date getProPkgTime() {
-        return proPkgTime;
+    public String getMailLeader() {
+        return mailLeader;
     }
 
-    public void setProPkgTime(Date proPkgTime) {
-        this.proPkgTime = proPkgTime;
-    }
-
-    public String getProPkgName() {
-        return proPkgName;
-    }
-
-    public void setProPkgName(String proPkgName) {
-        this.proPkgName = proPkgName;
+    public void setMailLeader(String mailLeader) {
+        this.mailLeader = mailLeader;
     }
 }
