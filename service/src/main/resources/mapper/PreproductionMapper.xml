@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IPreproductionDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.PreproductionDO" >
+        <id column="pre_number" property="preNumber" jdbcType="VARCHAR" />
+        <result column="pre_need" property="preNeed" jdbcType="VARCHAR" />
+        <result column="pre_type" property="preType" jdbcType="VARCHAR" />
+        <result column="pre_date" property="preDate" jdbcType="DATE" />
+        <result column="application_dept" property="applicationDept" jdbcType="VARCHAR" />
+        <result column="pre_applicant" property="preApplicant" jdbcType="VARCHAR" />
+        <result column="applicant_tel" property="applicantTel" jdbcType="VARCHAR" />
+        <result column="pre_manager" property="preManager" jdbcType="VARCHAR" />
+        <result column="pre_status" property="preStatus" jdbcType="VARCHAR" />
+        <result column="production_deployment_result" property="productionDeploymentResult" jdbcType="VARCHAR" />
+        <result column="pro_advance_result" property="proAdvanceResult" jdbcType="VARCHAR" />
+        <result column="pro_pkg_time" property="proPkgTime" jdbcType="DATE" />
+        <result column="pro_pkg_name" property="proPkgName" jdbcType="VARCHAR" />
+        <result column="development_leader" property="developmentLeader" jdbcType="VARCHAR" />
+        <result column="identifier" property="identifier" jdbcType="VARCHAR" />
+        <result column="identifier_tel" property="identifierTel" jdbcType="VARCHAR" />
+        <result column="pro_checker" property="proChecker" jdbcType="VARCHAR" />
+        <result column="checker_tel" property="checkerTel" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <resultMap id="ResultMapWithBLOBs" type="com.cmpay.lemon.monitor.entity.PreproductionDO" extends="BaseResultMap" >
+        <result column="mail_leader" property="mailLeader" jdbcType="LONGVARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        pre_number, pre_need, pre_type, pre_date, application_dept, pre_applicant, applicant_tel, 
+        pre_manager, pre_status, production_deployment_result, pro_advance_result, pro_pkg_time, 
+        pro_pkg_name, development_leader, identifier, identifier_tel, pro_checker, checker_tel, 
+        remark
+    </sql>
+
+    <sql id="Blob_Column_List" >
+        mail_leader
+    </sql>
+
+    <select id="get" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from t_preproduction_records
+        where pre_number = #{preNumber,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_preproduction_records
+        where pre_number = #{preNumber,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
+        insert into t_preproduction_records
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="preNumber != null" >
+                pre_number,
+            </if>
+            <if test="preNeed != null" >
+                pre_need,
+            </if>
+            <if test="preType != null" >
+                pre_type,
+            </if>
+            <if test="preDate != null" >
+                pre_date,
+            </if>
+            <if test="applicationDept != null" >
+                application_dept,
+            </if>
+            <if test="preApplicant != null" >
+                pre_applicant,
+            </if>
+            <if test="applicantTel != null" >
+                applicant_tel,
+            </if>
+            <if test="preManager != null" >
+                pre_manager,
+            </if>
+            <if test="preStatus != null" >
+                pre_status,
+            </if>
+            <if test="productionDeploymentResult != null" >
+                production_deployment_result,
+            </if>
+            <if test="proAdvanceResult != null" >
+                pro_advance_result,
+            </if>
+            <if test="proPkgTime != null" >
+                pro_pkg_time,
+            </if>
+            <if test="proPkgName != null" >
+                pro_pkg_name,
+            </if>
+            <if test="developmentLeader != null" >
+                development_leader,
+            </if>
+            <if test="identifier != null" >
+                identifier,
+            </if>
+            <if test="identifierTel != null" >
+                identifier_tel,
+            </if>
+            <if test="proChecker != null" >
+                pro_checker,
+            </if>
+            <if test="checkerTel != null" >
+                checker_tel,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+            <if test="mailLeader != null" >
+                mail_leader,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="preNumber != null" >
+                #{preNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="preNeed != null" >
+                #{preNeed,jdbcType=VARCHAR},
+            </if>
+            <if test="preType != null" >
+                #{preType,jdbcType=VARCHAR},
+            </if>
+            <if test="preDate != null" >
+                #{preDate,jdbcType=DATE},
+            </if>
+            <if test="applicationDept != null" >
+                #{applicationDept,jdbcType=VARCHAR},
+            </if>
+            <if test="preApplicant != null" >
+                #{preApplicant,jdbcType=VARCHAR},
+            </if>
+            <if test="applicantTel != null" >
+                #{applicantTel,jdbcType=VARCHAR},
+            </if>
+            <if test="preManager != null" >
+                #{preManager,jdbcType=VARCHAR},
+            </if>
+            <if test="preStatus != null" >
+                #{preStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionDeploymentResult != null" >
+                #{productionDeploymentResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proAdvanceResult != null" >
+                #{proAdvanceResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proPkgTime != null" >
+                #{proPkgTime,jdbcType=DATE},
+            </if>
+            <if test="proPkgName != null" >
+                #{proPkgName,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentLeader != null" >
+                #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="identifier != null" >
+                #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="identifierTel != null" >
+                #{identifierTel,jdbcType=VARCHAR},
+            </if>
+            <if test="proChecker != null" >
+                #{proChecker,jdbcType=VARCHAR},
+            </if>
+            <if test="checkerTel != null" >
+                #{checkerTel,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="mailLeader != null" >
+                #{mailLeader,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
+        update t_preproduction_records
+        <set >
+            <if test="preNeed != null" >
+                pre_need = #{preNeed,jdbcType=VARCHAR},
+            </if>
+            <if test="preType != null" >
+                pre_type = #{preType,jdbcType=VARCHAR},
+            </if>
+            <if test="preDate != null" >
+                pre_date = #{preDate,jdbcType=DATE},
+            </if>
+            <if test="applicationDept != null" >
+                application_dept = #{applicationDept,jdbcType=VARCHAR},
+            </if>
+            <if test="preApplicant != null" >
+                pre_applicant = #{preApplicant,jdbcType=VARCHAR},
+            </if>
+            <if test="applicantTel != null" >
+                applicant_tel = #{applicantTel,jdbcType=VARCHAR},
+            </if>
+            <if test="preManager != null" >
+                pre_manager = #{preManager,jdbcType=VARCHAR},
+            </if>
+            <if test="preStatus != null" >
+                pre_status = #{preStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionDeploymentResult != null" >
+                production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proAdvanceResult != null" >
+                pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proPkgTime != null" >
+                pro_pkg_time = #{proPkgTime,jdbcType=DATE},
+            </if>
+            <if test="proPkgName != null" >
+                pro_pkg_name = #{proPkgName,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentLeader != null" >
+                development_leader = #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="identifier != null" >
+                identifier = #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="identifierTel != null" >
+                identifier_tel = #{identifierTel,jdbcType=VARCHAR},
+            </if>
+            <if test="proChecker != null" >
+                pro_checker = #{proChecker,jdbcType=VARCHAR},
+            </if>
+            <if test="checkerTel != null" >
+                checker_tel = #{checkerTel,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="mailLeader != null" >
+                mail_leader = #{mailLeader,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where pre_number = #{preNumber,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
+        update t_preproduction_records
+        set pre_need = #{preNeed,jdbcType=VARCHAR},
+            pre_type = #{preType,jdbcType=VARCHAR},
+            pre_date = #{preDate,jdbcType=DATE},
+            application_dept = #{applicationDept,jdbcType=VARCHAR},
+            pre_applicant = #{preApplicant,jdbcType=VARCHAR},
+            applicant_tel = #{applicantTel,jdbcType=VARCHAR},
+            pre_manager = #{preManager,jdbcType=VARCHAR},
+            pre_status = #{preStatus,jdbcType=VARCHAR},
+            production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},
+            pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
+            pro_pkg_time = #{proPkgTime,jdbcType=DATE},
+            pro_pkg_name = #{proPkgName,jdbcType=VARCHAR},
+            development_leader = #{developmentLeader,jdbcType=VARCHAR},
+            identifier = #{identifier,jdbcType=VARCHAR},
+            identifier_tel = #{identifierTel,jdbcType=VARCHAR},
+            pro_checker = #{proChecker,jdbcType=VARCHAR},
+            checker_tel = #{checkerTel,jdbcType=VARCHAR},
+            remark = #{remark,jdbcType=VARCHAR},
+            mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}
+        where pre_number = #{preNumber,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_preproduction_records
+        <where >
+            <if test="preNumber != null" >
+                and pre_number = #{preNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="preNeed != null" >
+                and pre_need = #{preNeed,jdbcType=VARCHAR}
+            </if>
+            <if test="preType != null" >
+                and pre_type = #{preType,jdbcType=VARCHAR}
+            </if>
+            <if test="preDate != null" >
+                and pre_date = #{preDate,jdbcType=DATE}
+            </if>
+            <if test="applicationDept != null" >
+                and application_dept = #{applicationDept,jdbcType=VARCHAR}
+            </if>
+            <if test="preApplicant != null" >
+                and pre_applicant = #{preApplicant,jdbcType=VARCHAR}
+            </if>
+            <if test="applicantTel != null" >
+                and applicant_tel = #{applicantTel,jdbcType=VARCHAR}
+            </if>
+            <if test="preManager != null" >
+                and pre_manager = #{preManager,jdbcType=VARCHAR}
+            </if>
+            <if test="preStatus != null" >
+                and pre_status = #{preStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="productionDeploymentResult != null" >
+                and production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR}
+            </if>
+            <if test="proAdvanceResult != null" >
+                and pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR}
+            </if>
+            <if test="proPkgTime != null" >
+                and pro_pkg_time = #{proPkgTime,jdbcType=DATE}
+            </if>
+            <if test="proPkgName != null" >
+                and pro_pkg_name = #{proPkgName,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentLeader != null" >
+                and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="identifier != null" >
+                and identifier = #{identifier,jdbcType=VARCHAR}
+            </if>
+            <if test="identifierTel != null" >
+                and identifier_tel = #{identifierTel,jdbcType=VARCHAR}
+            </if>
+            <if test="proChecker != null" >
+                and pro_checker = #{proChecker,jdbcType=VARCHAR}
+            </if>
+            <if test="checkerTel != null" >
+                and checker_tel = #{checkerTel,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null" >
+                and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="mailLeader != null" >
+                and mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
