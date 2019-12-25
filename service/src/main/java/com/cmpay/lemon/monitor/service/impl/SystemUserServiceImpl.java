@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service.impl;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.IdGenUtils;
@@ -395,6 +396,10 @@ public class SystemUserServiceImpl implements SystemUserService {
     public String getFullname(String loginname) {
         UserDO userDO = new UserDO();
         UserDO userByUserName = iUserDao.getUserByUserName(loginname);
+        if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getFullname())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(loginname+"操作员信息有误，请及时联系管理员");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         return  userByUserName.getFullname();
     }
 

@@ -328,6 +328,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
         this.addOperationalApplication(bean);
         ScheduleDO scheduleBean = new ScheduleDO(bean.getOperNumber(), SecurityUtils.getLoginName(), "录入", "", "提出", "");
+        //操作员姓名
+        scheduleBean.setProOperator(userService.getFullname(SecurityUtils.getLoginName()));
         operationProductionService.addScheduleBean(scheduleBean);
 
         /**

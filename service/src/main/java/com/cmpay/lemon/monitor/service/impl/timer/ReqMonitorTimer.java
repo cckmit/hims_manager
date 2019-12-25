@@ -89,6 +89,7 @@ public class ReqMonitorTimer {
 	 * */
 	@Scheduled(cron = "10 0 12 * * ?")
 	public void productionVerificationIsNotTimely() {
+		//测试环境不发通知
 		if(LemonUtils.getEnv().equals(Env.DEV)) {
 			return;
 		}
@@ -143,6 +144,7 @@ public class ReqMonitorTimer {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		//调用企业微信应用发送推送
 		boardcastScheduler.pushValidationNotTimelyChecklist(body,file);
 		file.delete();
 	}
@@ -223,8 +225,6 @@ public class ReqMonitorTimer {
 				Map<String, String>  map = reqPlanService.getMailbox(reqTask.getReqInnerSeq());
 				sendTo = map.get("proMemberEmail");
 				copyTo = map.get("devpEmail") + map.get("testDevpEmail") + "xiao_hua@hisuntech.com;wujinyan@hisuntech.com;";
-				System.err.println(sendTo);
-				System.err.println(copyTo);
 //				sendTo = "tu_yi@hisuntech.com";
 //				copyTo = "wu_lr@hisuntech.com";
 				//发送邮件
@@ -300,8 +300,10 @@ public class ReqMonitorTimer {
 		DemandDO demandDO = new DemandDO();
 		String month = DateUtil.date2String(new Date(), "yyyy-MM");
 		demandDO.setReqImplMon(month);
+		//获得正常执行需求
 		List<DemandBO> demandBOlist = reqPlanService.getNormalExecutionDemand(demandDO);
 		demandBOlist.forEach(m->{
+			//没有部门或者没有当前需求状态的跳过
 			if(StringUtils.isEmpty(m.getPreCurPeriod())||StringUtils.isEmpty(m.getDevpLeadDept())){
 				return;
 			}else {
