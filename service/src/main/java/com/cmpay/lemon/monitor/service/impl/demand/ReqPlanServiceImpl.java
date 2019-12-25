@@ -2054,6 +2054,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public void getReqPlan(HttpServletResponse response, DemandBO demandBO) {
         List<DemandDO> demandDOList = reqPlan(demandBO);
+        //todo 添加测试需要的数据
+        jiraOperationService.getJiraIssue(demandDOList);
+
         List<PlanDO> planDOList = new  LinkedList<>();
         demandDOList.forEach(m->{
             planDOList.add(BeanUtils.copyPropertiesReturnDest(new PlanDO(),m));

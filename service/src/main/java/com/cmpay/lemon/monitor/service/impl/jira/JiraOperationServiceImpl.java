@@ -272,7 +272,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(jiraKey);
             demandDO.setAssignee(jiraTaskBodyBO.getAssignee());
             demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanStartTime());
-            demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanEndTime());
+            demandDO.setPlanEndTime(jiraTaskBodyBO.getPlanEndTime());
         });
 
     }
@@ -306,15 +306,15 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
-                jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(12).toString());
-                if(!JudgeUtils.isEmpty(map.get(i).get(29).toString())) {
-                    jiraTaskBodyBO.setAssignee(map.get(i).get(29).toString());
+                jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(1).toString().trim());
+                if(!JudgeUtils.isEmpty(map.get(i).get(18).toString().trim())) {
+                    jiraTaskBodyBO.setAssignee(map.get(i).get(18).toString().trim());
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(30).toString())) {
-                    jiraTaskBodyBO.setPlanStartTime(map.get(i).get(30).toString());
+                if(!JudgeUtils.isEmpty(map.get(i).get(19).toString().trim())) {
+                    jiraTaskBodyBO.setPlanStartTime(map.get(i).get(19).toString().trim());
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(31).toString())) {
-                    jiraTaskBodyBO.setPlanEndTime(map.get(i).get(31).toString());
+                if(!JudgeUtils.isEmpty(map.get(i).get(20).toString().trim())) {
+                    jiraTaskBodyBO.setPlanEndTime(map.get(i).get(20).toString().trim());
                 }
                 jiraTaskBodyBOS.add(jiraTaskBodyBO);
             }

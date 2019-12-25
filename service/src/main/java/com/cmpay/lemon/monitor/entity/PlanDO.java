@@ -50,6 +50,12 @@ public class PlanDO extends BaseDO {
     private String testEng;
     @Excel(name = "项目经理")
     private String projectMng;
+    @Excel(name = "测试主任务经办人")
+    private String assignee;
+    @Excel(name = "测试主任务计划开始时间")
+    private String planStartTime;
+    @Excel(name = "测试主任务计划完成时间")
+    private String planEndTime;
     private String reqProDept;
     private String reqProposer;
     private String reqMnger;
@@ -110,6 +116,30 @@ public class PlanDO extends BaseDO {
     private String updateUser;
     private String reqAbnorType;
     public PlanDO() {
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public String getPlanStartTime() {
+        return planStartTime;
+    }
+
+    public void setPlanStartTime(String planStartTime) {
+        this.planStartTime = planStartTime;
+    }
+
+    public String getPlanEndTime() {
+        return planEndTime;
+    }
+
+    public void setPlanEndTime(String planEndTime) {
+        this.planEndTime = planEndTime;
     }
 
     public PlanDO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String reqProposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, int totalWorkload, int inputWorkload, int lastInputWorkload, int remainWorkload, int monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
