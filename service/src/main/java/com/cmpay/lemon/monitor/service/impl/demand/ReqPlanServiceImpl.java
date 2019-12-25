@@ -16,10 +16,7 @@ import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailSenderInfo;
-import com.cmpay.lemon.monitor.entity.sendemail.SimpleMailSender;
+import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -826,20 +823,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         MailFlowDO bnb = new MailFlowDO(subject, Constant.P_EMAIL_NAME, sendTo, content);
 
         // 发邮件通知
-        MailSenderInfo mailInfo = new MailSenderInfo();
-        // 设置邮件服务器类型
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
-        //设置端口号
         mailInfo.setMailServerPort("25");
-        //设置是否验证
         mailInfo.setValidate(true);
-        //设置用户名、密码、发送人地址
-        mailInfo.setUserName(Constant.P_EMAIL_NAME);
-        // 您的邮箱密码
-        mailInfo.setPassword(Constant.P_EMAIL_PSWD);
-        mailInfo.setFromAddress(Constant.P_EMAIL_NAME);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
         sendTo=sendTo.replaceAll("；", ";");
-        mailInfo.setToAddress(sendTo.split(";"));
+        mailInfo.setReceivers(sendTo.split(";"));
         if (StringUtils.isNotBlank(copyTo)) {
             copyTo=copyTo.replaceAll("；", ";");
             mailInfo.setCcs(copyTo.split(";"));
@@ -850,9 +843,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         mailInfo.setSubject(subject);
         mailInfo.setContent(content);
         // 这个类主要来发送邮件
-        SimpleMailSender sms = new SimpleMailSender();
-
-        boolean isSend = sms.sendHtmlMail(mailInfo);// 发送html格式
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         if (isSend) {
             operationProductionDao.addMailFlow(bnb);
         } else {
@@ -2109,24 +2100,24 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 DemandDO demandDO = new DemandDO();
-                demandDO.setReqPrdLine(map.get(i).get(0).toString());
-                demandDO.setReqInnerSeq(map.get(i).get(1).toString());
-                demandDO.setReqNo(map.get(i).get(2).toString());
-                demandDO.setReqNm(map.get(i).get(3).toString());
-                demandDO.setPreCurPeriod(map.get(i).get(4).toString());
-                demandDO.setReqSts(map.get(i).get(5).toString());
-                demandDO.setPrdFinshTm(map.get(i).get(6).toString());
-                demandDO.setUatUpdateTm(map.get(i).get(7).toString());
-                demandDO.setTestFinshTm(map.get(i).get(8).toString());
-                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString());
-                demandDO.setCurMonTarget(map.get(i).get(10).toString());
-                demandDO.setDevpLeadDept(map.get(i).get(11).toString());
-                demandDO.setDevpCoorDept(map.get(i).get(12).toString());
-                demandDO.setProductMng(map.get(i).get(13).toString());
-                demandDO.setDevpEng(map.get(i).get(14).toString());
-                demandDO.setFrontEng(map.get(i).get(15).toString());
-                demandDO.setTestEng(map.get(i).get(16).toString());
-                demandDO.setProjectMng(map.get(i).get(17).toString());
+                demandDO.setReqPrdLine(map.get(i).get(0).toString().trim());
+                demandDO.setReqInnerSeq(map.get(i).get(1).toString().trim());
+                demandDO.setReqNo(map.get(i).get(2).toString().trim());
+                demandDO.setReqNm(map.get(i).get(3).toString().trim());
+                demandDO.setPreCurPeriod(map.get(i).get(4).toString().trim());
+                demandDO.setReqSts(map.get(i).get(5).toString().trim());
+                demandDO.setPrdFinshTm(map.get(i).get(6).toString().trim());
+                demandDO.setUatUpdateTm(map.get(i).get(7).toString().trim());
+                demandDO.setTestFinshTm(map.get(i).get(8).toString().trim());
+                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString().trim());
+                demandDO.setCurMonTarget(map.get(i).get(10).toString().trim());
+                demandDO.setDevpLeadDept(map.get(i).get(11).toString().trim());
+                demandDO.setDevpCoorDept(map.get(i).get(12).toString().trim());
+                demandDO.setProductMng(map.get(i).get(13).toString().trim());
+                demandDO.setDevpEng(map.get(i).get(14).toString().trim());
+                demandDO.setFrontEng(map.get(i).get(15).toString().trim());
+                demandDO.setTestEng(map.get(i).get(16).toString().trim());
+                demandDO.setProjectMng(map.get(i).get(17).toString().trim());
                 demandDOS.add(demandDO);
             }
         } catch (FileNotFoundException e) {
@@ -2164,13 +2155,23 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             m.setReqPrdLine(dic.get(0).getName());
 
+            if (StringUtils.isNotBlank(m.getReqSts())) {
+                dictionaryDO.setDicId("REQ_STS");
+                dictionaryDO.setValue(m.getReqSts());
+                dic = dictionaryDao.getDicByDicId(dictionaryDO);
+                if (dic.size() == 0) {
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的需求状态字典项不存在");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+                }
+                m.setReqSts(dic.get(0).getName());
+            }
 
             if (StringUtils.isNotBlank(m.getPreCurPeriod())) {
                 dictionaryDO.setDicId("REQ_PEROID");
                 dictionaryDO.setValue(m.getPreCurPeriod());
                 dic = dictionaryDao.getDicByDicId(dictionaryDO);
                 if (dic.size() == 0) {
-                    MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的当前进展字典项不存在");
+                    MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的当前阶段字典项不存在");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
                 }
                 m.setPreCurPeriod(dic.get(0).getName());
@@ -2211,6 +2212,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                 //设置默认值
                 m.setReqStartMon("");
+                //需求当前阶段和需求状态不做修改
+                m.setReqSts("");
+                m.setPreCurPeriod("");
                 updateList.add(m);
             }
         });

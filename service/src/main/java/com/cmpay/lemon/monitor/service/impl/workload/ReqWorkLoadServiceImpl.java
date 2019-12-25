@@ -258,30 +258,30 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 DemandDO demandDO = new DemandDO();
-                demandDO.setReqInnerSeq(map.get(i).get(0).toString());
-                demandDO.setReqNo(map.get(i).get(1).toString());
-                demandDO.setReqNm(map.get(i).get(2).toString());
-                demandDO.setReqPrdLine(map.get(i).get(3).toString());
-                demandDO.setDevpLeadDept(map.get(i).get(4).toString());
-                demandDO.setDevpResMng(map.get(i).get(5).toString());
-                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString())) {
-                    demandDO.setTotalWorkload((int)Float.parseFloat( map.get(i).get(6).toString()));
+                demandDO.setReqInnerSeq(map.get(i).get(0).toString().trim());
+                demandDO.setReqNo(map.get(i).get(1).toString().trim());
+                demandDO.setReqNm(map.get(i).get(2).toString().trim());
+                demandDO.setReqPrdLine(map.get(i).get(3).toString().trim());
+                demandDO.setDevpLeadDept(map.get(i).get(4).toString().trim());
+                demandDO.setDevpResMng(map.get(i).get(5).toString().trim());
+                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString().trim())) {
+                    demandDO.setTotalWorkload((int)Float.parseFloat( map.get(i).get(6).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + t + "行的" + "总工作量为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(7).toString())) {
-                    demandDO.setInputWorkload((int)Float.parseFloat( map.get(i).get(7).toString()));
+                if(!JudgeUtils.isEmpty(map.get(i).get(7).toString().trim())) {
+                    demandDO.setInputWorkload((int)Float.parseFloat( map.get(i).get(7).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo() + "第" + t + "行的" + "已录入工作量为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(8).toString())) {
-                    demandDO.setMonInputWorkload((int)Float.parseFloat( map.get(i).get(8).toString()));
+                if(!JudgeUtils.isEmpty(map.get(i).get(8).toString().trim())) {
+                    demandDO.setMonInputWorkload((int)Float.parseFloat( map.get(i).get(8).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
