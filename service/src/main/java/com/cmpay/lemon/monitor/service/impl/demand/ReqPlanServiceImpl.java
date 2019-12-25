@@ -2274,7 +2274,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     @Override
     public DemandTimeFrameHistoryRspBO findTimeNodeModificationDetails(DemandTimeFrameHistoryBO demandTimeFrameHistoryBO) {
-        //todo
         if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&!demandTimeFrameHistoryBO.getReqNo().isEmpty()){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只需要传一个条件!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);

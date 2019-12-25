@@ -144,8 +144,10 @@ public class ReqMonitorTimer {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		//调用企业微信应用发送推送
-		boardcastScheduler.pushValidationNotTimelyChecklist(body,file);
+		//如果有内容则调用企业微信应用发送推送
+        if(!productionDOList.isEmpty()||!operationApplicationDOList.isEmpty()) {
+            boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
+        }
 		file.delete();
 	}
 

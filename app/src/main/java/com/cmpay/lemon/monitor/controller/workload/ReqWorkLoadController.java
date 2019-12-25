@@ -52,7 +52,6 @@ public class ReqWorkLoadController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> getUserInfoPage(@RequestBody DemandReqDTO reqDTO) {
-        System.out.println("工作量查询");
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         DemandRspBO demandRspBO = reqWorkLoadService.findDemand(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
@@ -244,7 +243,6 @@ public class ReqWorkLoadController {
      */
     @RequestMapping("/update")
     public GenericRspDTO updateReqWorkLoad(@RequestBody DemandDTO demandDTO) {
-        System.out.println(demandDTO);
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqWorkLoadService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
