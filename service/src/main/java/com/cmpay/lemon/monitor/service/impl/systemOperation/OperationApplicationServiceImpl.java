@@ -722,7 +722,7 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<tr><td style='font-weight: bold;'>影响分析描述：</td><td colspan='5'>"+bean.getAnalysis()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>更新要求完成时间说明：</td><td colspan='5'>"+bean.getCompletionUpdate()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>备注：</td><td colspan='5'>"+bean.getRemark()+"</td></tr></table>");
-                mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次系统操作实施完成，请知悉。谢谢！<br/>"+sb.toString());
+                mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次系统操作实施完成。请知悉，并及时验证，谢谢！<br/>"+sb.toString());
                 // 这个类主要来发送邮件
                 boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 if(!isSend){

@@ -91,7 +91,7 @@ public class SendExcelOperationResultProductionUtil {
 			if(msb.getProStatus().equals("投产验证完成")){
 				addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
 			}else{
-				addCell(sheet, i+1, ++k,"验证未通过", bodyFormat,0,20);
+				addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
 			}
 		}
 		params[0]=String.valueOf(totalRow);
