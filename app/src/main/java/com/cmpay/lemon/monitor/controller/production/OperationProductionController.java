@@ -98,6 +98,13 @@ public class OperationProductionController {
         return GenericRspDTO.newSuccessInstance();
     }
 
+    // IT中心每周投产日投产情况通报
+    @RequestMapping("/sendGoITExportResult")
+    public GenericRspDTO<NoBody> sendGoITExportResult1(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        operationProductionService.sendGoITExportResult(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
     // 投产包检查
     @RequestMapping("/proPkgCheck")
     public GenericRspDTO proPkgCheck(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){

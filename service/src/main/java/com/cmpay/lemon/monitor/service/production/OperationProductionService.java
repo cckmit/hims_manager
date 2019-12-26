@@ -36,6 +36,7 @@ public interface OperationProductionService {
     void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExport(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String str);
+    void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, String str);
     String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String str);
     void doProductionDetailDownload(HttpServletRequest request, HttpServletResponse response, String str)throws Exception;
 

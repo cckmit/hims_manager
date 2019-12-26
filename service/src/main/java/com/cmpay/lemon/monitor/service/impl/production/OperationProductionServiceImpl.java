@@ -843,6 +843,39 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         return file;
     }
+
+    /**
+     * IT中心每周投产日情况通报附件1：投产清单
+     * @param list 投产需求集合
+     * @return
+     */
+    public File sendITExportExcel_Result(List<ProductionDO> list){
+        String fileName = "附件1：投产清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        try {
+            String filePath = path + fileName;
+            SendExcelOperationITResultProductionUtil util = new SendExcelOperationITResultProductionUtil();
+            util.createExcel(filePath, list,null);
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
     public File sendExportExcel_out(List<ProductionDO> list){
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
@@ -1047,6 +1080,100 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         return ;//ajaxDoneSuccess("邮件发送成功！");
     }
+    //IT中心投产日投产情况通报
+    @Override
+    public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        String[] pro_number_list=taskIdStr.split("~");
+        List<ProductionDO> list=new ArrayList<ProductionDO>();
+        StringBuffer sbfStr = new StringBuffer();
+        for(int i=0;i<pro_number_list.length;i++){
+            ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
+            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if(!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择部署完成待验证或者投产验证完成的投产状态发送!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            list.add(bean);
+            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
+                if(sbfStr.length()<1){
+                    sbfStr.append(bean.getMailLeader());
+                }else{
+                    sbfStr.append(";"+bean.getMailLeader());
+                }
+            }
+        }
+        File file=sendITExportExcel_Result(list);
+        List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
+        for(int i=0;i<list.size();i++){
+            pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
+        }
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        File file2=exportExcelIT_Nei(list, pblist, currentUser);
+
+        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
+
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+        /**
+         * 附件
+         */
+        Vector<File> files = new Vector<File>() ;
+        files.add(file2) ;
+        files.add(file) ;
+        mailInfo.setFile(files) ;
+        /**
+         * 收件人邮箱
+         */
+        String[] mailToAddressDemo = null;
+        if(sbfStr !=null && sbfStr.length()>0){
+            mailToAddressDemo = (sbfStr.toString()+";"+mp.getMailUser()).split(";");
+        }else{
+            mailToAddressDemo = mp.getMailUser().split(";");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        //收件人去重复
+        List<String> result = new ArrayList<String>();
+        boolean flag;
+        for(int i=0;i<mailToAddressDemo.length;i++){
+            flag = false;
+            for(int j=0;j<result.size();j++){
+                if(mailToAddressDemo[i].equals(result.get(j))){
+                    flag = true;
+                    break;
+                }
+            }
+            if(!flag){
+                result.add(mailToAddressDemo[i]);
+            }
+        }
+       // String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
+        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
+        mailInfo.setReceivers(mailToAddress);
+        //记录邮箱信息
+        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
+        //添加发送内容
+        mailInfo.setSubject("【IT中心每周投产日情况通报"+sdf.format(new Date())+"】");
+        mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本次投产正常,详情请参见附件<br/><br/>");
+        // 这个类主要来发送邮件
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        operationProductionDao.addMailFlow(bn);
+        if(isSend){
+            if(file.isFile() && file.exists()){
+                file.delete();
+            }
+        }
+    }
     // 投产结果通报
     @Override
     public void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
@@ -1210,6 +1337,33 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
+            util.createExcel(filePath, list,null,proBeanList,userName);
+            file=new File(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+    public File exportExcelIT_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
+        String fileName = "IT中心每周投产日情况通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
+        File file=null;
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        try {
+            String filePath = path + fileName;
+            SendExcelOperationITResultProblemUtil util = new SendExcelOperationITResultProblemUtil();
             util.createExcel(filePath, list,null,proBeanList,userName);
             file=new File(filePath);
         } catch (IOException e) {
