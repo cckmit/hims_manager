@@ -1128,9 +1128,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("<th>产品经理</th><th>生产验证方式</th><th>验证结果</th></tr>");
         for (ProductionDO bean : list) {
             String proNumber = bean.getProNumber();
-            if(bean.getProNumber().startsWith("REQ")){
-                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
-            }
+            //REQ完全展示
+//            if(bean.getProNumber().startsWith("REQ")){
+//                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
+//            }
             sb.append("<td >"+proNumber+"</td>");//投产编号
             sb.append("<td >"+bean.getProModule()+"</td>");//产品名称
             sb.append("<td >"+bean.getProNeed()+"</td>");//需求名称及内容简述
@@ -1141,7 +1142,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             if(bean.getProStatus().equals("投产验证完成")){
                 sb.append("<td >验证通过</td></tr>");//验证结果
             }else{
-                sb.append("<td >隔日验证</td></tr>");//验证结果
+                sb.append("<td >验证未完成</td></tr>");//验证结果
             }
 
         }

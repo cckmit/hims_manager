@@ -157,22 +157,10 @@ public class SendExcelOperationResultProblemUtil {
 			//生产验证方式
 			addCell(sheet, i+1, ++k, msb.getValidation(), bodyFormat,0,20);
 			//验证结果
-			if(msb.getValidation().equals("当晚验证")){
-				if(msb.getProStatus().equals("投产验证完成")){
-					addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
-				}else{
-					addCell(sheet, i+1, ++k,"验证未通过", bodyFormat,0,20);
-				}
-			}
-			if(msb.getValidation().equals("隔日验证")){
-				if(msb.getProStatus().equals("投产验证完成")){
-					addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
-				}else{
-					addCell(sheet, i+1, ++k,"验证未通过", bodyFormat,0,20);
-				}
-			}
-			if(msb.getValidation().equals("待业务触发验证")){
-			addCell(sheet, i+1, ++k, "待业务触发验证", bodyFormat,0,20);
+			if(msb.getProStatus().equals("投产验证完成")){
+				addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
+			}else{
+				addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
 			}
 		}
 		int len=rowList.size()+5;

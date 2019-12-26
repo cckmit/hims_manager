@@ -80,6 +80,11 @@ public class MonitorConstants {
      */
     public static final String PRODUCTION_PATH = BASE_URI + "/production";
 
+    /**
+     * 投产查询管理uri
+     */
+    public static final String PREPRODUCTION_PATH = BASE_URI + "/preproduction";
+
     public static final String REPORTFORM_PATH=BASE_URI + "/reportform";
     /**
      * 系统操作URL
