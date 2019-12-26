@@ -38,7 +38,7 @@ public class BoardcastScheduler {
     public void pushTimeOutWarning(String body){
         boardcastExecutor.getAccessToken(corpid, corpsecret);
         //todo  投产日期定时变动，发给自己，固定接收人
-        boardcastExecutor.sendTextMessage("WuLiangRui", body);
+        boardcastExecutor.sendTextMessage("@all", body);
 
     }
 
