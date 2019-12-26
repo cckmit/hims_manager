@@ -74,7 +74,7 @@ public class ReqWeekController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = df.format(date);
         demandBO.setRiskFeedbackTm(time);
-        reqTaskService.update(demandBO);
+        reqTaskService.WeedAndMonthFeedback(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 }

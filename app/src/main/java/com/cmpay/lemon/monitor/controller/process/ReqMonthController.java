@@ -76,7 +76,7 @@ public class ReqMonthController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String time = df.format(date);
         demandBO.setEndFeedbackTm(time);
-        reqTaskService.update(demandBO);
+        reqTaskService.WeedAndMonthFeedback(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
 }

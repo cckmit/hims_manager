@@ -447,7 +447,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
             }
-            demandDao.update(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
+
+            DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
+            // 这五个数值为int类型，该操作不会对其产生修改，但默认新对象数值为0，搜索并赋值保证不会变化
+            demandBO.setTotalWorkload(demandDO.getTotalWorkload());
+            demandBO.setInputWorkload(demandDO.getInputWorkload());
+            demandBO.setLastInputWorkload(demandDO.getLastInputWorkload());
+            demandBO.setRemainWorkload(demandDO.getRemainWorkload());
+            demandBO.setMonInputWorkload(demandDO.getMonInputWorkload());
+
+            demandDao.update(BeanUtils.copyPropertiesReturnDest(demandDO, demandBO));
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
@@ -1429,5 +1438,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     public List<DemandBO> getTestFnishWarn() {
         return BeanConvertUtils.convertList(demandDao.getTestFnishWarn(), DemandBO.class);
+    }
+
+    @Override
+    public void WeedAndMonthFeedback(DemandBO reqTask) {
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, reqTask);
+        demandDao.WeedAndMonthFeedback(demandDO);
     }
 }

@@ -1403,4 +1403,28 @@
         date_add(SYSDATE(), interval 2 day),'%Y-%m-%d');
     </select>
 
+    <update id="WeedAndMonthFeedback" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        req_inner_seq = #{reqInnerSeq}
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            ,pre_cur_period =#{preCurPeriod}
+        </if>
+        <if test="riskSolution != null and riskSolution != ''">
+            ,risk_solution =#{riskSolution}
+        </if>
+        <if test="endMonRemark != null and endMonRemark != ''">
+            ,end_mon_remark =#{endMonRemark}
+        </if>
+        <if test="endMonRemark != null and endMonRemark != ''">
+            ,end_mon_remark =#{endMonRemark}
+        </if>
+        <if test="riskFeedbackTm != null and riskFeedbackTm != ''">
+            ,risk_feedback_tm =#{riskFeedbackTm}
+        </if>
+        <if test="endFeedbackTm != null and endFeedbackTm != ''">
+            ,end_feedback_tm =#{endFeedbackTm }
+        </if>
+        WHERE req_inner_seq = #{reqInnerSeq}
+	</update>
 </mapper>

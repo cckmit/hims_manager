@@ -140,4 +140,7 @@ public interface ReqTaskService {
     List<DemandBO> getPrdFnishWarn();
     List<DemandBO> getUatUpdateWarn();
     List<DemandBO> getTestFnishWarn();
+
+    //周反馈月反馈修改
+    void WeedAndMonthFeedback(DemandBO reqTask);
 }
