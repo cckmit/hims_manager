@@ -1512,6 +1512,21 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqTask.setRemainWorkload(totWork);
             reqTask.setMonInputWorkload(0);
             planDao.updateReqWorkLoad(reqTask);
+            //导入功能点时将所有跨月的需求总功能点统一修改
+            DemandDO demanddo = new DemandDO();
+            demanddo.setReqNo(reqTask.getReqNo());
+            List<DemandDO> demandBOList = demandDao.find(demanddo);
+            if(!demandBOList.isEmpty()){
+                for(int i=0;i<demandBOList.size();i++){
+                    DemandDO demand = demandBOList.get(i);
+                    if (!JudgeUtils.isNull(demand)) {
+                            DemandBO demandBO =  new DemandBO();
+                            demandBO.setTotalWorkload(totWork);
+                            BeanUtils.copyPropertiesReturnDest(demandBO, demand);
+                            reqTaskService.update(demandBO);
+                        }
+                    }
+            }
         } catch (NumberFormatException e) {
             return "功能点导入失败："+e.getMessage();
         }
