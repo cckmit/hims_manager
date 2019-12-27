@@ -60,16 +60,11 @@ public class ProductTimeController {
     // 更新投产所有时间信息
     @RequestMapping("/updateProductTime")
     public GenericRspDTO update(@RequestBody ProductionTimeReqDTO productionTimeReqDTO){
-        String productTime = productionTimeReqDTO.getProductTime();
-        ProductionTimeBO productionTimeBO= null;
-        if (productTime != null && !productTime.trim().equals("")) {
-            int i = 0;
-            for (String tmpTime : productTime.trim().split(";")) {
-                productionTimeBO = new ProductionTimeBO();
-                productionTimeBO.setId(++i);
-                productionTimeBO.setTime(tmpTime);
-                productTimeService.updateProductTime(productionTimeBO);
-            }
+        List<ProductionTimeDTO> productTime = productionTimeReqDTO.getProductTime();
+        if (!productTime.isEmpty()) {
+            productTime.forEach(m->{
+                productTimeService.updateProductTime(BeanUtils.copyPropertiesReturnDest(new ProductionTimeBO(),m));
+            });
         }
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }

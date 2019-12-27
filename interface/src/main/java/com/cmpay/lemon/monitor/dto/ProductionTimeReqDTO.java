@@ -1,13 +1,15 @@
 package com.cmpay.lemon.monitor.dto;
 
-public class ProductionTimeReqDTO  {
-    String productTime;
+import java.util.List;
 
-    public String getProductTime() {
+public class ProductionTimeReqDTO  {
+    List<ProductionTimeDTO> productTime;
+
+    public List<ProductionTimeDTO> getProductTime() {
         return productTime;
     }
 
-    public void setProductTime(String productTime) {
+    public void setProductTime(List<ProductionTimeDTO> productTime) {
         this.productTime = productTime;
     }
 }
