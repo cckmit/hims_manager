@@ -840,6 +840,18 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             // 更新数据库
             updateList.forEach(m -> {
+                DemandDO demandDO = demandDao.get(m.getReqInnerSeq());
+                // 这个数值为int类型，该操作不会对其产生修改，但默认新对象数值为0，搜索并赋值保证不会变化
+                //总工作量
+                m.setTotalWorkload(demandDO.getTotalWorkload());
+                //已录入总工作量
+                m.setInputWorkload(demandDO.getInputWorkload());
+                //上月录入
+                m.setLastInputWorkload(demandDO.getLastInputWorkload());
+                //剩余录入工作量
+                m.setRemainWorkload(demandDO.getRemainWorkload());
+                //本月录入工作量
+                m.setMonInputWorkload(demandDO.getMonInputWorkload());
                 demandDao.update(m);
             });
 
