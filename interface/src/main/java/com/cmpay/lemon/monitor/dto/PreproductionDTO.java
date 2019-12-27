@@ -35,13 +35,11 @@ public class PreproductionDTO extends GenericDTO {
     //@Excel(name = "验证人联系方式")
     private String identifierTel;
     //@Excel(name = "验证复核人")
-    private String prChecker;
+    private String proChecker;
     //@Excel(name = "验证复核人联系方式")
     private String checkerTel;
     //@Excel(name = "预投产需求状态")
     private String preStatus;
-    //@Excel(name = "预投产验证结果")
-    private String preAdvanceResult;
     //@Excel(name = "备注")
     private String remark;
     //@Excel(name = "预投产包上传时间")
@@ -49,7 +47,12 @@ public class PreproductionDTO extends GenericDTO {
     //@Excel(name = "预投产包名")
     private String proPkgName;
     //@Excel(name = "预投产部署结果")
-    private String preductionDeploymentResult;
+    private String productionDeploymentResult;
+    /**
+     * @Fields proAdvanceResult 预投产验证结果
+     */
+    //@Excel(name = "预投产验证结果")
+    private String proAdvanceResult;
     /**
      * 页数
      */
@@ -60,32 +63,6 @@ public class PreproductionDTO extends GenericDTO {
     private int pageSize;
 
     public PreproductionDTO() {
-    }
-
-    public PreproductionDTO(String preNumber, String preNeed, String preType, Date preDateStart, Date preDateEnd, Date preDate, String applicationDept, String preApplicant, String applicantTel, String preManager, String developmentLeader, String mailLeader, String identifier, String identifierTel, String prChecker, String checkerTel, String preStatus, String preAdvanceResult, String remark, Date proPkgTime, String proPkgName, int pageNum, int pageSize) {
-        this.preNumber = preNumber;
-        this.preNeed = preNeed;
-        this.preType = preType;
-        this.preDateStart = preDateStart;
-        this.preDateEnd = preDateEnd;
-        this.preDate = preDate;
-        this.applicationDept = applicationDept;
-        this.preApplicant = preApplicant;
-        this.applicantTel = applicantTel;
-        this.preManager = preManager;
-        this.developmentLeader = developmentLeader;
-        this.mailLeader = mailLeader;
-        this.identifier = identifier;
-        this.identifierTel = identifierTel;
-        this.prChecker = prChecker;
-        this.checkerTel = checkerTel;
-        this.preStatus = preStatus;
-        this.preAdvanceResult = preAdvanceResult;
-        this.remark = remark;
-        this.proPkgTime = proPkgTime;
-        this.proPkgName = proPkgName;
-        this.pageNum = pageNum;
-        this.pageSize = pageSize;
     }
 
     @Override
@@ -105,25 +82,17 @@ public class PreproductionDTO extends GenericDTO {
                 ", mailLeader='" + mailLeader + '\'' +
                 ", identifier='" + identifier + '\'' +
                 ", identifierTel='" + identifierTel + '\'' +
-                ", prChecker='" + prChecker + '\'' +
+                ", proChecker='" + proChecker + '\'' +
                 ", checkerTel='" + checkerTel + '\'' +
                 ", preStatus='" + preStatus + '\'' +
-                ", preAdvanceResult='" + preAdvanceResult + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
                 ", remark='" + remark + '\'' +
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +
-                ", preductionDeploymentResult='" + preductionDeploymentResult + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
-    }
-
-    public String getPreductionDeploymentResult() {
-        return preductionDeploymentResult;
-    }
-
-    public void setPreductionDeploymentResult(String preductionDeploymentResult) {
-        this.preductionDeploymentResult = preductionDeploymentResult;
     }
 
     public String getPreNumber() {
@@ -238,12 +207,12 @@ public class PreproductionDTO extends GenericDTO {
         this.identifierTel = identifierTel;
     }
 
-    public String getPrChecker() {
-        return prChecker;
+    public String getProChecker() {
+        return proChecker;
     }
 
-    public void setPrChecker(String prChecker) {
-        this.prChecker = prChecker;
+    public void setProChecker(String proChecker) {
+        this.proChecker = proChecker;
     }
 
     public String getCheckerTel() {
@@ -262,12 +231,12 @@ public class PreproductionDTO extends GenericDTO {
         this.preStatus = preStatus;
     }
 
-    public String getPreAdvanceResult() {
-        return preAdvanceResult;
+    public String getProAdvanceResult() {
+        return proAdvanceResult;
     }
 
-    public void setPreAdvanceResult(String preAdvanceResult) {
-        this.preAdvanceResult = preAdvanceResult;
+    public void setProAdvanceResult(String proAdvanceResult) {
+        this.proAdvanceResult = proAdvanceResult;
     }
 
     public String getRemark() {
@@ -292,6 +261,14 @@ public class PreproductionDTO extends GenericDTO {
 
     public void setProPkgName(String proPkgName) {
         this.proPkgName = proPkgName;
+    }
+
+    public String getProductionDeploymentResult() {
+        return productionDeploymentResult;
+    }
+
+    public void setProductionDeploymentResult(String productionDeploymentResult) {
+        this.productionDeploymentResult = productionDeploymentResult;
     }
 
     public int getPageNum() {

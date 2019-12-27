@@ -1520,10 +1520,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for(int i=0;i<demandBOList.size();i++){
                     DemandDO demand = demandBOList.get(i);
                     if (!JudgeUtils.isNull(demand)) {
-                            DemandBO demandBO =  new DemandBO();
-                            demandBO.setTotalWorkload(totWork);
-                            BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                            reqTaskService.update(demandBO);
+//                            DemandBO demandBO =  new DemandBO();
+                            demand.setTotalWorkload(totWork);
+                            demand.setLeadDeptPro(result.get("leadDeptRate"));
+                            demand.setCoorDeptPro(result.get("coorDeptRate"));
+                            demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
+                            demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
+//                            BeanUtils.copyPropertiesReturnDest(demandBO, demand);
+                            planDao.updateReqWorkLoad(demand);
                         }
                     }
             }

@@ -76,7 +76,6 @@ public class PreProductionServiceImpl implements PreProductionService {
     @Override
     public PreproductionRspBO find(PreproductionBO productionBO) {
         PageInfo<PreproductionBO> pageInfo = getPageInfo(productionBO);
-        System.err.println(pageInfo.getSize());
         List<PreproductionBO> productionBOList = BeanConvertUtils.convertList(pageInfo.getList(), PreproductionBO.class);
         PreproductionRspBO productionRspBO = new PreproductionRspBO();
         productionRspBO.setPreproductionBOList(productionBOList);
@@ -87,8 +86,6 @@ public class PreProductionServiceImpl implements PreProductionService {
     private PageInfo<PreproductionBO> getPageInfo(PreproductionBO productionBO) {
         PreproductionDO preproductionDO = new PreproductionDO();
         BeanConvertUtils.convert(preproductionDO, productionBO);
-        System.err.println(preproductionDO.toString());
-        System.err.println(iPreproductionExtDao.find(preproductionDO).size());
         PageInfo<PreproductionBO> pageInfo = PageUtils.pageQueryWithCount(productionBO.getPageNum(), productionBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(iPreproductionExtDao.find(preproductionDO), PreproductionBO.class));
         return pageInfo;
