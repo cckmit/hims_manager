@@ -17,5 +17,7 @@ public interface JiraOperationService {
 
     void getJiraIssue(List<DemandDO> demandDOList);
 
+    void jiraEpicKey(DemandDO demandDO);
+
     void jiraTestMainTaskBatchEdit(MultipartFile file);
 }

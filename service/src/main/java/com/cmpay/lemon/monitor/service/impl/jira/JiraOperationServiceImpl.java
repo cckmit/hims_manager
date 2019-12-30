@@ -28,10 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class JiraOperationServiceImpl implements JiraOperationService {
@@ -252,15 +249,14 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         //添加测试主任务
         this.CreateJiraMasterTask(TESTINGDIVISION,demandBO,demandJiraDO,TESTMAINTASK);
     }
-    @Async
     @Override
     public void getJiraIssue(List<DemandDO> demandDOList) {
         demandDOList.forEach(demandDO -> {
-            jiraEpicKey(demandDO);
+            this.jiraEpicKey(demandDO);
         });
-
     }
     @Async
+    @Override
     public void jiraEpicKey(DemandDO demandDO) {
         //获取jira epic key
         DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
