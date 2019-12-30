@@ -68,5 +68,4 @@ public class ProductTimeController {
         }
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
-
 }

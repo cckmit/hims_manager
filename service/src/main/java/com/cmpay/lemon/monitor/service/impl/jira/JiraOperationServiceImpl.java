@@ -252,29 +252,33 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         //添加测试主任务
         this.CreateJiraMasterTask(TESTINGDIVISION,demandBO,demandJiraDO,TESTMAINTASK);
     }
-
+    @Async
     @Override
     public void getJiraIssue(List<DemandDO> demandDOList) {
         demandDOList.forEach(demandDO -> {
-            //获取jira epic key
-            DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
-            if(demandJiraDO==null){
-                return;
-            }
-            String epicKey = demandJiraDO.getJiraKey();
-
-            //获取jira epic key获取测试主任务
-            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
-            if(demandJiraDevelopMasterTaskDO==null){
-                return;
-            }
-            String jiraKey = demandJiraDevelopMasterTaskDO.getJiraKey();
-            JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(jiraKey);
-            demandDO.setAssignee(jiraTaskBodyBO.getAssignee());
-            demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanStartTime());
-            demandDO.setPlanEndTime(jiraTaskBodyBO.getPlanEndTime());
+            jiraEpicKey(demandDO);
         });
 
+    }
+    @Async
+    public void jiraEpicKey(DemandDO demandDO) {
+        //获取jira epic key
+        DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
+        if(demandJiraDO==null){
+            return;
+        }
+        String epicKey = demandJiraDO.getJiraKey();
+
+        //获取jira epic key获取测试主任务
+        DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
+        if(demandJiraDevelopMasterTaskDO==null){
+            return;
+        }
+        String jiraKey = demandJiraDevelopMasterTaskDO.getJiraKey();
+        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(jiraKey);
+        demandDO.setAssignee(jiraTaskBodyBO.getAssignee());
+        demandDO.setPlanStartTime(jiraTaskBodyBO.getPlanStartTime());
+        demandDO.setPlanEndTime(jiraTaskBodyBO.getPlanEndTime());
     }
 
     /*
