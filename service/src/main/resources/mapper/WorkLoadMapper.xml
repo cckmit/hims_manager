@@ -617,7 +617,7 @@
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
-            a.pre_cur_period &gt; 50
+            a.pre_cur_period &gt; 50 and a.req_sts not in ('60' )
             <if test="reqNm != null and reqNm != ''">
                 AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
             </if>
