@@ -228,7 +228,7 @@
             <if test="checkerTel != null and checkerTel != ''" >
                 checker_tel = #{checkerTel,jdbcType=VARCHAR}
             </if>
-            <if test="remark != null and preNumber != ''" >
+            <if test="remark != null and remark != ''" >
                  remark = #{remark,jdbcType=VARCHAR}
             </if>
             <if test="mailLeader != null and mailLeader != ''" >
@@ -253,7 +253,7 @@
                 and pre_type = #{preType,jdbcType=VARCHAR}
             </if>
             <if test="preDateStart != null and preDateEnd != null  ">
-                and pre_date between #{proDateStart,jdbcType=DATE} and #{proDateEnd,jdbcType=DATE}
+                and pre_date between #{preDateStart,jdbcType=DATE} and #{preDateEnd,jdbcType=DATE}
             </if>
             <if test="preDate != null" >
                 and pre_date = #{preDate,jdbcType=DATE}
@@ -300,7 +300,7 @@
             <if test="checkerTel != null and checkerTel != ''" >
                 and checker_tel = #{checkerTel,jdbcType=VARCHAR}
             </if>
-            <if test="remark != null and preNumber != ''" >
+            <if test="remark != null and remark != ''" >
                 and remark = #{remark,jdbcType=VARCHAR}
             </if>
             <if test="mailLeader != null and mailLeader != ''" >
