@@ -441,14 +441,19 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         setDefaultValue(demandBO);
         setDefaultUser(demandBO);
         setReqSts(demandBO);
-
+        //查询原数据
+        DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
+        //传入的内部需求编号为REQ前缀,即内部需求编号不为空
+        if(!demandBO.getReqInnerSeq().trim().startsWith("REQ")) {
+            //校验内部需求编号是否存在
+            checkReqNo(demandBO,demandDO);
+        }
         try {
             //如果修改了需求节点计划时间
             if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
             }
 
-            DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
             // 这五个数值为int类型，该操作不会对其产生修改，但默认新对象数值为0，搜索并赋值保证不会变化
             demandBO.setTotalWorkload(demandDO.getTotalWorkload());
             demandBO.setInputWorkload(demandDO.getInputWorkload());
@@ -462,6 +467,20 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
         jiraOperationService.createEpic(demandBO);
+    }
+
+    private void checkReqNo(DemandBO demandBO,DemandDO demandDO) {
+        //判断需求编号是否修改,若已经修改则查询修改后的内部需求编号是否已经被使用
+        if(!demandBO.getReqNo().trim().equals(demandDO.getReqNo().trim())){
+            DemandDO demandDO1 = new DemandDO();
+            demandDO1.setReqImplMon(demandBO.getReqImplMon());
+            demandDO1.setReqNo(demandBO.getReqNo());
+            List<DemandDO> demandDOS = demandDao.find(demandDO1);
+            if(!demandDOS.isEmpty()){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该内部需求编号有重复，请确认后输入!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
     }
 
     @Override
@@ -1209,7 +1228,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
-                System.err.println(devpLeadDept);
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
                 String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
                 if(deptManagerName.equals(userName)||productMng.equals(userName)) {
