@@ -30,6 +30,13 @@ public interface IDemandExtDao extends IDemandDao {
      */
     List<DemandDO> findUnFinishReq(String month);
     /**
+     * 找到上月已完成但工作量未录入完
+     * @param month
+     * @return
+     */
+    List<DemandDO> findUnFinishReq1(String month);
+
+    /**
      * 插入存量需求
      */
     void insertStockReq(DemandDO demand);
