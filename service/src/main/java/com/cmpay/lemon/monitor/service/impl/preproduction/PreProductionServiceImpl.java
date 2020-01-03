@@ -114,12 +114,19 @@ public class PreProductionServiceImpl implements PreProductionService {
     public void add(PreproductionBO productionBO){
         PreproductionDO preproductionDO = new PreproductionDO();
         BeanConvertUtils.convert(preproductionDO, productionBO);
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         preproductionDO.setPreStatus("预投产提出");
         //预投产验证结果
         preproductionDO.setProAdvanceResult("未通过");
         //预投产部署结果
         preproductionDO.setProductionDeploymentResult("未部署");
-        System.err.println(preproductionDO);
+
+        ScheduleDO sBean=new ScheduleDO();
+        sBean.setPreOperation(preproductionDO.getPreStatus());
+        ScheduleDO schedule=new ScheduleDO(preproductionDO.getPreNumber(), currentUser, "预投产录入", sBean.getPreOperation(), sBean.getPreOperation(), "预投产录入");
+        operationProductionDao.insertSchedule(schedule);
+
         iPreproductionExtDao.insert(preproductionDO);
     }
 
