@@ -810,6 +810,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 //设置默认值
                 //插入SVN为否
                 m.setIsSvnBuild("否");
+                m.setReqSts("10");
                 insertList.add(m);
             } else {
                 m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
