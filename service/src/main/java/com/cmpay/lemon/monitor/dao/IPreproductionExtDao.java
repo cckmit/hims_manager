@@ -14,4 +14,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface IPreproductionExtDao extends IPreproductionDao {
     //上传投产包，更新包名，上传时间
     void updatePropkg(PreproductionDO preproductionDO);
+
+    void updatePreSts(PreproductionDO preproductionDO);
 }

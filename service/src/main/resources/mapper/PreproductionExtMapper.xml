@@ -244,10 +244,10 @@
         from t_preproduction_records
         <where >
             <if test="preNumber != null and preNumber != ''" >
-                and pre_number = #{preNumber,jdbcType=VARCHAR}
+                and pre_number LIKE CONCAT('%',#{preNumber,jdbcType=VARCHAR},'%')
             </if>
             <if test="preNeed != null and preNeed != ''" >
-                and pre_need = #{preNeed,jdbcType=VARCHAR}
+                and pre_need LIKE CONCAT('%',#{preNeed,jdbcType=VARCHAR},'%')
             </if>
             <if test="preType != null and preType != ''" >
                 and pre_type = #{preType,jdbcType=VARCHAR}
@@ -262,7 +262,7 @@
                 and application_dept = #{applicationDept,jdbcType=VARCHAR}
             </if>
             <if test="preApplicant != null and preApplicant != ''" >
-                and pre_applicant = #{preApplicant,jdbcType=VARCHAR}
+                and pre_applicant LIKE CONCAT('%',#{preApplicant,jdbcType=VARCHAR},'%')
             </if>
             <if test="applicantTel != null and applicantTel != ''" >
                 and applicant_tel = #{applicantTel,jdbcType=VARCHAR}
@@ -317,6 +317,22 @@
             </if>
             <if test="proPkgName != null and proPkgName != ''">
                 pro_pkg_name = #{proPkgName},
+            </if>
+        </set>
+        WHERE pre_number = #{preNumber}
+    </update>
+
+    <update id="updatePreSts" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO">
+        UPDATE t_preproduction_records
+        <set >
+            <if test="preStatus != null" >
+                pre_status = #{preStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionDeploymentResult != null" >
+                production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proAdvanceResult != null" >
+                pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
             </if>
         </set>
         WHERE pre_number = #{preNumber}

@@ -75,6 +75,7 @@ public class PreProductionController {
 
     @RequestMapping("/updateAllProduction")
     public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        preProductionService.updateAllProduction(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
 
