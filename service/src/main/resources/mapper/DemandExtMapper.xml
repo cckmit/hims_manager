@@ -893,6 +893,15 @@
         and req_sts not in ('30','40','50','60');
     </select>
 
+    <select id="findUnFinishReq1" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_info
+        where req_impl_mon=#{reqImplMon}
+        and req_sts='50' and remain_workload > mon_input_workload
+    </select>
+
+
     <insert id="insertStockReq" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
 		insert into t_demand_info(
 		req_inner_seq ,
