@@ -38,4 +38,7 @@ public interface IDictionaryExtDao extends IDictionaryDao {
      */
 
     public List<DictionaryDO> findDictionary();
+
+
+    public int updateWorkloadLockStatus(String workloadLockStatus);
 }

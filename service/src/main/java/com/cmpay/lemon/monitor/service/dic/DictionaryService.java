@@ -37,4 +37,6 @@ public interface DictionaryService {
      */
 
     DictionaryBO findDictionary();
+
+    void workloadLockStatus();
 }

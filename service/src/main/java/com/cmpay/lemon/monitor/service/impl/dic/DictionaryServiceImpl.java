@@ -20,6 +20,7 @@ import java.util.Map;
 @Service
 @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
 public class DictionaryServiceImpl implements DictionaryService {
+    static final String  WORKLOADLOCKSTATUS="WORKLOAD_LOCK_STATUS";
     @Autowired
     private IDictionaryExtDao dictionaryDao;
 
@@ -91,6 +92,23 @@ public class DictionaryServiceImpl implements DictionaryService {
         DictionaryBO dictionaryBO = new DictionaryBO();
         dictionaryBO.setDictionaryBOList(dictionaryBOList);
         return dictionaryBO;
+    }
+
+    @Override
+    public void workloadLockStatus() {
+        System.err.println(1);
+        DictionaryDO dictionaryDO = new DictionaryDO();
+        dictionaryDO.setDicId(WORKLOADLOCKSTATUS);
+        List<DictionaryDO> dictionaryDOList = dictionaryDao.getDicByDicId(dictionaryDO);
+        String workloadLockStatus= dictionaryDOList.get(0).getValue();
+        if(workloadLockStatus.equals("off")){
+            //变为开启
+            workloadLockStatus="no";
+        }else{
+            //变为关闭
+            workloadLockStatus="off";
+        }
+        dictionaryDao.updateWorkloadLockStatus(workloadLockStatus);
     }
 
 }

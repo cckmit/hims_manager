@@ -860,11 +860,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public void changeReq(String req_impl_mon){
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
-            //todo
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
-
+            //找到为完成状态且工作量未录入完的需求
             List<DemandDO> list1 = demandDao.findUnFinishReq1(req_impl_mon);
-
+            //拼接
             list.addAll(list1);
             //获取下个月时间
             SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");

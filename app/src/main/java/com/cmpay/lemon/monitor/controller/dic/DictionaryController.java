@@ -91,6 +91,10 @@ public class DictionaryController {
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOS, DictionaryDTO.class));
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
-
+    @RequestMapping("/workloadLockStatus")
+    public GenericRspDTO updateReqWorkLoad(GenericDTO<NoBody> req) {
+        dictionaryService.workloadLockStatus();
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
 
 }
