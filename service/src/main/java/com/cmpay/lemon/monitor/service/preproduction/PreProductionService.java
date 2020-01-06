@@ -30,4 +30,10 @@ public interface PreProductionService {
      * @return
      */
     PreproductionRspBO find(PreproductionBO productionBO);
+    void update(PreproductionBO productionBO);
+    void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
+    void add(PreproductionBO productionBO);
+    void doBatchImport(MultipartFile file,String reqNumber);
+    //投产包下载
+    void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 }

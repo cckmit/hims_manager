@@ -59,4 +59,43 @@ public class PreProductionController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
+    @RequestMapping("/update")
+    public GenericRspDTO<NoBody> PreProductionUpdate( @RequestBody PreproductionReqDTO reqDTO){
+        PreproductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new PreproductionBO(), reqDTO);
+        preProductionService.update(productionBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    @RequestMapping("/add")
+    public GenericRspDTO<NoBody> PreProductionAdd( @RequestBody PreproductionReqDTO reqDTO){
+        PreproductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new PreproductionBO(), reqDTO);
+        preProductionService.add(productionBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    @RequestMapping("/updateAllProduction")
+    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        preProductionService.updateAllProduction(request,response,taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 投产包
+     *
+     * @return
+     */
+    @PostMapping("/batch/import")
+    public GenericRspDTO<NoBody> batchImport(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        String reqNumber = request.getParameter("proNumber");
+        preProductionService.doBatchImport(file,reqNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    // 下载投产包
+    @RequestMapping("/pkgDownload")
+    public GenericRspDTO<NoBody> pkgDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
+        preProductionService.pkgDownload(request,response,proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

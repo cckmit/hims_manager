@@ -114,7 +114,7 @@
             <if test="preNumber != null and preNumber != ''" >
                 #{preNumber,jdbcType=VARCHAR},
             </if>
-            <if test="preNeed != null and preTpreNeedype != ''" >
+            <if test="preNeed != null and preNeed != ''" >
                 #{preNeed,jdbcType=VARCHAR},
             </if>
             <if test="preType != null and preType != ''" >
@@ -177,62 +177,62 @@
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
         update t_preproduction_records
         <set >
-            <if test="preNeed != null and preNeed != ''" >
-               pre_need = #{preNeed,jdbcType=VARCHAR}
+            <if test="preNeed != null" >
+                pre_need = #{preNeed,jdbcType=VARCHAR},
             </if>
-            <if test="preType != null and preType != ''" >
-                pre_type = #{preType,jdbcType=VARCHAR}
+            <if test="preType != null" >
+                pre_type = #{preType,jdbcType=VARCHAR},
             </if>
             <if test="preDate != null" >
-                pre_date = #{preDate,jdbcType=DATE}
+                pre_date = #{preDate,jdbcType=DATE},
             </if>
-            <if test="applicationDept != null and applicationDept != ''" >
-                application_dept = #{applicationDept,jdbcType=VARCHAR}
+            <if test="applicationDept != null" >
+                application_dept = #{applicationDept,jdbcType=VARCHAR},
             </if>
-            <if test="preApplicant != null and preApplicant != ''" >
-              pre_applicant = #{preApplicant,jdbcType=VARCHAR}
+            <if test="preApplicant != null" >
+                pre_applicant = #{preApplicant,jdbcType=VARCHAR},
             </if>
-            <if test="applicantTel != null and applicantTel != ''" >
-                 applicant_tel = #{applicantTel,jdbcType=VARCHAR}
+            <if test="applicantTel != null" >
+                applicant_tel = #{applicantTel,jdbcType=VARCHAR},
             </if>
-            <if test="preManager != null and preManager != ''" >
-                 pre_manager = #{preManager,jdbcType=VARCHAR}
+            <if test="preManager != null" >
+                pre_manager = #{preManager,jdbcType=VARCHAR},
             </if>
-            <if test="preStatus != null and preStatus != ''" >
-                pre_status = #{preStatus,jdbcType=VARCHAR}
+            <if test="preStatus != null" >
+                pre_status = #{preStatus,jdbcType=VARCHAR},
             </if>
-            <if test="productionDeploymentResult != null and productionDeploymentResult != ''" >
-                 production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR}
+            <if test="productionDeploymentResult != null" >
+                production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},
             </if>
-            <if test="proAdvanceResult != null and proAdvanceResult != ''" >
-                pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR}
+            <if test="proAdvanceResult != null" >
+                pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
             </if>
             <if test="proPkgTime != null" >
-                 pro_pkg_time = #{proPkgTime,jdbcType=DATE}
+                pro_pkg_time = #{proPkgTime,jdbcType=DATE},
             </if>
-            <if test="proPkgName != null and proPkgName != ''" >
-                pro_pkg_name = #{proPkgName,jdbcType=VARCHAR}
+            <if test="proPkgName != null" >
+                pro_pkg_name = #{proPkgName,jdbcType=VARCHAR},
             </if>
-            <if test="developmentLeader != null and developmentLeader != ''" >
-                development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            <if test="developmentLeader != null" >
+                development_leader = #{developmentLeader,jdbcType=VARCHAR},
             </if>
-            <if test="identifier != null and identifier != ''" >
-                identifier = #{identifier,jdbcType=VARCHAR}
+            <if test="identifier != null" >
+                identifier = #{identifier,jdbcType=VARCHAR},
             </if>
-            <if test="identifierTel != null and identifierTel != ''" >
-                identifier_tel = #{identifierTel,jdbcType=VARCHAR}
+            <if test="identifierTel != null" >
+                identifier_tel = #{identifierTel,jdbcType=VARCHAR},
             </if>
-            <if test="proChecker != null and proChecker != ''" >
-                pro_checker = #{proChecker,jdbcType=VARCHAR}
+            <if test="proChecker != null" >
+                pro_checker = #{proChecker,jdbcType=VARCHAR},
             </if>
-            <if test="checkerTel != null and checkerTel != ''" >
-                checker_tel = #{checkerTel,jdbcType=VARCHAR}
+            <if test="checkerTel != null" >
+                checker_tel = #{checkerTel,jdbcType=VARCHAR},
             </if>
-            <if test="remark != null and remark != ''" >
-                 remark = #{remark,jdbcType=VARCHAR}
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
             </if>
-            <if test="mailLeader != null and mailLeader != ''" >
-                mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}
+            <if test="mailLeader != null" >
+                mail_leader = #{mailLeader,jdbcType=LONGVARCHAR},
             </if>
         </set>
         where pre_number = #{preNumber,jdbcType=VARCHAR}
@@ -244,10 +244,10 @@
         from t_preproduction_records
         <where >
             <if test="preNumber != null and preNumber != ''" >
-                and pre_number = #{preNumber,jdbcType=VARCHAR}
+                and pre_number LIKE CONCAT('%',#{preNumber,jdbcType=VARCHAR},'%')
             </if>
             <if test="preNeed != null and preNeed != ''" >
-                and pre_need = #{preNeed,jdbcType=VARCHAR}
+                and pre_need LIKE CONCAT('%',#{preNeed,jdbcType=VARCHAR},'%')
             </if>
             <if test="preType != null and preType != ''" >
                 and pre_type = #{preType,jdbcType=VARCHAR}
@@ -262,7 +262,7 @@
                 and application_dept = #{applicationDept,jdbcType=VARCHAR}
             </if>
             <if test="preApplicant != null and preApplicant != ''" >
-                and pre_applicant = #{preApplicant,jdbcType=VARCHAR}
+                and pre_applicant LIKE CONCAT('%',#{preApplicant,jdbcType=VARCHAR},'%')
             </if>
             <if test="applicantTel != null and applicantTel != ''" >
                 and applicant_tel = #{applicantTel,jdbcType=VARCHAR}
@@ -308,4 +308,34 @@
             </if>
         </where>
     </select>
+
+    <update id="updatePropkg" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO">
+        UPDATE t_preproduction_records
+        <set >
+            <if test="proPkgTime != null">
+                pro_pkg_time = #{proPkgTime},
+            </if>
+            <if test="proPkgName != null and proPkgName != ''">
+                pro_pkg_name = #{proPkgName},
+            </if>
+        </set>
+        WHERE pre_number = #{preNumber}
+    </update>
+
+    <update id="updatePreSts" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO">
+        UPDATE t_preproduction_records
+        <set >
+            <if test="preStatus != null" >
+                pre_status = #{preStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionDeploymentResult != null" >
+                production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},
+            </if>
+            <if test="proAdvanceResult != null" >
+                pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE pre_number = #{preNumber}
+    </update>
+
 </mapper>
