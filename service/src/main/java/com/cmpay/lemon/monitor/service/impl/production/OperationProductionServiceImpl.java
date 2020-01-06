@@ -376,10 +376,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
                 mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
+                //获取投产申请人的邮箱
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
 
                 MailFlowConditionDO mfwa = new MailFlowConditionDO();
                 mfwa.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getIdentifier());
+                //获取投产验证人的邮箱
                 MailFlowDO mfaa = operationProductionDao.searchUserEmail(mfwa);
 
                 List<ProductionDO> bean=new ArrayList<ProductionDO>();
@@ -399,7 +401,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 Vector filesv = new Vector();
                 filesv.add(file);
                 mailInfo.setFile(filesv);
-
+                //收件人：投产申请人，投产验证人employeeEmail
                 String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
                 mailInfo.setReceivers(mailToAddress);
                 StringBuffer sb = new StringBuffer();

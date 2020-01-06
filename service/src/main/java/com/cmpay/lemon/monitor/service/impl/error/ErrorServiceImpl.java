@@ -393,7 +393,7 @@ public class ErrorServiceImpl implements ErrorService {
         if(uattsg_cd==null){
             //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在UAT数控库pubttms表中已存在");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在UAT数控库pubttms表中不存在");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         if(uatmsg_cd==null){
