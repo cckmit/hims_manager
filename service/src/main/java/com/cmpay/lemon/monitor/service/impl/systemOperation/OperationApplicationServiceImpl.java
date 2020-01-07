@@ -199,7 +199,6 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         bean.setMailRecipient(mailSum);
         //添加部门经理邮箱地址
         MailFlowConditionDO voManager = new MailFlowConditionDO();
-        System.err.println(bean.getApplicationSector());
         voManager.setEmployeeName(operationProductionService.findDeptManager(bean.getApplicationSector()).getDeptManagerName());
         MailFlowDO mManager = operationProductionService.searchUserEmail(voManager);
         if (bean.getSysOperType().equals("数据变更")) {
@@ -687,10 +686,16 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 //发送审批邮件
                 String operName=bean.getSysOperType();
                 //添加申请人邮箱地址
-
                 MailFlowConditionDO vo=new MailFlowConditionDO();
                 vo.setEmployeeName(bean.getOperApplicant());
                 MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+                //验证人
+                vo.setEmployeeName(bean.getIdentifier());
+                MailFlowDO mfaa=operationProductionDao.searchUserEmail(vo);
+                //添加部门经理邮箱地址
+                MailFlowConditionDO voDept = new MailFlowConditionDO();
+                voDept.setEmployeeName(operationProductionService.findDeptManager(bean.getApplicationSector()).getDeptManagerName());
+                MailFlowDO mvoDept = operationProductionService.searchUserEmail(voDept);
 
                 // 创建邮件信息
                 MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -703,7 +708,11 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
 
                 //记录邮箱信息
                 MailFlowDO bnb=new MailFlowDO("【"+operName+"结果通报】",Constant.P_EMAIL_NAME, mflow.getEmployeeEmail(),"");
-                mailInfo.setReceivers(mflow.getEmployeeEmail().split(";"));
+                //收件人：投产申请人，投产验证人employeeEmail
+                String[] mailToAddress = (mflow.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
+                //抄送人；部门经理
+                mailInfo.setReceivers(mailToAddress);
+                mailInfo.setCcs(mvoDept.getEmployeeEmail().split(";"));
                 StringBuffer sb=new StringBuffer();
 
                 mailInfo.setSubject("【"+operName+"结果通报】-"+bean.getOperRequestContent()+"-"+bean.getOperApplicant());
@@ -716,8 +725,8 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
                 sb.append("<td style='font-weight: bold;'>验证人:</td><td>"+bean.getIdentifier()+"</td>");
                 sb.append("<td style='font-weight: bold;'>联系方式：</td><td>"+bean.getIdentifierTel()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>验证测试类型：</td><td>"+bean.getValidationType()+"</td>");
-                sb.append("<td style='font-weight: bold;'>验证说明：</td><td>"+bean.getValidationInstruction()+"</td></tr>");
-                sb.append("<tr><td style='font-weight: bold;'>开发负责人：</td><td>"+bean.getDevelopmentLeader()+"</td>");
+                sb.append("<td style='font-weight: bold;'>验证说明：</td><td>"+bean.getValidationInstruction()+"</td>");
+                sb.append("<td style='font-weight: bold;'>开发负责人：</td><td>"+bean.getDevelopmentLeader()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>系统操作原因描述：</td><td colspan='5'>"+bean.getOperApplicationReason()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>影响分析描述：</td><td colspan='5'>"+bean.getAnalysis()+"</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>更新要求完成时间说明：</td><td colspan='5'>"+bean.getCompletionUpdate()+"</td></tr>");
