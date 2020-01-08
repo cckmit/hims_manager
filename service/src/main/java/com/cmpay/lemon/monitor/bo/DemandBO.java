@@ -89,7 +89,7 @@ public class DemandBO {
     private String creatUser;
     private String updateUser;
     private String reqAbnorType;
-
+    //时间修改备注
     private String revisionTimeNote;
     /**
      * 页数
