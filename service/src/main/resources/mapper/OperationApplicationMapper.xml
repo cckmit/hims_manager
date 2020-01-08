@@ -187,6 +187,9 @@
     	<if test="operApplicant != null and operApplicant != ''">
     		and oper_applicant LIKE CONCAT('%',#{operApplicant},'%')
     	</if>
+		 <if test="applicationSector != null and applicationSector != ''">
+			 and application_sector = #{applicationSector}
+		 </if>
     	order by propose_date desc
     </select>
 

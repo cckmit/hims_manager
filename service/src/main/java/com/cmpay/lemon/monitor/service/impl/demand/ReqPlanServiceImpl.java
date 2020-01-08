@@ -1510,11 +1510,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqTask.setCoorDeptPro(result.get("coorDeptRate"));
             reqTask.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
             reqTask.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
+            reqTask.setRemainWorkload(Integer.parseInt(result.get("remainWordkLoad")));
             //已录入总量 新增的时候默认为0
-            reqTask.setInputWorkload(0);
-            reqTask.setLastInputWorkload(0);
-            reqTask.setRemainWorkload(totWork);
-            reqTask.setMonInputWorkload(0);
+//            reqTask.setInputWorkload(0);
+//            reqTask.setLastInputWorkload(0);
+//            reqTask.setRemainWorkload(totWork);
+//            reqTask.setMonInputWorkload(0);
             planDao.updateReqWorkLoad(reqTask);
             //导入功能点时将所有跨月的需求总功能点统一修改
             DemandDO demanddo = new DemandDO();
@@ -1524,13 +1525,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for(int i=0;i<demandBOList.size();i++){
                     DemandDO demand = demandBOList.get(i);
                     if (!JudgeUtils.isNull(demand)) {
-//                            DemandBO demandBO =  new DemandBO();
                             demand.setTotalWorkload(totWork);
                             demand.setLeadDeptPro(result.get("leadDeptRate"));
                             demand.setCoorDeptPro(result.get("coorDeptRate"));
                             demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
                             demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
-//                            BeanUtils.copyPropertiesReturnDest(demandBO, demand);
+                            demand.setRemainWorkload(totWork-demand.getInputWorkload());
                             planDao.updateReqWorkLoad(demand);
                         }
                     }
@@ -1736,6 +1736,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     return map;
                 }
             }
+        }
+        if((totWork-demand.getInputWorkload()<0)){
+            String msg = demand.getReqImplMon()+"月的已录入工作量超过总工作量，剩余工作量不能为负数！";
+            map.put("message", msg);
+            return map;
         }
 
         map.put("leadDeptRate", leadDeptRate);

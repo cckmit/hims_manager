@@ -61,6 +61,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     private ProductTimeService productTimeService;
     @Autowired
+    OperationProductionService operationProductionService;
+    @Autowired
     private ReqTaskService reqTaskService;
     @Autowired
     IPermiUserDao permiUserDao;
@@ -372,16 +374,20 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
             ProductionDO productionBean = operationProductionDao.findProductionBean(pro_number_list[j]);
 
-            if ((((!(productionBean.getProType().equals("正常投产"))) || (!(productionBean.getIsOperationProduction().equals("是"))))) && (productionBean.getProStatus().equals("部署完成待验证")))
+            if (pro_status_after.equals("部署完成待验证"))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
                 mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
+                //获取投产申请人的邮箱
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
-
                 MailFlowConditionDO mfwa = new MailFlowConditionDO();
                 mfwa.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getIdentifier());
+                //获取投产验证人的邮箱
                 MailFlowDO mfaa = operationProductionDao.searchUserEmail(mfwa);
-
+                //添加部门经理邮箱地址
+                MailFlowConditionDO voDept = new MailFlowConditionDO();
+                voDept.setEmployeeName(operationProductionService.findDeptManager(operationProductionDao.findProductionBean(pro_number_list[j]).getApplicationDept()).getDeptManagerName());
+                MailFlowDO mvoDept = operationProductionService.searchUserEmail(voDept);
                 List<ProductionDO> bean=new ArrayList<ProductionDO>();
                 bean.add(operationProductionDao.findExportExcelList(pro_number_list[j]));
                 File file = sendExportExcel_Result(bean);
@@ -399,9 +405,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 Vector filesv = new Vector();
                 filesv.add(file);
                 mailInfo.setFile(filesv);
-
+                //收件人：投产申请人，投产验证人employeeEmail
                 String[] mailToAddress = (mfba.getEmployeeEmail()+";"+mfaa.getEmployeeEmail()).split(";");
                 mailInfo.setReceivers(mailToAddress);
+                mailInfo.setCcs(mvoDept.getEmployeeEmail().split(";"));
                 StringBuffer sb = new StringBuffer();
                 if (productionBean.getProType().equals("救火更新")) {
                     mailInfo.setSubject("【救火更新部署完成待验证结果通知】-" + productionBean.getProNeed() + "-" + productionBean.getProNumber() + "-" + productionBean.getProApplicant());
@@ -454,8 +461,37 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     sb.append("<tr><td style='font-weight: bold;'>不走正常投产原因</td><td colspan='5'>" + productionBean.getUnusualReasonPhrase() + "</td></tr>");
                     sb.append("<tr><td style='font-weight: bold;'>备注 (影响范围,其它补充说明)</td><td colspan='5'>" + productionBean.getRemark() + "</td></tr></table>");
                 }
+                if ((productionBean.getProType().equals("正常投产")) && (productionBean.getIsOperationProduction().equals("是")))
+                {
+                    mailInfo.setSubject("【正常投产部署完成待验证结果通知】-" + productionBean.getProNeed() + "-" + productionBean.getProNumber() + "-" + productionBean.getProApplicant());
+                    sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                    sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>正常投产结果反馈</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>需求名称及内容简述</td><td colspan='5'>" + productionBean.getProNeed() + "</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + productionBean.getApplicationDept() + "</td><td style='font-weight: bold;'>申请人</td><td>" + productionBean.getProApplicant() + "</td>");
+                    sb.append("<td style='font-weight: bold;'>联系方式</td><td>" + productionBean.getApplicantTel() + "</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>投产编号</td><td>" + productionBean.getProNumber() + "</td><td style='font-weight: bold;'>复核人</td><td>" + productionBean.getProChecker() + "</td>");
+                    sb.append("<td style='font-weight: bold;'>联系方式</td><td>" + productionBean.getCheckerTel() + "</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>验证测试类型</td><td>" + productionBean.getValidation() + "</td><td style='font-weight: bold;'>验证人</td><td>" + productionBean.getIdentifier() + "</td>");
+                    sb.append("<td style='font-weight: bold;'>联系方式</td><td>" + productionBean.getIdentifierTel() + "</td></tr>");
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    sb.append("<tr><td style='font-weight: bold;'>计划投产日期</td><td>" + sdf.format(productionBean.getProDate()) + "</td><td style='font-weight: bold;'>产品所属模块</td><td>" + productionBean.getProModule() + "</td>");
+                    sb.append("<td style='font-weight: bold;'>基地业务负责人</td><td>" + productionBean.getBusinessPrincipal() + "</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>产品经理</td><td>" + productionBean.getProManager() + "</td><td style='font-weight: bold;'>是否涉及证书</td><td>" + productionBean.getIsRefCerificate() + "</td>");
+                    sb.append("<td style='font-weight: bold;'>开发负责人</td><td>" + productionBean.getDevelopmentLeader() + "</td></tr>");
+                    sb.append("<tr><td style='font-weight: bold;'>审批人</td><td>" + productionBean.getApprover() + "</td><td style='font-weight: bold;'>是否需要运维监控</td><td>" + productionBean.getProOperation() + "</td>");
+                    if ((productionBean.getUpdateOperator() != null) && (!(productionBean.getUpdateOperator().equals("")))) {
+                        sb.append("<td style='font-weight: bold;'>版本更新操作人</td><td>" + productionBean.getUpdateOperator() + "</td></tr>");
+                    }
+                    else {
+                        sb.append("<td style='font-weight: bold;'>版本更新操作人</td><td>暂未录入</td></tr>");
+                    }
+                    if (productionBean.getIsAdvanceProduction().equals("否")) {
+                        sb.append("<tr><td style='font-weight: bold;'>不做预投产验证原因</td><td colspan='5'>" + productionBean.getNotAdvanceReason() + "</td></tr>");
+                    }
+                    sb.append("<tr><td style='font-weight: bold;'>备注 (影响范围,其它补充说明)</td><td colspan='5'>" + productionBean.getRemark() + "</td></tr></table>");
+                }
 
-                mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产部署完成，请知悉。谢谢！<br/>" + sb.toString());
+                mailInfo.setContent("你好：<br/>&nbsp;&nbsp;本次投产部署完成，请知悉并及时验证。谢谢！<br/>" + sb.toString());
 
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
