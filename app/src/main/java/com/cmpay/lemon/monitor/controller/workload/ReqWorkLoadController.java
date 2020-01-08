@@ -9,6 +9,7 @@ import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
 import com.cmpay.lemon.monitor.bo.DictionaryBO;
+import com.cmpay.lemon.monitor.bo.WorkloadLockedStateBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -246,5 +247,27 @@ public class ReqWorkLoadController {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDTO);
         reqWorkLoadService.update(demandBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /*
+     *  修改月份工作量录入状态
+     */
+    @RequestMapping("/updateWorkloadEntryStatus")
+    public GenericRspDTO updateWorkloadEntryStatus(@RequestBody UpdateReqWorkLoadDTO updateReqWorkLoadDTO) {
+        WorkloadLockedStateBO workloadLockedStateBO = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), updateReqWorkLoadDTO);
+        reqWorkLoadService.updateWorkloadEntryStatus(workloadLockedStateBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /*
+     *  获取月份工作量录入状态
+     */
+    @RequestMapping("/getWorkloadEntryStatus")
+    public GenericRspDTO<WorkLoadDTO> getWorkloadEntryStatus(@RequestBody GetReqWorkLoadDTO getReqWorkLoadDTO) {
+        WorkloadLockedStateBO workloadLockedStateBO = new WorkloadLockedStateBO();
+        workloadLockedStateBO.setEntrymonth(getReqWorkLoadDTO.getEntrymonth());
+        workloadLockedStateBO = reqWorkLoadService.getWorkloadEntryStatus(workloadLockedStateBO);
+        WorkLoadDTO workLoadDTO = BeanUtils.copyPropertiesReturnDest(new WorkLoadDTO(), workloadLockedStateBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, workLoadDTO);
     }
 }

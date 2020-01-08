@@ -2,16 +2,12 @@ package com.cmpay.lemon.monitor.service.workload;
 
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.ProjectStartBO;
+import com.cmpay.lemon.monitor.bo.WorkloadLockedStateBO;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * @author: tu_yi
@@ -56,4 +52,8 @@ public interface ReqWorkLoadService {
     void updateReqWorkLoad(DemandBO bean);
     DemandBO getWorkLoad(DemandBO demand);
     void update(DemandBO bean);
+
+    void updateWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
+
+    WorkloadLockedStateBO getWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
 }

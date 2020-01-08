@@ -5,19 +5,20 @@ import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.framework.security.SecurityUtils;
-import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
+import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgPordUserBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.*;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionReqDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionRspDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgPordUserDTO;
 import com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.errror.ErrorService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.CreateSequence;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -60,10 +61,8 @@ public class ErrorController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<ErcdmgErrorComditionRspDTO> getUserInfoPage(@RequestBody ErcdmgErrorComditionReqDTO reqDTO) {
-        System.err.println(reqDTO);
         ErcdmgErrorComditionBO demandBO = BeanUtils.copyPropertiesReturnDest(new ErcdmgErrorComditionBO(), reqDTO);
         ErcdmgErrorComditionRspBO demandRspBO = errorService.searchErroeList(demandBO);
-        System.err.println(demandRspBO);
         ErcdmgErrorComditionRspDTO rspDTO = new ErcdmgErrorComditionRspDTO();
         rspDTO.setErrorComditionDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgErrorComditionBOList(), ErcdmgErrorComditionDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());
@@ -116,7 +115,6 @@ public class ErrorController {
      */
     @RequestMapping("/update")
     public GenericRspDTO updateError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
-        System.err.println(reqDTO);
         ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
         BeanConvertUtils.convert(errorComditionBO, reqDTO);
         errorService.checkErrorUP(errorComditionBO);
@@ -216,7 +214,6 @@ public class ErrorController {
     }
     @RequestMapping("/goback")
     public GenericRspDTO gobackError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
-        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getStatus());
         errorService.goback(reqDTO.getTaskIdStr(),reqDTO.getStatus());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -248,7 +245,6 @@ public class ErrorController {
      */
     @RequestMapping("/pordsubmit")
     public GenericRspDTO pordsubmit(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
-        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getEmails()+"=="+reqDTO.getEmailContent());
         errorService.pordsubmit(reqDTO.getTaskIdStr(),reqDTO.getEmails(),reqDTO.getEmailContent());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -268,7 +264,6 @@ public class ErrorController {
      */
     @RequestMapping("/audisubmit")
     public GenericRspDTO audisubmit(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
-        System.err.println(reqDTO.getTaskIdStr()+"==="+reqDTO.getEmails()+"=="+reqDTO.getEmailContent());
         errorService.audisubmit(reqDTO.getTaskIdStr(),reqDTO.getEmails(),reqDTO.getEmailContent(),reqDTO.getUpdateDateSH());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
@@ -285,7 +280,6 @@ public class ErrorController {
     }
     @RequestMapping("/addCnl")
     public GenericRspDTO addCnl(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
-        System.err.println(reqDTO);
         ErcdmgErrorComditionBO errorComditionBO = new ErcdmgErrorComditionBO();
         BeanConvertUtils.convert(errorComditionBO, reqDTO);
         addCnl(errorComditionBO);

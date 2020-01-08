@@ -11,15 +11,14 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.BaseWorkloadBO;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.DepartmentMonthlyDetailBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
 import com.cmpay.lemon.monitor.dao.IPlanDao;
 import com.cmpay.lemon.monitor.dao.IWorkLoadDao;
+import com.cmpay.lemon.monitor.dao.IWorkloadLockedStateDao;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
+import com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
@@ -81,6 +80,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     private static final int FINISHPRD = 180;
     // 180 完成产品发布
     private static final int ZERO = 0;
+    // 工作量录入状态打开
+    private static final  String WORKLOADENTRYSTATUSOPEN ="打开";
 
     @Autowired
     private IPlanDao planDao;
@@ -94,6 +95,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     private ReqTaskService reqTaskService;
     @Autowired
     SystemUserService userService;
+    @Autowired
+    IWorkloadLockedStateDao workloadLockedStateDao;
 
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
@@ -953,7 +956,30 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("工作量提交失败！");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
+    }
 
+    @Override
+    public void updateWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO) {
+        WorkloadLockedStateDO workloadLockedStateDO = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateDO(), workloadLockedStateBO);
+        workloadLockedStateDao.update(workloadLockedStateDO);
+    }
+
+    @Override
+    public WorkloadLockedStateBO getWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO) {
+
+        WorkloadLockedStateDO workloadLockedStateDO = workloadLockedStateDao.get(workloadLockedStateBO.getEntrymonth());
+        WorkloadLockedStateBO workloadLockedStateBO1 =new WorkloadLockedStateBO();
+        //查询结果为空则新建该月份的数据
+        if(JudgeUtils.isNull(workloadLockedStateDO)){
+            WorkloadLockedStateDO workloadLockedStateDO1 =new WorkloadLockedStateDO();
+            workloadLockedStateDO1.setEntrymonth(workloadLockedStateBO.getEntrymonth());
+            workloadLockedStateDO1.setStatus(WORKLOADENTRYSTATUSOPEN);
+            workloadLockedStateDao.insert(workloadLockedStateDO1);
+            workloadLockedStateBO1= BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), workloadLockedStateDO1);
+        }else {
+            workloadLockedStateBO1 = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), workloadLockedStateDO);
+        }
+        return workloadLockedStateBO1;
     }
 
     /**

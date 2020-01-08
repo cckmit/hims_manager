@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IWorkloadLockedStateDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        <id column="entryMonth" property="entrymonth" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        entryMonth, status
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from workload_locked_state
+        where entryMonth = #{entrymonth,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from workload_locked_state
+        where entryMonth = #{entrymonth,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        insert into workload_locked_state
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="entrymonth != null" >
+                entryMonth,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="entrymonth != null" >
+                #{entrymonth,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        update workload_locked_state
+        <set >
+            <if test="status != null" >
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where entryMonth = #{entrymonth,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from workload_locked_state
+        <where >
+            <if test="entrymonth != null" >
+                and entryMonth = #{entrymonth,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null" >
+                and status = #{status,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
