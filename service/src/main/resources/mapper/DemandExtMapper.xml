@@ -802,6 +802,7 @@
         <include refid="Base_Column_List1" />
         FROM t_demand_info a
         <where>
+            req_sts not in ('60')
             <if test="reqNm != null and reqNm != ''">
                 AND a.req_nm LIKE CONCAT('%',#{reqNm},'%')
             </if>
