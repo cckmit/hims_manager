@@ -79,7 +79,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
     @Autowired
-    private IDemandStateHistoryDao demandStateHistoryDao;
+    private IDemandStateHistoryExtDao demandStateHistoryDao;
     @Autowired
     private SystemRoleService systemRoleService;
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandStateHistoryExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandStateHistoryDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="old_req_sts" property="oldReqSts" jdbcType="VARCHAR" />
+        <result column="req_sts" property="reqSts" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="identification" property="identification" jdbcType="VARCHAR" />
+        <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
+        <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_inner_seq, req_no, req_nm, old_req_sts, req_sts, remarks, identification, 
+        creat_user, creat_time
+    </sql>
+
+
+    <select id="getLastRecordByReqInnerSeq" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_state_history
+        where req_inner_seq = #{reqInnerSeq,jdbcType=INTEGER} order by id desc
+    </select>
+
+</mapper>

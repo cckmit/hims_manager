@@ -110,7 +110,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Autowired
     private IDemandJiraDao demandJiraDao;
     @Autowired
-    private IDemandStateHistoryDao demandStateHistoryDao;
+    private IDemandStateHistoryExtDao demandStateHistoryDao;
 
     @Autowired
     private IDictionaryExtDao dictionaryDao;

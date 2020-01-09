@@ -125,13 +125,11 @@ public class DemandDO extends BaseDO {
     public String getIsMonthSer() {
         return isMonthSer;
     }
-    @Excel(name = "测试主任务经办人")
     private String assignee;
-    @Excel(name = "测试主任务计划开始时间")
     private String planStartTime;
-    @Excel(name = "测试主任务计划完成时间")
     private String planEndTime;
-
+    @Excel(name = "上次修改状态备注")
+    private String requirementStatusModificationNotes;
     public void setIsMonthSer(String isMonthSer) {
         this.isMonthSer = isMonthSer;
     }
@@ -773,6 +771,14 @@ public class DemandDO extends BaseDO {
 
     public void setReqAbnorType(String reqAbnorType) {
         this.reqAbnorType = reqAbnorType;
+    }
+
+    public String getRequirementStatusModificationNotes() {
+        return requirementStatusModificationNotes;
+    }
+
+    public void setRequirementStatusModificationNotes(String requirementStatusModificationNotes) {
+        this.requirementStatusModificationNotes = requirementStatusModificationNotes;
     }
 
     @Override

@@ -80,7 +80,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Autowired
     private IDictionaryExtDao dictionaryDao;
     @Autowired
-    private IDemandStateHistoryDao demandStateHistoryDao;
+    private IDemandStateHistoryExtDao demandStateHistoryDao;
     @Autowired
     private IDemandJiraDao demandJiraDao;
     @Autowired
@@ -217,12 +217,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 () -> BeanConvertUtils.convertList(demandDao.find(demandDO), DemandBO.class));
         return pageInfo;
     }
+    //导出
     @Override
     public void getReqTask(HttpServletResponse response,DemandBO demandBO) {
         List<DemandDO> demandDOList = reqTask(demandBO);
 
-
-
+        demandDOList.forEach(m->{
+            List<DemandStateHistoryDO> list = demandStateHistoryDao.getLastRecordByReqInnerSeq(m.getReqInnerSeq());
+            if(JudgeUtils.isNotEmpty(list)) {
+                m.setRequirementStatusModificationNotes(list.get(0).getRemarks());
+            }
+        });
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandDO.class, demandDOList);
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
