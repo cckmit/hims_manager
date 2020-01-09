@@ -211,6 +211,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             for(int i=2;i<pro_number_list.length;i++){
+                SimpleDateFormat sdfmonth =new SimpleDateFormat("yyyy-MM");
+                String month = sdfmonth.format(operationProductionDao.findProductionBean(pro_number_list[i]).getProDate());
                 ProductionDO beanCheck=operationProductionDao.findProductionBean(pro_number_list[i]);
                 if(!currentUser.equals(beanCheck.getProManager()) && !currentUser.equals(beanCheck.getProApplicant()) && !currentUser.equals(beanCheck.getDevelopmentLeader())){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -237,12 +239,28 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 operationProductionDao.insertSchedule(schedule);
                 //是否预投产验证为“是”时，预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
                 if (bean.getIsAdvanceProduction().equals("是") && bean.getProAdvanceResult().equals("通过")) {
-                    DemandDO demand = reqTaskService.findById1(bean.getProNumber());
-                    if (!JudgeUtils.isNull(demand)) {
-                        demand.setPreCurPeriod("160");
-                        DemandBO demandBO =  new DemandBO();
-                        BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                        reqTaskService.update(demandBO);
+                    // 根据编号查询需求信息
+                    DemandDO demanddo = new DemandDO();
+                    demanddo.setReqNo(pro_number_list[i]);
+                    List<DemandDO> demandBOList = demandDao.find(demanddo);
+                    if(!demandBOList.isEmpty()){
+                        for(int j=0;i<demandBOList.size();j++){
+                            // 投产月份  = 需求实施月份时 ，改变需求状态
+                            if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
+                                DemandDO demand = demandBOList.get(i);
+                                if (!JudgeUtils.isNull(demand)) {
+                                    //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
+                                    demand.setPreCurPeriod("160");
+                                    demand.setReqSts("20");
+                                    demandDao.updateOperation(demand);
+                                }
+                            }
+                            // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
+                            if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
+                                DemandDO demand = demandBOList.get(i);
+                                demandDao.delete(demand.getReqInnerSeq());
+                            }
+                        }
                     }
                 }
             }
@@ -629,10 +647,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                     demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                                     demandStateHistoryDao.insert(demandStateHistoryDO);
                                 }
-
-                                DemandBO demandBO =  new DemandBO();
-                                BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                                reqTaskService.update(demandBO);
+                                demandDao.updateOperation(demand);
                             }
                             if (pro_status_after.equals("部署完成待验证")) {
                                 //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
@@ -657,10 +672,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                                 demandStateHistoryDao.insert(demandStateHistoryDO);
-
-                                DemandBO demandBO =  new DemandBO();
-                                BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                                reqTaskService.update(demandBO);
+                                demandDao.updateOperation(demand);
                             }
                         }
                     }

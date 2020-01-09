@@ -88,6 +88,20 @@ public class DictionaryController {
         dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOS, DictionaryDTO.class));
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
     }
+
+    /**
+     * 查询所有人员名单
+     * @param req
+     * @return
+     */
+    @GetMapping("/getPeople")
+    public GenericRspDTO<DictionaryRspDTO> getPeople(GenericDTO<NoBody> req) {
+        List<DictionaryBO> dictionaryBOS = dictionaryService.getPeople(new DictionaryDO());
+        DictionaryRspDTO dictionaryRspDTO = new DictionaryRspDTO();
+        dictionaryRspDTO.setDictionaryDTOList(BeanConvertUtils.convertList(dictionaryBOS, DictionaryDTO.class));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, dictionaryRspDTO);
+    }
+
     @RequestMapping("/workloadLockStatus")
     public GenericRspDTO updateReqWorkLoad(GenericDTO<NoBody> req) {
         dictionaryService.workloadLockStatus();

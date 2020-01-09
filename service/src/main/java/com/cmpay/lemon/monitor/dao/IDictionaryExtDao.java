@@ -28,6 +28,8 @@ public interface IDictionaryExtDao extends IDictionaryDao {
     List<DictionaryDO> findUploadPeriod(String reqPeriod);
 
     List<DictionaryDO> findProManager();
+    //查询研发系统所有人员名单
+    List<DictionaryDO> findPeople();
     /**
      * 查询错误码模块字典项
      */
