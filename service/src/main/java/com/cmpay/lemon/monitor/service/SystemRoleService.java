@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.monitor.bo.PageQueryBO;
 import com.cmpay.lemon.monitor.bo.RoleBO;
+import com.cmpay.lemon.monitor.entity.UserDO;
 
 import java.util.List;
 
@@ -104,4 +105,11 @@ public interface SystemRoleService {
      * @param roleIds
      */
     void deleteBatch(List<Long> roleIds);
+
+    /**
+     * 依据权限编号查询该权限人员邮件
+     *
+     * @param roleId
+     */
+    List<UserDO> getPermissionGroupMembers(Long roleId);
 }

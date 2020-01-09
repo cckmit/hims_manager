@@ -17,6 +17,7 @@ import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
@@ -79,7 +80,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private IDemandChangeDetailsExtDao demandChangeDetailsDao;
     @Autowired
     private IDemandStateHistoryDao demandStateHistoryDao;
+    @Autowired
+    private SystemRoleService systemRoleService;
 
+    public  static  final  long configurationAdministratorRoleID=5003;
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
         PageInfo<ProductionBO> pageInfo = getPageInfo(productionBO);
@@ -946,7 +950,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             c.setTime(sdf.parse(newtime));
         } catch (ParseException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return dayNames[c.get(Calendar.DAY_OF_WEEK)-1];
@@ -1825,14 +1828,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             receiver_users.add(bean.getDevelopmentLeader());
             String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)
                //     +";wu_lr@hisuntech.com";
-            //todo 收件人需要添加两人必选先注释 先用自己的邮件代替
+            //todo 固定收件人需要添加两人必选先注释 先用自己的邮件代替
             +";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
             MailFlowBean bnb = new MailFlowBean("【投产录入审批申请】", Constant.P_EMAIL_NAME, receiver_mail, "");
             bean.setMailRecipient(receiver_mail);
-            //todo 抄送人需要添加两人必选先注释 先用自己的邮件代替
+            //todo 固定抄送人需要添加两人必选先注释 先用自己的邮件代替
             bean.setMailCopyPerson("tian_qun@hisuntech.com;huang_jh@hisuntech.com");
             //bean.setMailCopyPerson("wu_lr@hisuntech.com");
             mailInfo.setReceivers(receiver_mail.split(";"));
@@ -1902,6 +1905,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //抄送人邮箱
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getAbnormalMailCopy();
+            //todo  添加配置管理员 权限编号5003  挨个添加到抄送人邮箱列表
+            List<UserDO> permissionGroupMembers = systemRoleService.getPermissionGroupMembers(configurationAdministratorRoleID);
+                for (int i=0;i<permissionGroupMembers.size();i++){
+                    copy_mail=copy_mail+";"+ permissionGroupMembers.get(i).getEmail();
+                }
             if (bean.getMailCopyPerson() != null && !bean.getMailCopyPerson().equals("")) {
                 copy_mail += ";" + bean.getMailCopyPerson();
             }
@@ -1955,7 +1963,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 receiver_users.add(bean.getDevelopmentLeader());
                 base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
-            // todo 添加申请人邮箱地址
             MailFlowConditionDO vo=new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
             MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);

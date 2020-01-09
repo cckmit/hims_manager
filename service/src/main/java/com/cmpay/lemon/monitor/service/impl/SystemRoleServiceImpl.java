@@ -10,12 +10,11 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.PageQueryBO;
 import com.cmpay.lemon.monitor.bo.RoleBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dao.IMenuExtDao;
-import com.cmpay.lemon.monitor.dao.IRoleExtDao;
-import com.cmpay.lemon.monitor.dao.IRoleMenuExtDao;
-import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.RoleDO;
 import com.cmpay.lemon.monitor.entity.RoleMenuDO;
+import com.cmpay.lemon.monitor.entity.UserDO;
+import com.cmpay.lemon.monitor.entity.UserRoleDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -26,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +46,8 @@ public class SystemRoleServiceImpl implements SystemRoleService {
     private IMenuExtDao iMenuDao;
     @Autowired
     private IUserRoleExtDao iUserRoleDao;
+    @Autowired
+    private IUserExtDao iUserDao;
 
     /**
      * 查询用户角色
@@ -182,5 +184,21 @@ public class SystemRoleServiceImpl implements SystemRoleService {
             iRoleDao.delete(id);
             iRoleMenuDao.deleteRoleMenu(id);
         });
+    }
+
+    @Override
+    public  List<UserDO> getPermissionGroupMembers(Long roleId) {
+        //依据权限标号查询拥有该权限的人员
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(roleId);
+        List<UserRoleDO> userRoleDOS = iUserRoleDao.find(userRoleDO);
+        LinkedList<UserDO> userDOS = new LinkedList<>();
+        if(JudgeUtils.isNotEmpty(userRoleDOS)) {
+            userRoleDOS.forEach(m -> {
+                UserDO userDO = iUserDao.get(m.getUserNo());
+                userDOS.add(userDO);
+            });
+        }
+        return userDOS;
     }
 }
