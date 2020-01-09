@@ -2085,7 +2085,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                         String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";
                         if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产非投产日投产必须在计划投产日"+config_time+"之前上传投产包");
                             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                         }
                     }
