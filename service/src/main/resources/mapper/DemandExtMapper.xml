@@ -181,6 +181,7 @@
 		,pre_tm=#{preTm}
 		,exp_prd_release_tm=#{expPrdReleaseTm}
 		,devp_res_mng =#{ devpResMng}
+		,req_sts =#{reqSts}
 		,update_time =#{ updateTime }
 		,update_user =#{ updateUser }
 		WHERE req_inner_seq = #{reqInnerSeq}

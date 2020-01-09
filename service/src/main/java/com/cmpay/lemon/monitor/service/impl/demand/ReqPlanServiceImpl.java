@@ -346,10 +346,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 }
             }
             setDefaultUser(demandBO);
-
+            //时间修改备注不为空时，登记
             if(!demandBO.getRevisionTimeNote().isEmpty()){
                 registrationTimeNodeHistoryTable(demandBO);
+                //项目计划变更 发送邮件
+                productionChangeEmail(demandBO);
             }
+            System.err.println(demandBO.getReqSts());
             demandDao.updateReqPlanJsp(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
 
         } catch (Exception e) {
@@ -357,6 +360,28 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
         jiraOperationService.createEpic(demandBO);
+    }
+
+    //项目计划变更 发送邮件
+    public void productionChangeEmail(DemandBO demandBO){
+        Map<String, String> resMap = new HashMap<>();
+        resMap = reqPlanService.getMailbox(demandBO.getReqInnerSeq());
+        String proMemberEmail = resMap.get("proMemberEmail");
+        String testDevpEmail = resMap.get("testDevpEmail");
+        String devpEmail =  resMap.get("devpEmail");
+        String jdEmail = resMap.get("jdEmail");
+
+        String subject = "【项目计划变更】" + demandBO.getReqNo() + "_" + demandBO.getReqNm() + "_"
+                + userService.getFullname(SecurityUtils.getLoginName()) ;
+        String content = projectChangeContent(demandBO);
+        String message = reqPlanService.sendMail(proMemberEmail, testDevpEmail+devpEmail, content, subject, null);
+        //String message = reqPlanService.sendMail("tu_yi@hisuntech.com", "wu_lr@hisuntech.com", content, subject, null);
+        if (StringUtils.isNotBlank(message)) {
+            //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
+            BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
+        }
+
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
@@ -802,7 +827,65 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return content.toString();
     }
-
+    /**
+     * 项目计划变更邮件内容
+     * @param reqTask
+     * @return
+     */
+    public String projectChangeContent(DemandBO reqTask) {
+        String projectMng = "无";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        StringBuilder content = new StringBuilder();
+        content.append(reqTask.getReqNo() + "_" + reqTask.getReqNm() + "项目计划变更。人员以及计划安排如下，请各位知悉：");
+        content.append("<br/>");
+        content.append("人员计划如下：");
+        content.append("<br/>");
+        if( !StringUtils.isEmpty(reqTask.getProjectMng())){
+            projectMng = reqTask.getProjectMng();
+        }
+        content.append("&nbsp;&nbsp;项目经理：" + projectMng );
+       // content.append("&nbsp;&nbsp;项目经理：" + reqTask.getProjectMng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;产品经理：" + reqTask.getProductMng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;后台开发：" + reqTask.getDevpEng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;前端开发：" + reqTask.getFrontEng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;测试人员：" + reqTask.getTestEng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;QA人员：" + reqTask.getQaMng());
+        content.append("<br/>");
+        content.append("&nbsp;&nbsp;配置人员：" + reqTask.getConfigMng());
+        content.append("<br/>");
+        content.append("<br/>");
+        content.append("实施计划如下：");
+        content.append("<br/>");
+        try {
+            String prdFinshTm = sdf
+                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[] { "yyyy-MM-dd" }));
+            String uatUpdateTm = sdf
+                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[] { "yyyy-MM-dd" }));
+            String testFinishTm = sdf
+                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[] { "yyyy-MM-dd" }));
+            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[] { "yyyy-MM-dd" }));
+            String oprFisnTm = sdf
+                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[] { "yyyy-MM-dd" }));
+            content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
+            content.append("<br/>");
+            content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
+            content.append("<br/>");
+            content.append("&nbsp;&nbsp;3、UAT测试完成时间：" + uatUpdateTm + "—" + testFinishTm);
+            content.append("<br/>");
+            content.append("&nbsp;&nbsp;4、预投产验证：" + preTm + "—" + oprFisnTm);
+            content.append("<br/>");
+            content.append("&nbsp;&nbsp;5、投产时间：" + oprFisnTm);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "时间转换错误," + e.getMessage();
+        }
+        return content.toString();
+    }
     /**
      * 发送邮件
      * @param sendTo
@@ -2237,7 +2320,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 m.setIsSvnBuild("否");
                 insertList.add(m);
             } else {
-                m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                 //设置默认值
                 m.setReqStartMon("");
                 //需求当前阶段和需求状态不做修改
@@ -2296,6 +2378,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 m.setRemainWorkload(demandDO.getRemainWorkload());
                 //本月录入工作量
                 m.setMonInputWorkload(demandDO.getMonInputWorkload());
+                //人月三个字段赋值  投入资源setInputRes  开发周期setDevCycle  人月setExpInput
+                m.setInputRes(demandDO.getInputRes());
+                m.setDevCycle(demandDO.getDevCycle());
+                m.setExpInput(demandDO.getExpInput());
+                System.err.println(m);
+                System.err.println(demandDO);
                 demandDao.update(m);
             });
 

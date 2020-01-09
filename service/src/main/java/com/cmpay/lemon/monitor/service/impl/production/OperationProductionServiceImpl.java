@@ -1124,7 +1124,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
         String[] pro_number_list=taskIdStr.split("~");
         List<ProductionDO> list=new ArrayList<ProductionDO>();
-        StringBuffer sbfStr = new StringBuffer();
         for(int i=0;i<pro_number_list.length;i++){
             ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
             if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
@@ -1138,13 +1137,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             list.add(bean);
-            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
-                if(sbfStr.length()<1){
-                    sbfStr.append(bean.getMailLeader());
-                }else{
-                    sbfStr.append(";"+bean.getMailLeader());
-                }
-            }
         }
         File file=sendITExportExcel_Result(list);
         List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
@@ -1154,7 +1146,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
         File file2=exportExcelIT_Nei(list, pblist, currentUser);
 
-        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
+        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("5");
 
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -1175,11 +1167,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
          * 收件人邮箱
          */
         String[] mailToAddressDemo = null;
-        if(sbfStr !=null && sbfStr.length()>0){
-            mailToAddressDemo = (sbfStr.toString()+";"+mp.getMailUser()).split(";");
-        }else{
-            mailToAddressDemo = mp.getMailUser().split(";");
-        }
+        mailToAddressDemo = mp.getMailUser().split(";");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         //收件人去重复
         List<String> result = new ArrayList<String>();
@@ -1196,11 +1184,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 result.add(mailToAddressDemo[i]);
             }
         }
-       // String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
-        String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com"};
-        mailInfo.setReceivers(mailToAddress);
+        mailInfo.setReceivers(mailToAddressDemo);
         //记录邮箱信息
-        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
+        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
         //添加发送内容
         mailInfo.setSubject("【IT中心每周投产日情况通报"+sdf.format(new Date())+"】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本次投产正常,详情请参见附件<br/><br/>");

@@ -813,7 +813,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 m.setReqSts("10");
                 insertList.add(m);
             } else {
-                m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                 //设置默认值
                 m.setReqStartMon("");
                 updateList.add(m);
@@ -872,6 +871,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 m.setRemainWorkload(demandDO.getRemainWorkload());
                 //本月录入工作量
                 m.setMonInputWorkload(demandDO.getMonInputWorkload());
+                //人月三个字段赋值  投入资源setInputRes  开发周期setDevCycle  人月setExpInput
+                m.setInputRes(demandDO.getInputRes());
+                m.setDevCycle(demandDO.getDevCycle());
+                m.setExpInput(demandDO.getExpInput());
                 demandDao.update(m);
             });
 

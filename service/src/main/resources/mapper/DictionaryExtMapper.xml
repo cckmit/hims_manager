@@ -54,6 +54,7 @@
                 and t.value = #{value}
             </if>
         </where>
+        ORDER BY sort
     </select>
 
     <select id="findDictionary"  resultMap="BaseResultMap" >
