@@ -1439,4 +1439,17 @@
         </if>
         WHERE req_inner_seq = #{reqInnerSeq}
 	</update>
+
+    <update id="updateOperation" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        update t_demand_info
+        set
+        req_inner_seq =#{reqInnerSeq }
+        <if test="reqSts != null and reqSts != ''">
+            ,req_sts =#{reqSts }
+        </if>
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            ,pre_cur_period =#{preCurPeriod }
+        </if>
+        where req_inner_seq =#{reqInnerSeq }
+    </update>
 </mapper>

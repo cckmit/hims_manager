@@ -27,6 +27,7 @@ public interface DictionaryService {
     public List<DictionaryBO> findUploadPeriod(String reqPeriod);
 
     public List<DictionaryBO> getcpInfo(DictionaryDO dictionaryDO);
+    List<DictionaryBO> getPeople(DictionaryDO dictionaryDO);
     /**
      * 查询错误码模块字典项
      */

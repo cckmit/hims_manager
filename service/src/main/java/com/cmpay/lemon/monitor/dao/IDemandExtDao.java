@@ -74,4 +74,5 @@ public interface IDemandExtDao extends IDemandDao {
     List<DemandDO> getNormalExecutionDemand(DemandDO demandDO);
 
     void WeedAndMonthFeedback(DemandDO demandDO);
+    void updateOperation(DemandDO demandDO);
 }

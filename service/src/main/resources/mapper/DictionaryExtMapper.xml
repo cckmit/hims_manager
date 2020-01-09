@@ -95,6 +95,11 @@
         select distinct u.user_name,u.user_id from  t_permi_user_role r right JOIN t_permi_user u on r.user_id=u.user_id where  role_id='201401010002' order  by  u.user_name asc
     </select>
 
+    <select id="findPeople" resultMap="rm4">
+        select distinct u.user_name,u.user_id from  t_permi_user_role r right JOIN t_permi_user u on r.user_id=u.user_id order  by  u.user_name asc
+    </select>
+
+
     <update id="updateWorkloadLockStatus"  parameterType="java.lang.String">
        update t_permi_dic_data  SET
         value = #{workloadLockStatus}
