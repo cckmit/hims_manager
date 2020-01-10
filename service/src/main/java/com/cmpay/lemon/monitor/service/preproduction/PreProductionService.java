@@ -36,4 +36,6 @@ public interface PreProductionService {
     void doBatchImport(MultipartFile file,String reqNumber);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
+
+    DemandBO verifyAndQueryTheProductionNumber(String proNumber);
 }
