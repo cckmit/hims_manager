@@ -42,6 +42,11 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     //jira项目类型 和包项目 jira编号
     final static  Integer PROJECTTYPE_CMPAY=10009;
+    //jira项目类型 资金归集项目 jira编号
+    final static  Integer PROJECTTYPE_FCPT=10012;
+    //jira项目类型 团体缴费项目 jira编号
+    final static  Integer PROJECTTYPE_GPPT=10011;
+
     //EPIC任务 jira编号
     final static  Integer ISSUETYPE_EPIC=10000;
     //开发主任务 jira编号
@@ -76,12 +81,23 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             this.createMasterTask(demandBO,demandJiraDO1);
             return;
         }
+
+
         CreateIssueEpicRequestBO createIssueEpicRequestBO = new CreateIssueEpicRequestBO();
         createIssueEpicRequestBO.setSummary(demandBO.getReqNm());
         createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
         //设置项目为和包项目，问题类型开发主任务
+
+        if("资金归集项目组".equals(demandBO.getDevpLeadDept())){
+            createIssueEpicRequestBO.setProject(PROJECTTYPE_FCPT);
+        }else if("团体组织交费项目组".equals(demandBO.getDevpLeadDept())){
+            createIssueEpicRequestBO.setProject(PROJECTTYPE_GPPT);
+        }
+        else {
+            createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY);
+        }
+
         createIssueEpicRequestBO.setIssueType(ISSUETYPE_EPIC);
-        createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY);
         createIssueEpicRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
         createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
         createIssueEpicRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
@@ -119,6 +135,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             }else{
                 demandJiraDao.update(demandJiraDO);
             }
+            //创建主任务
             this.createMasterTask(demandBO, demandJiraDO);
 
         }else{
@@ -170,7 +187,15 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             createMainTaskRequestBO.setIssueType(ISSUETYPE_TESTMAINTASK);
         }
 
-        createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY);
+        if("资金归集项目组".equals(demandBO.getDevpLeadDept())){
+            createMainTaskRequestBO.setProject(PROJECTTYPE_FCPT);
+        }else if("团体组织交费项目组".equals(demandBO.getDevpLeadDept())){
+            createMainTaskRequestBO.setProject(PROJECTTYPE_GPPT);
+        }
+        else {
+            createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY);
+        }
+
         createMainTaskRequestBO.setDevpLeadDept(devpCoorDept);
         createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
         createMainTaskRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
@@ -230,7 +255,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     }
 
     @Override
-    public void createMasterTask(DemandBO demandBO, DemandJiraDO demandJiraDO) {
+    public void  createMasterTask(DemandBO demandBO, DemandJiraDO demandJiraDO) {
         //创建开发部门链表
         List<String> developmentDepartmenList = new ArrayList<>();
         //若有开发配合部门
@@ -247,7 +272,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             this.CreateJiraMasterTask(m,demandBO,demandJiraDO,DEVELOPMAINTASK);
         });
         //添加测试主任务
-        this.CreateJiraMasterTask(TESTINGDIVISION,demandBO,demandJiraDO,TESTMAINTASK);
+        if(!demandBO.getDevpLeadDept().equals("团体组织交费项目组")&&!demandBO.getDevpLeadDept().equals("资金归集项目组")) {
+            this.CreateJiraMasterTask(TESTINGDIVISION, demandBO, demandJiraDO, TESTMAINTASK);
+        }
     }
     @Override
     public void getJiraIssue(List<DemandDO> demandDOList) {
