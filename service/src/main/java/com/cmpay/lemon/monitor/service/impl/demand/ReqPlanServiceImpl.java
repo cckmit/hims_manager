@@ -1503,7 +1503,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                                 attachFileNames[i].replace("\\", "/");
                             }
                         }
-                        System.err.println(fl);
                         // 保存本地svn
                         importfile.transferTo(fl);
                         File newWordLod =null;
@@ -1808,18 +1807,32 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             return map;
         }
         String coorDept=demand.getDevpCoorDept();
+        String[] coorDeptArray=new String[coorDept.split(",").length] ;
         if(StringUtils.isNotBlank(coorDept)){
             String[] coorDeptArr=coorDept.split(",");
-            for (int i = 0; i < coorDeptArr.length; i++) {
+            for (int i = 0,j= 0; i < coorDeptArr.length; i++) {
                 if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])) {
                     continue;
                 }
-                if (!coorDeptName.contains(coorDeptArr[i])) {
-                    map.put("message", "配合部门占比信息有误请检查！");
-                    return map;
-                }
+                coorDeptArray[j] =coorDeptArr[i];
+                j++;
             }
         }
+
+        String[] devOnlyIds = new String[coorDeptName.size()];
+        devOnlyIds =coorDeptName.toArray(devOnlyIds);
+        if(coorDeptArray.length == devOnlyIds.length){
+            Arrays.sort(coorDeptArray);
+            Arrays.sort(devOnlyIds);
+            if (!Arrays.equals(coorDeptArray, devOnlyIds)) {
+                map.put("message", "功能点文档中配合部门与上传月份需求中配合部门不一致！");
+                return map;
+            }
+        }else{
+            map.put("message", "功能点文档中配合部门与上传月份需求中配合部门不一致！");
+            return map;
+        }
+
         if((totWork-demand.getInputWorkload()<0)){
             String msg = demand.getReqImplMon()+"月的已录入工作量超过总工作量，剩余工作量不能为负数！";
             map.put("message", msg);
