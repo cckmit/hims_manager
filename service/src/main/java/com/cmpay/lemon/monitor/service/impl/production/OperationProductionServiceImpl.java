@@ -1863,7 +1863,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)
                //     +";wu_lr@hisuntech.com";
             //todo 固定收件人需要添加两人必选先注释 先用自己的邮件代替
-            +";tian_qun@hisuntech.com;huang_jh@hisuntech.com";
+            +"wujinyan@hisuntech.com;xiao_hua@hisuntech.com;tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
