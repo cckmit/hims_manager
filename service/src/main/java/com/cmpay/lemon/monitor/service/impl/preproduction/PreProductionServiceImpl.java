@@ -316,14 +316,30 @@ public class PreProductionServiceImpl implements PreProductionService {
                 sBean.setPreOperation(bean.getPreStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getPreNumber(), currentUser, "预投产验证通过", "预投产部署待验证", sBean.getPreOperation(), "预投产验证已通过");
                 operationProductionDao.insertSchedule(schedule);
-                //预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
-                if (bean.getProAdvanceResult().equals("通过")) {
-                    DemandDO demand = reqTaskService.findById1(bean.getPreNumber());
-                    if (!JudgeUtils.isNull(demand)) {
-                        demand.setPreCurPeriod("160");
-                        DemandBO demandBO =  new DemandBO();
-                        BeanUtils.copyPropertiesReturnDest(demandBO, demand);
-                        reqTaskService.update(demandBO);
+                //是否预投产验证为“是”时，预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
+                if ( bean.getProAdvanceResult().equals("通过")) {
+                    // 根据编号查询需求信息
+                    DemandDO demanddo = new DemandDO();
+                    demanddo.setReqNo(pro_number_list[j]);
+                    List<DemandDO> demandBOList = demandDao.find(demanddo);
+                    if(!demandBOList.isEmpty()){
+                        for(int i =0;i<demandBOList.size();i++){
+                            // 投产月份  = 需求实施月份时 ，改变需求状态
+                            if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
+                                DemandDO demand = demandBOList.get(i);
+                                if (!JudgeUtils.isNull(demand)) {
+                                    //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
+                                    demand.setPreCurPeriod("160");
+                                    demand.setReqSts("20");
+                                    demandDao.updateOperation(demand);
+                                }
+                            }
+                            // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
+                            if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
+                                DemandDO demand = demandBOList.get(i);
+                                demandDao.delete(demand.getReqInnerSeq());
+                            }
+                        }
                     }
                 }
             }
@@ -458,5 +474,41 @@ public class PreProductionServiceImpl implements PreProductionService {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
+    }
+
+    @Override
+    public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
+        //未投产,req前缀投产编号则查询该编号对应的需求计划
+        DemandDO demandDO = new DemandDO();
+        if(proNumber.startsWith("REQ")) {
+            //查询该是编号是否已经投产
+            PreproductionBO productionBO = this.searchProdutionDetail(proNumber);
+            if(productionBO!=null && !productionBO.getPreStatus().equals("预投产取消")&& !productionBO.getPreStatus().equals("预投产打回")&& !productionBO.getPreStatus().equals("预投产回退")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该预投产编号已经预投产!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            demandDO.setReqNo(proNumber);
+            demandDO.setReqSts("20");
+            List<DemandDO> demandDOList = demandDao.find(demandDO);
+            if(demandDOList.isEmpty()){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该预投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }else {
+                demandDO = demandDOList.get(0);
+            }
+        }
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
+        return demandBO;
+    }
+
+    public PreproductionBO searchProdutionDetail(String proNumber) {
+        PreproductionBO productionBO=null;
+        PreproductionDO productionBean = iPreproductionExtDao.get(proNumber);
+        if(productionBean!=null) {
+            productionBO= BeanUtils.copyPropertiesReturnDest(new PreproductionBO(), productionBean);
+        }
+        return productionBO;
     }
 }

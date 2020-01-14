@@ -244,10 +244,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     demanddo.setReqNo(pro_number_list[i]);
                     List<DemandDO> demandBOList = demandDao.find(demanddo);
                     if(!demandBOList.isEmpty()){
-                        for(int j=0;i<demandBOList.size();j++){
+                        for(int j =0;j<demandBOList.size();j++){
                             // 投产月份  = 需求实施月份时 ，改变需求状态
-                            if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
-                                DemandDO demand = demandBOList.get(i);
+                            if(demandBOList.get(j).getReqImplMon().compareTo(month)==0){
+                                DemandDO demand = demandBOList.get(j);
                                 if (!JudgeUtils.isNull(demand)) {
                                     //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
                                     demand.setPreCurPeriod("160");
@@ -256,8 +256,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 }
                             }
                             // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
-                            if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
-                                DemandDO demand = demandBOList.get(i);
+                            if(demandBOList.get(j).getReqImplMon().compareTo(month)>0){
+                                DemandDO demand = demandBOList.get(j);
                                 demandDao.delete(demand.getReqInnerSeq());
                             }
                         }
