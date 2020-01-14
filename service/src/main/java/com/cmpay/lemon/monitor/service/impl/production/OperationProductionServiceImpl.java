@@ -806,8 +806,24 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }catch ( Exception e){
             e.printStackTrace();
         }
-        return operationApplicationDao.getSystemEntryVerificationIsNotTimelyList(operationApplicationDO);
+        //获取系统录入状态变更不及时清单
+        return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList(operationApplicationDO);
     }
+    @Override
+    public List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date) {
+        OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
+        try {
+            operationApplicationDO.setOperStatus("审批通过待部署");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            operationApplicationDO.setProposeDate(new java.sql.Date(date1.getTime()));
+        }catch ( Exception e){
+            e.printStackTrace();
+        }
+        //获取审批通过待部署清单
+        return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList(operationApplicationDO);
+    }
+
 
     /**
      * @param date 日期
@@ -824,7 +840,27 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }catch ( Exception e){
             e.printStackTrace();
         }
-        return operationProductionDao.getProductionVerificationIsNotTimely(productionDO);
+        //获取状态变更不及时清单
+        return operationProductionDao.getListOfUntimelyStatusChanges(productionDO);
+    }
+
+    /**
+     * @param date 日期
+     *  计算日期之后投产验证不及时清单
+     */
+    @Override
+    public List<ProductionDO> getTheListOfProductionToBeDeployed(String date) {
+        ProductionDO productionDO = new ProductionDO();
+        try {
+            productionDO.setProStatus("投产待部署");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            productionDO.setProDate(new java.sql.Date(date1.getTime()));
+        }catch ( Exception e){
+            e.printStackTrace();
+        }
+        //获取状态变更不及时清单
+        return operationProductionDao.getListOfUntimelyStatusChanges(productionDO);
     }
 
     @Override
@@ -1961,6 +1997,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 receiver_users.add(bean.getDevelopmentLeader());
                 base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
+            //救火更新抄送人添加自己
             MailFlowConditionDO vo=new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
             MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);

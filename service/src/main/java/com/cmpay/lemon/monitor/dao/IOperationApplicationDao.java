@@ -23,5 +23,5 @@ public interface IOperationApplicationDao extends BaseDao<OperationApplicationDO
 	//修改操作审批状态(全部)
 	void updateAllOperationalApplication(OperationApplicationDO bean);
 
-	List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(OperationApplicationDO operationApplicationDO);
+	List<OperationApplicationDO> getSystemEntryStatusChangeIsNotTimelyList(OperationApplicationDO operationApplicationDO);
 }

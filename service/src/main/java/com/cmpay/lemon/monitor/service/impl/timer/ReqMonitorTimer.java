@@ -2,13 +2,17 @@ package com.cmpay.lemon.monitor.service.impl.timer;
 
 
 import com.cmpay.lemon.common.Env;
+import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
+import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.OperationApplicationDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
@@ -82,6 +86,87 @@ public class ReqMonitorTimer {
 		boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
 	}
 
+	/*
+	 *搜索1天之前状态为“投产待部署”的投产记录与状态为“审批通过待部署”的系统操作记录
+	 *提醒运维同事确认这些投产/系统操作是否已经部署完成，如果部署已完成，请及时更新状态，如果是回退，也请更新到对应的状态。
+	 *如果确实既没部署，也没有回退，则不用更新状态。
+	 *邮件发送给 it.version@hisuntech.com
+	 **/
+
+	@Scheduled(cron = "10 0 12 * * ?")
+	public void listOfUntimelyStatusChanges() {
+		//如果是dev环境则不处理
+		if(LemonUtils.getEnv().equals(Env.DEV)) {
+			return;
+		}
+		//该功能计算起始时间
+		String date="2020-01-01";
+		//获得投产待部署不及时清单
+		List<ProductionDO> productionDOList = operationProductionService.getTheListOfProductionToBeDeployed(date);
+		System.err.println(productionDOList.size());
+		//获得审批通过待部署清单
+		List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getApprovalAndPassTheToDoList(date);
+		System.err.println(productionDOList.size());
+		//若俩清单为空则无邮箱发送
+		if(JudgeUtils.isEmpty(productionDOList)&&JudgeUtils.isEmpty(operationApplicationDOList)){
+			return;
+		}
+		//邮件信息
+		MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+		mailInfo.setMailServerHost("smtp.qiye.163.com");
+		mailInfo.setMailServerPort("25");
+		mailInfo.setValidate(true);
+		mailInfo.setUsername(Constant.EMAIL_NAME);
+		mailInfo.setPassword(Constant.EMAIL_PSWD);
+		mailInfo.setFromAddress(Constant.EMAIL_NAME);
+		//收件人;version_it@hisuntech.com
+		String result="version_it@hisuntech.com";
+		String[] mailToAddress = result.split(";");
+		mailInfo.setReceivers(mailToAddress);
+		//抄送人
+		result="wang_yw@hisuntech.com";
+		mailInfo.setCcs(result.split(";"));
+
+
+		mailInfo.setSubject("【待部署状态变更未及时更新清单】");
+
+		StringBuffer sb=new StringBuffer();
+		sb.append("<table border ='1' style='width:1000px;border-collapse: collapse;background-color: white;'>");
+		sb.append("<tr>");
+		sb.append("<th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th>");
+		sb.append("<th>计划投产日期</th><th>开发负责人</th><th>投产申请人</th><th>投产状态</th>");
+		sb.append("</tr>");
+		if(JudgeUtils.isNotEmpty(productionDOList)) {
+			for(int i=0;i<productionDOList.size();i++) {
+				sb.append("<tr>");
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProNumber() + "</td>");//投产编号
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProNeed() + "</td>");//需求名称及内容简述
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProType() + "</td>");//投产类型
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProDate() + "</td>");//计划投产日期
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getDevelopmentLeader() + "</td>");//开发负责人
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProApplicant() + "</td>");//投产申请人
+				sb.append("<td style='white-space: nowrap;'>" + productionDOList.get(i).getProStatus() + "</td>");//投产状态
+				sb.append("</tr>");
+			}
+		}
+		if(JudgeUtils.isNotEmpty(operationApplicationDOList)) {
+			for(int i=0;i<operationApplicationDOList.size();i++) {
+				sb.append("<tr>");
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperNumber() + "</td>");//投产编号
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperRequestContent() + "</td>");//需求名称及内容简述
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperType() + "</td>");//投产类型
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getProposeDate() + "</td>");//计划投产日期
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getDevelopmentLeader() + "</td>");//开发负责人
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperApplicant() + "</td>");//申请人
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperStatus() + "</td>");//投产状态
+				sb.append("</tr>");
+			}
+		}
+		sb.append("</table>");
+		mailInfo.setContent("版本组:<br/>&nbsp;&nbsp;&nbsp;&nbsp;以下投产记录或系统操作记录目前处于待部署状态清单，请确认最新部署状态，并更新。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;如果投产已回退，也请更新对应状态。如果既没有部署也没有回退则无需操作。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;如有任何问题请及时反馈与沟通。<br/><br/>"+sb.toString());
+		boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+
+	}
 
 	/*
 	 *投产不及时验证清单发送企业微信

@@ -101,7 +101,9 @@ public interface OperationProductionService {
     void updateMailGroup(MailGroupBO mailGroupBO);
 
     List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date);
+    List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date);
     List<ProductionDO> getProductionVerificationIsNotTimely(String number);
+    List<ProductionDO> getTheListOfProductionToBeDeployed(String number);
 
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
 }

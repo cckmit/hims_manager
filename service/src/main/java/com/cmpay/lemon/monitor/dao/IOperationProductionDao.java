@@ -80,5 +80,7 @@ public interface IOperationProductionDao extends BaseDao<ProductionDO, String> {
 
     ScheduleDO findProExcelList(String seq_id);
 
-    List<ProductionDO> getProductionVerificationIsNotTimely(ProductionDO productionBean);
+    List<ProductionDO> getListOfUntimelyStatusChanges(ProductionDO productionBean);
+
+
 }
