@@ -315,7 +315,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        // 如果项目经理不为空，则判断项目经理是否为技术负责人或团队主管，否则报错
+        // 如果项目经理不为空，则判断项目经理是否为产品经理技术负责人或团队主管，否则报错
         if(StringUtils.isNotBlank(demandBO.getProjectMng())){
             TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
             if(tPermiUser==null){
@@ -326,7 +326,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
             if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR2,userByUserName.getUserNo())){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为产品经理,部门技术负责人或团队主管！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
@@ -914,10 +914,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         mailInfo.setUsername(Constant.EMAIL_NAME);
         mailInfo.setPassword(Constant.EMAIL_PSWD);
         mailInfo.setFromAddress(Constant.EMAIL_NAME);
-        sendTo=sendTo.replaceAll("；", ";");
+        sendTo=sendTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
         mailInfo.setReceivers(sendTo.split(";"));
         if (StringUtils.isNotBlank(copyTo)) {
-            copyTo=copyTo.replaceAll("；", ";");
+            copyTo=copyTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
             mailInfo.setCcs(copyTo.split(";"));
         }
         if (null != attachFiles) {

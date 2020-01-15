@@ -437,7 +437,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
                 if (!isDepartmentManager(SUPERADMINISTRATOR1, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR3, userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR4, userByUserName.getUserNo())) {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为部门技术负责人或团队主管！");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为产品经理,部门技术负责人或团队主管！");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
             }
