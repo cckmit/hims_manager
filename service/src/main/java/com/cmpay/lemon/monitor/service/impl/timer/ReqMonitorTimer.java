@@ -103,10 +103,8 @@ public class ReqMonitorTimer {
 		String date="2020-01-01";
 		//获得投产待部署不及时清单
 		List<ProductionDO> productionDOList = operationProductionService.getTheListOfProductionToBeDeployed(date);
-		System.err.println(productionDOList.size());
 		//获得审批通过待部署清单
 		List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getApprovalAndPassTheToDoList(date);
-		System.err.println(productionDOList.size());
 		//若俩清单为空则无邮箱发送
 		if(JudgeUtils.isEmpty(productionDOList)&&JudgeUtils.isEmpty(operationApplicationDOList)){
 			return;
@@ -126,10 +124,7 @@ public class ReqMonitorTimer {
 		//抄送人
 		result="wang_yw@hisuntech.com";
 		mailInfo.setCcs(result.split(";"));
-
-
 		mailInfo.setSubject("【待部署状态变更未及时更新清单】");
-
 		StringBuffer sb=new StringBuffer();
 		sb.append("<table border ='1' style='width:1000px;border-collapse: collapse;background-color: white;'>");
 		sb.append("<tr>");
@@ -154,7 +149,7 @@ public class ReqMonitorTimer {
 				sb.append("<tr>");
 				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperNumber() + "</td>");//投产编号
 				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperRequestContent() + "</td>");//需求名称及内容简述
-				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperType() + "</td>");//投产类型
+				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getSysOperType() + "</td>");//投产类型
 				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getProposeDate() + "</td>");//计划投产日期
 				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getDevelopmentLeader() + "</td>");//开发负责人
 				sb.append("<td style='white-space: nowrap;'>" + operationApplicationDOList.get(i).getOperApplicant() + "</td>");//申请人
