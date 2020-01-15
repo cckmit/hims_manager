@@ -67,7 +67,7 @@
     		)
     </insert>
 
-	<select id="getSystemEntryVerificationIsNotTimelyList" resultMap="rm"  >
+	<select id="getSystemEntryStatusChangeIsNotTimelyList" resultMap="rm"  >
 		select
 		<include refid="Base_Column_List" />
 		from t_operational_application_detail
