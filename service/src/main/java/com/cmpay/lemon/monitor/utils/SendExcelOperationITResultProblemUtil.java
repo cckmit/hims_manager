@@ -1,5 +1,6 @@
 package com.cmpay.lemon.monitor.utils;
 
+import com.cmpay.lemon.monitor.bo.ITProductionBO;
 import com.cmpay.lemon.monitor.entity.ProblemDO;
 import com.cmpay.lemon.monitor.entity.ProductionDO;
 import jxl.Workbook;
@@ -20,14 +21,14 @@ import java.util.List;
  * IT中心每周投产日情况通报
  */
 public class SendExcelOperationITResultProblemUtil {
-	public  String createExcel(String path, List<ProductionDO> list, List<ProductionDO> listTotal, List<List<ProblemDO>> proBeanList, String userName) throws Exception {
+	public  String createExcel(String path, List<ProductionDO> list, List<ProductionDO> listTotal, ITProductionBO itProductionBO, String userName) throws Exception {
 
 		File file = new File(path);
 		WritableWorkbook book = null;
 		book = Workbook.createWorkbook(file);
 		WritableSheet sheet = book.createSheet(file.getName(), 0);
 		setHeader(sheet,list);
-		String[] params = setBody(sheet, list,proBeanList,userName); // 设置Excel内容主体信息
+		String[] params = setBody(sheet, list,itProductionBO,userName); // 设置Excel内容主体信息
 		setTotal(sheet, listTotal,params); // 设置Excel内容主体信息
 		book.write();
 		book.close();
@@ -80,9 +81,14 @@ public class SendExcelOperationITResultProblemUtil {
 		int len=rowList.size()+9;
 		sheet.mergeCells(0, len+1, 6, len+1);
 		addCell(sheet, len+1, 0, "本次投产总结及遗留事项", headerFormat,550,5);
+		sheet.mergeCells(0, len+10, 1, len+10);
+		addCell(sheet, len+10, 0, "投产编号", headerFormat,550,5);
+		sheet.mergeCells(2, len+10, 3, len+10);
+		addCell(sheet, len+10, 2, "需求名称及内容简述", headerFormat,550,5);
+		addCell(sheet, len+10, 4, "开发负责人", headerFormat,550,5);
 	}
 	
-	private  String[] setBody(WritableSheet sheet, List<ProductionDO> rowList, List<List<ProblemDO>> proBeanList, String userName) throws Exception {
+	private  String[] setBody(WritableSheet sheet, List<ProductionDO> rowList, ITProductionBO itProductionBO, String userName) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setWrap(true);
 		bodyFormat.setAlignment(Alignment.LEFT); // 水平居中对齐
@@ -115,59 +121,63 @@ public class SendExcelOperationITResultProblemUtil {
 		sheet.mergeCells(4, 1, 6, 1);
 		addCell(sheet, 1, 4, sdf.format(new Date()), bodyFormat,0,20);
 		sheet.mergeCells(1, 2, 2, 2);
-		addCell(sheet, 2, 1, "0:00", bodyFormat,0,20);
+		addCell(sheet, 2, 1, itProductionBO.getStartTime(), bodyFormat,0,20);
 		sheet.mergeCells(4, 2, 6, 2);
-		addCell(sheet, 2, 4, "次日7:00", bodyFormat,0,20);
+		addCell(sheet, 2, 4, itProductionBO.getEndTime(), bodyFormat,0,20);
 
 		
 		sheet.mergeCells(1, 3, 6, 3);
-		addCell(sheet, 3, 1,"无", bodyFormat,0,20);
+		addCell(sheet, 3, 1,itProductionBO.getSupportStaff(), bodyFormat,0,20);
 
 		sheet.mergeCells(1, 4, 6, 4);
 		addCell(sheet, 4, 1,"（清单请看附录1）", bodyFormat,0,20);
 		sheet.mergeCells(1, 5, 6, 5);
-		addCell(sheet, 5, 1,"重启平台范围WLS", bodyFormat,0,20);
+		addCell(sheet, 5, 1,itProductionBO.getRestartTheSituation(), bodyFormat,0,20);
 
 		sheet.mergeCells(1, 6, 2, 6);
-		addCell(sheet, 6, 1, "", bodyFormat,0,20);
+		addCell(sheet, 6, 1, itProductionBO.getServiceDeskTester(), bodyFormat,0,20);
 		sheet.mergeCells(4, 6, 6, 6);
-		addCell(sheet, 6, 4, "拨测无异常", bodyFormat,0,20);
+		addCell(sheet, 6, 4, itProductionBO.getTestResult(), bodyFormat,0,20);
 
 		sheet.mergeCells(1, 7, 2, 7);
-		addCell(sheet, 7, 1, "", bodyFormat,0,20);
+		addCell(sheet, 7, 1, itProductionBO.getAlarmMonitor(), bodyFormat,0,20);
 		sheet.mergeCells(4, 7, 6, 7);
-		addCell(sheet, 7, 4, "无异常告警", bodyFormat,0,20);
+		addCell(sheet, 7, 4, itProductionBO.getAlarmMonitoring(), bodyFormat,0,20);
 
 
 		for (int i = 9; i < rowList.size()+9; i++) {
 			msb = rowList.get(i-9);
 			int k = -1;
 			sheet.mergeCells(0, i+1, 1, i+1);
-			addCell(sheet, i+1, 0, msb.getProNumber(), bodyFormat,0,20);
+			addCell(sheet, i+1, 0, "", bodyFormat,0,20);
 			//需求名称及内容简述
 			sheet.mergeCells(2, i+1, 4, i+1);
-			addCell(sheet, i+1, 2, msb.getProNeed(), bodyFormat,0,50);
+			addCell(sheet, i+1, 2, "", bodyFormat,0,50);
 			//产品模块
-			addCell(sheet, i+1, 5, msb.getValidation(), bodyFormat,0,15);
+			addCell(sheet, i+1, 5, "", bodyFormat,0,15);
 			//验证人
-			addCell(sheet, i+1, 6, msb.getIdentifier(), bodyFormat,0,15);
+			addCell(sheet, i+1, 6, "", bodyFormat,0,15);
 		}
 		int len=rowList.size()+9;
 		sheet.mergeCells(0, len+2, 6, len+8);
-		StringBuffer stb=new StringBuffer();
-		int rowNum=1;
-		for(int i=0;i<proBeanList.size();i++){
-			List<ProblemDO> list=proBeanList.get(i);
-			for(int j=0;j<list.size();j++){
-			
-				if(list.get(j).getProblemDetail()!=null && !list.get(j).getProblemDetail().equals("")){
-				stb.append(rowNum+"、"+list.get(j).getProblemDetail()+"。\r\n");
-				}
-				rowNum++;
-			}
+		addCell(sheet, len+2, 0, itProductionBO.getProductionOfTheSummary(), bodyFormat,0,20);
+
+
+		int row=len+10;
+		for(int i=len+10;i<rowList.size()+len+10;i++){
+			msb = rowList.get(i-(len+10));
+			System.err.println(msb);
+			//投产编号
+			sheet.mergeCells(0, row+1, 1, row+1);
+			addCell(sheet, row+1, 0, msb.getProNumber(), bodyFormat,0,20);
+			//需求名称及内容简述
+			sheet.mergeCells(2, row+1, 3, row+1);
+			addCell(sheet, row+1, 2, msb.getProNeed(), bodyFormat,0,50);
+			//产品模块
+			addCell(sheet, row+1, 4, msb.getDevelopmentLeader(), bodyFormat,0,15);
+			row++;
 		}
-		addCell(sheet, len+2, 0, stb.toString(), bodyFormat,0,20);
-		
+
 		params[0]=String.valueOf(totalRow);
 		params[1]=String.valueOf(totalWorkloadPoint);
 		params[2]=String.valueOf(currentWorkloadPoint);

@@ -183,7 +183,7 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                     cont.append("&nbsp;&nbsp;&nbsp;&nbsp;");
                     cont.append("insert into PUBTTMS (MSG_CD, BUS_CNL, MSG_INF, MSG_DESC, LAST_UPD_OPR, UPD_DT, TM_SMP, BUS_TYP) <br/> values ");
                     cont.append("('"+ercdmgError.getErrorCd()+"',");
-                    cont.append("'*',");
+                    cont.append("'"+ercdmgError.getBuscnl()+"',");
                     cont.append("'"+ercdmgError.getBusnTip()+"',");
                     cont.append("'"+ercdmgError.getAppScen()+"',");
                     cont.append("' ',");
@@ -191,7 +191,7 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                     cont.append("to_char(sysdate,'yyyymmddhh24miss'),");
                     cont.append("'*'); <br/>");
                     cont.append("<br/>");
-                    redisStr.append("&nbsp;&nbsp;&nbsp;&nbsp;sh ./alert-redis.sh  'insert' 'pubttms' '"+ercdmgError.getErrorCd()+"' '*' '*' 'msgType' '"+ercdmgError.getBusnTip()+"' 'monFlg' 'bmsgInf'<br/>");
+                    redisStr.append("&nbsp;&nbsp;&nbsp;&nbsp;sh ./alert-redis.sh  'insert' 'pubttms' '"+ercdmgError.getErrorCd()+"' '"+ercdmgError.getBuscnl()+"' '*' 'msgType' '"+ercdmgError.getBusnTip()+"' 'monFlg' 'bmsgInf'<br/>");
                 }
                 cont.append(redisStr.toString());
                 cont.append("<br/>");
@@ -271,9 +271,6 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 mailInfo.setSubject("和包错误码在线更新通知(新增)");
                 mailInfo.setContent(email);
                 mailInfo.setCcs(bothReceivers);
-//                System.err.println(bothReceivers);
-//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
-//                mailInfo.setCcs(mailToAddress);
 
 
 
@@ -370,7 +367,6 @@ public class UpdmgnServiceImpl implements UpdmgnService {
         mailInfo.setSubject("和包错误码在线更新通知(修改)");
         mailInfo.setContent(sqlStr.toString());
         mailInfo.setCcs(bothReceivers);
-
         try{
             MultiMailsender.sendMailtoMultiCC(mailInfo);
         } catch (Exception e) {
