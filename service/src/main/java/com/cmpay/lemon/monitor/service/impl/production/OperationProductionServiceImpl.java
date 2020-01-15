@@ -1133,8 +1133,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
     //IT中心投产日投产情况通报
     @Override
-    public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        String[] pro_number_list=taskIdStr.split("~");
+    public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, ITProductionBO itProductionBO){
+
+        String[] pro_number_list=itProductionBO.getTaskIdStr().split("~");
         List<ProductionDO> list=new ArrayList<ProductionDO>();
         for(int i=0;i<pro_number_list.length;i++){
             ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
@@ -1150,15 +1151,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
             list.add(bean);
         }
-        File file=sendITExportExcel_Result(list);
+//        File file=sendITExportExcel_Result(list);
         List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
         for(int i=0;i<list.size();i++){
             pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
         }
         String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
-        File file2=exportExcelIT_Nei(list, pblist, currentUser);
+        File file2=exportExcelIT_Nei(list, itProductionBO, currentUser);
 
         MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("5");
+        MailGroupDO mp2=operationProductionDao.findMailGroupBeanDetail("6");
 
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -1173,7 +1175,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
          */
         Vector<File> files = new Vector<File>() ;
         files.add(file2) ;
-        files.add(file) ;
+//        files.add(file) ;
         mailInfo.setFile(files) ;
         /**
          * 收件人邮箱
@@ -1197,8 +1199,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
         }
         mailInfo.setReceivers(mailToAddressDemo);
+        mailInfo.setCcs(mp2.getMailUser().split(";"));
         //记录邮箱信息
-        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
+        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file2.getName() ,"");
         //添加发送内容
         mailInfo.setSubject("【IT中心每周投产日情况通报"+sdf.format(new Date())+"】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本次投产正常,详情请参见附件<br/><br/>");
@@ -1206,8 +1209,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionDao.addMailFlow(bn);
         if(isSend){
-            if(file.isFile() && file.exists()){
-                file.delete();
+            if(file2.isFile() && file2.exists()){
+                file2.delete();
             }
         }
     }
@@ -1383,7 +1386,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         return file;
     }
-    public File exportExcelIT_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
+    public File exportExcelIT_Nei(List<ProductionDO> list,ITProductionBO itProductionBO,String userName){
         String fileName = "IT中心每周投产日情况通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file=null;
         //依据环境配置路径
@@ -1401,7 +1404,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationITResultProblemUtil util = new SendExcelOperationITResultProblemUtil();
-            util.createExcel(filePath, list,null,proBeanList,userName);
+            util.createExcel(filePath, list,null,itProductionBO,userName);
             file=new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();

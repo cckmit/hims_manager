@@ -100,8 +100,10 @@ public class OperationProductionController {
 
     // IT中心每周投产日投产情况通报
     @RequestMapping("/sendGoITExportResult")
-    public GenericRspDTO<NoBody> sendGoITExportResult1(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        operationProductionService.sendGoITExportResult(request,response,taskIdStr);
+    public GenericRspDTO<NoBody> sendGoITExportResult1(@RequestBody ITProductionReqDTO reqDTO, HttpServletRequest request, HttpServletResponse response){
+        ITProductionBO itProductionBO = BeanUtils.copyPropertiesReturnDest(new ITProductionBO(), reqDTO);
+        System.err.println(reqDTO);
+        operationProductionService.sendGoITExportResult(request,response,itProductionBO);
         return GenericRspDTO.newSuccessInstance();
     }
 
