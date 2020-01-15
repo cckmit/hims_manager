@@ -172,6 +172,9 @@
     	<if test="operRequestContent != null and operRequestContent != ''">
     		and oper_request_content LIKE CONCAT('%',#{operRequestContent},'%')
     	</if>
+		 <if test="operNumber != null and operNumber != ''">
+			 and oper_number LIKE CONCAT('%',#{operNumber},'%')
+		 </if>
     	<if test="poDateStart != null and poDateEnd != null ">
     		and propose_date between #{poDateStart} and #{poDateEnd}
     	</if>
