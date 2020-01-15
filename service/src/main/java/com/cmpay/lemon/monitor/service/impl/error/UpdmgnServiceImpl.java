@@ -271,9 +271,6 @@ public class UpdmgnServiceImpl implements UpdmgnService {
                 mailInfo.setSubject("和包错误码在线更新通知(新增)");
                 mailInfo.setContent(email);
                 mailInfo.setCcs(bothReceivers);
-//                System.err.println(bothReceivers);
-//                String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com","liujia3@hisuntech.com"};
-//                mailInfo.setCcs(mailToAddress);
 
 
 
@@ -370,7 +367,6 @@ public class UpdmgnServiceImpl implements UpdmgnService {
         mailInfo.setSubject("和包错误码在线更新通知(修改)");
         mailInfo.setContent(sqlStr.toString());
         mailInfo.setCcs(bothReceivers);
-
         try{
             MultiMailsender.sendMailtoMultiCC(mailInfo);
         } catch (Exception e) {
