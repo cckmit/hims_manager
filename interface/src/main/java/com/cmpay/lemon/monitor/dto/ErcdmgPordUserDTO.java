@@ -11,6 +11,33 @@ public class ErcdmgPordUserDTO  extends GenericDTO {
 	private String audiUserId;
 	private String audiUserName;
 	private String userAcesss;
+	private String errorCdStart;
+	private int errorCdEnd;
+    private String errorCd;
+
+    public String getErrorCd() {
+        return errorCd;
+    }
+
+    public void setErrorCd(String errorCd) {
+        this.errorCd = errorCd;
+    }
+
+    public String getErrorCdStart() {
+		return errorCdStart;
+	}
+
+	public void setErrorCdStart(String errorCdStart) {
+		this.errorCdStart = errorCdStart;
+	}
+
+	public int getErrorCdEnd() {
+		return errorCdEnd;
+	}
+
+	public void setErrorCdEnd(int errorCdEnd) {
+		this.errorCdEnd = errorCdEnd;
+	}
 
 	public String getUserAcesss() {
 		return userAcesss;
@@ -79,15 +106,19 @@ public class ErcdmgPordUserDTO  extends GenericDTO {
 		this.audiUserName = audiUserName;
 	}
 
-	@Override
-	public String toString() {
-		return "ErcdmgPordUserBO{" +
-				"prodUserId='" + prodUserId + '\'' +
-				", prodUserName='" + prodUserName + '\'' +
-				", email='" + email + '\'' +
-				", emailPassword='" + emailPassword + '\'' +
-				", audiUserId='" + audiUserId + '\'' +
-				", audiUserName='" + audiUserName + '\'' +
-				'}';
-	}
+    @Override
+    public String toString() {
+        return "ErcdmgPordUserDTO{" +
+                "prodUserId='" + prodUserId + '\'' +
+                ", prodUserName='" + prodUserName + '\'' +
+                ", email='" + email + '\'' +
+                ", emailPassword='" + emailPassword + '\'' +
+                ", audiUserId='" + audiUserId + '\'' +
+                ", audiUserName='" + audiUserName + '\'' +
+                ", userAcesss='" + userAcesss + '\'' +
+                ", errorCdStart='" + errorCdStart + '\'' +
+                ", errorCdEnd=" + errorCdEnd +
+                ", errorCd='" + errorCd + '\'' +
+                '}';
+    }
 }

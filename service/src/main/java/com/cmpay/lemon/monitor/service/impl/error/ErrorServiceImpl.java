@@ -938,4 +938,61 @@ public class ErrorServiceImpl implements ErrorService {
         ercdmgPordUserBO.setProdUserName(currentUser);
         return ercdmgPordUserBO;
     }
+
+    @Override
+    public Boolean errorCdCheck(String errorStart){
+        String errorCode= iErcdmgErorDao.checkErrorCode(errorStart);
+        if(errorCode==null){
+            return true;
+        }
+        return false;
+    }
+    //获取错误码，sit
+    @Override
+    @TargetDataSource("dsSit")
+    public Boolean errorCdSit(String errorStart){
+        String sitmsg_cd= iErcdmgErorDao.selectPubtmsg(errorStart);
+       // String sittsg_cd= iErcdmgErorDao.CheckPubttms(errorStart);
+//        if(sitmsg_cd==null&&sittsg_cd==null){
+//            return true;
+//        }
+        if(sitmsg_cd==null){
+            return true;
+        }
+        return false;
+    }
+    //获取错误码，uat
+    @Override
+    @TargetDataSource("dsUat")
+    public Boolean errorCdUat(String errorStart){
+        String sitmsg_cd= iErcdmgErorDao.selectPubtmsg(errorStart);
+//        String sittsg_cd= iErcdmgErorDao.CheckPubttms(errorStart);
+//        System.err.println("查询Uit"+sitmsg_cd);
+//        System.err.println("查询Uit"+sittsg_cd);
+//        if(sitmsg_cd==null&&sittsg_cd==null){
+//            return true;
+//        }
+        if(sitmsg_cd==null){
+            return true;
+        }
+        return false;
+    }
+    //查询错误码后缀
+    @Override
+    public int selectIndex(String errorCdStart){
+        String errorCdEnd = iErcdmgErorDao.selectIndex(errorCdStart);
+        int index ;
+        if(errorCdEnd==null){
+            index = 10000;
+            iErcdmgErorDao.insertIndex( errorCdStart , errorCdEnd+"");
+        }else {
+            index = Integer.parseInt(errorCdEnd);
+        }
+        return index;
+    }
+    //新增后缀查询数
+    @Override
+    public void updateIndex(String errorCdStart ,int errorCdEnd){
+        iErcdmgErorDao.updateIndex(errorCdEnd+"",errorCdStart );
+    }
 }
