@@ -2,13 +2,11 @@ package com.cmpay.lemon.monitor.controller;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
-import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.annotation.QueryBody;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
-import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
 import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.UserInfoQueryBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -18,21 +16,11 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
 /**
  * 用户控制器
@@ -189,6 +177,12 @@ public class SystemUserController {
         }
         String fullName = systemUserService.getFullname(name);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, fullName);
+    }
+
+    @PostMapping("/getTelbyName")
+    public GenericRspDTO<String> getTelbyName(@RequestParam("name")String name) {
+        String tel=systemUserService.getTelbyName(name);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, tel);
     }
 
     /**

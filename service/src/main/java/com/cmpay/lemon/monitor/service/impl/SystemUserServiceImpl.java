@@ -27,6 +27,7 @@ import com.cmpay.lemon.monitor.utils.CryptoUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -450,5 +451,37 @@ public class SystemUserServiceImpl implements SystemUserService {
             userRoleDO.setRoleId((long)4001);
             iUserRoleDao.insert(userRoleDO);
         });
+    }
+
+    @Override
+    public String getTelbyName(String name) {
+        UserDO userDO = new UserDO();
+        userDO.setFullname(name);
+        List<UserDO> userDOS = iUserDao.find(userDO);
+        //查询不为空，则判断是否有电话号码，
+        if(JudgeUtils.isNotEmpty(userDOS)) {
+            String mobile = userDOS.get(0).getMobile();
+            if(StringUtils.isNotBlank(mobile)){
+                return mobile;
+            }
+        }
+        return "";
+    }
+
+
+    @Async
+    @Override
+    @Transactional(propagation= Propagation.REQUIRES_NEW)
+    public void updateMobile(String fullName,String mobile) {
+        System.err.println(222);
+        UserDO userDO = new UserDO();
+        userDO.setFullname(fullName);
+        List<UserDO> userDOS = iUserDao.find(userDO);
+        if(JudgeUtils.isEmpty(userDOS)){
+            return;
+        }else{
+            userDOS.get(0).setMobile(mobile);
+            iUserDao.update(userDOS.get(0));
+        }
     }
 }
