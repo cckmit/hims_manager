@@ -1807,17 +1807,21 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             return map;
         }
         String coorDept=demand.getDevpCoorDept();
-        String[] coorDeptArray=new String[coorDept.split(",").length] ;
-        if(StringUtils.isNotBlank(coorDept)){
-            String[] coorDeptArr=coorDept.split(",");
-            for (int i = 0,j= 0; i < coorDeptArr.length; i++) {
-                if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])) {
-                    continue;
+        String[] coorDeptArray = {};
+        if(!coorDept.isEmpty()){
+            coorDeptArray=new String[coorDept.split(",").length] ;
+            if(StringUtils.isNotBlank(coorDept)){
+                String[] coorDeptArr=coorDept.split(",");
+                for (int i = 0,j= 0; i < coorDeptArr.length; i++) {
+                    if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])) {
+                        continue;
+                    }
+                    coorDeptArray[j] =coorDeptArr[i];
+                    j++;
                 }
-                coorDeptArray[j] =coorDeptArr[i];
-                j++;
             }
         }
+
 
         String[] devOnlyIds = new String[coorDeptName.size()];
         devOnlyIds =coorDeptName.toArray(devOnlyIds);

@@ -33,6 +33,13 @@ public interface IErcdmgErorDao extends BaseDao<ErcdmgErrorComditionDO, String> 
      */
     public String selectPubttms(@Param("errorCd") String errorCd, @Param("buscnl")  String buscnl);
 
+    public String CheckPubttms(@Param("errorCd") String errorCd);
+
+    public String checkErrorCode(@Param("errorCd") String errorCd);
+
+    void insertIndex(@Param("errorCdStart") String errorCdStart, @Param("errorCdEnd")  String errorCdEnd);
+    void updateIndex(@Param("errorCdEnd")  String errorCdEnd ,@Param("errorCdStart") String errorCdStart );
+    public String selectIndex(@Param("errorCdStart") String errorCdStart);
     void insertPubtmsg(ErcdmgErrorComditionDO ercdmgError);
 
     void insertPubttms(ErcdmgErrorComditionDO ercdmgError);

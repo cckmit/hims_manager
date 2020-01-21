@@ -172,13 +172,14 @@ public class ErrorController {
             for (int i = 1; i <= map.size(); i++) {
                 ErcdmgErrorComditionBO demandDO = new ErcdmgErrorComditionBO();
                 demandDO.setCr(map.get(i).get(0).toString().trim());
-                demandDO.setErrorCd(map.get(i).get(1).toString().trim());
-                demandDO.setProdMod(map.get(i).get(2).toString().trim());
-                demandDO.setBuscnl(map.get(i).get(3).toString().trim());
-                demandDO.setBusnTip(map.get(i).get(4).toString().trim());
-                demandDO.setTechTip(map.get(i).get(5).toString().trim());
-                demandDO.setAppScen(map.get(i).get(6).toString().trim());
-                demandDO.setProdUserName(map.get(i).get(7).toString().trim());
+                //demandDO.setErrorCd(map.get(i).get(1).toString().trim());
+                demandDO.setProdMod(map.get(i).get(1).toString().trim());
+                demandDO.setBuscnl(map.get(i).get(2).toString().trim());
+                demandDO.setBusnTip(map.get(i).get(3).toString().trim());
+                demandDO.setTechTip(map.get(i).get(4).toString().trim());
+                demandDO.setAppScen(map.get(i).get(5).toString().trim());
+                demandDO.setProdUserName(map.get(i).get(6).toString().trim());
+                demandDO.setErrorCd(errorIndex(map.get(i).get(1).toString().trim()));
                 demandDOS.add(demandDO);
             }
         } catch (BusinessException e) {
@@ -306,4 +307,72 @@ public class ErrorController {
         BeanConvertUtils.convert(rspDTO, ercdmgPordUserBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+
+    @RequestMapping("/errorCdCheck")
+    public GenericRspDTO<ErcdmgPordUserDTO> errorCdCheck(@RequestParam("errorCdStart") String errorCdStart){
+        ErcdmgPordUserDTO rspDTO =  new ErcdmgPordUserDTO();
+        String errorCode = "";
+        int end = errorService.selectIndex(errorCdStart);
+        for(int i = end;i<=99999;i++){
+            String error = errorCdStart + i;
+            end = i;
+            //判断该错误码sit是否存在
+            boolean sit = errorService.errorCdSit(error);
+            if(!sit){
+                continue;
+            }
+            //判断该错误码uat是否存在
+            boolean uat =errorService.errorCdUat(error);
+            if(!uat){
+                continue;
+            }
+            //判断该错误码本地是否存在
+            boolean check = errorService.errorCdCheck(error);
+            if(!check){
+                continue;
+            }
+            if(sit && uat && check){
+                errorCode = error;
+                errorService.updateIndex(errorCdStart,i);
+                break;
+            }
+        }
+        rspDTO.setErrorCd(errorCode);
+        rspDTO.setErrorCdStart(errorCdStart);
+        rspDTO.setErrorCdEnd(end);
+        System.err.println(errorCode);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    //批量导入时根据模块自动生成错误码
+    public String errorIndex(String errorCdStart){
+        String errorCode = "";
+        int end = errorService.selectIndex(errorCdStart);
+        for(int i = end;i<=99999;i++){
+            String error = errorCdStart + i;
+            end = i;
+            //判断该错误码sit是否存在
+            boolean sit = errorService.errorCdSit(error);
+            if(!sit){
+                continue;
+            }
+            //判断该错误码uat是否存在
+            boolean uat =errorService.errorCdUat(error);
+            if(!uat){
+                continue;
+            }
+            //判断该错误码本地是否存在
+            boolean check = errorService.errorCdCheck(error);
+            if(!check){
+                continue;
+            }
+            if(sit && uat && check){
+                errorCode = error;
+                errorService.updateIndex(errorCdStart,i);
+                break;
+            }
+        }
+        return errorCode;
+    }
 }
+
+

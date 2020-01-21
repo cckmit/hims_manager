@@ -90,6 +90,15 @@ public interface ErrorService {
     ErcdmgErrorComditionBO addCnlCheckErrorCode(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
     void addCnlSitMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
     void addCnlUatMsg(ErcdmgErrorComditionBO ercdmgErrorComditionBO);
-
     ErcdmgPordUserBO access();
+    //获取错误码，本地
+    Boolean errorCdCheck(String errorStart);
+    //获取错误码，sit
+    Boolean errorCdSit(String errorStart);
+    //获取错误码，uat
+    Boolean errorCdUat(String errorStart);
+    //查询错误码后缀
+    int selectIndex(String errorCdStart);
+    //修改后缀查询数
+    void updateIndex(String errorCdStart ,int errorCdEnd);
 }

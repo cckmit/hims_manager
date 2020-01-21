@@ -318,6 +318,17 @@
     <select id="selectPubttms" parameterType="java.lang.String"  resultType="java.lang.String">
          select MSG_CD FROM pubttms where MSG_CD=#{errorCd} and  bus_cnl=#{buscnl}
     </select>
+    <select id="CheckPubttms" parameterType="java.lang.String"  resultType="java.lang.String">
+         select MSG_CD FROM pubttms where MSG_CD=#{errorCd}
+    </select>
+
+    <select id="checkErrorCode" parameterType="java.lang.String"  resultType="java.lang.String" >
+        SELECT
+        error_cd
+        from t_ercdmg_error
+        where error_cd =#{errorCd}
+    </select>
+
     <update id="updatePubtmsg">
         update Pubtmsg
           <set>
@@ -518,7 +529,7 @@
              AND entry_date &lt;= #{endDate}
         </if>
         <if test="errorCd != null and errorCd != ''">
-    		and error_cd = #{errorCd}
+    		and error_cd  LIKE CONCAT('%',#{errorCd},'%')
     	</if>
 
     	 <if test="buscnl != null and buscnl != ''">
@@ -797,6 +808,24 @@
           and cur_status='0'
 
         </where>
+    </update>
+
+    <insert id="insertIndex" parameterType="java.lang.String">
+        INSERT INTO t_error_index(
+            errorCdStart,
+            errorCdEnd
+        )VALUES(
+            #{errorCdStart},
+            #{errorCdEnd}
+        )
+    </insert>
+
+    <select id="selectIndex" parameterType="java.lang.String"  resultType="java.lang.String">
+         select errorCdEnd FROM t_error_index where errorCdStart=#{errorCdStart}
+    </select>
+
+    <update id="updateIndex" parameterType="java.lang.String">
+        update t_error_index set errorCdEnd=#{errorCdEnd} where errorCdStart=#{errorCdStart}
     </update>
     
 </mapper>
