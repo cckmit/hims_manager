@@ -115,4 +115,8 @@ public interface SystemUserService {
     String  getFullname(String loginname);
 
      void syncOldTable();
+
+    String getTelbyName(String name);
+
+    public void updateMobile(String fullName,String mobile);
 }

@@ -82,6 +82,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private IDemandStateHistoryExtDao demandStateHistoryDao;
     @Autowired
     private SystemRoleService systemRoleService;
+    @Autowired
+    private SystemUserService systemUserService;
 
     public  static  final  long configurationAdministratorRoleID=5003;
     @Override
@@ -1844,7 +1846,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-
+        //登记验证人电话号码
+        systemUserService.updateMobile(bean.getIdentifier(),bean.getIdentifierTel());
+        systemUserService.updateMobile(bean.getProChecker(),bean.getCheckerTel());
         //发邮件通知
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
