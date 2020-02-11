@@ -819,6 +819,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 insertList.add(m);
             } else {
                 //设置默认值
+                m.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                 m.setReqStartMon("");
                 updateList.add(m);
             }
