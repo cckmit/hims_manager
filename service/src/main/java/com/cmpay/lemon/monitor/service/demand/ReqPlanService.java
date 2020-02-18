@@ -113,4 +113,9 @@ public interface ReqPlanService {
     DemandTimeFrameHistoryRspBO findTimeNodeModificationDetails(DemandTimeFrameHistoryBO demandTimeFrameHistoryBO);
 
     void registrationTimeNodeHistoryTable(DemandBO demandBO);
+
+    /**
+     * 工作量遗留需求存量变更
+     */
+    void changesInLegacyWorkload(String reqImplMon);
 }

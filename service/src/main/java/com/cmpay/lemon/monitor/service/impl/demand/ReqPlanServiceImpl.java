@@ -416,6 +416,111 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandTimeFrameHistoryDao.insert(demandTimeFrameHistoryDO);
     }
 
+    /**
+     * 需求已完成但工作量未录入完的需求存量变更
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void changesInLegacyWorkload(String req_impl_mon){
+        try {
+            //找到为完成状态且工作量未录入完的需求
+            List<DemandDO> list = demandDao.findUnFinishReq1(req_impl_mon);
+            //获取下个月时间
+            SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
+            Date month = simpleDateFormatMonth.parse(req_impl_mon);
+            Calendar c = Calendar.getInstance();
+            c.setTime(month);
+            c.add(Calendar.MONTH, 1);
+            String last_month = simpleDateFormatMonth.format(c.getTime());
+            //获取登录用户ID
+            String update_user = SecurityUtils.getLoginUserId();
+            for (int i = 0; i < list.size(); i++) {
+                DemandDO demand = list.get(i);
+                // 需求类型变为存量
+                demand.setReqType("02");
+                // 需求实施月份，转为下个月
+                demand.setReqImplMon(last_month);
+                // 月初阶段等于需求当前阶段
+                demand.setPreMonPeriod(demand.getPreCurPeriod());
+                //月初备注置空
+                demand.setMonRemark("该需求为"+simpleDateFormatMonth+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
+                //月底备注置空
+                demand.setEndMonRemark("");
+                demand.setEndFeedbackTm("");
+                // 是否核减置空
+                demand.setIsCut("");
+                // 工作量已录入总量
+                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                demand.setInputWorkload(inputWorkLoad);
+                demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
+                // 本月录入，计入上月录入
+                demand.setLastInputWorkload(demand.getMonInputWorkload());
+                // 本月录入0
+                demand.setMonInputWorkload(0);
+                // 更新人，更新时间
+                demand.setUpdateUser(update_user);
+                demand.setUpdateTime(new Date());
+                DemandDO vo = new DemandDO();
+                vo.setReqNm(demand.getReqNm());
+                vo.setReqNo(demand.getReqNo());
+                vo.setReqImplMon(demand.getReqImplMon());
+                List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
+                if (dem.size() == 0) {
+                    String reqInnerSeq = demand.getReqInnerSeq();
+                    demand.setReqInnerSeq(getNextInnerSeq());
+                    demandDao.insertStockReq(demand);
+                    // 登记需求变更明细表
+                    DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+                    demandChangeDetailsDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandChangeDetailsDO.setReqNo(demand.getReqNo());
+                    demandChangeDetailsDO.setReqNm(demand.getReqNm());
+                    demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
+
+                    String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
+                    if(identification==null){
+                        identification=reqInnerSeq;
+                    }
+                    demandChangeDetailsDO.setIdentification(identification);
+                    demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
+                    demandChangeDetailsDO.setParentReqNo(reqInnerSeq);
+                    demandChangeDetailsDao.insert(demandChangeDetailsDO);
+                    //同步jira
+                    SyncJira(demand, reqInnerSeq);
+                    //更新需求状态历史表
+                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
+                    demandStateHistoryDO.setReqSts(reqSts);
+                    demandStateHistoryDO.setRemarks("存量变更录入");
+                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                    //依据内部需求编号查唯一标识
+                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                    if(identificationByReqInnerSeq==null){
+                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                    }
+                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                    //获取当前操作员
+                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                    //登记需求状态历史表
+                    demandStateHistoryDao.insert(demandStateHistoryDO);
+
+                }else {
+                    demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+                    demandDao.updateStockReq(demand);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.error("存量需求转存失败：" + e.getMessage());
+            //"存量需求转存失败" + e.getMessage();
+            MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
+        }
+    }
     @Override
     public List<DemandBO> findAll() {
         return BeanConvertUtils.convertList(demandDao.find(new DemandDO()), DemandBO.class);
@@ -944,10 +1049,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
-            //找到为完成状态且工作量未录入完的需求
-            List<DemandDO> list1 = demandDao.findUnFinishReq1(req_impl_mon);
-            //拼接
-            list.addAll(list1);
             //获取下个月时间
             SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
             Date month = simpleDateFormatMonth.parse(req_impl_mon);

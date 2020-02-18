@@ -76,6 +76,17 @@ public class ReqWorkLoadController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**
+     * 已完成但工作量未完全录入需求存量变更
+     *
+     * @return
+     */
+    @RequestMapping("/changesInLegacyWorkload")
+    public GenericRspDTO changesInLegacyWorkload(@RequestBody DemandReqDTO reqDTO) {
+        System.out.println(reqDTO.getReqImplMon());
+        reqPlanService.changesInLegacyWorkload(reqDTO.getReqImplMon());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    /**
      * 模板下载
      *
      * @return
