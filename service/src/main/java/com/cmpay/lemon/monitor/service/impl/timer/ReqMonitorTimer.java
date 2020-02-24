@@ -224,9 +224,32 @@ public class ReqMonitorTimer {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-		//如果有内容则调用企业微信应用发送推送
+		//如果有内容则调用企业微信应用和邮件发送推送
         if(!productionDOList.isEmpty()||!operationApplicationDOList.isEmpty()) {
-            boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
+			//邮件信息推送
+			MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+			mailInfo.setMailServerHost("smtp.qiye.163.com");
+			mailInfo.setMailServerPort("25");
+			mailInfo.setValidate(true);
+			mailInfo.setUsername(Constant.EMAIL_NAME);
+			mailInfo.setPassword(Constant.EMAIL_PSWD);
+			mailInfo.setFromAddress(Constant.EMAIL_NAME);
+			//收件人;version_it@hisuntech.com
+			String result="wu_lr@hisuntech.com";
+			String[] mailToAddress = result.split(";");
+			mailInfo.setReceivers(mailToAddress);
+			//抄送人
+			result="wu_lr@hisuntech.com";
+			mailInfo.setCcs(result.split(";"));
+			//添加附件
+			Vector filesv = new Vector();
+			filesv.add(file);
+			mailInfo.setFile(filesv);
+			mailInfo.setSubject("【投产验证不及时清单】");
+			mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件<br/><br/>");
+			boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+			//企业微信信息推送
+			boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
         }
 		file.delete();
 	}
