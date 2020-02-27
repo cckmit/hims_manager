@@ -8,6 +8,7 @@ package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -43,4 +44,6 @@ public interface IDictionaryExtDao extends IDictionaryDao {
 
 
     public int updateWorkloadLockStatus(String workloadLockStatus);
+
+    String getValue(@Param("reqPeroid")String reqPeroid,@Param("preCurPeriod")String preCurPeriod);
 }

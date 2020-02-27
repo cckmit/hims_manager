@@ -118,4 +118,6 @@ public interface ReqPlanService {
      * 工作量遗留需求存量变更
      */
     void changesInLegacyWorkload(String reqImplMon);
+
+    void registrationDemandPhaseRecordForm(DemandBO demandBO,String remarks ) ;
 }

@@ -128,6 +128,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Autowired
     IDemandTimeFrameHistoryDao demandTimeFrameHistoryDao;
     @Autowired
+    IDemandCurperiodHistoryDao demandCurperiodHistoryDao;
+    @Autowired
     private IErcdmgErorDao iErcdmgErorDao;
     @Autowired
     private IUserExtDao iUserDao;
@@ -521,6 +523,39 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
         }
     }
+
+    /**
+     * 登记需求阶段更变历史表
+     * @param demandBO
+     */
+    @Override
+    public void registrationDemandPhaseRecordForm(DemandBO demandBO,String remarks ) {
+
+
+        DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
+        DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
+
+        demandCurperiodHistoryDO.setReqInnerSeq(demandBO.getReqInnerSeq());
+        demandCurperiodHistoryDO.setReqNo(demandDO.getReqNo());
+        demandCurperiodHistoryDO.setReqNm(demandDO.getReqNm());
+        demandCurperiodHistoryDO.setOldPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID",demandDO.getPreCurPeriod()));
+        String req_peroid = dictionaryService.findFieldName("REQ_PEROID", demandDO.getPreCurPeriod());
+        demandCurperiodHistoryDO.setPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID",demandBO.getPreCurPeriod()));
+        demandCurperiodHistoryDO.setRemarks(remarks);
+
+        //依据内部需求编号查唯一标识
+        String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandDO.getReqInnerSeq());
+        if(identificationByReqInnerSeq==null){
+            identificationByReqInnerSeq=demandDO.getReqInnerSeq();
+        }
+        demandCurperiodHistoryDO.setIdentification(identificationByReqInnerSeq);
+        //获取当前操作员
+        demandCurperiodHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+        demandCurperiodHistoryDO.setCreatTime(LocalDateTime.now());
+        //登记需求状态历史表
+        demandCurperiodHistoryDao.insert(demandCurperiodHistoryDO);
+    }
+
     @Override
     public List<DemandBO> findAll() {
         return BeanConvertUtils.convertList(demandDao.find(new DemandDO()), DemandBO.class);

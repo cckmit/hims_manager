@@ -104,7 +104,6 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public void workloadLockStatus() {
-        System.err.println(1);
         DictionaryDO dictionaryDO = new DictionaryDO();
         dictionaryDO.setDicId(WORKLOADLOCKSTATUS);
         List<DictionaryDO> dictionaryDOList = dictionaryDao.getDicByDicId(dictionaryDO);
@@ -117,6 +116,14 @@ public class DictionaryServiceImpl implements DictionaryService {
             workloadLockStatus="off";
         }
         dictionaryDao.updateWorkloadLockStatus(workloadLockStatus);
+    }
+
+    @Override
+    public String findFieldValue(String req_peroid, String preCurPeriod) {
+        String value ="";
+        value= dictionaryDao.getValue(req_peroid, preCurPeriod);
+        System.err.println(value);
+        return  value;
     }
 
 }
