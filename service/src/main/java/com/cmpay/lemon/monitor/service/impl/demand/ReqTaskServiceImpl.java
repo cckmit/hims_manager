@@ -458,12 +458,22 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
             }
-
-            // 这五个数值为int类型，该操作不会对其产生修改，但默认新对象数值为0，搜索并赋值保证不会变化
+            //如果修改了需求当前阶段
+            if(!demandBO.getPreCurPeriod().equals(demandDO.getPreCurPeriod())){
+                //登记需求阶段记录表
+                String remarks="手动修改";
+                reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+            }
+            // 这个数值为int类型，该操作不会对其产生修改，但默认新对象数值为0，搜索并赋值保证不会变化
+            //总工作量
             demandBO.setTotalWorkload(demandDO.getTotalWorkload());
+            //已录入总工作量
             demandBO.setInputWorkload(demandDO.getInputWorkload());
+            //上月录入
             demandBO.setLastInputWorkload(demandDO.getLastInputWorkload());
+            //剩余录入工作量
             demandBO.setRemainWorkload(demandDO.getRemainWorkload());
+            //本月录入工作量
             demandBO.setMonInputWorkload(demandDO.getMonInputWorkload());
 
             demandDao.update(BeanUtils.copyPropertiesReturnDest(demandDO, demandBO));

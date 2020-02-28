@@ -105,4 +105,8 @@
         value = #{workloadLockStatus}
         WHERE DIC_ID = 'WORKLOAD_LOCK_STATUS'
     </update>
+
+    <select id="getValue" resultType="string" parameterType="java.lang.String">
+         SELECT VALUE AS NAME FROM t_permi_dic_data where dic_id = #{reqPeroid} and name = #{preCurPeriod}
+    </select>
 </mapper>

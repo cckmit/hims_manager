@@ -40,4 +40,6 @@ public interface DictionaryService {
     DictionaryBO findDictionary();
 
     void workloadLockStatus();
+
+    String findFieldValue(String req_peroid, String preCurPeriod);
 }

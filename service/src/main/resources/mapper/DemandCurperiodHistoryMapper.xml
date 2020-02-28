@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandCurperiodHistoryDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandCurperiodHistoryDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="old_pre_cur_period" property="oldPreCurPeriod" jdbcType="VARCHAR" />
+        <result column="pre_cur_period" property="preCurPeriod" jdbcType="VARCHAR" />
+        <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+        <result column="identification" property="identification" jdbcType="VARCHAR" />
+        <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
+        <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_inner_seq, req_no, req_nm, old_pre_cur_period, pre_cur_period, remarks, identification, 
+        creat_user, creat_time
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_curperiod_history
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_demand_curperiod_history
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandCurperiodHistoryDO" >
+        insert into t_demand_curperiod_history
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="reqInnerSeq != null" >
+                req_inner_seq,
+            </if>
+            <if test="reqNo != null" >
+                req_no,
+            </if>
+            <if test="reqNm != null" >
+                req_nm,
+            </if>
+            <if test="oldPreCurPeriod != null" >
+                old_pre_cur_period,
+            </if>
+            <if test="preCurPeriod != null" >
+                pre_cur_period,
+            </if>
+            <if test="remarks != null" >
+                remarks,
+            </if>
+            <if test="identification != null" >
+                identification,
+            </if>
+            <if test="creatUser != null" >
+                creat_user,
+            </if>
+            <if test="creatTime != null" >
+                creat_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="reqInnerSeq != null" >
+                #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="oldPreCurPeriod != null" >
+                #{oldPreCurPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="preCurPeriod != null" >
+                #{preCurPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null" >
+                #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="identification != null" >
+                #{identification,jdbcType=VARCHAR},
+            </if>
+            <if test="creatUser != null" >
+                #{creatUser,jdbcType=VARCHAR},
+            </if>
+            <if test="creatTime != null" >
+                #{creatTime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandCurperiodHistoryDO" >
+        update t_demand_curperiod_history
+        <set >
+            <if test="reqInnerSeq != null" >
+                req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNm != null" >
+                req_nm = #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="oldPreCurPeriod != null" >
+                old_pre_cur_period = #{oldPreCurPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="preCurPeriod != null" >
+                pre_cur_period = #{preCurPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="remarks != null" >
+                remarks = #{remarks,jdbcType=VARCHAR},
+            </if>
+            <if test="identification != null" >
+                identification = #{identification,jdbcType=VARCHAR},
+            </if>
+            <if test="creatUser != null" >
+                creat_user = #{creatUser,jdbcType=VARCHAR},
+            </if>
+            <if test="creatTime != null" >
+                creat_time = #{creatTime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandCurperiodHistoryDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_curperiod_history
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="reqInnerSeq != null" >
+                and req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNm != null" >
+                and req_nm = #{reqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="oldPreCurPeriod != null" >
+                and old_pre_cur_period = #{oldPreCurPeriod,jdbcType=VARCHAR}
+            </if>
+            <if test="preCurPeriod != null" >
+                and pre_cur_period = #{preCurPeriod,jdbcType=VARCHAR}
+            </if>
+            <if test="remarks != null" >
+                and remarks = #{remarks,jdbcType=VARCHAR}
+            </if>
+            <if test="identification != null" >
+                and identification = #{identification,jdbcType=VARCHAR}
+            </if>
+            <if test="creatUser != null" >
+                and creat_user = #{creatUser,jdbcType=VARCHAR}
+            </if>
+            <if test="creatTime != null" >
+                and creat_time = #{creatTime,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
