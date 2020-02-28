@@ -445,7 +445,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 月初阶段等于需求当前阶段
                 demand.setPreMonPeriod(demand.getPreCurPeriod());
                 //月初备注置空
-                demand.setMonRemark("该需求为"+simpleDateFormatMonth+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
+                demand.setMonRemark("该需求为"+req_impl_mon+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
                 //月底备注置空
                 demand.setEndMonRemark("");
                 demand.setEndFeedbackTm("");
@@ -510,8 +510,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDao.insert(demandStateHistoryDO);
 
                 }else {
-                    demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
-                    demandDao.updateStockReq(demand);
+                    //若下月已有该条需求则不做处理
+                   /* demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+                    demandDao.updateStockReq(demand);*/
                 }
 
             }
@@ -2535,8 +2536,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 m.setInputRes(demandDO.getInputRes());
                 m.setDevCycle(demandDO.getDevCycle());
                 m.setExpInput(demandDO.getExpInput());
-                System.err.println(m);
-                System.err.println(demandDO);
                 demandDao.update(m);
             });
 
