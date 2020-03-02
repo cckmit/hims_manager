@@ -445,9 +445,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 月初阶段等于需求当前阶段
                 demand.setPreMonPeriod(demand.getPreCurPeriod());
                 //月初备注置空
-                demand.setMonRemark("该需求为"+req_impl_mon+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
+                demand.setMonRemark("");
                 //月底备注置空
-                demand.setEndMonRemark("");
+                demand.setEndMonRemark("该需求为"+req_impl_mon+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
                 demand.setEndFeedbackTm("");
                 // 是否核减置空
                 demand.setIsCut("");
@@ -460,7 +460,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 本月录入0
                 demand.setMonInputWorkload(0);
                 // 更新人，更新时间
-                demand.setUpdateUser(update_user);
+                demand.setUpdateUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demand.setUpdateTime(new Date());
                 DemandDO vo = new DemandDO();
                 vo.setReqNm(demand.getReqNm());
@@ -1118,7 +1118,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 本月录入0
                 demand.setMonInputWorkload(0);
                 // 更新人，更新时间
-                demand.setUpdateUser(update_user);
+                demand.setUpdateUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demand.setUpdateTime(new Date());
 
                 DemandDO vo = new DemandDO();
@@ -1304,7 +1304,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 本月录入0
                 demand.setMonInputWorkload(0);
                 // 更新人，更新时间
-                demand.setUpdateUser(update_user);
+                demand.setUpdateUser(userService.getFullname(SecurityUtils.getLoginName()));
                 demand.setUpdateTime(new Date());
 
                 DemandDO vo = new DemandDO();

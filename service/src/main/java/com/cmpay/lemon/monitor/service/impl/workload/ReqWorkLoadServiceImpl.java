@@ -690,6 +690,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateReqWorkLoad(DemandBO bean) {
+
+        System.err.println(11112233);
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, bean);
         workLoadDao.updateReqWorkLoad(demandDO);
