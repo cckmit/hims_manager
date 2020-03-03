@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -821,6 +822,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 MsgEnum.ERROR_NOT_SVN.setMsgInfo("项目启动失败:" + message);
                 BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
             }
+
             //文档建立成功后，更新字段 is_svn_build
             bean.setIsSvnBuild("是");
             demandDao.update(bean);
@@ -872,10 +874,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * @return
      */
     private String bulidSvnProjrct(DemandDO reqTask, HttpServletRequest request) {
+        //连接svn失败后报错，项目启动失败
+        try {
         // 身份验证
         ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
         SVNClientManager clientManager = SVNUtil.authSvn(SvnConstant.SvnPath,authManager);
-        try {
+
             String reqNo=reqTask.getReqNo();
             int start=reqNo.indexOf("-")+1;
             String reqMonth=reqNo.substring(start,start+6);
@@ -906,12 +910,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             File file = new File(path);
             // 导入文件夹
-            SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true);
+            if(SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true) == null){
+                return "项目启动SVN创建子文件夹失败";
+            }
+            return "";
         } catch (Exception e) {
             e.printStackTrace();
             return "项目启动创建子文件夹失败，" + e.getMessage();
         }
-        return "";
     }
 
     /**
@@ -1947,7 +1953,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String coorDept=demand.getDevpCoorDept();
         String[] coorDeptArray = {};
         if(!coorDept.isEmpty()){
-            coorDeptArray=new String[coorDept.split(",").length] ;
+            int coorDeptString = coorDept.split(",").length;
+            if(coorDept.indexOf("产品研究部")!=-1){
+                coorDeptString = coorDeptString -1;
+            }
+            if(coorDept.indexOf("产品测试部")!=-1){
+                coorDeptString = coorDeptString -1;
+            }
+            coorDeptArray=new String[coorDeptString] ;
             if(StringUtils.isNotBlank(coorDept)){
                 String[] coorDeptArr=coorDept.split(",");
                 for (int i = 0,j= 0; i < coorDeptArr.length; i++) {

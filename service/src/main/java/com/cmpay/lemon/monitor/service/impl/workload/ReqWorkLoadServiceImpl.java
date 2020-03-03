@@ -12,10 +12,7 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
-import com.cmpay.lemon.monitor.dao.IDictionaryExtDao;
-import com.cmpay.lemon.monitor.dao.IPlanDao;
-import com.cmpay.lemon.monitor.dao.IWorkLoadDao;
-import com.cmpay.lemon.monitor.dao.IWorkloadLockedStateDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.DemandDO;
 import com.cmpay.lemon.monitor.entity.DictionaryDO;
 import com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO;
@@ -97,6 +94,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     SystemUserService userService;
     @Autowired
     IWorkloadLockedStateDao workloadLockedStateDao;
+    @Autowired
+    private IDemandExtDao demandDao;
 
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
