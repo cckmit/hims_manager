@@ -1169,8 +1169,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDao.insert(demandStateHistoryDO);
 
                 }else {
-                    demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
-                    demandDao.updateStockReq(demand);
+                    //若下月已有该需求则不做修改
+                  /*  demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+                    demandDao.updateStockReq(demand);*/
                 }
 
             }
