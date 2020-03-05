@@ -523,8 +523,11 @@
             <if test="reqStartMon != null and reqStartMon != ''">
                 AND a.req_start_mon = #{reqStartMon}
             </if>
-            <if test="devpLeadDept != null and devpLeadDept != ''">
+            <if test="devpLeadDept != '主导部门为空' and devpLeadDept != null and devpLeadDept != ''">
                 AND a.devp_lead_dept = #{devpLeadDept}
+            </if>
+            <if test="devpLeadDept == '主导部门为空'">
+                AND a.devp_lead_dept = ''
             </if>
             <if test="devpCoorDept != null and devpCoorDept != ''">
                 AND a.devp_coor_dept LIKE CONCAT('%',#{devpCoorDept},'%')

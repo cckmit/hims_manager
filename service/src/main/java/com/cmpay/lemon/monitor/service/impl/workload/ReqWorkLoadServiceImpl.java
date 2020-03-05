@@ -568,7 +568,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             list = dealDevpWorkload(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
             headerNames = new String[]{"银行合作研发部","移动支付研发部","营销服务研发部","电商支付研发部","风控大数据研发部",
                     "互联网金融研发部","前端技术研发部","基础应用研发部","客户端研发部","公共缴费研发部","产品测试部",
-                    "平台架构部", "产品研究部","设计项目组","资金归集项目组","客服中间层项目组","行业拓展事业部","金科项目组"};
+                    "平台架构部", "产品研究部","设计项目组","资金归集项目组","客服中间层项目组","行业拓展事业部","团体组织交费项目组"};
 
             OutputStream os = null;
             response.reset();
@@ -657,7 +657,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         String LeadDeptCurMonWorkLoad = "";
         String lead = demand.getLeadDeptPro();
         String req_sts = demand.getReqSts();
-        if(StringUtils.isNotBlank(lead) && monInputWorkload != 0 && !("30".equals(req_sts)) ){
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if(StringUtils.isNotBlank(lead) && monInputWorkload != 0  ){
             String[] leadSplit = lead.replaceAll("%", "").split(":");
             leadSplit[1] = leadSplit[1].replaceAll(";","");
             LeadDeptCurMonWorkLoad = leadSplit[0]+":"+String.format("%.2f",(Double.valueOf(leadSplit[1])/100)*monInputWorkload)+";";
@@ -669,7 +670,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         String CoorDevpPer = "";
         String[] coorList = new String[20];
         String coor = demand.getCoorDeptPro();
-        if (StringUtils.isNotBlank(coor) && monInputWorkload != 0 && !("30".equals(req_sts))){
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if (StringUtils.isNotBlank(coor) && monInputWorkload != 0 ){
             coorList = demand.getCoorDeptPro().split(";");
             for (int i = 0; i < coorList.length;i++){
                 if (StringUtils.isNotBlank(coorList[i])){
@@ -765,7 +767,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             case "行业拓展事业部":
                 list.set(16, workload + (list.get(16) == null ? 0:list.get(16)) );
                 break;
-            case "金科项目组":
+            case "团体组织交费项目组":
                 list.set(17, workload + (list.get(17) == null ? 0:list.get(17)) );
                 break;
 
