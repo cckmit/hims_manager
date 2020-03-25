@@ -140,7 +140,7 @@ public class ErrorController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
     /**
-     * 错误码导入
+     * 自动生产错误码导入
      *
      * @return
      */
@@ -213,6 +213,74 @@ public class ErrorController {
         //errorService.doBatchImport(file);
         return GenericRspDTO.newSuccessInstance();
     }
+
+    /**
+     * 错误码导入
+     *
+     * @return
+     */
+    @PostMapping("/batch/import2")
+    public GenericRspDTO<NoBody> batchImport2(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        System.err.println(file.getOriginalFilename());
+        File f = null;
+        List<ErcdmgErrorComditionBO> demandDOS=new ArrayList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if(suffix.equals("xls")){
+                suffix=".xls";
+            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
+                suffix=".xlsx";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f=File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                ErcdmgErrorComditionBO demandDO = new ErcdmgErrorComditionBO();
+                demandDO.setCr(map.get(i).get(0).toString().trim());
+                demandDO.setErrorCd(map.get(i).get(1).toString().trim());
+                demandDO.setProdMod(map.get(i).get(2).toString().trim());
+                demandDO.setBuscnl(map.get(i).get(3).toString().trim());
+                demandDO.setBusnTip(map.get(i).get(4).toString().trim());
+                demandDO.setTechTip(map.get(i).get(5).toString().trim());
+                demandDO.setAppScen(map.get(i).get(6).toString().trim());
+                demandDO.setProdUserName(map.get(i).get(7).toString().trim());
+                demandDOS.add(demandDO);
+            }
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }finally {
+            f.delete();
+        }
+
+        List<ErcdmgErrorComditionBO> updateList = new ArrayList<>();
+        demandDOS.forEach(m -> {
+            int i = demandDOS.indexOf(m)+2;
+            updateList.add(m);
+        });
+        //更新数据库
+        updateList.forEach(m -> {
+            addError1(m);
+        });
+        return GenericRspDTO.newSuccessInstance();
+    }
+
     @RequestMapping("/goback")
     public GenericRspDTO gobackError(@RequestBody ErcdmgErrorComditionDTO reqDTO) {
         errorService.goback(reqDTO.getTaskIdStr(),reqDTO.getStatus());
@@ -226,8 +294,13 @@ public class ErrorController {
      * @throws IOException
      */
     @PostMapping("/template/download")
-    public GenericRspDTO<NoBody> downloadTmp(GenericDTO<NoBody> req, HttpServletResponse response) {
-        doWrite("static/errorcode.xlsx", response);
+    public GenericRspDTO<NoBody> downloadTmp(@RequestParam("isError") String ids, HttpServletResponse response) {
+        if("YES".equals(ids)){
+            doWrite("static/errorcode.xlsx", response);
+        }else{
+            doWrite("static/errorcode1.xlsx", response);
+        }
+
         return GenericRspDTO.newSuccessInstance();
     }
     @RequestMapping("/forwardpord")

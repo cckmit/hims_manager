@@ -1568,6 +1568,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             String preCurPeriod = period + "";
             reqPlan.setPreCurPeriod(preCurPeriod);
+            //上传文档更新需求状态
+            if (!"30".equals(reqPlan.getReqSts()) && !"40".equals(reqPlan.getReqSts())) {
+                //修改需求状态
+                if ("10".equals(reqPlan.getPreCurPeriod())) {
+                    //提出
+                    reqPlan.setReqSts("10");
+                } else if ("180".equals(reqPlan.getPreCurPeriod())) {
+                    //完成
+                    reqPlan.setReqSts("50");
+                } else {
+                    //进行中
+                    reqPlan.setReqSts("20");
+                }
+            }
             demandDao.updatePreCurPeriod(reqPlan);
         }
     }
