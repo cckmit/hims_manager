@@ -995,6 +995,17 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
         }
     }
 
+    @Override
+    public OperationApplicationBO getSystemOperation(String operNumber) {
+        OperationApplicationDO baseOperationalApplicationInfo = operationApplicationDao.findBaseOperationalApplicationInfo(operNumber);
+        if(baseOperationalApplicationInfo==null){
+            return null;
+        }
+        OperationApplicationBO operationApplicationBO = new OperationApplicationBO();
+        BeanUtils.copyPropertiesReturnDest(operationApplicationBO, baseOperationalApplicationInfo);
+        return operationApplicationBO;
+    }
+
     public String ZipFiles(File[] srcfile, File zipfile, boolean flag) {
         try {
             byte[] buf = new byte[1024];

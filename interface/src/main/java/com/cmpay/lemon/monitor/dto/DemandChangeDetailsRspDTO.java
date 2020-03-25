@@ -13,13 +13,13 @@ import java.util.List;
 
 
 public class DemandChangeDetailsRspDTO extends PageableRspDTO {
-    private List<DemandStateHistoryDTO> DemandStateHistoryDTOList = new ArrayList<>();
+    private List<DemandStateHistoryDTO> demandStateHistoryDTOList = new ArrayList<>();
 
     public List<DemandStateHistoryDTO> getDemandStateHistoryDTOList() {
-        return DemandStateHistoryDTOList;
+        return demandStateHistoryDTOList;
     }
 
     public void setDemandStateHistoryDTOList(List<DemandStateHistoryDTO> demandStateHistoryDTOList) {
-        DemandStateHistoryDTOList = demandStateHistoryDTOList;
+        this.demandStateHistoryDTOList = demandStateHistoryDTOList;
     }
 }

@@ -12,6 +12,8 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,8 +27,7 @@ import java.util.List;
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 
-
-
+@Api(tags = "需求任务")
 @RestController
 @RequestMapping(value = MonitorConstants.REQTASK_PATH)
 public class ReqTaskController {
@@ -41,7 +42,8 @@ public class ReqTaskController {
      * @param reqDTO
      * @return
      */
-    @RequestMapping("/list")
+    @ApiOperation(value = "分页需求列表" )
+    @RequestMapping(value = "/list" ,method = RequestMethod.POST)
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
@@ -203,6 +205,22 @@ public class ReqTaskController {
         rspDTO.setPages(demandStateHistoryRspBO.getPageInfo().getPages());
         rspDTO.setTotal(demandStateHistoryRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(demandStateHistoryRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+    /**
+     *需求阶段变更明细
+     */
+    @PostMapping("/detailsOfChangesInTheDemandPhase")
+    public GenericRspDTO<DemandCurperiodHistoryRspDTO> detailsOfChangesInTheDemandPhase (@RequestBody DemandChangeDetailsReqDTO req) {
+        DemandCurperiodHistoryRspDTO rspDTO = new DemandCurperiodHistoryRspDTO();
+        DemandChangeDetailsBO demandChangeDetailsBO = BeanUtils.copyPropertiesReturnDest(new DemandChangeDetailsBO(), req);
+        DemandCurperiodHistoryRspBO demandCurperiodHistoryRspBO = reqTaskService.findDemandCurperiodDetails(demandChangeDetailsBO);
+        rspDTO.setDemandCurperiodHistoryDTOList(BeanConvertUtils.convertList(demandCurperiodHistoryRspBO.getDemandCurperiodHistoryBOList(), DemandCurperiodHistoryDTO.class));
+        rspDTO.setPageNum(demandCurperiodHistoryRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(demandCurperiodHistoryRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(demandCurperiodHistoryRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(demandCurperiodHistoryRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
     /**

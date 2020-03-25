@@ -35,8 +35,18 @@ public class SystemLoginServiceImpl implements SystemLoginService {
     public UserLoginBO login(UserLoginBO userLoginBO) {
         UserDO userDO =null;
         userDO = iUserDao.getUserByUserName(userLoginBO.getUsername());
+        //账号查找不存在
           if(userDO==null){
-              BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
+              try {
+                  //使用手机号查找
+                  userDO = iUserDao.getUserByMobile(userLoginBO.getUsername());
+              }catch (Exception e){
+                  BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
+              }
+              //使用手机号查找也不存在
+              if(userDO==null) {
+                  BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
+              }
           }
             if (!userDO.getStatus().toString().equals(ENABLED)) {
                 BusinessException.throwBusinessException(MsgEnum.USER_DISABLED);
@@ -45,6 +55,7 @@ public class SystemLoginServiceImpl implements SystemLoginService {
             if (JudgeUtils.notEquals(inputPassword, userDO.getPassword())) {
                 BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
             }
+            userLoginBO.setUsername(userDO.getUsername());
             userLoginBO.setUserNo(userDO.getUserNo());
             userLoginBO.setMobileNo(userDO.getMobile());
             return userLoginBO;

@@ -18,6 +18,7 @@ public interface IUserExtDao extends IUserDao {
      */
     UserDO getUserByUserName(String username);
 
+    UserDO getUserByMobile(String username);
     List<UserDO> search(UserDO entity);
 
 }

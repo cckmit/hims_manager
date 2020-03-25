@@ -143,4 +143,6 @@ public interface ReqTaskService {
 
     //周反馈月反馈修改
     void WeedAndMonthFeedback(DemandBO reqTask);
+
+    DemandCurperiodHistoryRspBO findDemandCurperiodDetails(DemandChangeDetailsBO demandChangeDetailsBO);
 }
