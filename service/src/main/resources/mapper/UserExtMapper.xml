@@ -26,7 +26,12 @@
         from sys_user
         where username = #{username,jdbcType=VARCHAR}
     </select>
-
+    <select id="getUserByMobile" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_user
+        where mobile = #{username,jdbcType=VARCHAR}
+    </select>
     <select id="search" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.UserDO" >
         select
         <include refid="Base_Column_List" />

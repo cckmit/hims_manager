@@ -1,14 +1,13 @@
 package com.cmpay.lemon.monitor.service.systemOperation;
 
 
-import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.OperationApplicationBO;
+import com.cmpay.lemon.monitor.bo.OperationApplicationRspBO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author: zhou_xiong
@@ -48,4 +47,6 @@ public interface OperationApplicationService {
     void systemOperationUpdate(List<MultipartFile> files, OperationApplicationBO operationApplicationBO, HttpServletRequest request);
     // 下载附件
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber);
+
+    OperationApplicationBO getSystemOperation(String operNumber);
 }

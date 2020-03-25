@@ -3,7 +3,6 @@ package com.cmpay.lemon.monitor.service.impl.demand;
 import cn.afterturn.easypoi.excel.ExcelExportUtil;
 import cn.afterturn.easypoi.excel.entity.ExportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
-import com.alibaba.druid.sql.visitor.functions.If;
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -17,7 +16,10 @@ import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -532,8 +534,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     @Override
     public void registrationDemandPhaseRecordForm(DemandBO demandBO,String remarks ) {
-
-
         DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
         DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
 

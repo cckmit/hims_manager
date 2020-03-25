@@ -110,4 +110,12 @@ public class systemOperationController {
         operationApplicationService.pkgDownload(request,response,proNumber);
         return GenericRspDTO.newSuccessInstance();
     }
+    // 获取单个系统操作录入内容
+    @RequestMapping("/getSystemOperation")
+    public GenericRspDTO<OperationApplicationDTO> getSystemOperation(@RequestParam("operNumber")String operNumber){
+        OperationApplicationBO systemOperation = operationApplicationService.getSystemOperation(operNumber);
+        OperationApplicationDTO operationApplicationDTO = BeanUtils.copyPropertiesReturnDest(new OperationApplicationDTO(), systemOperation);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, operationApplicationDTO);
+    }
+
 }

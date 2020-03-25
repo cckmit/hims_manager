@@ -82,6 +82,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Autowired
     private IDemandStateHistoryExtDao demandStateHistoryDao;
     @Autowired
+    private IDemandCurperiodHistoryDao demandCurperiodHistoryDao;
+    @Autowired
     private IDemandJiraDao demandJiraDao;
     @Autowired
     private IJiraDepartmentDao jiraDepartmentDao;
@@ -1342,6 +1344,66 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
     }
 
+    @Override
+    public DemandCurperiodHistoryRspBO findDemandCurperiodDetails(DemandChangeDetailsBO demandChangeDetailsBO){
+        if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&!demandChangeDetailsBO.getReqNo().isEmpty()){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只需要传一个条件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(!demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&demandChangeDetailsBO.getReqNo().isEmpty()){
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsBO.getReqInnerSeq());
+            if(identification==null){
+                DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
+                demandCurperiodHistoryDO.setIdentification(demandChangeDetailsBO.getReqInnerSeq());
+                PageInfo<DemandCurperiodHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                        () -> BeanConvertUtils.convertList(demandCurperiodHistoryDao.find(demandCurperiodHistoryDO), DemandCurperiodHistoryBO.class));
+                List<DemandCurperiodHistoryBO> demandCurperiodHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandCurperiodHistoryBO.class);
+                DemandCurperiodHistoryRspBO demandCurperiodHistoryRspBO = new DemandCurperiodHistoryRspBO();
+                demandCurperiodHistoryRspBO.setDemandCurperiodHistoryBOList(demandCurperiodHistoryBOList);
+                demandCurperiodHistoryRspBO.setPageInfo(pageInfo);
+                return demandCurperiodHistoryRspBO;
+            }
+            DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
+            demandCurperiodHistoryDO.setIdentification(identification);
+            PageInfo<DemandCurperiodHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandCurperiodHistoryDao.find(demandCurperiodHistoryDO), DemandCurperiodHistoryBO.class));
+            List<DemandCurperiodHistoryBO> demandCurperiodHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandCurperiodHistoryBO.class);
+            DemandCurperiodHistoryRspBO demandCurperiodHistoryRspBO = new DemandCurperiodHistoryRspBO();
+            demandCurperiodHistoryRspBO.setDemandCurperiodHistoryBOList(demandCurperiodHistoryBOList);
+            demandCurperiodHistoryRspBO.setPageInfo(pageInfo);
+            return demandCurperiodHistoryRspBO;
+        }else if(demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&!demandChangeDetailsBO.getReqNo().isEmpty()){
+            DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
+            demandChangeDetailsDO.setReqNo(demandChangeDetailsBO.getReqNo());
+            List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
+            demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
+            if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
+            DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
+            demandCurperiodHistoryDO.setIdentification(identification);
+            PageInfo<DemandCurperiodHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandCurperiodHistoryDao.find(demandCurperiodHistoryDO), DemandCurperiodHistoryBO.class));
+            List<DemandCurperiodHistoryBO> demandCurperiodHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandCurperiodHistoryBO.class);
+            DemandCurperiodHistoryRspBO demandCurperiodHistoryRspBO = new DemandCurperiodHistoryRspBO();
+            demandCurperiodHistoryRspBO.setDemandCurperiodHistoryBOList(demandCurperiodHistoryBOList);
+            demandCurperiodHistoryRspBO.setPageInfo(pageInfo);
+            return demandCurperiodHistoryRspBO;
+        }else{
+            //未传参数 输出所有
+            DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
+            PageInfo<DemandCurperiodHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),
+                    () -> BeanConvertUtils.convertList(demandCurperiodHistoryDao.find(demandCurperiodHistoryDO), DemandCurperiodHistoryBO.class));
+            List<DemandCurperiodHistoryBO> demandCurperiodHistoryBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandCurperiodHistoryBO.class);
+            DemandCurperiodHistoryRspBO demandCurperiodHistoryRspBO = new DemandCurperiodHistoryRspBO();
+            demandCurperiodHistoryRspBO.setDemandCurperiodHistoryBOList(demandCurperiodHistoryBOList);
+            demandCurperiodHistoryRspBO.setPageInfo(pageInfo);
+            return demandCurperiodHistoryRspBO;
+        }
+    }
+
     //获取已经上传的文档
     private Map<String, Object> BatLists(DemandDO demandDO) {
         System.err.println(demandDO);
@@ -1496,4 +1558,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         BeanConvertUtils.convert(demandDO, reqTask);
         demandDao.WeedAndMonthFeedback(demandDO);
     }
+
+
 }
