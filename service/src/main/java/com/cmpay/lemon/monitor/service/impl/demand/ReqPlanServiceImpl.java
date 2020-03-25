@@ -1568,6 +1568,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             String preCurPeriod = period + "";
             reqPlan.setPreCurPeriod(preCurPeriod);
+            //查询原数据
+            DemandDO demandDO = demandDao.get(reqPlan.getReqInnerSeq());
+            //如果修改了需求当前阶段
+            if(!reqPlan.getPreCurPeriod().equals(demandDO.getPreCurPeriod())){
+                DemandBO demandBO = new DemandBO();
+                BeanConvertUtils.convert(demandBO, reqPlan);
+                //登记需求阶段记录表
+                String remarks="文档上传自动修改";
+                reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+            }
             //上传文档更新需求状态
             if (!"30".equals(reqPlan.getReqSts()) && !"40".equals(reqPlan.getReqSts())) {
                 //修改需求状态
@@ -1697,7 +1707,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                             SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
                             SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
                         }
-                        SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY);
+                        if( SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY) == 0){
+                            map.put("message", "文档提交到SVN失败");
+                            return map;
+                        }
+
                     } catch (Exception e) {
                         map.put("message", "文档提交到SVN失败："+e.getMessage());
                         return map;
