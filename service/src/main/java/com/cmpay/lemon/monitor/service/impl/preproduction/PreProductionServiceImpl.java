@@ -531,7 +531,83 @@ public class PreProductionServiceImpl implements PreProductionService {
         return productionBO;
     }
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateState(String proNumber,String state){
-        int i =1/0;
+        PreproductionDO  beanCheck = iPreproductionExtDao.get(proNumber);
+        if (JudgeUtils.isNull(beanCheck)) {
+            LOGGER.warn("id为[{}]的记录不存在", proNumber);
+            BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
+        }
+        //生成流水记录
+        ScheduleDO scheduleBean =new ScheduleDO("自动预投产");
+        SimpleDateFormat sdfmonth =new SimpleDateFormat("yyyy-MM");
+        String month = sdfmonth.format(iPreproductionExtDao.get(proNumber).getPreDate());
+        String pro_status_after = "";
+        String pro_status_before = "";
+        boolean isSend = true;
+        MailFlowConditionDO mfva = new MailFlowConditionDO();
+        mfva.setEmployeeName(iPreproductionExtDao.get(proNumber).getPreApplicant());
+        MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
+        // 创建邮件信息，通知预投产申请人
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+
+        String[] mailToAddress = mfba.getEmployeeEmail().split(";");
+        mailInfo.setReceivers(mailToAddress);
+        //如果状态为1，即部署成功
+        if("1".equals(state)){
+            pro_status_before = "预投产提出";
+            pro_status_after = "预投产部署待验证";
+            scheduleBean.setOperationReason("预投产已部署");
+
+            if(beanCheck.getProductionDeploymentResult().equals("已部署")){
+                //return ajaxDoneError("当前投产预投产已部署，不可重复操作!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产预投产已部署，不可重复操作!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            PreproductionDO  bean=iPreproductionExtDao.get(proNumber);
+            bean.setProductionDeploymentResult("已部署");
+            bean.setPreStatus("预投产部署待验证");
+            iPreproductionExtDao.updatePreSts(bean);
+            mailInfo.setSubject("【" + pro_status_after + "通知】");
+            mailInfo.setContent("你好:<br/>您的需求" + proNumber + bean.getPreNeed() + "已经预投产部署成功，请及时验证并更新状态。");
+            // 这个类主要来发送邮件
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            if (!(isSend)) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署待验证】邮件发送,请及时联系系统维护人员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }else{
+            pro_status_before = "预投产提出";
+            pro_status_after = "预投产打回";
+            scheduleBean.setOperationReason("预投产部署失败");
+
+            PreproductionDO bean = iPreproductionExtDao.get(proNumber);
+            //更新状态
+            bean.setPreStatus("pro_status_after");
+            iPreproductionExtDao.updatePreSts(bean);
+
+            mailInfo.setSubject("【" + pro_status_after + "通知】");
+            mailInfo.setContent("你好:<br/>由于【预投产部署失败】，您的" + proNumber + bean.getPreNeed() + ",中止预投产流程。如需重新预投产，请走重新投产流程。");
+            // 这个类主要来发送邮件
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            if (!(isSend)) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署失败】邮件发送,请及时联系系统维护人员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        scheduleBean.setPreOperation(pro_status_before);
+        scheduleBean.setAfterOperation(pro_status_after);
+        scheduleBean.setOperationType(pro_status_after);
+        scheduleBean.setProNumber(proNumber);
+        operationProductionDao.insertSchedule(scheduleBean);
     }
 }

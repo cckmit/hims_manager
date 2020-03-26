@@ -115,11 +115,8 @@ public class PreProductionController {
 
     @PostMapping("/updateState")
     @ApiOperation(value = "更新需求预投产状态",notes = "根据投产编号自动更新需求预投产状态")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "proNumber",required = true ,dataType = "String"),
-            @ApiImplicitParam(name = "state",required = true ,dataType = "String")
-    })
     public GenericRspDTO<NoBody> updateState(@RequestParam("proNumber") String proNumber, @RequestParam("state") String state){
+        System.err.println(proNumber);
         preProductionService.updateState(proNumber,state);
         return GenericRspDTO.newSuccessInstance();
     }
