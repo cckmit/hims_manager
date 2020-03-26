@@ -2338,9 +2338,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Override
     public void getReqPlan(HttpServletResponse response, DemandBO demandBO) {
         List<DemandDO> demandDOList = reqPlan(demandBO);
-        //todo 添加测试需要的数据
-        jiraOperationService.getJiraIssue(demandDOList);
-
+        // 从jira 获取测试部所需要的数据
+        try {
+            jiraOperationService.getJiraIssue(demandDOList);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         List<PlanDO> planDOList = new  LinkedList<>();
         demandDOList.forEach(m->{
             planDOList.add(BeanUtils.copyPropertiesReturnDest(new PlanDO(),m));
