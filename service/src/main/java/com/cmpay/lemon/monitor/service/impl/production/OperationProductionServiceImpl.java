@@ -1897,7 +1897,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             receiver_users.add(bean.getProManager());
             //添加开发负责人部门经理邮箱地址
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false);
+            // 获取申请人邮箱地址
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+
+            String receiver_mail = this.findManagerMailByUserName(receiver_users) +";"+bean.getMailLeader() + ";"+ mflow.getEmployeeEmail()+";" + config.getNormalMailTo(false);
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //投产信息记录邮箱

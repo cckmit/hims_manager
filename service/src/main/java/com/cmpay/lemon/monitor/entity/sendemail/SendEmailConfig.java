@@ -15,7 +15,7 @@ public class SendEmailConfig {
 	private String env;
 
 	//todo 先改成发给自己
-	private String devMail="liu_chang@hisuntech.com";
+	private String devMail="wu_lr@hisuntech.com";
 	//private String devMail="wu_lr@hisuntech.com";
 	public static final String SEND_MAIL = "sendmail.properties";
 	/**
@@ -72,9 +72,9 @@ public class SendEmailConfig {
 			return devMail;
 		}else if(env.equals("PRO")){
 			if(isPre)  
-				return SendEmailConfig.getParamValue("ytczyz");
+				return "version_it@hisuntech.com;huang_jh@hisuntech.com";
 			else {
-				String paramValue = SendEmailConfig.getParamValue("ytcbzyz");
+				String paramValue = "version_it@hisuntech.com;huang_jh@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;dong_jm@hisuntech.com";
 				return paramValue;//预投产不做验证
 			}
 		}
