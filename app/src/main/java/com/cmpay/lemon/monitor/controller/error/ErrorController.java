@@ -422,7 +422,6 @@ public class ErrorController {
         int end = errorService.selectIndex(errorCdStart);
         for(int i = end;i<=99999;i++){
             String error = errorCdStart + i;
-            end = i;
             //判断该错误码sit是否存在
             boolean sit = errorService.errorCdSit(error);
             if(!sit){
@@ -440,7 +439,7 @@ public class ErrorController {
             }
             if(sit && uat && check){
                 errorCode = error;
-                errorService.updateIndex(errorCdStart,i);
+                errorService.updateIndex(errorCdStart,i+1);
                 break;
             }
         }

@@ -13,6 +13,10 @@ import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +33,7 @@ import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
  * 预投产过程管理
  */
 @RestController
+@Api(value = "测试",tags = "测试预投产")
 @RequestMapping(value = MonitorConstants.PREPRODUCTION_PATH)
 public class PreProductionController {
     @Autowired
@@ -105,6 +110,14 @@ public class PreProductionController {
     @RequestMapping("/pkgDownload")
     public GenericRspDTO<NoBody> pkgDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
         preProductionService.pkgDownload(request,response,proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    @PostMapping("/updateState")
+    @ApiOperation(value = "更新需求预投产状态",notes = "根据投产编号自动更新需求预投产状态")
+    public GenericRspDTO<NoBody> updateState(@RequestParam("proNumber") String proNumber, @RequestParam("state") String state){
+        System.err.println(proNumber);
+        preProductionService.updateState(proNumber,state);
         return GenericRspDTO.newSuccessInstance();
     }
 }

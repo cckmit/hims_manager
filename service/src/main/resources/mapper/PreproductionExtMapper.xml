@@ -307,6 +307,7 @@
                 and mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}
             </if>
         </where>
+        order by pre_date desc
     </select>
 
     <update id="updatePropkg" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO">

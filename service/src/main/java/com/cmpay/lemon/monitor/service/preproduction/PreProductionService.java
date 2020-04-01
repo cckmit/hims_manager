@@ -38,4 +38,5 @@ public interface PreProductionService {
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
+    void updateState(String proNumber,String state);
 }

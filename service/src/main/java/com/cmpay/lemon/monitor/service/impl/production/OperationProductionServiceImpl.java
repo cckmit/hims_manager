@@ -19,6 +19,7 @@ import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
+import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
@@ -56,7 +57,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private IOperationProductionDao operationProductionDao;
     @Autowired
     private IOperationApplicationDao operationApplicationDao;
-
+    @Autowired
+    private ReqPlanService reqPlanService;
     @Autowired
     private IProductionPicDao productionPicDao;
     @Autowired
@@ -253,6 +255,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 if (!JudgeUtils.isNull(demand)) {
                                     //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
                                     demand.setPreCurPeriod("160");
+                                    DemandBO demandBO = new DemandBO();
+                                    BeanConvertUtils.convert(demandBO, demand);
+                                    //登记需求阶段记录表
+                                    String remarks="预投产验证完成自动修改";
+                                    reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
                                     demand.setReqSts("20");
                                     demandDao.updateOperation(demand);
                                 }
@@ -627,6 +634,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                             //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
                                 demand.setPreCurPeriod("170");
+                                DemandBO demandBO = new DemandBO();
+                                BeanConvertUtils.convert(demandBO, demand);
+                                //登记需求阶段记录表
+                                String remarks="投产状态自动修改";
+                                reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
                                 demand.setReqSts("20");
                                 if(pro_status_after.equals("投产回退")){
                                     // 登记需求变更明细表
@@ -634,7 +646,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                     demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
                                     demandStateHistoryDO.setReqNo(demand.getReqNo());
                                     demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
-                                    demandStateHistoryDO.setReqSts("提出");
+                                    demandStateHistoryDO.setReqSts("进行中");
                                     demandStateHistoryDO.setRemarks("投产回退");
                                     demandStateHistoryDO.setReqNm(demand.getReqNm());
                                     //依据内部需求编号查唯一标识
@@ -654,6 +666,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                             if (pro_status_after.equals("部署完成待验证")) {
                                 //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
                                 demand.setPreCurPeriod("180");
+                                DemandBO demandBO = new DemandBO();
+                                BeanConvertUtils.convert(demandBO, demand);
+                                //登记需求阶段记录表
+                                String remarks="投产状态自动修改";
+                                reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
                                 demand.setReqSts("50");
                                 // 登记需求变更明细表
                                 DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
@@ -797,7 +814,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         operationProductionDao.updateMailGroup(mailGroupDO);
     }
 
-
+    @Override
     public List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date) {
         OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
         try {
@@ -1688,7 +1705,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     }
 
-
+    @Override
     public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
         //依据环境配置路径
         String path="";
@@ -1718,7 +1735,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return  files;
     }
 
-    //
+    //投产录入
+    @Override
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
         boolean isSend = false;
@@ -2099,6 +2117,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
      * 投产包上传
      * @param file
      */
+    @Override
     public void doBatchImport(MultipartFile file,String reqNumber) {
         if (file.isEmpty()) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");

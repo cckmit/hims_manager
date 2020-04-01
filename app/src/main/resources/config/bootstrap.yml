@@ -106,6 +106,7 @@ lemon:
       #配置不进行认证检查的交易请求url
       permitAll:
       - /sys/test
+      - /v1/monitoringui/preproduction/*
       - /v1/monitoringui/dic/getDicByDicId
       - /v1/monitoringui/dic/getJdInfo
       - /v1/monitoringui/systemOperation/getSystemOperation
