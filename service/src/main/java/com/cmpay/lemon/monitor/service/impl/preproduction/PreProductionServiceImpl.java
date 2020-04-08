@@ -174,8 +174,8 @@ public class PreProductionServiceImpl implements PreProductionService {
 
         String pro_status_after = "";
         String pro_status_before = "";
-        //预投产已部署
-        if(pro_number_list[0].equals("ytc")){
+        // 预投产待部署
+        if(pro_number_list[0].equals("dbs")){
             if(pro_number_list.length==1){
                 //return ajaxDoneError("请选择投产进行操作!");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -183,6 +183,18 @@ public class PreProductionServiceImpl implements PreProductionService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             pro_status_before = "预投产提出";
+            pro_status_after = "预投产待部署";
+            scheduleBean.setOperationReason("预投产待部署");
+        }
+        //预投产已部署
+        else if(pro_number_list[0].equals("ytc")){
+            if(pro_number_list.length==1){
+                //return ajaxDoneError("请选择投产进行操作!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            pro_status_before = "预投产待部署";
             pro_status_after = "预投产部署待验证";
             scheduleBean.setOperationReason("预投产已部署");
         }//预投产验证通过
@@ -196,7 +208,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             pro_status_after = "预投产验证完成";
             scheduleBean.setOperationReason("预投产验证已通过");
         } else if (pro_number_list[0].equals("dh")) {
-            pro_status_before = "预投产提出";
+            pro_status_before = "预投产待部署";
             pro_status_after = "预投产打回";
             if ((pro_number_list.length == 1) || (pro_number_list.length == 2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -238,7 +250,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
             }
-            if(!(pro_status_before.equals(status)  || (pro_status_after.equals("预投产打回") && (status.equals("预投产提出")) ) || (pro_status_after.equals("预投产回退") && status.equals("预投产验证完成")) ||(pro_status_after.equals("预投产取消") && status.equals("预投产提出")))){
+            if(!(pro_status_before.equals(status)  || (pro_status_after.equals("预投产打回") && (status.equals("预投产待部署")) ) || (pro_status_after.equals("预投产回退") && status.equals("预投产验证完成")) ||(pro_status_after.equals("预投产取消") && status.equals("预投产提出")|| status.equals("预投产待部署")))){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -254,7 +266,7 @@ public class PreProductionServiceImpl implements PreProductionService {
 
 
             boolean isSend = true;
-            if ((((pro_status_before.equals(status))  || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))) || ((pro_status_after.equals("预投产取消")) && ((status.equals("预投产提出") ))))) && ((
+            if ((((pro_status_before.equals(status))  || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))) || ((pro_status_after.equals("预投产取消")) && ((status.equals("预投产提出") || status.equals("预投产待部署") ))))) && ((
                     (pro_status_after.equals("预投产打回")) || (pro_status_after.equals("预投产回退")) || (pro_status_after.equals("预投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
@@ -292,6 +304,20 @@ public class PreProductionServiceImpl implements PreProductionService {
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
                 operationProductionDao.addMailFlow(bnb);
+            }
+
+            if(pro_status_after.equals("预投产待部署")){
+                PreproductionDO  beanCheck=iPreproductionExtDao.get(pro_number_list[j]);
+                if(beanCheck.getProductionDeploymentResult().equals("已部署")){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产预投产已部署，不可重复操作!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+                // todo 调用自动化投产接口 提供投产编号，包名，环境
+                // addpack();
+                PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
+                bean.setPreStatus("预投产待部署");
+                iPreproductionExtDao.updatePreSts(bean);
             }
 
             if(pro_status_after.equals("预投产部署待验证")){
