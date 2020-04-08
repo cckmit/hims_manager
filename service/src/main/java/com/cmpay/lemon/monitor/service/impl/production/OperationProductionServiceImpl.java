@@ -1885,10 +1885,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //添加申请人部门经理邮箱地址
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
-            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";" + config.getNormalMailTo(false)
+            // 获取申请人邮箱地址
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+
+            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";"+ mflow.getEmployeeEmail()+";" + config.getNormalMailTo(false)
                //     +";wu_lr@hisuntech.com";
             //todo 固定收件人需要添加两人必选先注释 先用自己的邮件代替
-            +"wujinyan@hisuntech.com;xiao_hua@hisuntech.com;tian_qun@hisuntech.com;huang_jh@hisuntech.com";
+            +";wujinyan@hisuntech.com;xiao_hua@hisuntech.com;tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
