@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-         <table tableName="workload_locked_state" domainObjectName="WorkloadLockedStateDO" enableCountByExample="false"
+         <table tableName="t_demand_curperiod_history" domainObjectName="DemandCurperiodHistoryDO" enableCountByExample="false"
                 enableUpdateByExample="false"
                 enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
          </table>
