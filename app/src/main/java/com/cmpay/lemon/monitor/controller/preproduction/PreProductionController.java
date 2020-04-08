@@ -5,17 +5,18 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.AutomatedProductionCallbackReqBO;
+import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.PreproductionBO;
+import com.cmpay.lemon.monitor.bo.PreproductionRspBO;
+import com.cmpay.lemon.monitor.common.Response;
+import com.cmpay.lemon.monitor.common.ResponseResult;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
-import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
@@ -113,11 +112,14 @@ public class PreProductionController {
         return GenericRspDTO.newSuccessInstance();
     }
 
-    @PostMapping("/callback")
+    @RequestMapping(value = "/callback" ,method = RequestMethod.POST)
     @ApiOperation(value = "更新需求预投产状态",notes = "根据投产编号自动更新需求预投产状态")
-    public GenericRspDTO<NoBody> updateState(@RequestParam("proNumber") String proNumber, @RequestParam("state") String state){
-        System.err.println(proNumber);
-        preProductionService.updateState(proNumber,state);
-        return GenericRspDTO.newSuccessInstance();
+    @ResponseBody
+    public ResponseResult<AutomatedProductionCallbackReqDTO> updateState(@RequestBody AutomatedProductionCallbackReqDTO req){
+        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
+        //preProductionService.automatedProductionCallback(productionCallbackBO);
+        BbDTO bbDTO = new BbDTO();
+        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeErrRsp("");
+        return objectResponseResult;
     }
 }

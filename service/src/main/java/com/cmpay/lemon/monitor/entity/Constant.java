@@ -1,6 +1,6 @@
 package com.cmpay.lemon.monitor.entity;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.ArrayUtils;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -130,12 +130,15 @@ public class Constant {
 		Constant.accountLockCount = accountLockCount;
 	}  
 	public static void main (String args[]) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		int i = calendar.get(Calendar.HOUR_OF_DAY);
+		System.err.println(i);
 		
-		
-		String aStr []= {"abc", "uvw", "xyz", "123", "456" };
+		/*String aStr []= {"abc", "uvw", "xyz", "123", "456" };
 		System.out.println(DigestUtils.md5Hex("111111"));
 		boolean tt = ArrayUtils.contains(Constant.captchaTypes, CaptchaType.adminUserLogin);
-		boolean tt2 = ArrayUtils.contains(Constant.captchaTypes, CaptchaType.adminUserLogin);
+		boolean tt2 = ArrayUtils.contains(Constant.captchaTypes, CaptchaType.adminUserLogin);*/
 	}
 }
 

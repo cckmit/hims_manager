@@ -1,7 +1,5 @@
 package com.cmpay.lemon.monitor.service.impl.preproduction;
 
-import cn.afterturn.easypoi.excel.ExcelExportUtil;
-import cn.afterturn.easypoi.excel.entity.ExportParams;
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
@@ -11,22 +9,23 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.AutomatedProductionCallbackReqBO;
+import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.PreproductionBO;
+import com.cmpay.lemon.monitor.bo.PreproductionRspBO;
 import com.cmpay.lemon.monitor.dao.*;
-import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
-import com.cmpay.lemon.monitor.service.production.OperationProductionService;
-import com.cmpay.lemon.monitor.utils.*;
-import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
-import com.jcraft.jsch.*;
-import org.apache.poi.ss.usermodel.Workbook;
+import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +36,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.Date;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -558,21 +558,21 @@ public class PreProductionServiceImpl implements PreProductionService {
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void updateState(String proNumber,String state){
-        PreproductionDO  beanCheck = iPreproductionExtDao.get(proNumber);
+    public void updateState(AutomatedProductionCallbackReqBO productionCallbackBO){
+        PreproductionDO  beanCheck = iPreproductionExtDao.get(productionCallbackBO.getProNumber());
         if (JudgeUtils.isNull(beanCheck)) {
-            LOGGER.warn("id为[{}]的记录不存在", proNumber);
+            LOGGER.warn("id为[{}]的记录不存在", productionCallbackBO.getProNumber());
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
         //生成流水记录
         ScheduleDO scheduleBean =new ScheduleDO("自动预投产");
         SimpleDateFormat sdfmonth =new SimpleDateFormat("yyyy-MM");
-        String month = sdfmonth.format(iPreproductionExtDao.get(proNumber).getPreDate());
+        String month = sdfmonth.format(iPreproductionExtDao.get(productionCallbackBO.getProNumber()).getPreDate());
         String pro_status_after = "";
         String pro_status_before = "";
         boolean isSend = true;
         MailFlowConditionDO mfva = new MailFlowConditionDO();
-        mfva.setEmployeeName(iPreproductionExtDao.get(proNumber).getPreApplicant());
+        mfva.setEmployeeName(iPreproductionExtDao.get(productionCallbackBO.getProNumber()).getPreApplicant());
         MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
         // 创建邮件信息，通知预投产申请人
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -585,8 +585,8 @@ public class PreProductionServiceImpl implements PreProductionService {
 
         String[] mailToAddress = mfba.getEmployeeEmail().split(";");
         mailInfo.setReceivers(mailToAddress);
-        //如果状态为1，即部署成功
-        if("1".equals(state)){
+        //如果状态为0，即部署成功
+        if("0".equals(productionCallbackBO.getStatus())){
             pro_status_before = "预投产提出";
             pro_status_after = "预投产部署待验证";
             scheduleBean.setOperationReason("预投产已部署");
@@ -597,12 +597,12 @@ public class PreProductionServiceImpl implements PreProductionService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产预投产已部署，不可重复操作!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            PreproductionDO  bean=iPreproductionExtDao.get(proNumber);
+            PreproductionDO  bean=iPreproductionExtDao.get(productionCallbackBO.getProNumber());
             bean.setProductionDeploymentResult("已部署");
             bean.setPreStatus("预投产部署待验证");
             iPreproductionExtDao.updatePreSts(bean);
             mailInfo.setSubject("【" + pro_status_after + "通知】");
-            mailInfo.setContent("你好:<br/>您的需求" + proNumber + bean.getPreNeed() + "已经预投产部署成功，请及时验证并更新状态。");
+            mailInfo.setContent("你好:<br/>您的需求" + productionCallbackBO.getProNumber() + bean.getPreNeed() + "已经预投产部署成功，请及时验证并更新状态。");
             // 这个类主要来发送邮件
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             if (!(isSend)) {
@@ -615,13 +615,13 @@ public class PreProductionServiceImpl implements PreProductionService {
             pro_status_after = "预投产打回";
             scheduleBean.setOperationReason("预投产部署失败");
 
-            PreproductionDO bean = iPreproductionExtDao.get(proNumber);
+            PreproductionDO bean = iPreproductionExtDao.get(productionCallbackBO.getProNumber());
             //更新状态
             bean.setPreStatus("pro_status_after");
             iPreproductionExtDao.updatePreSts(bean);
 
             mailInfo.setSubject("【" + pro_status_after + "通知】");
-            mailInfo.setContent("你好:<br/>由于【预投产部署失败】，您的" + proNumber + bean.getPreNeed() + ",中止预投产流程。如需重新预投产，请走重新投产流程。");
+            mailInfo.setContent("你好:<br/>由于【预投产部署失败】，您的" + productionCallbackBO.getProNumber() + bean.getPreNeed() + ",中止预投产流程。如需重新预投产，请走重新投产流程。");
             // 这个类主要来发送邮件
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             if (!(isSend)) {
@@ -633,7 +633,23 @@ public class PreProductionServiceImpl implements PreProductionService {
         scheduleBean.setPreOperation(pro_status_before);
         scheduleBean.setAfterOperation(pro_status_after);
         scheduleBean.setOperationType(pro_status_after);
-        scheduleBean.setProNumber(proNumber);
+        scheduleBean.setProNumber(productionCallbackBO.getProNumber());
         operationProductionDao.insertSchedule(scheduleBean);
+    }
+
+    @Override
+    public void automatedProductionCallback(AutomatedProductionCallbackReqBO productionCallbackBO) {
+            //判断环境，预投产
+            if(productionCallbackBO.getEnv().equals("0")){
+                this.updateState(productionCallbackBO);
+                return;
+            }
+        //判断环境，生产投产
+            if(productionCallbackBO.getEnv().equals("1")){
+
+
+                return;
+             }
+
     }
 }
