@@ -1967,8 +1967,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 //添加开发负责人部门经理邮箱地址
                 receiver_users.add(bean.getDevelopmentLeader());
             }
+            // 获取申请人邮箱地址
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+
             //相关人员邮件
-            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
+            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";"+ mflow.getEmployeeEmail()+";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
             //系统配置邮件、救火更新收件人邮件
             //收件人去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
