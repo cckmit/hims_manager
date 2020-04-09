@@ -1,7 +1,12 @@
 package com.cmpay.lemon.monitor.utils;
 
+import com.cmpay.lemon.monitor.bo.AutomatedProductionBO;
+import io.restassured.response.Response;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static io.restassured.RestAssured.given;
 
 /**
  * Created by zouxin on 2018/8/24.
@@ -16,7 +21,26 @@ public class BaseUtil {
     private static SimpleDateFormat simpleDateFormat = null;
 
     public static void main(String args[]) {
-        System.out.println(transformDateToStr("yyyyMMddHHmmss"));
+        System.err.println(111);
+        AutomatedProductionBO bean = new AutomatedProductionBO();
+        Response response = given()
+                .header("Content-Type", "application/json")
+                .header("charset","utf-8")
+                .body(bean.getJson())
+                .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
+        int code = response.getStatusCode();
+        System.err.println(code);
+        System.err.println(3);
+        //450则包格式错误
+        if(code==200){
+
+        } else if(code==450){
+
+        }else{
+
+        }
+
+
     }
 
     /**

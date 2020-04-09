@@ -9,10 +9,7 @@ import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
-import com.cmpay.lemon.monitor.bo.AutomatedProductionCallbackReqBO;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.PreproductionBO;
-import com.cmpay.lemon.monitor.bo.PreproductionRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
@@ -26,9 +23,11 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,9 +41,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+import static io.restassured.RestAssured.given;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -85,6 +86,8 @@ public class PreProductionServiceImpl implements PreProductionService {
     SystemUserService userService;
     @Autowired
     private IOperationProductionDao operationProductionDao;
+    @Autowired
+    private IAutomatedProductionRegistrationDao automatedProductionRegistrationDao;
 
     @Override
     public PreproductionRspBO find(PreproductionBO productionBO) {
@@ -314,6 +317,11 @@ public class PreProductionServiceImpl implements PreProductionService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 // todo 调用自动化投产接口 提供投产编号，包名，环境
+                AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
+                automatedProductionBO.setEnv("0");
+                automatedProductionBO.setProNumber(beanCheck.getPreNumber());
+                automatedProductionBO.setProPkgName(beanCheck.getProPkgName());
+                automatedProduction(automatedProductionBO);
                 // addpack();
                 PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
                 bean.setPreStatus("预投产待部署");
@@ -403,6 +411,59 @@ public class PreProductionServiceImpl implements PreProductionService {
             }
         }
         return ;//ajaxDoneSuccess("批量操作成功");
+    }
+    /**
+     * 异步调用预投产接口
+     * @param automatedProductionBO
+     */
+    @Async
+    public void automatedProduction(AutomatedProductionBO automatedProductionBO) {
+        int code =0;
+        int i=0;
+        //todo 调用预投产
+        while(true) {
+            try {
+                Response response = given()
+                        .header("Content-Type", "application/json")
+                        .header("charset", "utf-8")
+                        .body(automatedProductionBO.getJson())
+                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
+                code = response.getStatusCode();
+                break;
+            } catch (Throwable e) {
+                i++;
+                if(i>1) {
+                    AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
+                    automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
+                    automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
+                    automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
+                    automatedProductionRegistrationDO.setRemark("接口调用失败");
+                    automatedProductionRegistrationDO.setStatus("失败");
+                    automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
+                    break;
+                }
+            }
+        }
+        //登记自动化
+        AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
+        automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
+        automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
+        automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
+
+        if( code ==200){
+            automatedProductionRegistrationDO.setStatus("成功");
+            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
+        } else if(code==450){
+            //450则包格式错误
+            automatedProductionRegistrationDO.setRemark("投产包异常");
+            automatedProductionRegistrationDO.setStatus("失败");
+            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
+        }else{
+            //其他错误
+            automatedProductionRegistrationDO.setRemark("其他错误");
+            automatedProductionRegistrationDO.setStatus("失败");
+            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
+        }
     }
 
     /**

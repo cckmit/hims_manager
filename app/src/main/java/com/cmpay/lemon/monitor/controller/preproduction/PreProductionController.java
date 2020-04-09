@@ -116,10 +116,10 @@ public class PreProductionController {
     @ApiOperation(value = "更新需求预投产状态",notes = "根据投产编号自动更新需求预投产状态")
     @ResponseBody
     public ResponseResult<AutomatedProductionCallbackReqDTO> updateState(@RequestBody AutomatedProductionCallbackReqDTO req){
+        System.err.println(1);
         AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
         //preProductionService.automatedProductionCallback(productionCallbackBO);
-        BbDTO bbDTO = new BbDTO();
-        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeErrRsp("");
+        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
         return objectResponseResult;
     }
 }

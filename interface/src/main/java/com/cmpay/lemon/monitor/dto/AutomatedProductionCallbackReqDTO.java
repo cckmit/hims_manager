@@ -36,4 +36,13 @@ public class AutomatedProductionCallbackReqDTO {
     public void setEnv(String env) {
         this.env = env;
     }
+
+    public String getTest(){
+        return "{\n" +
+                "\t\"proNumber\":\"autotouchantest_yutouchan\",\n" +
+                "\t\"status\":\"1\",\n" +
+                "\t\"env\":\"1\",\n" +
+                "\t\"remark\":\"其他\"\n" +
+                "}";
+    }
 }
