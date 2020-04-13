@@ -3,12 +3,10 @@ package com.cmpay.lemon.monitor.controller.preproduction;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
+import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.AutomatedProductionCallbackReqBO;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.PreproductionBO;
-import com.cmpay.lemon.monitor.bo.PreproductionRspBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.common.Response;
 import com.cmpay.lemon.monitor.common.ResponseResult;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -118,8 +116,23 @@ public class PreProductionController {
     public ResponseResult<AutomatedProductionCallbackReqDTO> updateState(@RequestBody AutomatedProductionCallbackReqDTO req){
         System.err.println(1);
         AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
+        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         //preProductionService.automatedProductionCallback(productionCallbackBO);
         ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
+        return objectResponseResult;
+    }
+
+    @RequestMapping(value = "/test" ,method = RequestMethod.POST)
+    @ApiOperation(value = "自己测试只用接口",notes = "自己测试只用接口")
+    @ResponseBody
+    public ResponseResult<AutomatedProductionCallbackReqDTO> test(@RequestBody AutomatedProductionBO req,HttpServletResponse response){
+        System.err.println(1);
+        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
+
+        //preProductionService.automatedProductionCallback(productionCallbackBO);
+        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(201,"ces");
+        response.setStatus(201);
         return objectResponseResult;
     }
 }

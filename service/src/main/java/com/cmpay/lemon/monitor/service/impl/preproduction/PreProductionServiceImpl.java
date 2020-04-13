@@ -418,9 +418,14 @@ public class PreProductionServiceImpl implements PreProductionService {
      */
     @Async
     public void automatedProduction(AutomatedProductionBO automatedProductionBO) {
+
+
+
+
         int code =0;
         int i=0;
         //todo 调用预投产
+
         while(true) {
             try {
                 Response response = given()
@@ -432,7 +437,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 break;
             } catch (Throwable e) {
                 i++;
-                if(i>1) {
+                if(i>2) {
                     AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
                     automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
                     automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
@@ -440,7 +445,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     automatedProductionRegistrationDO.setRemark("接口调用失败");
                     automatedProductionRegistrationDO.setStatus("失败");
                     automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-                    break;
+                    return;
                 }
             }
         }

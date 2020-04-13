@@ -31,9 +31,9 @@ public class AutomatedProductionBO {
 
     public String getJson(){
         return "{\n" +
-                "name:"+this.getProPkgName()+",\n" +
-                "number:"+this.getProNumber()+",\n" +
-                "env: "+this.getEnv()+"\n" +
+                "\"name\":"+"\""+this.getProPkgName()+"\""+",\n" +
+                "\"number\":"+"\""+this.getProNumber()+"\""+",\n" +
+                "\"env\": "+"\""+this.getEnv()+"\""+"\n" +
                 "}\n";
     }
 }

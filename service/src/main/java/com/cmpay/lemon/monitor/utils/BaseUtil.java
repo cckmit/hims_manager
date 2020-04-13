@@ -1,9 +1,11 @@
 package com.cmpay.lemon.monitor.utils;
 
 import com.cmpay.lemon.monitor.bo.AutomatedProductionBO;
+import com.cmpay.lemon.monitor.entity.AutomatedProductionRegistrationDO;
 import io.restassured.response.Response;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static io.restassured.RestAssured.given;
@@ -21,26 +23,48 @@ public class BaseUtil {
     private static SimpleDateFormat simpleDateFormat = null;
 
     public static void main(String args[]) {
-        System.err.println(111);
-        AutomatedProductionBO bean = new AutomatedProductionBO();
-        Response response = given()
-                .header("Content-Type", "application/json")
-                .header("charset","utf-8")
-                .body(bean.getJson())
-                .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
-        int code = response.getStatusCode();
-        System.err.println(code);
-        System.err.println(3);
-        //450则包格式错误
-        if(code==200){
-
-        } else if(code==450){
-
-        }else{
-
+        AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
+        automatedProductionBO.setProPkgName("包名");
+        automatedProductionBO.setEnv("1");
+        automatedProductionBO.setProNumber("投产编号");
+        int code =0;
+        int i=0;
+        System.err.println(automatedProductionBO.getJson());
+        while(true) {
+            try {
+                Response response = given()
+                        .header("Content-Type", "application/json")
+                        .header("charset", "utf-8")
+                        .body(automatedProductionBO.getJson())
+                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/test");
+                response.prettyPrint();
+                code = response.getStatusCode();
+                break;
+            } catch (Throwable e) {
+                i++;
+                System.err.println(i);
+                if(i>1) {
+                    System.err.println("接口调用失败");
+                    return;
+                }
+            }
         }
+        System.err.println(code);
+        //登记自动化
+        AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
+        automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
+        automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
+        automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
 
-
+        if( code ==200){
+            System.err.println("成功");
+        } else if(code==450){
+            //450则包格式错误
+            System.err.println("投产包异常");
+        }else{
+            //其他错误
+            System.err.println("其他");
+        }
     }
 
     /**
