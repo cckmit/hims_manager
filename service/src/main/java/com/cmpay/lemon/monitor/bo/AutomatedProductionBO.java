@@ -31,9 +31,18 @@ public class AutomatedProductionBO {
 
     public String getJson(){
         return "{\n" +
-                "\"name\":"+"\""+this.getProPkgName()+"\""+",\n" +
-                "\"number\":"+"\""+this.getProNumber()+"\""+",\n" +
+                "\"proPkgName\":"+"\""+this.getProPkgName()+"\""+",\n" +
+                "\"proNumber\":"+"\""+this.getProNumber()+"\""+",\n" +
                 "\"env\": "+"\""+this.getEnv()+"\""+"\n" +
                 "}\n";
+    }
+
+    public String getTest(){
+        return "{\n" +
+                "\t\"proNumber\":\"autotouchantest_yutouchan\",\n" +
+                "\t\"status\":\"1\",\n" +
+                "\t\"env\":\"0\",\n" +
+                "\t\"remark\":\"其他\"\n" +
+                "}";
     }
 }

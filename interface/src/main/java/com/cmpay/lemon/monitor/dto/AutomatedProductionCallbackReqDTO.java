@@ -45,4 +45,14 @@ public class AutomatedProductionCallbackReqDTO {
                 "\t\"remark\":\"其他\"\n" +
                 "}";
     }
+
+    @Override
+    public String toString() {
+        return "AutomatedProductionCallbackReqDTO{" +
+                "proNumber='" + proNumber + '\'' +
+                ", status='" + status + '\'' +
+                ", remark='" + remark + '\'' +
+                ", env='" + env + '\'' +
+                '}';
+    }
 }

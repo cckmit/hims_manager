@@ -16,6 +16,7 @@ import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -113,13 +114,38 @@ public class PreProductionController {
     @RequestMapping(value = "/callback" ,method = RequestMethod.POST)
     @ApiOperation(value = "更新需求预投产状态",notes = "根据投产编号自动更新需求预投产状态")
     @ResponseBody
-    public ResponseResult<AutomatedProductionCallbackReqDTO> updateState(@RequestBody AutomatedProductionCallbackReqDTO req){
-        System.err.println(1);
+    public ResponseResult<AutomatedProductionCallbackReqDTO> updateState(@RequestBody AutomatedProductionCallbackReqDTO req,HttpServletResponse response){
+        System.err.println(req.toString());
+        if( StringUtils.isEmpty(req.getProNumber())){
+            ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(461,"参数异常，投产编号为空");
+            response.setStatus(461);
+            return objectResponseResult;
+        }
+        if(StringUtils.isEmpty(req.getEnv())){
+            ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(462,"参数异常，投产环境为空");
+            response.setStatus(462);
+            return objectResponseResult;
+        }
+        if(StringUtils.isEmpty(req.getStatus())){
+            ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(463,"参数异常，投产状态为空");
+            response.setStatus(463);
+            return objectResponseResult;
+        }
         AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
-        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        //preProductionService.automatedProductionCallback(productionCallbackBO);
+        try{
+
+            preProductionService.automatedProductionCallback(productionCallbackBO);
+        }catch (BusinessException e){
+            ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(Integer.parseInt(e.getMsgCd()),e.getMsgInfo());
+            response.setStatus(Integer.parseInt(e.getMsgCd()));
+            return objectResponseResult;
+        }catch (Exception e){
+            ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(500,"服务器内部异常");
+            response.setStatus(500);
+            return objectResponseResult;
+        }
         ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
+        response.setStatus(200);
         return objectResponseResult;
     }
 
@@ -127,12 +153,13 @@ public class PreProductionController {
     @ApiOperation(value = "自己测试只用接口",notes = "自己测试只用接口")
     @ResponseBody
     public ResponseResult<AutomatedProductionCallbackReqDTO> test(@RequestBody AutomatedProductionBO req,HttpServletResponse response){
-        System.err.println(1);
+        System.err.println(req.getProNumber());
+        System.err.println(req.getEnv());
+        System.err.println(req.getProPkgName());
         AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
 
         //preProductionService.automatedProductionCallback(productionCallbackBO);
-        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(201,"ces");
-        response.setStatus(201);
+        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
         return objectResponseResult;
     }
 }

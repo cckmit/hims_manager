@@ -18,16 +18,15 @@ import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
+import com.cmpay.lemon.monitor.service.automaticCommissioningInterface.AutomaticCommissioningInterfaceService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import io.restassured.response.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,11 +40,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-import static io.restassured.RestAssured.given;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 
@@ -67,7 +64,7 @@ public class PreProductionServiceImpl implements PreProductionService {
     private IOperationApplicationDao operationApplicationDao;
 
     @Autowired
-    private IProductionPicDao productionPicDao;
+    private AutomaticCommissioningInterfaceService automaticCommissioningInterfaceService;
     @Autowired
     private ReqPlanService reqPlanService;
     @Autowired
@@ -160,6 +157,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         }
         return false ;
     }
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
@@ -321,7 +319,10 @@ public class PreProductionServiceImpl implements PreProductionService {
                 automatedProductionBO.setEnv("0");
                 automatedProductionBO.setProNumber(beanCheck.getPreNumber());
                 automatedProductionBO.setProPkgName(beanCheck.getProPkgName());
-                automatedProduction(automatedProductionBO);
+                System.err.println(Thread.currentThread().getName());
+                automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+
+                System.err.println("异步之后");
                 // addpack();
                 PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
                 bean.setPreStatus("预投产待部署");
@@ -412,64 +413,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         }
         return ;//ajaxDoneSuccess("批量操作成功");
     }
-    /**
-     * 异步调用预投产接口
-     * @param automatedProductionBO
-     */
-    @Async
-    public void automatedProduction(AutomatedProductionBO automatedProductionBO) {
 
-
-
-
-        int code =0;
-        int i=0;
-        //todo 调用预投产
-
-        while(true) {
-            try {
-                Response response = given()
-                        .header("Content-Type", "application/json")
-                        .header("charset", "utf-8")
-                        .body(automatedProductionBO.getJson())
-                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
-                code = response.getStatusCode();
-                break;
-            } catch (Throwable e) {
-                i++;
-                if(i>2) {
-                    AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
-                    automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
-                    automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
-                    automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
-                    automatedProductionRegistrationDO.setRemark("接口调用失败");
-                    automatedProductionRegistrationDO.setStatus("失败");
-                    automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-                    return;
-                }
-            }
-        }
-        //登记自动化
-        AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
-        automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
-        automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
-        automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
-
-        if( code ==200){
-            automatedProductionRegistrationDO.setStatus("成功");
-            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-        } else if(code==450){
-            //450则包格式错误
-            automatedProductionRegistrationDO.setRemark("投产包异常");
-            automatedProductionRegistrationDO.setStatus("失败");
-            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-        }else{
-            //其他错误
-            automatedProductionRegistrationDO.setRemark("其他错误");
-            automatedProductionRegistrationDO.setStatus("失败");
-            automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-        }
-    }
 
     /**
      * 投产包上传
@@ -627,8 +571,10 @@ public class PreProductionServiceImpl implements PreProductionService {
     public void updateState(AutomatedProductionCallbackReqBO productionCallbackBO){
         PreproductionDO  beanCheck = iPreproductionExtDao.get(productionCallbackBO.getProNumber());
         if (JudgeUtils.isNull(beanCheck)) {
-            LOGGER.warn("id为[{}]的记录不存在", productionCallbackBO.getProNumber());
-            BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
+            LOGGER.error("id为[{}]的记录不存在", productionCallbackBO.getProNumber());
+            MsgEnum.CUSTOMSUCCESS.setMsgCd("464");
+            MsgEnum.CUSTOMSUCCESS.setMsgInfo("需求编号异常，需求编号不存在");
+            BusinessException.throwBusinessException(MsgEnum.CUSTOMSUCCESS);
         }
         //生成流水记录
         ScheduleDO scheduleBean =new ScheduleDO("自动预投产");
@@ -711,11 +657,15 @@ public class PreProductionServiceImpl implements PreProductionService {
                 return;
             }
         //判断环境，生产投产
-            if(productionCallbackBO.getEnv().equals("1")){
+            else if(productionCallbackBO.getEnv().equals("1")){
 
 
                 return;
-             }
+             }else {
+                MsgEnum.CUSTOMSUCCESS.setMsgCd("465");
+                MsgEnum.CUSTOMSUCCESS.setMsgInfo("投产环境参数异常");
+                BusinessException.throwBusinessException(MsgEnum.CUSTOMSUCCESS);
+            }
 
     }
 }
