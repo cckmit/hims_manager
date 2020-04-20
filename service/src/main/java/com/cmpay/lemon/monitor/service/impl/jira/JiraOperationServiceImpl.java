@@ -44,18 +44,18 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     @Autowired
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     //jira项目类型 和包项目 jira编号
-    final static  Integer PROJECTTYPE_CMPAY=10009;
+    final static  Integer PROJECTTYPE_CMPAY=10100;
     //jira项目类型 资金归集项目 jira编号
-    final static  Integer PROJECTTYPE_FCPT=10012;
+    final static  Integer PROJECTTYPE_FCPT=10200;
     //jira项目类型 团体缴费项目 jira编号
-    final static  Integer PROJECTTYPE_GPPT=10011;
+    final static  Integer PROJECTTYPE_GPPT=10201;
 
     //EPIC任务 jira编号
     final static  Integer ISSUETYPE_EPIC=10000;
     //开发主任务 jira编号
-    final static  Integer ISSUETYPE_DEVELOPMAINTASK=10005;
+    final static  Integer ISSUETYPE_DEVELOPMAINTASK=10101;
     //测试主任务 jira编号
-    final static  Integer ISSUETYPE_TESTMAINTASK=10006;
+    final static  Integer ISSUETYPE_TESTMAINTASK=10103;
     //Epic任务
     final static  String EPIC="Epic";
     //开发主任务

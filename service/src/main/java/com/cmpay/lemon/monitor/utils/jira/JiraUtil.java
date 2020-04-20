@@ -48,10 +48,10 @@ public class JiraUtil {
         String assignee = object.getJSONObject("fields").getJSONObject("assignee").getString("displayName");
         jiraTaskBodyBO.setAssignee(assignee);
         //获取起始时间
-        String planStartTime = object.getJSONObject("fields").getString("customfield_10186");
+        String planStartTime = object.getJSONObject("fields").getString("customfield_10256");
         jiraTaskBodyBO.setPlanStartTime(planStartTime);
         //获取结束时间
-        String planEndTime = object.getJSONObject("fields").getString("customfield_10187");
+        String planEndTime = object.getJSONObject("fields").getString("customfield_10257");
         jiraTaskBodyBO.setPlanEndTime(planEndTime);
         return jiraTaskBodyBO;
     }
@@ -111,5 +111,6 @@ public class JiraUtil {
         System.err.println(object2);
         System.err.println(string1);
         System.err.println(string2);
+            }
     }
-}
+

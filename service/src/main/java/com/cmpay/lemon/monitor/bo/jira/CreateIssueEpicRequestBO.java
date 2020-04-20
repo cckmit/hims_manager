@@ -105,13 +105,13 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
                 "        \"project\":{\n" +
                 "            \"id\":\""+this.getProject()+"\"\n" +
                 "        },\n" +
-                "        \"customfield_10103\": \""+this.getSummary()+"\",\n" +
+                "        \"customfield_10104\": \""+this.getSummary()+"\",\n" +
                 "        \n" +
-                "        \"customfield_10181\":\""+this.getReqInnerSeq()+"\",\n" +
+                "        \"customfield_10255\":\""+this.getReqInnerSeq()+"\",\n" +
                 "        \n" +
                 "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +
-                "        \"customfield_10182\":{\n" +
+                "        \"customfield_10263\":{\n" +
                 "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
                 "        },\n" +
                 "         \"assignee\": {\n" +

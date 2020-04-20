@@ -25,24 +25,23 @@ public class BaseUtil {
     public static void main(String args[]) {
         AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
         automatedProductionBO.setProPkgName("包名");
-        automatedProductionBO.setEnv("1");
+        automatedProductionBO.setEnv("0");
         automatedProductionBO.setProNumber("投产编号");
         int code =0;
         int i=0;
-        System.err.println(automatedProductionBO.getJson());
+        System.err.println(automatedProductionBO.getTest());
         while(true) {
             try {
                 Response response = given()
                         .header("Content-Type", "application/json")
                         .header("charset", "utf-8")
-                        .body(automatedProductionBO.getJson())
-                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/test");
+                        .body(automatedProductionBO.getTest())
+                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
                 response.prettyPrint();
                 code = response.getStatusCode();
                 break;
             } catch (Throwable e) {
                 i++;
-                System.err.println(i);
                 if(i>1) {
                     System.err.println("接口调用失败");
                     return;

@@ -34,7 +34,7 @@ public class SendExcelProductionVerificationIsNotTimely {
 	
 	private  void setHeader(WritableSheet sheet) throws WriteException {
 		String[] headerNames = new String[]{
-				"投产编号/系统操作编号","投产/操作内容简述","投产/操作类型","投产/操作日期","申请部门","验证人","已投产/操作天数"
+				"投产编号/系统操作编号","投产/操作内容简述","投产/操作类型","投产/操作日期","申请部门","验证人","当前状态","已投产/操作天数"
 			/*	"投产编号","需求名称及内容简述","投产类型","计划投产日期","申请部门","投产申请人","申请人联系方式",
 				"产品所属模块","业务需求提出人","基地负责人","产品经理","投产状态","是否更新数据库数据","是否更新数据库（表）结构（包含DDL语句）","投产后是否需要运维监控",
 				"是否涉及证书","是否预投产验证","不能预投产验证原因","预投产验证结果","验证人 ","验证人联系方式"
@@ -97,6 +97,8 @@ public class SendExcelProductionVerificationIsNotTimely {
 
 			//产品经理
 			addCell(sheet, i+1, ++k, msb.getIdentifier(), bodyFormat,0,20);
+			//当前需求状态
+			addCell(sheet, i+1, ++k, 	msb.getProStatus(), bodyFormat,0,20);
 			//已投产天数
 			Calendar c1 = Calendar.getInstance();
 			Calendar c2 = Calendar.getInstance();

@@ -118,7 +118,7 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
                     "        \"project\":{\n" +
                     "            \"id\":\""+this.getProject()+"\"\n" +
                     "        },\n" +
-                    "         \"customfield_10101\": \""+this.getEpicKey()+"\",\n" +
+                    "         \"customfield_10102\": \""+this.getEpicKey()+"\",\n" +
                     "        \n" +
                     "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                     "        \n" +
@@ -137,10 +137,10 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
                     "        \"project\":{\n" +
                     "            \"id\":\""+this.getProject()+"\"\n" +
                     "        },\n" +
-                    "        \"customfield_10185\": {\n" +
+                    "        \"customfield_10263\": {\n" +
                     "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
                     "        },\n" +
-                    "         \"customfield_10101\": \""+this.getEpicKey()+"\",\n" +
+                    "         \"customfield_10102\": \""+this.getEpicKey()+"\",\n" +
                     "        \n" +
                     "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                     "        \n" +
