@@ -416,7 +416,7 @@
 		b.test_eng 'test_eng',
 		(select value from t_permi_dic_data where dic_id ='REQ_PEROID' and name =b.pre_cur_period) 'pre_cur_period'
 		from t_demand_extra a ,t_demand_info b
-		where  a.req_no = b.req_no and b.req_impl_mon  = #{0}  GROUP BY project_start_tm desc
+		where  a.req_no = b.req_no and b.req_impl_mon  = #{0}  ORDER BY  project_start_tm desc
 	</select>
 
 	<select id="getStageByJd" resultMap="rt">
