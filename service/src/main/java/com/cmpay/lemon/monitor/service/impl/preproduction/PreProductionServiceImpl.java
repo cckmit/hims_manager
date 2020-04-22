@@ -24,6 +24,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.preproduction.PreProductionService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
+import com.cmpay.lemon.monitor.utils.FtpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -227,7 +225,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             }
             scheduleBean.setOperationReason(pro_number_list[1]);
         }else if (pro_number_list[0].equals("ht")) {
-            pro_status_before = "预投产验证完成";
+            pro_status_before = "预投产部署待验证";
             pro_status_after = "预投产回退";
             if ((pro_number_list.length == 1) || (pro_number_list.length == 2)){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -251,7 +249,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
             }
-            if(!(pro_status_before.equals(status)  || (pro_status_after.equals("预投产打回") && (status.equals("预投产待部署")) ) || (pro_status_after.equals("预投产回退") && status.equals("预投产验证完成")) ||(pro_status_after.equals("预投产取消") && status.equals("预投产提出")|| status.equals("预投产待部署")))){
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("预投产打回") && (status.equals("预投产待部署")) ) || (pro_status_after.equals("预投产回退") && status.equals("预投产验证完成")) ||(pro_status_after.equals("预投产取消") && (status.equals("预投产提出")|| status.equals("预投产待部署"))))){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -267,7 +265,7 @@ public class PreProductionServiceImpl implements PreProductionService {
 
 
             boolean isSend = true;
-            if ((((pro_status_before.equals(status))  || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))) || ((pro_status_after.equals("预投产取消")) && ((status.equals("预投产提出") || status.equals("预投产待部署") ))))) && ((
+            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("预投产打回")) && (status.equals("预投产待部署"))) || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))) || ((pro_status_after.equals("预投产取消")) && (((status.equals("预投产提出")) || (status.equals("预投产待部署"))))))) && ((
                     (pro_status_after.equals("预投产打回")) || (pro_status_after.equals("预投产回退")) || (pro_status_after.equals("预投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
@@ -296,6 +294,12 @@ public class PreProductionServiceImpl implements PreProductionService {
                 }
                 if (pro_status_after.equals("预投产取消")) {
                     mess = pro_status_after;
+                    // 自动化调用投产取消接口
+                    AutoCancellationProductionBO autoCancellationProductionBO = new AutoCancellationProductionBO();
+                    autoCancellationProductionBO.setProNumber(bean.getPreNumber());
+                    autoCancellationProductionBO.setReason(pro_number_list[1]);
+                    System.err.println(Thread.currentThread().getName());
+                    automaticCommissioningInterfaceService.autoCancellationProduction(autoCancellationProductionBO);
                 }
 
                 mailInfo.setSubject("【" + mess + "通知】");
@@ -456,8 +460,12 @@ public class PreProductionServiceImpl implements PreProductionService {
         }else{
             fileDir.mkdir();
         }
+        boolean flag = true;
         try {
             file.transferTo(filePath);
+            // 将服务器中的投产包上传到ftp服务器
+            FileInputStream in=new FileInputStream(filePath);
+            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
         } catch (IllegalStateException e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -467,6 +475,88 @@ public class PreProductionServiceImpl implements PreProductionService {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if(!flag){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        bean.setProPkgTime(new Date(new java.util.Date().getTime()));
+        bean.setProPkgName(file.getOriginalFilename());
+        iPreproductionExtDao.updatePropkg(bean);
+    }
+
+    /**
+     * 更新投产包
+     * @param file
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void updateProductionPackage(MultipartFile file,String reqNumber) {
+        if (file.isEmpty()) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择上传文件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        PreproductionDO bean = null;
+        bean = iPreproductionExtDao.get(reqNumber);
+        if(!currentUser.equals(bean.getPreApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+        //依据环境配置路径
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/preproduction/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/preproduction/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        File fileDir = new File(path + reqNumber);
+        File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
+        if(fileDir.exists()){
+            File[] oldFile = fileDir.listFiles();
+            for(File o:oldFile) o.delete();
+        }else{
+            fileDir.mkdir();
+        }
+        boolean flag = true;
+        try {
+            file.transferTo(filePath);
+            // 将服务器中的投产包上传到ftp服务器
+            FileInputStream in=new FileInputStream(filePath);
+            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        } catch (IOException e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 投产包上传ftp服务器成功
+        if(flag){
+            // 上传成功后调用自动化投产接口，调用自动化投产接口 提供投产编号，包名，环境
+            AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
+            automatedProductionBO.setEnv("0");
+            automatedProductionBO.setProNumber(reqNumber);
+            automatedProductionBO.setProPkgName(file.getOriginalFilename());
+            automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+
+        }else{
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         bean.setProPkgTime(new Date(new java.util.Date().getTime()));

@@ -23,6 +23,7 @@ public interface PreProductionService {
     void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
     void add(PreproductionBO productionBO);
     void doBatchImport(MultipartFile file,String reqNumber);
+    void updateProductionPackage(MultipartFile file,String reqNumber);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 

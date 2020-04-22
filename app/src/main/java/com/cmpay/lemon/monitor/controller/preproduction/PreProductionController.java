@@ -92,8 +92,7 @@ public class PreProductionController {
     }
 
     /**
-     * 投产包
-     *
+     * 上传投产包
      * @return
      */
     @PostMapping("/batch/import")
@@ -103,6 +102,18 @@ public class PreProductionController {
         preProductionService.doBatchImport(file,reqNumber);
         return GenericRspDTO.newSuccessInstance();
     }
+    /**
+     * 更新投产包
+     * @return
+     */
+    @PostMapping("updateProductionPackage")
+    public GenericRspDTO<NoBody> updateProductionPackage(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        String reqNumber = request.getParameter("proNumber");
+        preProductionService.updateProductionPackage(file,reqNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
 
     // 下载投产包
     @RequestMapping("/pkgDownload")
@@ -149,17 +160,29 @@ public class PreProductionController {
         return objectResponseResult;
     }
 
-    @RequestMapping(value = "/test" ,method = RequestMethod.POST)
-    @ApiOperation(value = "自己测试只用接口",notes = "自己测试只用接口")
-    @ResponseBody
-    public ResponseResult<AutomatedProductionCallbackReqDTO> test(@RequestBody AutomatedProductionBO req,HttpServletResponse response){
-        System.err.println(req.getProNumber());
-        System.err.println(req.getEnv());
-        System.err.println(req.getProPkgName());
-        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
-
-        //preProductionService.automatedProductionCallback(productionCallbackBO);
-        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
-        return objectResponseResult;
-    }
+//    @RequestMapping(value = "/test" ,method = RequestMethod.POST)
+//    @ApiOperation(value = "自己测试只用接口",notes = "自己测试只用接口")
+//    @ResponseBody
+//    public ResponseResult<AutomatedProductionCallbackReqDTO> test(@RequestBody AutomatedProductionBO req,HttpServletResponse response){
+//        System.err.println(req.getProNumber());
+//        System.err.println(req.getEnv());
+//        System.err.println(req.getProPkgName());
+//        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
+//
+//        //preProductionService.automatedProductionCallback(productionCallbackBO);
+//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
+//        return objectResponseResult;
+//    }
+//    @RequestMapping(value = "/test1" ,method = RequestMethod.POST)
+//    @ApiOperation(value = "自己测试只用接口",notes = "自己测试只用接口")
+//    @ResponseBody
+//    public ResponseResult<AutomatedProductionCallbackReqDTO> test1(@RequestBody AutoCancellationProductionBO req,HttpServletResponse response){
+//        System.err.println(req.getProNumber());
+//        System.err.println(req.getReason());
+//        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
+//
+//        //preProductionService.automatedProductionCallback(productionCallbackBO);
+//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeErrRsp("500");
+//        return objectResponseResult;
+//    }
 }
