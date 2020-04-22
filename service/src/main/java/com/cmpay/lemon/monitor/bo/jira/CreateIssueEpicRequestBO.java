@@ -11,6 +11,7 @@ package com.cmpay.lemon.monitor.bo.jira;
  * @website http://www.bejson.com/java2pojo/
  */
 public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
+
     /**
      * 问题名
      */
@@ -105,13 +106,13 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
                 "        \"project\":{\n" +
                 "            \"id\":\""+this.getProject()+"\"\n" +
                 "        },\n" +
-                "        \"customfield_10104\": \""+this.getSummary()+"\",\n" +
+                "        \""+this.JIRA_EPICNAME+"\": \""+this.getSummary()+"\",\n" +
                 "        \n" +
-                "        \"customfield_10255\":\""+this.getReqInnerSeq()+"\",\n" +
+                "        \""+this.JIRA_REQINNERSEQ+"\":\""+this.getReqInnerSeq()+"\",\n" +
                 "        \n" +
                 "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +
-                "        \"customfield_10263\":{\n" +
+                "        \""+this.JIRA_DEPARTMENT+"\":{\n" +
                 "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
                 "        },\n" +
                 "         \"assignee\": {\n" +

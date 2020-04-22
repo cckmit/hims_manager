@@ -46,16 +46,16 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     //jira项目类型 和包项目 jira编号
     final static  Integer PROJECTTYPE_CMPAY=10100;
     //jira项目类型 资金归集项目 jira编号
-    final static  Integer PROJECTTYPE_FCPT=10200;
+    final static  Integer PROJECTTYPE_FCPT=10104;
     //jira项目类型 团体缴费项目 jira编号
-    final static  Integer PROJECTTYPE_GPPT=10201;
+    final static  Integer PROJECTTYPE_GPPT=10102;
 
     //EPIC任务 jira编号
     final static  Integer ISSUETYPE_EPIC=10000;
     //开发主任务 jira编号
-    final static  Integer ISSUETYPE_DEVELOPMAINTASK=10101;
+    final static  Integer ISSUETYPE_DEVELOPMAINTASK=10100;
     //测试主任务 jira编号
-    final static  Integer ISSUETYPE_TESTMAINTASK=10103;
+    final static  Integer ISSUETYPE_TESTMAINTASK=10102;
     //Epic任务
     final static  String EPIC="Epic";
     //开发主任务
