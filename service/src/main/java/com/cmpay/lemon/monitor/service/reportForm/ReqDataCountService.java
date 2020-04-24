@@ -60,7 +60,7 @@ public interface ReqDataCountService {
     //  查询录入不及时报表
     List<ScheduleBO> getProduction(String reqImplMon);
     // 需求文档上传情况报表
-    List<DemandBO> getReportForm6(String reqImplMon);
+    List<DemandBO> getReportForm6(String reqImplMon,String devpLeadDept,String productMng);
 
     //查询本月需求详情
     List<ReqDataCountBO> selectDetl(ReqMngBO vo);
@@ -83,7 +83,7 @@ public interface ReqDataCountService {
     //录入不及时报表下载
     void downloadProductionTypeStatistics(String month, HttpServletResponse response);
     //需求文档上传情况报表下载
-    void downloadDemandUploadDocumentBO(String month, HttpServletResponse response);
+    void downloadDemandUploadDocumentBO(String month,String devpLeadDept,String productMng, HttpServletResponse response);
 
 
     void downloadDemandImplementationReport(String month, HttpServletResponse response);

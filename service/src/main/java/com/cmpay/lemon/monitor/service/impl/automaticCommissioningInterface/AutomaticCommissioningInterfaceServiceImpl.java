@@ -32,7 +32,7 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
     // @Async
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
-    public void automatedProduction(AutomatedProductionBO automatedProductionBO) {
+    public String automatedProduction(AutomatedProductionBO automatedProductionBO) {
         System.err.println("预投产调用");
         System.err.println(Thread.currentThread().getName());
         System.err.println(automatedProductionBO.getProNumber());
@@ -61,19 +61,15 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
                     automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
                     automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
                     automatedProductionRegistrationDO.setRemark("接口调用失败");
-                    automatedProductionRegistrationDO.setStatus("失败");
+                    automatedProductionRegistrationDO.setStatus("增加自动化投产包接口调用失败");
                     automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-                    //消息回退
-                    // 同步操作报错
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("调用自动化投产增加自动化投产包接口失败！");
-                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//                    //消息回退
 //                    PreproductionDO preproductionDO = iPreproductionExtDao.get(automatedProductionRegistrationDO.getPronumber());
 //                    if(preproductionDO.getPreStatus().equals("预投产待部署")){
 //                        preproductionDO.setPreStatus("预投产提出");
 //                        iPreproductionExtDao.updatePreSts(preproductionDO);
 //                    }
-                    return;
+                    return "ERROR";
                 }
             }
         }
@@ -84,32 +80,28 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
         automatedProductionRegistrationDO.setEnv(automatedProductionBO.getEnv());
         automatedProductionRegistrationDO.setPronumber(automatedProductionBO.getProNumber());
         if( code ==200){
-            automatedProductionRegistrationDO.setStatus("成功");
+            automatedProductionRegistrationDO.setStatus("增加自动化投产包接口调用成功");
             automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
         } else if(code==450){
             //450则包格式错误
             automatedProductionRegistrationDO.setRemark("投产包异常");
-            automatedProductionRegistrationDO.setStatus("失败");
+            automatedProductionRegistrationDO.setStatus("增加自动化投产包接口调用失败");
             automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-
-            //消息回退
+            return "ERROR";
+//            //消息回退
 //            PreproductionDO preproductionDO = iPreproductionExtDao.get(automatedProductionRegistrationDO.getPronumber());
 //
 //            if(preproductionDO.getPreStatus().equals("预投产待部署")){
 //                preproductionDO.setPreStatus("预投产提出");
 //                iPreproductionExtDao.updatePreSts(preproductionDO);
 //            }
-            // 同步操作报错
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("调用自动化投产增加自动化投产包接口失败：投产包异常！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }else{
             //其他错误
             automatedProductionRegistrationDO.setRemark("其他错误");
-            automatedProductionRegistrationDO.setStatus("失败");
+            automatedProductionRegistrationDO.setStatus("增加自动化投产包接口调用失败");
             automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
-
-            //消息回退
+            return "ERROR";
+//            //消息回退
 //            PreproductionDO preproductionDO = iPreproductionExtDao.get(automatedProductionRegistrationDO.getPronumber());
 //            System.err.println(automatedProductionRegistrationDO.getPronumber());
 //            System.err.println(preproductionDO.getPreStatus());
@@ -118,11 +110,8 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
 //                preproductionDO.setPreStatus("预投产提出");
 //                iPreproductionExtDao.updatePreSts(preproductionDO);
 //            }
-            // 同步操作报错
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("调用自动化投产增加自动化投产包接口失败：其他错误！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
+        return "";
     }
 
     /**
@@ -132,7 +121,7 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
     // @Async
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
-    public void autoCancellationProduction(AutoCancellationProductionBO autoCancellationProductionBO) {
+    public String autoCancellationProduction(AutoCancellationProductionBO autoCancellationProductionBO) {
         System.err.println("取消自动化投产包");
         System.err.println(Thread.currentThread().getName());
         System.err.println(autoCancellationProductionBO.getProNumber());
@@ -157,20 +146,11 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
                     AutomatedProductionRegistrationDO automatedProductionRegistrationDO = new AutomatedProductionRegistrationDO();
                     automatedProductionRegistrationDO.setCreatTime(LocalDateTime.now());
                     automatedProductionRegistrationDO.setPronumber(autoCancellationProductionBO.getProNumber());
-                    automatedProductionRegistrationDO.setRemark("接口调用失败");
-                    automatedProductionRegistrationDO.setStatus("失败");
+                    automatedProductionRegistrationDO.setRemark("投产取消接口调用失败");
+                    automatedProductionRegistrationDO.setStatus("投产取消接口调用");
                     automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
                     // 同步操作报错
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("调用自动化投产取消接口失败！");
-                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//                    //消息回退
-//                    PreproductionDO preproductionDO = iPreproductionExtDao.get(automatedProductionRegistrationDO.getPronumber());
-//                    if(preproductionDO.getPreStatus().equals("预投产待部署")){
-//                        preproductionDO.setPreStatus("预投产提出");
-//                        iPreproductionExtDao.updatePreSts(preproductionDO);
-//                    }
-                    return;
+                    return "ERROR";
                 }
             }
         }
@@ -181,27 +161,16 @@ public class AutomaticCommissioningInterfaceServiceImpl implements AutomaticComm
         automatedProductionRegistrationDO.setEnv("0");
         automatedProductionRegistrationDO.setPronumber(autoCancellationProductionBO.getProNumber());
         if( code ==200){
-            automatedProductionRegistrationDO.setStatus("成功");
+            automatedProductionRegistrationDO.setStatus("投产取消接口调用成功");
             automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
         }else{
             //其他错误
-            automatedProductionRegistrationDO.setRemark("接口调用失败");
-            automatedProductionRegistrationDO.setStatus("失败");
+            automatedProductionRegistrationDO.setRemark("投产取消接口调用失败");
+            automatedProductionRegistrationDO.setStatus("投产取消接口调用失败");
             automatedProductionRegistrationDao.insert(automatedProductionRegistrationDO);
             // 同步操作报错
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("调用自动化投产取消接口失败！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-
-//            //消息回退
-//            PreproductionDO preproductionDO = iPreproductionExtDao.get(automatedProductionRegistrationDO.getPronumber());
-//            System.err.println(automatedProductionRegistrationDO.getPronumber());
-//            System.err.println(preproductionDO.getPreStatus());
-
-//            if(preproductionDO.getPreStatus().equals("预投产待部署")){
-//                preproductionDO.setPreStatus("预投产提出");
-//                iPreproductionExtDao.updatePreSts(preproductionDO);
-//            }
+            return "ERROR";
         }
+        return "";
     }
 }
