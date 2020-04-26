@@ -32,6 +32,9 @@ public class MonitorTradeEntryPointFilter extends TradeEntryPointFilter {
         response.setHeader(ACCESS_CONTROL_ALLOW_METHODS, properties.getHttpMethods());
         response.setHeader(ACCESS_CONTROL_MAX_AGE, properties.getHttpMaxAge());
         response.setHeader(ACCESS_CONTROL_ALLOW_HEADERS, properties.getHttpHeaders());
+
+
+
         super.doFilterInternal(request, response, filterChain);
     }
 }

@@ -126,6 +126,8 @@ public class SendExcelProductionVerificationIsNotTimely {
 
 			//产品经理
 			addCell(sheet, i+1, ++k, msb2.getIdentifier(), bodyFormat,0,20);
+			//产品投产状态
+			addCell(sheet, i+1, ++k, msb2.getOperStatus(), bodyFormat,0,15);
 			//已投产天数
 			Calendar c1 = Calendar.getInstance();
 			Calendar c2 = Calendar.getInstance();

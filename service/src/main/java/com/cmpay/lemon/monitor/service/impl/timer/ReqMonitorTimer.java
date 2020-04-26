@@ -26,6 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -168,11 +169,11 @@ public class ReqMonitorTimer {
 	 *每天中午12点10秒执行，避免和别的微信推送内容冲突
 	 * */
 	@Scheduled(cron = "10 0 12 * * ?")
-	public void productionVerificationIsNotTimely() {
+	public void productionVerificationIsNotTimely() throws ParseException {
 		//测试环境不发通知
-		if(LemonUtils.getEnv().equals(Env.DEV)) {
+		/*if(LemonUtils.getEnv().equals(Env.DEV)) {
 			return;
-		}
+		}*/
 		//项目启动日期开始当天计算
 		String date="2019-12-13";
 		//获得投产验证不及时清单
@@ -224,6 +225,45 @@ public class ReqMonitorTimer {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		StringBuffer sb=new StringBuffer();
+		sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+		sb.append("<tr><th>投产编号/系统操作编号</th><th>投产/操作内容简述</th><th>投产/操作类型</th><th>投产/操作日期</th>");
+		sb.append("<th>申请部门</th><th>验证人</th><th>当前状态</th><th>已投产/操作天数</th></tr>");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		for (ProductionDO bean : productionDOList){
+			sb.append("<tr><td >"+bean.getProNumber()+"</td>");//投产编号/系统操作编号
+			sb.append("<td >"+bean.getProNeed()+"</td>");//投产/操作内容简述
+			sb.append("<td >"+bean.getProType()+"</td>");//投产/操作类型
+			sb.append("<td >"+sdf.format(bean.getProDate())+"</td>");//投产/操作日期
+			sb.append("<td >"+bean.getApplicationDept()+"</td>");//申请部门
+			sb.append("<td >"+bean.getIdentifier()+"</td>");//验证人
+			sb.append("<td >"+bean.getProStatus()+"</td>");//当前状态
+			Calendar c1 = Calendar.getInstance();
+			Calendar c2 = Calendar.getInstance();
+			c1.setTime(sdf.parse(sdf.format(new Date())));
+			c2.setTime(sdf.parse(sdf.format(bean.getProDate())));
+			long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(bean.getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+			sb.append("<td >"+day+"</td></tr>");//已投产/操作天数
+		}
+
+		for (OperationApplicationDO bean : operationApplicationDOList){
+			sb.append("<tr><td >"+bean.getOperNumber()+"</td>");//投产编号/系统操作编号
+			sb.append("<td >"+bean.getOperRequestContent()+"</td>");//投产/操作内容简述
+			sb.append("<td >"+bean.getSysOperType()+"</td>");//投产/操作类型
+			sb.append("<td >"+sdf.format(bean.getProposeDate())+"</td>");//投产/操作日期
+			sb.append("<td >"+bean.getApplicationSector()+"</td>");//申请部门
+			sb.append("<td >"+bean.getIdentifier()+"</td>");//验证人
+			sb.append("<td >"+bean.getOperStatus()+"</td>");//当前状态
+			Calendar c1 = Calendar.getInstance();
+			Calendar c2 = Calendar.getInstance();
+			c1.setTime(sdf.parse(sdf.format(new Date())));
+			c2.setTime(sdf.parse(sdf.format(bean.getProposeDate())));
+			long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(bean.getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
+			sb.append("<td >"+day+"</td></tr>");//已投产/操作天数
+		}
+		sb.append("</table>");
+
+
 		//如果有内容则调用企业微信应用和邮件发送推送
         if(!productionDOList.isEmpty()||!operationApplicationDOList.isEmpty()) {
 			//邮件信息推送
@@ -234,19 +274,19 @@ public class ReqMonitorTimer {
 			mailInfo.setUsername(Constant.EMAIL_NAME);
 			mailInfo.setPassword(Constant.EMAIL_PSWD);
 			mailInfo.setFromAddress(Constant.EMAIL_NAME);
-			//收件人;version_it@hisuntech.com
-			String result="wu_lr@hisuntech.com";
+			//收件人 所有部门经理
+			String result="li_fan@hisuntech.com;zhou_xl@hisuntech.com;yang_chl@hisuntech.com;zhang_dy@hisuntech.com;tan_wj1@hisuntech.com;li_ms@hisuntech.com;duan_chj@hisuntech.com;liao_yk@hisuntech.com;yu_zhou@hisuntech.com;tian_qun@hisuntech.com;zhang_yx@hisuntech.com;li_ys@hisuntech.com;lu_zhou@hisuntech.com;yu_kuan@hisuntech.com;liao_lj@hisuntech.com";
 			String[] mailToAddress = result.split(";");
 			mailInfo.setReceivers(mailToAddress);
 			//抄送人
-			result="wu_lr@hisuntech.com";
+			result="wang_yw@hisuntech.com";
 			mailInfo.setCcs(result.split(";"));
 			//添加附件
 			Vector filesv = new Vector();
 			filesv.add(file);
 			mailInfo.setFile(filesv);
 			mailInfo.setSubject("【投产验证不及时清单】");
-			mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件<br/><br/>");
+			mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件,如已验证完成请及时修改状态<br/><br/>");
 			boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 			//企业微信信息推送
 			boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
