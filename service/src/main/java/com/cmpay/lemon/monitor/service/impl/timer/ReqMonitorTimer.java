@@ -171,9 +171,9 @@ public class ReqMonitorTimer {
 	@Scheduled(cron = "10 0 12 * * ?")
 	public void productionVerificationIsNotTimely() throws ParseException {
 		//测试环境不发通知
-		/*if(LemonUtils.getEnv().equals(Env.DEV)) {
+		if(LemonUtils.getEnv().equals(Env.DEV)) {
 			return;
-		}*/
+		}
 		//项目启动日期开始当天计算
 		String date="2019-12-13";
 		//获得投产验证不及时清单
