@@ -92,6 +92,11 @@ public class MonitorConstants {
     public static final String SYSTEMOPERATION_PATH=BASE_URI + "/systemOperation";
 
     /**
+     * VPN申请URL
+     */
+    public static final String SYSTEMOPERATION_VPN=BASE_URI + "/vpn";
+
+    /**
      * 投产时间管理Uri
      */
     public static final String PRODUCTTIME=BASE_URI + "/productTime";

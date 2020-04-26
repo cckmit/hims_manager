@@ -296,9 +296,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	}
 
 	@Override
-	public List<DemandBO> getReportForm6(String reqImplMon) {
+	public List<DemandBO> getReportForm6(String reqImplMon,String devpLeadDept,String productMng) {
 		List<DemandBO> reqDataCountBOS = new LinkedList<>();
-		List<DemandDO> impl = reqDataCountDao.getReportForm6(reqImplMon);
+		ReqDateCountDO reqDateCountDO = new ReqDateCountDO();
+		reqDateCountDO.setReqImplMon(reqImplMon);
+		reqDateCountDO.setDevpLeadDept(devpLeadDept);
+		reqDateCountDO.setProductMng(productMng);
+		List<DemandDO> impl = reqDataCountDao.getReportForm6(reqDateCountDO);
 		impl.forEach(m->
 				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new DemandBO(), m))
 		);
@@ -516,10 +520,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		}
 	}
 	@Override
-	public void downloadDemandUploadDocumentBO(String month, HttpServletResponse response) {
+	public void downloadDemandUploadDocumentBO(String month,String devpLeadDept,String productMng, HttpServletResponse response) {
 		List<DemandUploadDocumentBO> DemandTypeStatisticsBOList = new ArrayList<>();
 		List<DemandBO> reportLista = new ArrayList<>();
-		reportLista = this.getReportForm6(month);
+		reportLista = this.getReportForm6(month, devpLeadDept, productMng);
 		if (JudgeUtils.isNotEmpty(reportLista)) {
 			reportLista.forEach(m->{
 				DemandUploadDocumentBO demandTypeStatisticsBO = new DemandUploadDocumentBO();

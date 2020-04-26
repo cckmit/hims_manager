@@ -1,7 +1,19 @@
-package com.cmpay.lemon.monitor.dto;
+/*
+ * @ClassName CenterDO
+ * @Description 
+ * @version 1.0
+ * @Date 2019-07-25 11:01:18
+ */
+package com.cmpay.lemon.monitor.entity;
 
-public class ReqDataCountReqDTO {
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import com.cmpay.framework.data.BaseDO;
+import com.cmpay.lemon.framework.annotation.DataObject;
 
+import java.util.Date;
+
+@DataObject
+public class ReqDateCountDO extends BaseDO {
     String reqImplMon;
     // 部门
     String devpLeadDept;
@@ -9,6 +21,8 @@ public class ReqDataCountReqDTO {
     String productMng;
 
     String dayNumber;
+    public ReqDateCountDO() {
+    }
 
     public String getReqImplMon() {
         return reqImplMon;
@@ -16,14 +30,6 @@ public class ReqDataCountReqDTO {
 
     public void setReqImplMon(String reqImplMon) {
         this.reqImplMon = reqImplMon;
-    }
-
-    public String getDayNumber() {
-        return dayNumber;
-    }
-
-    public void setDayNumber(String dayNumber) {
-        this.dayNumber = dayNumber;
     }
 
     public String getDevpLeadDept() {
@@ -42,13 +48,11 @@ public class ReqDataCountReqDTO {
         this.productMng = productMng;
     }
 
-    @Override
-    public String toString() {
-        return "ReqDataCountReqDTO{" +
-                "reqImplMon='" + reqImplMon + '\'' +
-                ", devpLeadDept='" + devpLeadDept + '\'' +
-                ", productMng='" + productMng + '\'' +
-                ", dayNumber='" + dayNumber + '\'' +
-                '}';
+    public String getDayNumber() {
+        return dayNumber;
+    }
+
+    public void setDayNumber(String dayNumber) {
+        this.dayNumber = dayNumber;
     }
 }

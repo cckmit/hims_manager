@@ -5,6 +5,6 @@ import com.cmpay.lemon.monitor.bo.AutomatedProductionBO;
 
 public interface AutomaticCommissioningInterfaceService {
 
-    void automatedProduction(AutomatedProductionBO automatedProductionBO);
-    void autoCancellationProduction(AutoCancellationProductionBO autoCancellationProductionBO);
+    String automatedProduction(AutomatedProductionBO automatedProductionBO);
+    String autoCancellationProduction(AutoCancellationProductionBO autoCancellationProductionBO);
 }

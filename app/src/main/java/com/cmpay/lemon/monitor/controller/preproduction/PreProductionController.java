@@ -169,8 +169,9 @@ public class PreProductionController {
 //        System.err.println(req.getProPkgName());
 //        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
 //
+//        response.setStatus(500);
 //        //preProductionService.automatedProductionCallback(productionCallbackBO);
-//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeOKRsp();
+//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(500,"1111");
 //        return objectResponseResult;
 //    }
 //    @RequestMapping(value = "/test1" ,method = RequestMethod.POST)
@@ -180,9 +181,9 @@ public class PreProductionController {
 //        System.err.println(req.getProNumber());
 //        System.err.println(req.getReason());
 //        AutomatedProductionCallbackReqBO productionCallbackBO = BeanUtils.copyPropertiesReturnDest(new AutomatedProductionCallbackReqBO(), req);
-//
+//        response.setStatus(500);
 //        //preProductionService.automatedProductionCallback(productionCallbackBO);
-//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeErrRsp("500");
+//        ResponseResult<AutomatedProductionCallbackReqDTO> objectResponseResult = Response.makeRsp(500,"1111");
 //        return objectResponseResult;
 //    }
 }

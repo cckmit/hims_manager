@@ -299,7 +299,12 @@ public class PreProductionServiceImpl implements PreProductionService {
                     autoCancellationProductionBO.setProNumber(bean.getPreNumber());
                     autoCancellationProductionBO.setReason(pro_number_list[1]);
                     System.err.println(Thread.currentThread().getName());
-                    automaticCommissioningInterfaceService.autoCancellationProduction(autoCancellationProductionBO);
+                    String msg = automaticCommissioningInterfaceService.autoCancellationProduction(autoCancellationProductionBO);
+                    if("ERROR".equals(msg)){
+                        MsgEnum.SUCCESS.setMsgInfo("");
+                        MsgEnum.SUCCESS.setMsgInfo("调用自动化投产取消接口失败！请刷新后再试，或人工联系投产人员。");
+                        BusinessException.throwBusinessException(MsgEnum.SUCCESS);
+                    }
                 }
 
                 mailInfo.setSubject("【" + mess + "通知】");
@@ -324,9 +329,12 @@ public class PreProductionServiceImpl implements PreProductionService {
                 automatedProductionBO.setProNumber(beanCheck.getPreNumber());
                 automatedProductionBO.setProPkgName(beanCheck.getProPkgName());
                 System.err.println(Thread.currentThread().getName());
-                automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
-
-                System.err.println("异步之后");
+                String msg = automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+                if("ERROR".equals(msg)){
+                    MsgEnum.SUCCESS.setMsgInfo("");
+                    MsgEnum.SUCCESS.setMsgInfo("调用增加自动化投产包接口调用失败！请刷新后再试。");
+                    BusinessException.throwBusinessException(MsgEnum.SUCCESS);
+                }
                 // addpack();
                 PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
                 bean.setPreStatus("预投产待部署");
@@ -689,7 +697,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         mailInfo.setReceivers(mailToAddress);
         //如果状态为0，即部署成功
         if("0".equals(productionCallbackBO.getStatus())){
-            pro_status_before = "预投产提出";
+            pro_status_before = "预投产待部署";
             pro_status_after = "预投产部署待验证";
             scheduleBean.setOperationReason("预投产已部署");
 
@@ -709,29 +717,30 @@ public class PreProductionServiceImpl implements PreProductionService {
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             if (!(isSend)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署待验证】邮件发送,请及时联系系统维护人员!");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        }else{
-            pro_status_before = "预投产提出";
-            pro_status_after = "预投产打回";
-            scheduleBean.setOperationReason("预投产部署失败");
-
-            PreproductionDO bean = iPreproductionExtDao.get(productionCallbackBO.getProNumber());
-            //更新状态
-            bean.setPreStatus("pro_status_after");
-            iPreproductionExtDao.updatePreSts(bean);
-
-            mailInfo.setSubject("【" + pro_status_after + "通知】");
-            mailInfo.setContent("你好:<br/>由于【预投产部署失败】，您的" + productionCallbackBO.getProNumber() + bean.getPreNeed() + ",中止预投产流程。如需重新预投产，请走重新投产流程。");
-            // 这个类主要来发送邮件
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-            if (!(isSend)) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署失败】邮件发送,请及时联系系统维护人员!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署待验证】邮件发送失败,请及时联系系统维护人员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
+//        else{
+//            pro_status_before = "预投产提出";
+//            pro_status_after = "预投产打回";
+//            scheduleBean.setOperationReason("预投产部署失败");
+//
+//            PreproductionDO bean = iPreproductionExtDao.get(productionCallbackBO.getProNumber());
+//            //更新状态
+//            bean.setPreStatus("pro_status_after");
+//            iPreproductionExtDao.updatePreSts(bean);
+//
+//            mailInfo.setSubject("【" + pro_status_after + "通知】");
+//            mailInfo.setContent("你好:<br/>由于【预投产部署失败】，您的" + productionCallbackBO.getProNumber() + bean.getPreNeed() + ",中止预投产流程。如需重新预投产，请走重新投产流程。");
+//            // 这个类主要来发送邮件
+//            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+//            if (!(isSend)) {
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("【预投产部署失败】邮件发送,请及时联系系统维护人员!");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//        }
         scheduleBean.setPreOperation(pro_status_before);
         scheduleBean.setAfterOperation(pro_status_after);
         scheduleBean.setOperationType(pro_status_after);

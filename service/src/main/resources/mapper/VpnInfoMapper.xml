@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IVpnInfoDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.VpnInfoDO" >
+        <id column="vpn_inner_seq" property="vpnInnerSeq" jdbcType="VARCHAR" />
+        <result column="vpn_applicant" property="vpnApplicant" jdbcType="VARCHAR" />
+        <result column="vpn_dept" property="vpnDept" jdbcType="VARCHAR" />
+        <result column="vpn_applicant_tel" property="vpnApplicantTel" jdbcType="VARCHAR" />
+        <result column="vpn_start_time" property="vpnStartTime" jdbcType="VARCHAR" />
+        <result column="vpn_end_time" property="vpnEndTime" jdbcType="VARCHAR" />
+        <result column="vpn_reason" property="vpnReason" jdbcType="VARCHAR" />
+        <result column="vpn_apply_type" property="vpnApplyType" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        vpn_inner_seq, vpn_applicant, vpn_dept, vpn_applicant_tel, vpn_start_time, vpn_end_time, 
+        vpn_reason, vpn_apply_type
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_vpn_info
+        where vpn_inner_seq = #{vpnInnerSeq,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_vpn_info
+        where vpn_inner_seq = #{vpnInnerSeq,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.VpnInfoDO" >
+        insert into t_vpn_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="vpnInnerSeq != null" >
+                vpn_inner_seq,
+            </if>
+            <if test="vpnApplicant != null" >
+                vpn_applicant,
+            </if>
+            <if test="vpnDept != null" >
+                vpn_dept,
+            </if>
+            <if test="vpnApplicantTel != null" >
+                vpn_applicant_tel,
+            </if>
+            <if test="vpnStartTime != null" >
+                vpn_start_time,
+            </if>
+            <if test="vpnEndTime != null" >
+                vpn_end_time,
+            </if>
+            <if test="vpnReason != null" >
+                vpn_reason,
+            </if>
+            <if test="vpnApplyType != null" >
+                vpn_apply_type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="vpnInnerSeq != null" >
+                #{vpnInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnApplicant != null" >
+                #{vpnApplicant,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnDept != null" >
+                #{vpnDept,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnApplicantTel != null" >
+                #{vpnApplicantTel,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnStartTime != null" >
+                #{vpnStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnEndTime != null" >
+                #{vpnEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnReason != null" >
+                #{vpnReason,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnApplyType != null" >
+                #{vpnApplyType,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.VpnInfoDO" >
+        update t_vpn_info
+        <set >
+            <if test="vpnApplicant != null" >
+                vpn_applicant = #{vpnApplicant,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnDept != null" >
+                vpn_dept = #{vpnDept,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnApplicantTel != null" >
+                vpn_applicant_tel = #{vpnApplicantTel,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnStartTime != null" >
+                vpn_start_time = #{vpnStartTime,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnEndTime != null" >
+                vpn_end_time = #{vpnEndTime,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnReason != null" >
+                vpn_reason = #{vpnReason,jdbcType=VARCHAR},
+            </if>
+            <if test="vpnApplyType != null" >
+                vpn_apply_type = #{vpnApplyType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where vpn_inner_seq = #{vpnInnerSeq,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.VpnInfoDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_vpn_info
+        <where >
+            <if test="vpnInnerSeq != null and vpnInnerSeq != ''" >
+                and vpn_inner_seq = #{vpnInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="vpnApplicant != null and vpnApplicant != ''" >
+                and vpn_applicant = LIKE CONCAT('%',#{vpnApplicant,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="vpnDept != null and vpnDept != ''" >
+                and vpn_dept = #{vpnDept,jdbcType=VARCHAR}
+            </if>
+            <if test="vpnApplicantTel != null and vpnApplicantTel != ''" >
+                and vpn_applicant_tel = #{vpnApplicantTel,jdbcType=VARCHAR}
+            </if>
+            <if test="vpnStartTime != null and vpnStartTime != ''" >
+                and vpn_start_time >= #{vpnStartTime,jdbcType=VARCHAR}
+            </if>
+            <if test="vpnEndTime != null and vpnEndTime != ''" >
+                and #{vpnEndTime,jdbcType=VARCHAR} >= vpn_end_time
+            </if>
+            <if test="vpnReason != null and vpnReason != ''" >
+                and vpn_reason = #{vpnReason,jdbcType=VARCHAR}
+            </if>
+            <if test="vpnApplyType != null and vpnApplyType != ''" >
+                and vpn_apply_type = #{vpnApplyType,jdbcType=VARCHAR}
+            </if>
+        </where>
+        ORDER BY vpn_inner_seq  desc
+    </select>
+
+    <select id="getMaxInnerSeq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.VpnInfoDO">
+        select
+        max(vpn_inner_seq) as vpn_inner_seq from t_vpn_info
+    </select>
+</mapper>
