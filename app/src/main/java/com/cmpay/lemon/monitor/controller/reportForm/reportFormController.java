@@ -132,12 +132,13 @@ import java.util.List;
     // 需求文档上传情况报表
     @RequestMapping("/reportform6")
     public GenericRspDTO<DemandRspDTO> getReportForm6(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
+        System.err.println(reqDataCountReqDTO);
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
         List<DemandBO> reportLista = new ArrayList<>();
-        reportLista = reqDataCountService.getReportForm6(reqDataCountReqDTO.getReqImplMon());
+        reportLista = reqDataCountService.getReportForm6(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng());
         DemandRspDTO reqDataCountRspDTO = new DemandRspDTO();
         List<DemandDTO> reqDataCountDTOListA = new LinkedList<>();
         reportLista.forEach(m->
@@ -223,7 +224,7 @@ import java.util.List;
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),response);
+        reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 

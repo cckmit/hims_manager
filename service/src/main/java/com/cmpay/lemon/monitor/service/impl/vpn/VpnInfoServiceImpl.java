@@ -40,7 +40,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
         VpnInfoDO vpnInfoDO = new VpnInfoDO();
         BeanConvertUtils.convert(vpnInfoDO, vpnInfoBO);
         vpnInfoDO.setVpnInnerSeq(this.getNextInnerSeq());
-        vpnInfoDO.setVpnApplyType("VPN录入待审核");
+        vpnInfoDO.setVpnApplyType("录入待审核");
         MailFlowConditionDO mfva = new MailFlowConditionDO();
         mfva.setEmployeeName(vpnInfoDO.getVpnApplicant());
         //获取VPN申请人的邮箱
@@ -156,7 +156,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择VPN申请进行操作");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            pro_status_before = "VPN录入待审核";
+            pro_status_before = "录入待审核";
             pro_status_after = "部门主管审核通过";
             scheduleBean.setOperationReason("部门主管审核通过");
         }
@@ -180,13 +180,13 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             pro_status_before = "总经理审核通过";
-            pro_status_after = "VPN配置完成";
+            pro_status_after = "配置完成";
             scheduleBean.setOperationReason("VPN配置完成");
         }
         //打回
         else if (pro_number_list[0].equals("dh")) {
-            pro_status_before = "VPN录入待审核";
-            pro_status_after = "VPN审核不通过";
+            pro_status_before = "录入待审核";
+            pro_status_after = "审核不通过";
             if ((pro_number_list.length == 1) || (pro_number_list.length == 2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择VPN申请进行操作");
@@ -200,8 +200,10 @@ public class VpnInfoServiceImpl implements VpnInfoService {
 
         for (int i = 2; i < pro_number_list.length; ++i) {
             String status = iVpnInfoDao.get(pro_number_list[i]).getVpnApplyType();
-
-            if(!(pro_status_before.equals(status) || (pro_status_after.equals("部门主管审核通过") && (status.equals("VPN录入待审核")) ) || (pro_status_after.equals("总经理审核通过") && status.equals("部门主管审核通过"))|| (pro_status_after.equals("VPN配置完成") && status.equals("总经理审核通过")) ||(pro_status_after.equals("VPN审核不通过") && (status.equals("VPN录入待审核")|| status.equals("部门主管审核通过"))))){
+            System.err.println(pro_status_before);
+            System.err.println(pro_status_after);
+            System.err.println(status);
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("部门主管审核通过") && (status.equals("录入待审核")) ) || (pro_status_after.equals("总经理审核通过") && status.equals("部门主管审核通过"))|| (pro_status_after.equals("配置完成") && status.equals("总经理审核通过")) ||(pro_status_after.equals("审核不通过") && (status.equals("录入待审核")|| status.equals("部门主管审核通过"))))){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确审批状态!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -274,7 +276,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 MailFlowDO bnb = new MailFlowDO("VPN账号开通申请", "code_review@hisuntech.com", mp2.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
-            if(pro_status_after.equals("VPN配置完成")){
+            if(pro_status_after.equals("配置完成")){
                 String[] mailToAddress  = mp.getMailUser().split(";");
                 mailInfo.setReceivers(mailToAddress);
                 System.err.println("收件人"+mailToAddress.toString());
@@ -288,7 +290,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 MailFlowDO bnb = new MailFlowDO("VPN总经理审批申请", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
-            if(pro_status_after.equals("VPN审核不通过")){
+            if(pro_status_after.equals("审核不通过")){
                 String[] mailToAddress  = mfba.getEmployeeEmail().split(";");
                 mailInfo.setReceivers(mailToAddress);
                 mailInfo.setSubject("【VPN审批不通过通知】");

@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 
 
 public class ProductionInputReqDTO {
+        private String crMore;
         private Boolean attachment;
         private String proNumber;
         private String proNeed;
@@ -556,6 +557,14 @@ public class ProductionInputReqDTO {
 
     public void setAttachment(Boolean attachment) {
         this.attachment = attachment;
+    }
+
+    public String getCrMore() {
+        return crMore;
+    }
+
+    public void setCrMore(String crMore) {
+        this.crMore = crMore;
     }
 }
 

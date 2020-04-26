@@ -663,7 +663,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 }
                                 demandDao.updateOperation(demand);
                             }
-                            if (pro_status_after.equals("部署完成待验证")) {
+                            if (pro_status_after.equals("投产验证完成")) {
                                 //投产状态为“投产验证完成”时，需求当前阶段为“已投产”  17
                                 demand.setPreCurPeriod("180");
                                 DemandBO demandBO = new DemandBO();
@@ -678,7 +678,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 demandStateHistoryDO.setReqNo(demand.getReqNo());
                                 demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
                                 demandStateHistoryDO.setReqSts("已完成");
-                                demandStateHistoryDO.setRemarks("部署完成待验证");
+                                demandStateHistoryDO.setRemarks("投产验证完成");
                                 demandStateHistoryDO.setReqNm(demand.getReqNm());
                                 //依据内部需求编号查唯一标识
                                 String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
@@ -891,7 +891,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             ProductionBO productionBO = this.searchProdutionDetail(proNumber);
             if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")&& !productionBO.getProStatus().equals("投产打回")&& !productionBO.getProStatus().equals("投产回退")){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号已经投产!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber+"，该投产编号已经投产!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             demandDO.setReqNo(proNumber);
@@ -899,7 +899,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             List<DemandDO> demandDOList = demandDao.find(demandDO);
             if(demandDOList.isEmpty()){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("该投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber+"，该投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }else {
                 demandDO = demandDOList.get(0);
@@ -2004,8 +2004,85 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 unusualFile.delete();
             }
         }
+        //多个编号集合
+        String crMore = bean.getCrMore();
+        boolean crflag = false;
+        String[] crMore_list = null;
+        if(!("".equals(crMore)||crMore==null)){
+            crflag = true;
+            crMore_list =crMore.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";").split(";");
+        }
         //救火更新
-        if (bean.getProType().equals("救火更新")) {
+        if (bean.getProType().equals("救火更新") && crflag) {
+
+            for(int i=0;i<crMore_list.length;i++){
+                DemandBO demandBO =  verifyAndQueryTheProductionNumber(crMore_list[i]);
+
+            }
+            bean.setIsOperationProduction("");
+            bean.setProStatus("投产待部署");
+
+            List<ProductionBO> list = new ArrayList<ProductionBO>();
+            list.add(bean);
+
+            List<String> receiver_users = new ArrayList<String>();
+            List<String> copy_users = new ArrayList<String>();
+
+            // 添加申请人
+            receiver_users.add(bean.getProApplicant());
+            // 添加部门经理 抄送
+            copy_users.add(bean.getProApplicant());
+            // 附件
+            Vector<File> files = new Vector<File>();
+            File file_fire = this.exportUrgentExcel(list);
+            // 添加救火附件
+            if (!file.isEmpty()) {
+                files = this.setVectorFile(file,files,bean);
+            }
+            files.add(file_fire);
+            mailInfo.setFile(files);
+            // 收件人邮箱
+            String base_receiver_mail = bean.getMailRecipient();
+            if (bean.getIsAdvanceProduction().equals("是")) {
+                base_receiver_mail += config.getFireMailTo(true);
+            } else {
+                receiver_users.add(bean.getProManager());
+                receiver_users.add(bean.getDevelopmentLeader());
+                base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
+            }
+            //救火更新抄送人添加自己
+            MailFlowConditionDO vo=new MailFlowConditionDO();
+            vo.setEmployeeName(bean.getProApplicant());
+            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            //去重
+            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users)+";"+mflow.getEmployeeEmail();
+            String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
+            // 抄送人邮箱
+            String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
+            if (bean.getMailCopyPerson() != null && !bean.getMailCopyPerson().equals("")) {
+                copy_mail += ";" + bean.getMailCopyPerson();
+            }
+            copy_mail = BaseUtil.distinctStr(copy_mail, ";");
+
+            //记录邮箱信息
+            bean.setMailRecipient(receiver_mail);
+            bean.setMailCopyPerson(copy_mail);
+            //记录邮箱信息
+            mailInfo.setReceivers(receiver_mail.split(";"));
+            mailInfo.setCcs(copy_mail.split(";"));
+            //保存抄送人
+//	          bean.setMail_copy_person(mailCopySum);
+            mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
+
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean));
+            // 这个类主要来发送邮件
+            //SimpleMailSender sms = new SimpleMailSender();
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            this.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
+            if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
+                file_fire.delete();
+            }
+        }else {
             bean.setIsOperationProduction("");
             bean.setProStatus("投产待部署");
             List<ProductionBO> list = new ArrayList<ProductionBO>();

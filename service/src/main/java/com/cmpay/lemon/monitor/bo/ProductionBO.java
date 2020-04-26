@@ -8,6 +8,7 @@ import java.sql.Date;
  */
 
 public class ProductionBO {
+    private String crMore;
     private String proNumber;
     private String proNeed;
     private String proType;
@@ -588,5 +589,13 @@ public class ProductionBO {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    public String getCrMore() {
+        return crMore;
+    }
+
+    public void setCrMore(String crMore) {
+        this.crMore = crMore;
     }
 }
