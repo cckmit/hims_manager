@@ -27,6 +27,7 @@ import com.cmpay.lemon.monitor.utils.*;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1737,6 +1738,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     //投产录入
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
         boolean isSend = false;
@@ -2014,14 +2016,32 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         //救火更新
         if (bean.getProType().equals("救火更新") && crflag) {
-
-            for(int i=0;i<crMore_list.length;i++){
-                DemandBO demandBO =  verifyAndQueryTheProductionNumber(crMore_list[i]);
-
-            }
             bean.setIsOperationProduction("");
             bean.setProStatus("投产待部署");
+            String beanNumber = bean.getProNumber();
+            String beanNeed = bean.getProNeed();
+            String beanNumbers = bean.getProNumber();
+            String beanNeeds = bean.getProNeed();
+            for(int i=0;i<crMore_list.length;i++){
+                DemandBO demandBO =  verifyAndQueryTheProductionNumber(crMore_list[i]);
+                ProductionBO productionBO = new ProductionBO();
+                BeanUtils.copyPropertiesReturnDest(productionBO, bean);
+                // 设置投产编号
+                productionBO.setProNumber(demandBO.getReqNo());
+                // 设置投产名称
+                productionBO.setProNeed(demandBO.getReqNm());
+                // 设置申请部门
+                productionBO.setApplicationDept(demandBO.getDevpLeadDept());
+                // 设置产品经理
+                productionBO.setProManager(demandBO.getProductMng());
+                // 设置基地业务负责人
+                productionBO.setBusinessPrincipal(demandBO.getReqProposer());
 
+                beanNumbers += "-"+demandBO.getReqNo();
+                beanNeeds += "-"+demandBO.getReqNm();
+                //插入
+                this.addProduction(productionBO);
+            }
             List<ProductionBO> list = new ArrayList<ProductionBO>();
             list.add(bean);
 
@@ -2034,11 +2054,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             copy_users.add(bean.getProApplicant());
             // 附件
             Vector<File> files = new Vector<File>();
-            File file_fire = this.exportUrgentExcel(list);
             // 添加救火附件
             if (!file.isEmpty()) {
                 files = this.setVectorFile(file,files,bean);
             }
+            // 设置邮件中投产编号
+            bean.setProNumber(beanNumbers);
+            // 设置邮件中投产名称
+            bean.setProNeed(beanNeeds);
+            File file_fire = this.exportUrgentExcel(list);
             files.add(file_fire);
             mailInfo.setFile(files);
             // 收件人邮箱
@@ -2082,7 +2106,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
             }
-        }else {
+            //邮件发送完成，名称改回来
+            // 设置邮件中投产编号
+            bean.setProNumber(beanNumber);
+            // 设置邮件中投产名称
+            bean.setProNeed(beanNeed);
+        }
+        if (bean.getProType().equals("救火更新")&& !crflag) {
             bean.setIsOperationProduction("");
             bean.setProStatus("投产待部署");
             List<ProductionBO> list = new ArrayList<ProductionBO>();
