@@ -286,7 +286,7 @@ public class ReqMonitorTimer {
 			filesv.add(file);
 			mailInfo.setFile(filesv);
 			mailInfo.setSubject("【投产验证不及时清单】");
-			mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件,如已验证完成请及时修改状态<br/><br/>");
+			mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件,如已验证完成请及时修改状态<br/><br/>" + sb);
 			boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 			//企业微信信息推送
 			boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
