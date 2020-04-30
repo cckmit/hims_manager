@@ -25,7 +25,10 @@ public class BaseWorkloadBO {
     private int inputWorkload;
     @Excel(name = "本月录入工作量")
     private int monInputWorkload;
-
+    @Excel(name = "剩余工作量")
+    private int remainWorkload;
+    @Excel(name = "需求当前阶段")
+    private String preCurPeriod;
     public String getReqInnerSeq() {
         return reqInnerSeq;
     }
@@ -96,6 +99,22 @@ public class BaseWorkloadBO {
 
     public void setMonInputWorkload(int monInputWorkload) {
         this.monInputWorkload = monInputWorkload;
+    }
+
+    public int getRemainWorkload() {
+        return remainWorkload;
+    }
+
+    public void setRemainWorkload(int remainWorkload) {
+        this.remainWorkload = remainWorkload;
+    }
+
+    public String getPreCurPeriod() {
+        return preCurPeriod;
+    }
+
+    public void setPreCurPeriod(String preCurPeriod) {
+        this.preCurPeriod = preCurPeriod;
     }
 
     @Override

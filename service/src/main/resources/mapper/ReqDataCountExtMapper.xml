@@ -418,6 +418,7 @@
 		from t_demand_extra a ,t_demand_info b
 		<where>
 			a.req_no = b.req_no
+			and b.req_sts !=60
 			<if test="reqImplMon != null and reqImplMon != ''">
 				AND b.req_impl_mon =#{reqImplMon}
 			</if>

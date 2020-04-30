@@ -62,6 +62,11 @@ public interface ReqDataCountService {
     // 需求文档上传情况报表
     List<DemandBO> getReportForm6(String reqImplMon,String devpLeadDept,String productMng);
 
+    // 部门员工工时报表
+    List<WorkingHoursBO> getReportForm7(String devpLeadDept,String date);
+    // 部门员工工时报表
+    List<WorkingHoursBO> findList(String displayName ,String date);
+
     //查询本月需求详情
     List<ReqDataCountBO> selectDetl(ReqMngBO vo);
     // 查询总条数

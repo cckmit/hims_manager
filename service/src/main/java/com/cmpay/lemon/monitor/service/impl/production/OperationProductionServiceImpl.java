@@ -2037,7 +2037,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 // 设置基地业务负责人
                 productionBO.setBusinessPrincipal(demandBO.getReqProposer());
 
-                beanNumbers += "-"+demandBO.getReqNo();
+                beanNumbers += ";"+demandBO.getReqNo();
                 beanNeeds += "-"+demandBO.getReqNm();
                 //插入
                 this.addProduction(productionBO);
@@ -2097,8 +2097,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
             mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
-
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean));
+            boolean flag = true;
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean,flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
@@ -2167,8 +2167,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
             mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
-
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean));
+            boolean flag = false;
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean,flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);

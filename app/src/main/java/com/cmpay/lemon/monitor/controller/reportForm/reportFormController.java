@@ -148,26 +148,35 @@ import java.util.List;
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
-    //生产验证不及时清单
+    //部门员工工时
     @RequestMapping("/reportform7")
-    public GenericRspDTO<ProductionRspDTO> getReportForm7(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
-        int dayNumber;
-        if(reqDataCountReqDTO.getDayNumber()==null||reqDataCountReqDTO.getDayNumber().equals("")){
-            dayNumber = 50;
-        }else{
-            dayNumber = Integer.parseInt(reqDataCountReqDTO.getDayNumber());
+    public GenericRspDTO<WorkingHoursRspDTO> getReportForm7(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        if(workingHoursDTO.getSelectTime()==null||workingHoursDTO.getSelectTime().equals("")){
+            workingHoursDTO.setSelectTime(selectTime);
         }
-        List<ProductionBO> productionLista = new ArrayList<>();
-        productionLista = reqDataCountService.getProductionVerificationIsNotTimely(dayNumber);
-        ProductionRspDTO rspDTO = new ProductionRspDTO();
-        List<ProductionDTO> reqDataCountDTOListA = new LinkedList<>();
-        productionLista.forEach(m->{
-                    ProductionDTO productionDTO = new ProductionDTO();
-                    reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(productionDTO, m));
-        }
+        List<WorkingHoursBO> reportLista = new ArrayList<>();
+        reportLista = reqDataCountService.getReportForm7(workingHoursDTO.getDevpLeadDept(),workingHoursDTO.getSelectTime());
+        WorkingHoursRspDTO reqDataCountRspDTO = new WorkingHoursRspDTO();
+        List<WorkingHoursDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
         );
-        rspDTO.setProductionList(reqDataCountDTOListA);
-        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+        reqDataCountRspDTO.setVpnInfoDTOS(reqDataCountDTOListA);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+    // 查询某人某天的具体工时
+    @RequestMapping("/findList")
+    public GenericRspDTO<WorkingHoursRspDTO> findList(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        List<WorkingHoursBO> reportLista = new ArrayList<>();
+        reportLista = reqDataCountService.findList(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime());
+        WorkingHoursRspDTO reqDataCountRspDTO = new WorkingHoursRspDTO();
+        List<WorkingHoursDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
+        );
+        reqDataCountRspDTO.setVpnInfoDTOS(reqDataCountDTOListA);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
 

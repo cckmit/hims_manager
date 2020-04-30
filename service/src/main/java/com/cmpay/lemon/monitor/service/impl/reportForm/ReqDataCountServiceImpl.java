@@ -10,6 +10,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
+import com.cmpay.lemon.monitor.dao.IWorkingHoursDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -65,6 +66,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private IDemandExtDao demandDao;
 	@Autowired
 	private IReqDataCountDao reqDataCountDao;
+	@Autowired
+	private IWorkingHoursDao iWorkingHoursDao;
 
 	@Autowired
 	private ReqPlanService reqPlanService;
@@ -307,6 +310,32 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new DemandBO(), m))
 		);
 		return reqDataCountBOS;
+	}
+	@Override
+	public List<WorkingHoursBO> getReportForm7(String devpLeadDept,String date){
+		System.err.println(devpLeadDept+"++++++"+date);
+		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDevpLeadDept(devpLeadDept);
+		workingHoursDO.setSelectTime(date);
+		List<WorkingHoursDO> impl = iWorkingHoursDao.findSum(workingHoursDO);
+		impl.forEach(m->
+				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+		);
+		return workingHoursBOS;
+	}
+	@Override
+	public List<WorkingHoursBO> findList(String displayName,String date){
+		System.err.println(displayName+"++++++"+date);
+		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDisplayname(displayName);
+		workingHoursDO.setSelectTime(date);
+		List<WorkingHoursDO> impl = iWorkingHoursDao.findList(workingHoursDO);
+		impl.forEach(m->
+				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+		);
+		return workingHoursBOS;
 	}
 
 	@Override
