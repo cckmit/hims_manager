@@ -542,10 +542,10 @@
                 AND a.req_mnger LIKE CONCAT('%',#{reqMnger},'%')
             </if>
             <if test="projectMng != null and projectMng != ''">
-                AND a.project_mng = #{projectMng}
+                AND a.project_mng LIKE CONCAT('%',#{projectMng},'%')
             </if>
             <if test="productMng != null and productMng != ''">
-                AND a.product_mng = #{productMng}
+                AND a.product_mng LIKE CONCAT('%',#{productMng},'%')
             </if>
             <if test="isSvnBuild != null and isSvnBuild != ''">
                 AND a.is_svn_build = #{isSvnBuild}
