@@ -2,9 +2,30 @@ package com.cmpay.lemon.monitor.bo.jira;
 
 public class JiraTaskBodyBO {
     /**
-     * /ira任务编号  jiraKey
+     * jira任务编号  jiraKey
      */
     private String jiraKey;
+    /**
+     * jira任务归属部门  department
+     */
+    private String department;
+
+    /**
+     * jira任务类型  jiraType
+     */
+    private String jiraType;
+    /**
+     * jira任务名  issueName
+     */
+    private String  issueName;
+    /**
+     * jira任务及关联子任务总用时  aggregatetimespent
+     */
+    private String aggregatetimespent;
+    /**
+     * jira任务用时  timespent
+     */
+    private String timespent;
     /**
      * 内部需求编号
      */
@@ -13,6 +34,18 @@ public class JiraTaskBodyBO {
      *经办人
      */
     String assignee;
+
+    /*
+     *工作日志流水
+     */
+    String worklogs;
+
+    /*
+     *工作日志流水
+     */
+    String subtasks;
+
+
     /*
      *计划开始时间
      */
@@ -21,6 +54,14 @@ public class JiraTaskBodyBO {
      *计划完成时间
      */
     String planEndTime;
+
+    public String getAggregatetimespent() {
+        return aggregatetimespent;
+    }
+
+    public void setAggregatetimespent(String aggregatetimespent) {
+        this.aggregatetimespent = aggregatetimespent;
+    }
 
     public String getJiraKey() {
         return jiraKey;
@@ -60,6 +101,55 @@ public class JiraTaskBodyBO {
 
     public void setPlanEndTime(String planEndTime) {
         this.planEndTime = planEndTime;
+    }
+
+
+    public String getJiraType() {
+        return jiraType;
+    }
+
+    public void setJiraType(String jiraType) {
+        this.jiraType = jiraType;
+    }
+
+    public String getTimespent() {
+        return timespent;
+    }
+
+    public void setTimespent(String timespent) {
+        this.timespent = timespent;
+    }
+
+    public String getWorklogs() {
+        return worklogs;
+    }
+
+    public void setWorklogs(String worklogs) {
+        this.worklogs = worklogs;
+    }
+
+    public String getSubtasks() {
+        return subtasks;
+    }
+
+    public void setSubtasks(String subtasks) {
+        this.subtasks = subtasks;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getIssueName() {
+        return issueName;
+    }
+
+    public void setIssueName(String issueName) {
+        this.issueName = issueName;
     }
 
     public String  getEditTestMainTaskBody(){

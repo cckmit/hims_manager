@@ -6,11 +6,13 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -221,23 +223,54 @@ public class DateUtil {
     }
 
     public static void main(String[] args){
-        System.out.println(DateUtil.getCurrentTime("dd"));
+            int sum=0;
+            for(int i=1;i<10;++i){
+                for(int j=1;j<10;++j){
+                    sum +=j;
+                    if(i+j>6){
+                        System.out.println(i+"+"+j);
+                        break;
 
-        String str1 = "2014-9-2";
-        String str2 = "2014-9-2";
-        Date date1 = DateUtil.string2Date(str1, "yyyy-MM-dd");
-        Date date2 = DateUtil.string2Date(str2, "yyyy-MM-dd");
-        Calendar c1 = Calendar.getInstance();
-        Calendar c2 = Calendar.getInstance();
-        c1.setTime(date1);
-        c2.setTime(date2);
-        //c2.add(Calendar.YEAR, 4);
-        if (c1.before(c2)) {
-            System.out.println("illegal");
-        }else {
-            System.out.println("ok");
-
-        }
+                    }
+                }
+            }
+        System.out.println(sum);
 
     }
+
+    public static String dealDateFormat(String oldDate) {
+        Date date1 = null;
+        DateFormat df2 = null;
+        try {
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date date = df.parse(oldDate);
+            SimpleDateFormat df1 = new SimpleDateFormat ("EEE MMM dd HH:mm:ss Z yyyy", Locale.UK);
+            date1 = df1.parse(date.toString());
+            df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+        }
+        return df2.format(date1);
+    }
+
+    public static String addDateMinut(String day, int hour){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = format.parse(day);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        if (date == null)
+            return "";
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR, hour);// 24小时制
+        date = cal.getTime();
+        cal = null;
+        return format.format(date);
+
+    }
+
 }

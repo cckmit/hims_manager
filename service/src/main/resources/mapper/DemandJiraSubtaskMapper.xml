@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandJiraSubtaskDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandJiraSubtaskDO" >
+        <id column="subtaskKey" property="subtaskkey" jdbcType="VARCHAR" />
+        <result column="parentTaskKey" property="parenttaskkey" jdbcType="VARCHAR" />
+        <result column="subtaskName" property="subtaskname" jdbcType="VARCHAR" />
+        <result column="assignee" property="assignee" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        subtaskKey, parentTaskKey, subtaskName, assignee
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_jira_subtask
+        where subtaskKey = #{subtaskkey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_demand_jira_subtask
+        where subtaskKey = #{subtaskkey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraSubtaskDO" >
+        insert into t_demand_jira_subtask
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="subtaskkey != null" >
+                subtaskKey,
+            </if>
+            <if test="parenttaskkey != null" >
+                parentTaskKey,
+            </if>
+            <if test="subtaskname != null" >
+                subtaskName,
+            </if>
+            <if test="assignee != null" >
+                assignee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="subtaskkey != null" >
+                #{subtaskkey,jdbcType=VARCHAR},
+            </if>
+            <if test="parenttaskkey != null" >
+                #{parenttaskkey,jdbcType=VARCHAR},
+            </if>
+            <if test="subtaskname != null" >
+                #{subtaskname,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                #{assignee,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraSubtaskDO" >
+        update t_demand_jira_subtask
+        <set >
+            <if test="parenttaskkey != null" >
+                parentTaskKey = #{parenttaskkey,jdbcType=VARCHAR},
+            </if>
+            <if test="subtaskname != null" >
+                subtaskName = #{subtaskname,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                assignee = #{assignee,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where subtaskKey = #{subtaskkey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandJiraSubtaskDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_jira_subtask
+        <where >
+            <if test="subtaskkey != null" >
+                and subtaskKey = #{subtaskkey,jdbcType=VARCHAR}
+            </if>
+            <if test="parenttaskkey != null" >
+                and parentTaskKey = #{parenttaskkey,jdbcType=VARCHAR}
+            </if>
+            <if test="subtaskname != null" >
+                and subtaskName = #{subtaskname,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

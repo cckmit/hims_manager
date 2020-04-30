@@ -36,7 +36,7 @@ public class BaseUtil {
                         .header("Content-Type", "application/json")
                         .header("charset", "utf-8")
                         .body(automatedProductionBO.getTest())
-                        .post("http://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
+                        .post("https://127.0.0.1:6005/v1/monitoringui/preproduction/callback");
                 response.prettyPrint();
                 code = response.getStatusCode();
                 break;

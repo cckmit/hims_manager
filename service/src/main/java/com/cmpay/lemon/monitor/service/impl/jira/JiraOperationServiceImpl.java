@@ -43,8 +43,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     private IUserExtDao iUserDao;
     @Autowired
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
-    //jira项目类型 和包项目 jira编号
-    final static  Integer PROJECTTYPE_CMPAY=10100;
+    //jira项目类型 和包项目 jira编号10100
+    final static  Integer PROJECTTYPE_CMPAY=10106;
     //jira项目类型 资金归集项目 jira编号
     final static  Integer PROJECTTYPE_FCPT=10104;
     //jira项目类型 团体缴费项目 jira编号
@@ -107,16 +107,16 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         //获取部门管理人员
         JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
         //未获得部门管理人员则为配置jira对应数据错误
-        if(JudgeUtils.isNull(jiraDepartmentDO)){
-            DemandJiraDO demandJiraDO = new DemandJiraDO();
-            demandJiraDO.setCreatTime(LocalDateTime.now());
-            demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
-            demandJiraDO.setReqNm(demandBO.getReqNm());
-            demandJiraDO.setCreateState(FAIL);
-            demandJiraDO.setRemarks(DEPARTMENTDIDNOTMATCH);
-            demandJiraDao.insert(demandJiraDO);
-            return;
-        }
+            if (JudgeUtils.isNull(jiraDepartmentDO)) {
+                DemandJiraDO demandJiraDO = new DemandJiraDO();
+                demandJiraDO.setCreatTime(LocalDateTime.now());
+                demandJiraDO.setReqInnerSeq(demandBO.getReqInnerSeq());
+                demandJiraDO.setReqNm(demandBO.getReqNm());
+                demandJiraDO.setCreateState(FAIL);
+                demandJiraDO.setRemarks(DEPARTMENTDIDNOTMATCH);
+                demandJiraDao.insert(demandJiraDO);
+                return;
+            }
         createIssueEpicRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
         Response response = JiraUtil.CreateIssue(createIssueEpicRequestBO);
         if(response.getStatusCode()==JIRA_SUCCESS) {
@@ -172,6 +172,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
             //拼凑jira主任务名
             demandJiraDevelopMasterTaskDO.setMasterTaskKey(epicDemandJiraDO.getJiraKey()+"_"+devpCoorDept+"_"+taskType);
+            System.err.println(demandJiraDevelopMasterTaskDO.getMasterTaskKey());
             demandJiraDevelopMasterTaskDO.setReqNm(demandBO.getReqNm());
             demandJiraDevelopMasterTaskDO.setCreateState(FAIL);
             demandJiraDevelopMasterTaskDO.setRemarks(DEPARTMENTDIDNOTMATCH);
@@ -272,6 +273,11 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             if(m.isEmpty()){
                 return;
             }
+            //该部门不需要创建
+            if (m.equals("行业拓展事业部")){
+                return;
+            }
+            System.err.println(m);
             this.CreateJiraMasterTask(m,demandBO,demandJiraDO,DEVELOPMAINTASK);
         });
         //添加测试主任务
@@ -282,7 +288,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     @Override
     public void getJiraIssue(List<DemandDO> demandDOList) {
         demandDOList.forEach(demandDO -> {
-            this.jiraEpicKey(demandDO);
+                this.jiraEpicKey(demandDO);
         });
     }
     @Async

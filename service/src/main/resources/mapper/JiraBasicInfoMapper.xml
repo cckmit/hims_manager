@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IJiraBasicInfoDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.JiraBasicInfoDO" >
+        <id column="jiraKey" property="jirakey" jdbcType="VARCHAR" />
+        <result column="jiraType" property="jiratype" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="assignee" property="assignee" jdbcType="VARCHAR" />
+        <result column="timespent" property="timespent" jdbcType="VARCHAR" />
+        <result column="aggregatetimespent" property="aggregatetimespent" jdbcType="VARCHAR" />
+        <result column="planStartTime" property="planstarttime" jdbcType="VARCHAR" />
+        <result column="planEndTime" property="planendtime" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        jiraKey, jiraType, description, department, assignee, timespent, aggregatetimespent, 
+        planStartTime, planEndTime
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_jira_basic_info
+        where jiraKey = #{jirakey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_jira_basic_info
+        where jiraKey = #{jirakey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.JiraBasicInfoDO" >
+        insert into t_jira_basic_info
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="jirakey != null" >
+                jiraKey,
+            </if>
+            <if test="jiratype != null" >
+                jiraType,
+            </if>
+            <if test="description != null" >
+                description,
+            </if>
+            <if test="department != null" >
+                department,
+            </if>
+            <if test="assignee != null" >
+                assignee,
+            </if>
+            <if test="timespent != null" >
+                timespent,
+            </if>
+            <if test="aggregatetimespent != null" >
+                aggregatetimespent,
+            </if>
+            <if test="planstarttime != null" >
+                planStartTime,
+            </if>
+            <if test="planendtime != null" >
+                planEndTime,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="jirakey != null" >
+                #{jirakey,jdbcType=VARCHAR},
+            </if>
+            <if test="jiratype != null" >
+                #{jiratype,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                #{assignee,jdbcType=VARCHAR},
+            </if>
+            <if test="timespent != null" >
+                #{timespent,jdbcType=VARCHAR},
+            </if>
+            <if test="aggregatetimespent != null" >
+                #{aggregatetimespent,jdbcType=VARCHAR},
+            </if>
+            <if test="planstarttime != null" >
+                #{planstarttime,jdbcType=VARCHAR},
+            </if>
+            <if test="planendtime != null" >
+                #{planendtime,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.JiraBasicInfoDO" >
+        update t_jira_basic_info
+        <set >
+            <if test="jiratype != null" >
+                jiraType = #{jiratype,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                department = #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                assignee = #{assignee,jdbcType=VARCHAR},
+            </if>
+            <if test="timespent != null" >
+                timespent = #{timespent,jdbcType=VARCHAR},
+            </if>
+            <if test="aggregatetimespent != null" >
+                aggregatetimespent = #{aggregatetimespent,jdbcType=VARCHAR},
+            </if>
+            <if test="planstarttime != null" >
+                planStartTime = #{planstarttime,jdbcType=VARCHAR},
+            </if>
+            <if test="planendtime != null" >
+                planEndTime = #{planendtime,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where jiraKey = #{jirakey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.JiraBasicInfoDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_jira_basic_info
+        <where >
+            <if test="jirakey != null" >
+                and jiraKey = #{jirakey,jdbcType=VARCHAR}
+            </if>
+            <if test="jiratype != null" >
+                and jiraType = #{jiratype,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+            <if test="timespent != null" >
+                and timespent = #{timespent,jdbcType=VARCHAR}
+            </if>
+            <if test="aggregatetimespent != null" >
+                and aggregatetimespent = #{aggregatetimespent,jdbcType=VARCHAR}
+            </if>
+            <if test="planstarttime != null" >
+                and planStartTime = #{planstarttime,jdbcType=VARCHAR}
+            </if>
+            <if test="planendtime != null" >
+                and planEndTime = #{planendtime,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
