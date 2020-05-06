@@ -66,7 +66,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
         StringBuffer sb = new StringBuffer();
         sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
         sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
         sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + vpnInfoDO.getVpnApplyType() + "</td></tr>");
         sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
 
@@ -244,7 +244,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 StringBuffer sb = new StringBuffer();
                 sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
                 sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
-                sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + pro_status_after + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
 
@@ -265,7 +265,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 StringBuffer sb = new StringBuffer();
                 sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
                 sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
-                sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + pro_status_after + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>申请账号</td><td>" + vpnInfoDO.getVpnAccount() + "</td><td style='font-weight: bold;'>账号密码</td><td>" + vpnInfoDO.getVpnPassword() + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
