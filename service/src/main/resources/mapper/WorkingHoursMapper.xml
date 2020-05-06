@@ -3,7 +3,7 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IWorkingHoursDao" >
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
-        <id column="id" property="id" jdbcType="BIGINT" />
+        <id column="jiraWorklogKey" property="jiraworklogkey" jdbcType="VARCHAR" />
         <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
         <result column="timeSpnet" property="timespnet" jdbcType="VARCHAR" />
         <result column="subtaskName" property="subtaskname" jdbcType="VARCHAR" />
@@ -20,27 +20,27 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, devp_lead_dept, 
-        comment, createdTime, startedTime, updatedTime
+        jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime
     </sql>
 
-    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select 
         <include refid="Base_Column_List" />
         from t_working_hours
-        where id = #{id,jdbcType=BIGINT}
+        where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
     </select>
 
-    <delete id="delete" parameterType="java.lang.Long" >
+    <delete id="delete" parameterType="java.lang.String" >
         delete from t_working_hours
-        where id = #{id,jdbcType=BIGINT}
+        where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
     </delete>
 
     <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
         insert into t_working_hours
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
-                id,
+            <if test="jiraworklogkey != null" >
+                jiraWorklogKey,
             </if>
             <if test="issuekey != null" >
                 issuekey,
@@ -77,8 +77,8 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="id != null" >
-                #{id,jdbcType=BIGINT},
+            <if test="jiraworklogkey != null" >
+                #{jiraworklogkey,jdbcType=VARCHAR},
             </if>
             <if test="issuekey != null" >
                 #{issuekey,jdbcType=VARCHAR},
@@ -153,7 +153,7 @@
                 updatedTime = #{updatedtime,jdbcType=VARCHAR},
             </if>
         </set>
-        where id = #{id,jdbcType=BIGINT}
+        where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
@@ -161,8 +161,8 @@
         <include refid="Base_Column_List" />
         from t_working_hours
         <where >
-            <if test="id != null" >
-                and id = #{id,jdbcType=BIGINT}
+            <if test="jiraworklogkey != null" >
+                and jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
             </if>
             <if test="issuekey != null" >
                 and issuekey = #{issuekey,jdbcType=VARCHAR}
@@ -227,5 +227,5 @@
                 and LEFT(createdTime,10) = #{selectTime,jdbcType=VARCHAR}
             </if>
         </where>
-</select>
+    </select>
 </mapper>

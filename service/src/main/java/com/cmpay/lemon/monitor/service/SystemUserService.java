@@ -114,6 +114,8 @@ public interface SystemUserService {
      */
     String  getFullname(String loginname);
 
+    String  getDepartmentByUser(String name);
+
      void syncOldTable();
 
     String getTelbyName(String name);

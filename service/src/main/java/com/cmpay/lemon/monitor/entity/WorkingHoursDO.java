@@ -2,7 +2,7 @@
  * @ClassName WorkingHoursDO
  * @Description 
  * @version 1.0
- * @Date 2020-04-29 16:02:39
+ * @Date 2020-04-30 15:59:10
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -12,9 +12,18 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 @DataObject
 public class WorkingHoursDO extends BaseDO {
     /**
-     * @Fields id ID
+     * @Fields jiraworklogkey 关联jira日志主键ID
      */
-    private Long id;
+    private String jiraworklogkey;
+
+    public String getSelectTime() {
+        return selectTime;
+    }
+
+    public void setSelectTime(String selectTime) {
+        this.selectTime = selectTime;
+    }
+
     /**
      * @Fields issuekey 子任务key
      */
@@ -63,21 +72,12 @@ public class WorkingHoursDO extends BaseDO {
     private String sumTime;
     private String selectTime;
 
-    public String getSelectTime() {
-        return selectTime;
+    public String getJiraworklogkey() {
+        return jiraworklogkey;
     }
 
-    public void setSelectTime(String selectTime) {
-        this.selectTime = selectTime;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setJiraworklogkey(String jiraworklogkey) {
+        this.jiraworklogkey = jiraworklogkey;
     }
 
     public String getIssuekey() {
