@@ -36,6 +36,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
     @Autowired
     private SystemUserService userService;
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(VpnInfoBO vpnInfoBO) {
         VpnInfoDO vpnInfoDO = new VpnInfoDO();
         BeanConvertUtils.convert(vpnInfoDO, vpnInfoBO);
@@ -239,14 +240,14 @@ public class VpnInfoServiceImpl implements VpnInfoService {
             mailInfo.setPassword(Constant.EMAIL_PSWD);
             mailInfo.setFromAddress(Constant.EMAIL_NAME);
 
-            StringBuffer sb = new StringBuffer();
-            sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
-            sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + pro_status_after + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
-
             if(pro_status_after.equals("部门主管审核通过")){
+                StringBuffer sb = new StringBuffer();
+                sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + pro_status_after + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
+
                 String[] mailToAddress  = mp.getMailUser().split(";");
                 mailInfo.setReceivers(mailToAddress);
                 System.err.println("收件人"+mailToAddress.toString());
@@ -261,6 +262,14 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 operationProductionDao.addMailFlow(bnb);
             }
             if(pro_status_after.equals("总经理审核通过")){
+                StringBuffer sb = new StringBuffer();
+                sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN申请信息</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + vpnInfoDO.getVpnApplicant() + "</td><td style='font-weight: bold;'>申请人</td><td>" + vpnInfoDO.getVpnDept() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>手机号</td><td>" + vpnInfoDO.getVpnApplicantTel() + "</td><td style='font-weight: bold;'>当前审批状态</td><td>" + pro_status_after + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>申请账号</td><td>" + vpnInfoDO.getVpnAccount() + "</td><td style='font-weight: bold;'>账号密码</td><td>" + vpnInfoDO.getVpnPassword() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
+
                 // 安全中心人员
                 String[] mailToAddress  = mp2.getMailUser().split(";");
                 mailInfo.setReceivers(mailToAddress);
@@ -277,6 +286,12 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 operationProductionDao.addMailFlow(bnb);
             }
             if(pro_status_after.equals("配置完成")){
+                StringBuffer sb = new StringBuffer();
+                sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+                sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN账号信息</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>账号名</td><td>" + vpnInfoDO.getVpnAccount() + "</td><td style='font-weight: bold;'>账号密码</td><td>" + vpnInfoDO.getVpnPassword() + "</td></tr>");
+                sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
+
                 String[] mailToAddress  = mp.getMailUser().split(";");
                 mailInfo.setReceivers(mailToAddress);
                 System.err.println("收件人"+mailToAddress.toString());
@@ -284,7 +299,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 System.err.println("抄送人"+mailToCss.toString());
                 mailInfo.setCcs(mailToCss);
                 mailInfo.setSubject("【VPN账号开通通知】");
-                mailInfo.setContent("你好:<br/>VPN账号已经配置开通具体信息如下：【" + pro_number_list[1] + "】");
+                mailInfo.setContent("你好:<br/>VPN账号已经配置开通具体信息如下：【" + pro_number_list[1] + "】<br/>" + sb.toString());
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
                 MailFlowDO bnb = new MailFlowDO("VPN总经理审批申请", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());

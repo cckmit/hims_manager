@@ -47,7 +47,30 @@ public class VpnInfoReqDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+    /**
+     * @Fields vpnApplyType VPN申请账号
+     */
+    private String vpnAccount;
+    /**
+     * @Fields vpnApplyType VPN申请账号密码
+     */
+    private String vpnPassword;
 
+    public String getVpnAccount() {
+        return vpnAccount;
+    }
+
+    public void setVpnAccount(String vpnAccount) {
+        this.vpnAccount = vpnAccount;
+    }
+
+    public String getVpnPassword() {
+        return vpnPassword;
+    }
+
+    public void setVpnPassword(String vpnPassword) {
+        this.vpnPassword = vpnPassword;
+    }
     public VpnInfoReqDTO() {
     }
 
@@ -133,17 +156,19 @@ public class VpnInfoReqDTO extends GenericDTO {
 
     @Override
     public String toString() {
-        return "VpnInfoDTO{" +
+        return "VpnInfoReqDTO{" +
                 "vpnInnerSeq='" + vpnInnerSeq + '\'' +
                 ", vpnApplicant='" + vpnApplicant + '\'' +
                 ", vpnDept='" + vpnDept + '\'' +
                 ", vpnApplicantTel='" + vpnApplicantTel + '\'' +
-                ", vpnStartTime=" + vpnStartTime +
-                ", vpnEndTime=" + vpnEndTime +
+                ", vpnStartTime='" + vpnStartTime + '\'' +
+                ", vpnEndTime='" + vpnEndTime + '\'' +
                 ", vpnReason='" + vpnReason + '\'' +
                 ", vpnApplyType='" + vpnApplyType + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", vpnAccount='" + vpnAccount + '\'' +
+                ", vpnPassword='" + vpnPassword + '\'' +
                 '}';
     }
 }
