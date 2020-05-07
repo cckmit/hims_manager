@@ -1,8 +1,10 @@
 package com.cmpay.lemon.monitor.service.impl.jira;
 
+import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueEpicRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueMainTaskRequestBO;
@@ -43,8 +45,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     private IUserExtDao iUserDao;
     @Autowired
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
+    //jira项目类型 和包项目 jira编号10106(测试环境)
+    final static  Integer PROJECTTYPE_CMPAY_dev=10106;
     //jira项目类型 和包项目 jira编号10100
-    final static  Integer PROJECTTYPE_CMPAY=10106;
+    final static  Integer PROJECTTYPE_CMPAY=10100;
     //jira项目类型 资金归集项目 jira编号
     final static  Integer PROJECTTYPE_FCPT=10104;
     //jira项目类型 团体缴费项目 jira编号
@@ -97,7 +101,11 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             createIssueEpicRequestBO.setProject(PROJECTTYPE_GPPT);
         }
         else {
-            createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY);
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY);
+            }else{
+                createIssueEpicRequestBO.setProject(PROJECTTYPE_CMPAY_dev);
+            }
         }
 
         createIssueEpicRequestBO.setIssueType(ISSUETYPE_EPIC);
@@ -197,7 +205,11 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             createMainTaskRequestBO.setProject(PROJECTTYPE_GPPT);
         }
         else {
-            createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY);
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY);
+            }else{
+                createMainTaskRequestBO.setProject(PROJECTTYPE_CMPAY_dev);
+            }
         }
 
         createMainTaskRequestBO.setDevpLeadDept(devpCoorDept);
