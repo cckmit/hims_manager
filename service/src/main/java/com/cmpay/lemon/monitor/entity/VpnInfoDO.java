@@ -44,6 +44,30 @@ public class VpnInfoDO extends BaseDO {
      * @Fields vpnApplyType VPN申请状态
      */
     private String vpnApplyType;
+    /**
+     * @Fields vpnApplyType VPN申请账号
+     */
+    private String vpnAccount;
+    /**
+     * @Fields vpnApplyType VPN申请账号密码
+     */
+    private String vpnPassword;
+
+    public String getVpnAccount() {
+        return vpnAccount;
+    }
+
+    public void setVpnAccount(String vpnAccount) {
+        this.vpnAccount = vpnAccount;
+    }
+
+    public String getVpnPassword() {
+        return vpnPassword;
+    }
+
+    public void setVpnPassword(String vpnPassword) {
+        this.vpnPassword = vpnPassword;
+    }
 
     public String getVpnInnerSeq() {
         return vpnInnerSeq;
@@ -120,6 +144,8 @@ public class VpnInfoDO extends BaseDO {
                 ", vpnEndTime='" + vpnEndTime + '\'' +
                 ", vpnReason='" + vpnReason + '\'' +
                 ", vpnApplyType='" + vpnApplyType + '\'' +
+                ", vpnAccount='" + vpnAccount + '\'' +
+                ", vpnPassword='" + vpnPassword + '\'' +
                 '}';
     }
 }

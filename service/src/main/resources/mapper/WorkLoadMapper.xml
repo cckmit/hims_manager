@@ -707,11 +707,11 @@
         where a.pre_cur_period &gt; 50
         and a.req_sts not in('60')
         and	(
-        <if test="reqNm != null and reqNm != ''">
+        <if test="(reqNm != null and reqNm != '') and (reqNo == null or reqNo == '')">
             a.req_nm =#{reqNm}
         </if>
-        <if test="reqNo != null and reqNo != ''">
-            OR a.req_no = #{reqNo}
+        <if test="(reqNm != null and reqNm != '') and (reqNo != null and reqNo != '')">
+           a.req_no = #{reqNo}
         </if>
         )
     </select>
