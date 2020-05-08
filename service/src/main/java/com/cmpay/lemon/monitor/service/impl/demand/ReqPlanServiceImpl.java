@@ -746,7 +746,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 proMemberEmail += list.get(i) + ";";
             }
         }
-        //查询基地邮箱(需求提出人，需求负责人,开发负责人)
+        //查询基地邮箱(需求提出人，产品负责人,开发负责人)
         demandDO = planDao.findBaseChargeEmailByName(reqInnerSeq);
         if (demandDO != null) {
             jdEmail = demandDO.getMonRemark() + ";";
@@ -2460,7 +2460,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             dictionaryDO.setValue(m.getReqPrdLine());
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的产品线字典项不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的产品名称字典项不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             m.setReqPrdLine(dic.get(0).getName());

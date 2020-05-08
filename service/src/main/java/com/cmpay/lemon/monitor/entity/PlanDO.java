@@ -14,7 +14,7 @@ import java.util.Date;
 
 @DataObject
 public class PlanDO extends BaseDO {
-    @Excel(name = "产品线")
+    @Excel(name = "产品名称")
     private String reqPrdLine;
     @Excel(name = "内部编号")
     private String reqInnerSeq;

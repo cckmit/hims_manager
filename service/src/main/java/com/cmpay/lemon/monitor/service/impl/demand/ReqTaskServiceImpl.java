@@ -711,7 +711,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandDOS.forEach(m -> {
             int i = demandDOS.indexOf(m)+2;
             if (StringUtils.isBlank(m.getReqProDept())) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"归属部门不能为空");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"产品管理部门不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqNm())) {
@@ -727,11 +727,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqMnger())) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"需求负责人不能为空");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"产品负责人不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqPrdLine())) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"产品线不能为空");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第"+i+"行"+"产品名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqStartMon())) {
@@ -754,7 +754,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             dictionaryDO.setValue(m.getReqPrdLine());
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"产品线字典项不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"产品名称字典项不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             m.setReqPrdLine(dic.get(0).getName());
@@ -769,7 +769,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             dictionaryDO.setUserName(m.getReqMnger());
             dic = dictionaryDao.getJdInfo(dictionaryDO);
             if (dic.size() == 0) {
-                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"需求负责人不存在");
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"产品负责人不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
 
