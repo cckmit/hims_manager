@@ -339,7 +339,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
             if (dic.size() == 0) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo()  + "第" + i + "行的" + "产品线字典项不存在");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_IMPORT.getMsgInfo()  + "第" + i + "行的" + "产品名称字典项不存在");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             m.setReqPrdLine(dic.get(0).getName());

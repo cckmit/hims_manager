@@ -24,7 +24,7 @@ public class ReqDataCountDTO extends GenericDTO {
     private String reqUsual;
     // 需求状态：异常
     private String reqUnusual;
-    // 产品线
+    // 产品名称
     private String reqPrdLine;
     // 开发主导部门
     private String devpLeadDept;

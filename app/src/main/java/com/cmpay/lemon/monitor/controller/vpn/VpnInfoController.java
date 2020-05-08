@@ -69,6 +69,12 @@ public class VpnInfoController {
         vpnInfoService.updateAllProduction(request,response,taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
-
+    @RequestMapping("/access")
+    public GenericRspDTO<ErcdmgPordUserDTO> access(){
+        ErcdmgPordUserBO ercdmgPordUserBO = vpnInfoService.access();
+        ErcdmgPordUserDTO rspDTO =  new ErcdmgPordUserDTO();
+        BeanConvertUtils.convert(rspDTO, ercdmgPordUserBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 
 }

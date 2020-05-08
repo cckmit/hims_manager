@@ -4,7 +4,7 @@ package com.cmpay.lemon.monitor.bo;
 
 public class ReqMngBO extends BaseConditionBO{
 
-    //需求名称、需求编号、开发主导部门、开发配合部门、需求阶段，需求类型、需求启动月份、需求实施月份、需求负责人、项目经理、产品经理、是否建立svn目录、需求异常状态、月底备注、需求状态
+    //需求名称、需求编号、开发主导部门、开发配合部门、需求阶段，需求类型、需求启动月份、需求实施月份、产品负责人、项目经理、产品经理、是否建立svn目录、需求异常状态、月底备注、需求状态
     private String reqNm;
     private String reqNo;
     private String devpLeadDept;

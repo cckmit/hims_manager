@@ -13,7 +13,7 @@ public class BaseWorkloadBO {
     private String reqNo;
     @Excel(name = "需求名称")
     private String reqNm;
-    @Excel(name = "产品线")
+    @Excel(name = "产品名称")
     private String reqPrdLine;
     @Excel(name = "需求主导部门")
     private String devpLeadDept;
