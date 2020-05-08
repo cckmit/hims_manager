@@ -213,8 +213,8 @@
         department  devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and LEFT(B.createdTime,10)= #{selectTime,jdbcType=VARCHAR}
-        <where >
+        and LEFT(b.createdTime,10)= #{selectTime,jdbcType=VARCHAR}
+        <where>
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
             </if>
