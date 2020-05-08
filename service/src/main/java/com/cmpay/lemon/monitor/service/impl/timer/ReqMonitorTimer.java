@@ -15,6 +15,7 @@ import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.DateUtil;
@@ -44,6 +45,8 @@ public class ReqMonitorTimer {
 	private OperationProductionService operationProductionService;
 	@Autowired
 	private BoardcastScheduler boardcastScheduler;
+	@Autowired
+	JiraDataCollationService jiraDataCollationService;
 
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
@@ -61,7 +64,14 @@ public class ReqMonitorTimer {
 //		String month = simpleDateFormatMonth.format(c.getTime());
 //		reqTaskService.updateUnFinishReq(month);
 //	}
-	
+	@Scheduled(cron = "0 40 23 * * ?")
+	public void getIssueModifiedWithinOneDay() {
+		//如果是dev环境则不处理
+		if(LemonUtils.getEnv().equals(Env.DEV)) {
+			return;
+		}
+		jiraDataCollationService.getIssueModifiedWithinOneDay();
+	}
 	/**
 	 *  每周一更新投产时间
 	 */

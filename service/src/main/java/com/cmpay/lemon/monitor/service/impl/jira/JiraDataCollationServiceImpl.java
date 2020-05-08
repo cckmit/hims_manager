@@ -43,8 +43,29 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     SystemUserService systemUserService;
 
 
+    public void getIssueModifiedWithinOneDay() {
+        List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
+        int i=0;
+        while (true){
+            System.err.println(i);
+            List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay(i);
+            if(JudgeUtils.isEmpty(jiraTaskBodyBOS)){
+                break;
+            }
+            jiraTaskBodyBOList.addAll(jiraTaskBodyBOS);
+            i=i+50;
+        }
+        if(JudgeUtils.isNotEmpty(jiraTaskBodyBOList)){
+            jiraTaskBodyBOList.forEach(m->{
+                JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                this.registerJiraBasicInfo(jiraTaskBodyBO);
+                this.registerWorklogs(jiraTaskBodyBO);
+            });
+        }
+
+    }
+
     public void getEpicRelatedTasks(DemandBO demandBO) {
-      /*  demandBO.setReqInnerSeq("XQ00003707");
         //1.需求编号找到对应的epic
         DemandJiraDO demandJiraDO = demandJiraDao.get(demandBO.getReqInnerSeq());
         if (JudgeUtils.isNull(demandJiraDO)) {
@@ -59,21 +80,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         //登记epic及开发主任务的key
         LinkedList<String> JIRAKeys = new LinkedList<>();
         JIRAKeys.add(demandJiraDO.getJiraKey());
-        demandJiraDevelopMasterTaskDOS.forEach(m -> JIRAKeys.add(m.getJiraKey()));*/
-        LinkedList<String> JIRAKeys = new LinkedList<>();
-        JIRAKeys.add("TMT-1");
-        JIRAKeys.add("TMT-2");
-        JIRAKeys.add("TMT-3");
-        JIRAKeys.add("TMT-7");
-        JIRAKeys.add("TMT-8");
-        JIRAKeys.add("TMT-10");
-        JIRAKeys.add("TMT-11");
-        JIRAKeys.add("TMT-13");
-        JIRAKeys.add("TMT-14");
-        JIRAKeys.add("TMT-19");
-        JIRAKeys.add("TMT-20");
-        JIRAKeys.add("TMT-21");
-        JIRAKeys.add("TMT-22");
+        demandJiraDevelopMasterTaskDOS.forEach(m -> JIRAKeys.add(m.getJiraKey()));
+
         //根据key查找对应数据
         JIRAKeys.forEach(m -> {
             JiraTaskBodyBO jiraTaskBodyBO = registerJiraBasicInfo(m, null);
@@ -98,6 +106,37 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             this.registerWorklogs(jiraTaskBodyBO);
         });
     }
+    private JiraTaskBodyBO registerJiraBasicInfo(JiraTaskBodyBO jiraTaskBodyBO) {
+        JiraBasicInfoDO jiraBasicInfoDO = new JiraBasicInfoDO();
+        jiraBasicInfoDO.setJirakey(jiraTaskBodyBO.getJiraKey());
+        jiraBasicInfoDO.setAggregatetimespent(jiraTaskBodyBO.getAggregatetimespent());
+        jiraBasicInfoDO.setTimespent(jiraTaskBodyBO.getTimespent());
+        jiraBasicInfoDO.setAssignee(jiraTaskBodyBO.getAssignee());
+        jiraBasicInfoDO.setJiratype(jiraTaskBodyBO.getJiraType());
+        jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
+        if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
+            jiraBasicInfoDO.setDepartment("产品测试部");
+            jiraBasicInfoDO.setDescription("问题描述");
+        } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
+
+        } else if (jiraTaskBodyBO.getJiraType().equals("开发子任务")) {
+            jiraBasicInfoDO.setDepartment(systemUserService.getDepartmentByUser(jiraTaskBodyBO.getAssignee()));
+        } else {
+            jiraBasicInfoDO.setDepartment(jiraTaskBodyBO.getDepartment());
+        }
+        jiraBasicInfoDO.setPlanstarttime(jiraTaskBodyBO.getPlanStartTime());
+        jiraBasicInfoDO.setPlanendtime(jiraTaskBodyBO.getPlanEndTime());
+        JiraBasicInfoDO jiraBasicInfoDO1 = jiraBasicInfoDao.get(jiraTaskBodyBO.getJiraKey());
+        if (JudgeUtils.isNotNull(jiraBasicInfoDO1)) {
+            jiraBasicInfoDao.update(jiraBasicInfoDO);
+        } else {
+            jiraBasicInfoDao.insert(jiraBasicInfoDO);
+        }
+
+
+        return jiraTaskBodyBO;
+    }
+
 
     private JiraTaskBodyBO registerJiraBasicInfo(String m, String department) {
         JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m);
@@ -133,8 +172,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
     private void registerWorklogs(JiraTaskBodyBO jiraTaskBodyBO) {
         List<JiraWorklogBO> worklogs = JiraUtil.getWorklogs(jiraTaskBodyBO);
-        System.err.println(jiraTaskBodyBO.getWorklogs());
-
         for (int i = 0; i < worklogs.size(); i++) {
             JiraWorklogDO jiraWorklogDO = new JiraWorklogDO();
             jiraWorklogDO.setJiraworklogkey(worklogs.get(i).getJiraWorklogKey());
@@ -186,8 +223,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } else {
                     iWorkingHoursDao.insert(workingHoursDO);
                 }
-
-
             }
         }
 

@@ -5,4 +5,5 @@ import com.cmpay.lemon.monitor.bo.DemandBO;
 public interface JiraDataCollationService {
 
     void  getEpicRelatedTasks(DemandBO demandBO);
+    void getIssueModifiedWithinOneDay();
 }

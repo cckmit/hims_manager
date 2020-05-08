@@ -398,8 +398,11 @@ public class SystemUserServiceImpl implements SystemUserService {
         UserDO userDO = new UserDO();
         UserDO userByUserName = iUserDao.getUserByUserName(loginname);
         if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getDepartment())){
-            MsgEnum.ERROR_CUSTOM.setMsgInfo(loginname+"操作员信息有误，请及时联系管理员");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+             userByUserName = iUserDao.getUserByUserFullName(loginname);
+            if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getDepartment())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(loginname + "操作员信息有误，请及时联系管理员");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
         }
         return  userByUserName.getDepartment();
     }

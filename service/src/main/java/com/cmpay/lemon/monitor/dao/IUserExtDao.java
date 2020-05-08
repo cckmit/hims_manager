@@ -21,4 +21,5 @@ public interface IUserExtDao extends IUserDao {
     UserDO getUserByMobile(String username);
     List<UserDO> search(UserDO entity);
 
+    UserDO getUserByUserFullName(String loginname);
 }

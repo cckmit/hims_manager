@@ -159,8 +159,8 @@ public class JiraTaskBodyBO {
                 "\t \"assignee\": {\n" +
                 "\t \"name\":\""+this.getAssignee()+"\"\n" +
                 "\t },\n" +
-                "    \"customfield_10186\":\""+  this.getPlanStartTime()+"\",\n" +
-                "    \"customfield_10187\":\""+  this.getPlanEndTime()+"\"\n" +
+                "    \"customfield_10252\":\""+  this.getPlanStartTime()+"\",\n" +
+                "    \"customfield_10253\":\""+  this.getPlanEndTime()+"\"\n" +
                 "  }\n" +
                 "}";
     }

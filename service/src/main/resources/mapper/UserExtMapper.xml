@@ -26,6 +26,14 @@
         from sys_user
         where username = #{username,jdbcType=VARCHAR}
     </select>
+
+    <select id="getUserByUserFullName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_user
+        where fullname = #{fullname,jdbcType=VARCHAR}
+    </select>
+
     <select id="getUserByMobile" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />

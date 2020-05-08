@@ -28,6 +28,8 @@ public class JiraUtil {
     // post 请求
     private final static String CREATEISSUEURL = "http://10.9.10.117:18080/rest/api/2/issue";
 
+    // post 请求
+    private final static String GETSEARCH = "http://10.9.10.117:18080/rest/api/2/search";
     //创建
     public static Response CreateIssue(CreateIssueRequestBO createIssueRequest) {
         Response response = given()
@@ -44,9 +46,9 @@ public class JiraUtil {
         return response;
     }
 
-    //创建
+    //获取
     public static JiraTaskBodyBO GetIssue(String jirakey) {
-        JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
@@ -54,8 +56,14 @@ public class JiraUtil {
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
+        JiraTaskBodyBO jiraTaskBodyBO = getJiraTaskBodyBO(object);
+        return jiraTaskBodyBO;
+    }
+
+    private static JiraTaskBodyBO getJiraTaskBodyBO(JSONObject object) {
+        JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
         //获取jirakey
-        jiraTaskBodyBO.setJiraKey(jirakey);
+        jiraTaskBodyBO.setJiraKey(object.getString("key"));
         //获取获取jira任务类型
         String jiraType = object.getJSONObject("fields").getJSONObject("issuetype").getString("name");
 
@@ -135,13 +143,9 @@ public class JiraUtil {
                 jiraWorklogBO.setDisplayname(displayName);
                 String name = jsonObject1.getJSONObject("author").getString("name");
                 jiraWorklogBO.setName(name);
+                //备注
                 String comment = jsonObject1.getString("comment");
                 jiraWorklogBO.setComment(comment);
-
-
-
-                //评论
-
                 String created = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("created")), 8);
                 jiraWorklogBO.setCreatedtime(created);
 
@@ -169,14 +173,38 @@ public class JiraUtil {
                 .put(CREATEISSUEURL + "/" + jiraTaskBodyBO.getJiraKey());
     }
 
+
+    //依据jql批量获取jira数据
+    public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay(int page) {
+        Response response = given()
+                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created&startAt="+page+"&maxResults=50");
+        ResponseBody body = response.getBody();
+        String json = body.print();
+        JSONObject object = JSONObject.parseObject(json);
+        String maxResults = object.getString("maxResults");
+        String total = object.getString("total");
+        JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
+        List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
+        if (issueJsonArray != null) {
+            for (int i = 0; i < issueJsonArray.size(); i++) {
+                JSONObject jsonObject1 =JSONObject.parseObject(issueJsonArray.get(i).toString());
+                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                jiraTaskBodyBO.setJiraKey(jsonObject1.getString("key"));
+                jiraTaskBodyBOlist.add(jiraTaskBodyBO);
+            }
+        }
+        return jiraTaskBodyBOlist;
+    }
+
+
     /*
      *获取主任务，并解析相关信息
      */
     public static void main(String[] args) {
-        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue("Test-19");
-        List<JiraWorklogBO> worklogs = JiraUtil.getWorklogs(jiraTaskBodyBO);
+        JiraUtil.batchQueryIssuesModifiedWithinOneDay(1000);
 
-        System.err.println(worklogs.size());
     }
 
 
