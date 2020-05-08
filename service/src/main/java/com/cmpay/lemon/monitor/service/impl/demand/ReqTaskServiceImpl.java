@@ -492,7 +492,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             DemandDO demandDO1 = new DemandDO();
             demandDO1.setReqImplMon(demandBO.getReqImplMon());
             demandDO1.setReqNo(demandBO.getReqNo());
-            List<DemandDO> demandDOS = demandDao.find(demandDO1);
+            List<DemandDO> demandDOS = demandDao.getReqTaskByNo(demandDO1);
             if(!demandDOS.isEmpty()){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("该内部需求编号有重复，请确认后输入!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -518,7 +518,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         String[] reqNo = req_no.split("-");
         if (reqNo.length == 3) {
             if ((("REQ".equals(reqNo[0]) || "REQJIRA".equals(reqNo[0]))
-                    && reqNo[1].matches("^\\d{8}$") && reqNo[2].matches("^\\d{4}$"))) {
+                    && reqNo[1].matches("^\\d{8}$") && reqNo[2].matches("^\\d{4,5}$"))) {
                 bool = true;
             }
         }

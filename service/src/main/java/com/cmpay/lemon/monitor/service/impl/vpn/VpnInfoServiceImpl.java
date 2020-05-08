@@ -9,6 +9,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IOperationProductionDao;
 import com.cmpay.lemon.monitor.dao.IPreproductionExtDao;
+import com.cmpay.lemon.monitor.dao.IUserRoleExtDao;
 import com.cmpay.lemon.monitor.dao.IVpnInfoDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.*;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -34,7 +36,19 @@ public class VpnInfoServiceImpl implements VpnInfoService {
     @Autowired
     private IOperationProductionDao operationProductionDao;
     @Autowired
+    private IUserRoleExtDao userRoleExtDao;
+    @Autowired
     private SystemUserService userService;
+    //超级管理员
+    private static final Long SUPERADMINISTRATOR =(long)10506;
+    //安全部门
+    private static final Long SUPERADMINISTRATOR1 =(long)29001;
+    //总经理
+    private static final Long SUPERADMINISTRATOR2 =(long)28001;
+    //团队主管
+    private static final Long SUPERADMINISTRATOR3 =(long)5004;
+    //普通员工
+    private static final Long SUPERADMINISTRATOR4 =(long)4001;
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(VpnInfoBO vpnInfoBO) {
@@ -175,7 +189,8 @@ public class VpnInfoServiceImpl implements VpnInfoService {
         }
         //配置完成通过
         else if(pro_number_list[0].equals("pzwc")){
-            if ((pro_number_list.length == 1) || (pro_number_list.length == 2)) {
+            if(pro_number_list.length==1){
+                //return ajaxDoneError("请选择投产进行操作!");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择VPN申请进行操作");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -258,7 +273,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 mailInfo.setContent("武姐、铧哥好:<br/>由于【" + vpnInfoDO.getVpnReason() + "】故申请开通VPN账号以供使用。"+currentUser+"已审批同意，请及时审批。<br/>" + sb.toString());
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-                MailFlowDO bnb = new MailFlowDO("VPN总经理审批申请", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
+                MailFlowDO bnb = new MailFlowDO("部门主管审核通过", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
             if(pro_status_after.equals("总经理审核通过")){
@@ -274,7 +289,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 String[] mailToAddress  = mp2.getMailUser().split(";");
                 mailInfo.setReceivers(mailToAddress);
                 System.err.println("收件人"+mailToAddress.toString());
-                String[] mailToCss = (mfba.getEmployeeEmail()+";"+mvoDept.getEmployeeEmail()+";"+mp2.getMailUser()).split(";");
+                String[] mailToCss = (mfba.getEmployeeEmail()+";"+mvoDept.getEmployeeEmail()+";"+mp.getMailUser()).split(";");
                 System.err.println("抄送人"+mailToCss.toString());
                 mailInfo.setCcs(mailToCss);
                 mailInfo.setSubject("【VPN账号开通申请】");
@@ -282,7 +297,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
 
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-                MailFlowDO bnb = new MailFlowDO("VPN账号开通申请", "code_review@hisuntech.com", mp2.getMailUser(), mailInfo.getContent());
+                MailFlowDO bnb = new MailFlowDO("总经理审核通过", "code_review@hisuntech.com", mp2.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
             if(pro_status_after.equals("配置完成")){
@@ -291,18 +306,17 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>VPN账号信息</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>账号名</td><td>" + vpnInfoDO.getVpnAccount() + "</td><td style='font-weight: bold;'>账号密码</td><td>" + vpnInfoDO.getVpnPassword() + "</td></tr>");
                 sb.append("<tr><td style='font-weight: bold;'>生效开始时间</td><td>" + vpnInfoDO.getVpnStartTime() + "</td><td style='font-weight: bold;'>生效结束时间</td><td>" + vpnInfoDO.getVpnEndTime() + "</td></tr></table>");
-
-                String[] mailToAddress  = mp.getMailUser().split(";");
+                //申请人
+                String[] mailToAddress  = mfba.getEmployeeEmail().split(";");
                 mailInfo.setReceivers(mailToAddress);
-                System.err.println("收件人"+mailToAddress.toString());
-                String[] mailToCss = (mfba.getEmployeeEmail()+";"+mvoDept.getEmployeeEmail()).split(";");
-                System.err.println("抄送人"+mailToCss.toString());
+                // 抄送 安全，总经理
+                String[] mailToCss = (mp2.getMailUser()+";"+mp.getMailUser()).split(";");
                 mailInfo.setCcs(mailToCss);
                 mailInfo.setSubject("【VPN账号开通通知】");
-                mailInfo.setContent("你好:<br/>VPN账号已经配置开通具体信息如下：【" + pro_number_list[1] + "】<br/>" + sb.toString());
+                mailInfo.setContent("你好:<br/>VPN账号已经配置开通具体信息如下：<br/>" + sb.toString());
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-                MailFlowDO bnb = new MailFlowDO("VPN总经理审批申请", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
+                MailFlowDO bnb = new MailFlowDO("配置完成", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
             if(pro_status_after.equals("审核不通过")){
@@ -312,7 +326,7 @@ public class VpnInfoServiceImpl implements VpnInfoService {
                 mailInfo.setContent("你好:<br/>由于【" + pro_number_list[1] + "】，你申请的VPN，审批未通过！");
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-                MailFlowDO bnb = new MailFlowDO("VPN总经理审批申请", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
+                MailFlowDO bnb = new MailFlowDO("审核不通过", "code_review@hisuntech.com", mp.getMailUser(), mailInfo.getContent());
                 operationProductionDao.addMailFlow(bnb);
             }
             vpnInfoDO.setVpnApplyType(pro_status_after);
@@ -331,4 +345,49 @@ public class VpnInfoServiceImpl implements VpnInfoService {
 
 
     }
+    /**
+     * 角色控制
+     * @return
+     */
+    @Override
+    public ErcdmgPordUserBO access(){
+        // 获取当前操作人信息
+        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String access ="";
+        //判断是否是普通员工
+        if(isDepartmentManager(SUPERADMINISTRATOR4)){
+            access ="3";
+        }
+        //判断是否是团队主管
+        if(isDepartmentManager(SUPERADMINISTRATOR3)){
+            access ="2";
+        }
+        //判断是否是总经理
+        if(isDepartmentManager(SUPERADMINISTRATOR2)){
+            access ="1";
+        }
+        //判断是否是安全部
+        if(isDepartmentManager(SUPERADMINISTRATOR1)){
+            access ="0";
+        }
+        System.err.println(access);
+        ErcdmgPordUserBO ercdmgPordUserBO = new ErcdmgPordUserBO();
+        ercdmgPordUserBO.setUserAcesss(access);
+        ercdmgPordUserBO.setProdUserName(currentUser);
+        return ercdmgPordUserBO;
+    }
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
+
 }

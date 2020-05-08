@@ -312,26 +312,69 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		return reqDataCountBOS;
 	}
 	@Override
-	public List<WorkingHoursBO> getReportForm7(String devpLeadDept,String date){
-		System.err.println(devpLeadDept+"++++++"+date);
+	public List<WorkingHoursBO> getReportForm7(String devpLeadDept,String date,String date1,String date2){
+		System.err.println(devpLeadDept+"++++++"+date+"++++++"+date1+"++++++"+date2);
 		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		List<WorkingHoursDO> impl = null;
 		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
 		workingHoursDO.setDevpLeadDept(devpLeadDept);
-		workingHoursDO.setSelectTime(date);
-		List<WorkingHoursDO> impl = iWorkingHoursDao.findSum(workingHoursDO);
+		if(StringUtils.isBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如日期、周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		if(StringUtils.isNotBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date);
+			impl = iWorkingHoursDao.findSum(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findWeekSum(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findMonthSum(workingHoursDO);
+		}
+
 		impl.forEach(m->
 				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
 		);
 		return workingHoursBOS;
 	}
 	@Override
-	public List<WorkingHoursBO> findList(String displayName,String date){
-		System.err.println(displayName+"++++++"+date);
+	public List<String> getReportForm8(String date){
+		System.err.println(date+"++++++"+date);
+		List<String> workingHoursBOS = new LinkedList<>();
+		List<DepartmentWorkDO> impl = iWorkingHoursDao.findDeptHours(date);
+		impl.forEach(m->
+				workingHoursBOS.add(m.getWorkHoursToString())
+		);
+		return workingHoursBOS;
+	};
+	@Override
+	public List<WorkingHoursBO> findList(String displayName,String date,String date1,String date2){
+		System.err.println(displayName+"++++++"+date+"++++++"+date1+"++++++"+date2);
 		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		List<WorkingHoursDO> impl =null;
 		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
 		workingHoursDO.setDisplayname(displayName);
-		workingHoursDO.setSelectTime(date);
-		List<WorkingHoursDO> impl = iWorkingHoursDao.findList(workingHoursDO);
+		if(StringUtils.isBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如日期、周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		if(StringUtils.isNotBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date);
+			impl = iWorkingHoursDao.findList(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findListWeek(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findListMonth(workingHoursDO);
+		}
 		impl.forEach(m->
 				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
 		);

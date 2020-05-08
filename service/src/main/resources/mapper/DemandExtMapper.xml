@@ -670,6 +670,22 @@
         group by a.req_nm,a.req_no
     </select>
 
+    <select id="getReqTaskByNo" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            req_sts not in ('60')
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND a.req_impl_mon =#{reqImplMon}
+            </if>
+            <if test="reqNo != null and reqNo != ''">
+                AND a.req_no = #{reqNo}
+            </if>
+        </where>
+        ORDER BY a.req_inner_seq desc
+    </select>
+
     <select id="getReqTaskByUKImpl" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         SELECT
         a.req_inner_seq,a.req_nm,a.req_no,req_impl_mon

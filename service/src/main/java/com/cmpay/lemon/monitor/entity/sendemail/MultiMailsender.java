@@ -286,32 +286,43 @@ public class MultiMailsender {
     }
 
     public static void main(String[] args) throws Exception{
-        // 创建邮件信息
-    	
-    	System.out.println("ss");
-        // 创建邮件信息
-        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
-        mailInfo.setMailServerHost("smtp.qiye.163.com");
-        mailInfo.setMailServerPort("25");
-        mailInfo.setValidate(true);
-        mailInfo.setUsername(Constant.EMAIL_NAME);
-        mailInfo.setPassword(Constant.EMAIL_PSWD);
-        mailInfo.setFromAddress(Constant.EMAIL_NAME);
-        mailInfo.setSubject("不用管测试");
-        mailInfo.setContent("hahahahhah,测试\n\rMytestmail1111111111\n\r");
-        
-
-        String[] receivers = new String[]{"tu_yi@hisuntech.com","wu_lr1@hisuntech.com"};
-        String[] ccs=new String[]{"tu_yi1@hisuntech.com","wu_lr@hisuntech.com"};
-        mailInfo.setReceivers(receivers);
-        mailInfo.setCcs(ccs);
-        Vector<File> files = new Vector<File>() ;
-        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
-        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
-        mailInfo.setFile(files) ;
-        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        System.out.println(isSend);    
-        
+//        // 创建邮件信息
+//
+//    	System.out.println("ss");
+//        // 创建邮件信息
+//        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+//        mailInfo.setMailServerHost("smtp.qiye.163.com");
+//        mailInfo.setMailServerPort("25");
+//        mailInfo.setValidate(true);
+//        mailInfo.setUsername(Constant.EMAIL_NAME);
+//        mailInfo.setPassword(Constant.EMAIL_PSWD);
+//        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+//        mailInfo.setSubject("不用管测试");
+//        mailInfo.setContent("hahahahhah,测试\n\rMytestmail1111111111\n\r");
+//
+//
+//        String[] receivers = new String[]{"tu_yi@hisuntech.com","wu_lr1@hisuntech.com"};
+//        String[] ccs=new String[]{"tu_yi1@hisuntech.com","wu_lr@hisuntech.com"};
+//        mailInfo.setReceivers(receivers);
+//        mailInfo.setCcs(ccs);
+//        Vector<File> files = new Vector<File>() ;
+//        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
+//        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
+//        mailInfo.setFile(files) ;
+//        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+//        System.out.println(isSend);
+        //多个编号集合
+        String crMore = ";;;;123164;;;;;;;;;;;;;;;;;;";
+        boolean crflag = false;
+        String[] crMore_list = null;
+        if(!("".equals(crMore)||crMore==null)){
+            crflag = true;
+            crMore_list =crMore.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";").split(";");
+        }
+        System.err.println(crMore_list.length);
+        for(int i=0;i<crMore_list.length;i++){
+            System.err.println(crMore_list[i]);
+        }
     }
     
   

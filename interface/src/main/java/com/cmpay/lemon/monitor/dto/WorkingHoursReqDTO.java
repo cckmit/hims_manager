@@ -61,6 +61,8 @@ public class WorkingHoursReqDTO extends GenericDTO {
     private String sumTime;
 
     private String selectTime;
+    private String selectTime1;
+    private String selectTime2;
     /**
      * 页数
      */
@@ -69,6 +71,22 @@ public class WorkingHoursReqDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+
+    public String getSelectTime1() {
+        return selectTime1;
+    }
+
+    public void setSelectTime1(String selectTime1) {
+        this.selectTime1 = selectTime1;
+    }
+
+    public String getSelectTime2() {
+        return selectTime2;
+    }
+
+    public void setSelectTime2(String selectTime2) {
+        this.selectTime2 = selectTime2;
+    }
 
     public String getSelectTime() {
         return selectTime;
@@ -199,7 +217,7 @@ public class WorkingHoursReqDTO extends GenericDTO {
 
     @Override
     public String toString() {
-        return "WorkingHoursDTO{" +
+        return "WorkingHoursReqDTO{" +
                 "id=" + id +
                 ", issuekey='" + issuekey + '\'' +
                 ", timespnet='" + timespnet + '\'' +
@@ -213,6 +231,9 @@ public class WorkingHoursReqDTO extends GenericDTO {
                 ", startedtime='" + startedtime + '\'' +
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
+                ", selectTime='" + selectTime + '\'' +
+                ", selectTime1='" + selectTime1 + '\'' +
+                ", selectTime2='" + selectTime2 + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

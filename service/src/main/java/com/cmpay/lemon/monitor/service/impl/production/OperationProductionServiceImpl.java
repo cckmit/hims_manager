@@ -1083,9 +1083,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
          */
         String[] mailToAddressDemo = null;
         if(sbfStr !=null && sbfStr.length()>0){
-            mailToAddressDemo = ("wang_lu@justinmobile.com;hu_yi@justinmobile.com;fu_yz@justinmobile.com;"+sbfStr.toString()+";"+mp.getMailUser()).split(";");
+            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;"+sbfStr.toString()+";"+mp.getMailUser()).split(";");
         }else{
-            mailToAddressDemo = ("wang_lu@justinmobile.com;hu_yi@justinmobile.com;fu_yz@justinmobile.com;"+mp.getMailUser()).split(";");
+            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;"+mp.getMailUser()).split(";");
         }
 
         //收件人去重复
@@ -1167,9 +1167,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("</table>");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String format = simpleDateFormat.format(new Date());
-        String testDate = testDate(format);
         String change = "计划";
-        if(testDate.equals("星期三") || testDate.equals("星期四") || testDate.equals("星期五")){
+        // 获取本周投产日
+        String config_time = productTimeService.findProductTimeByID(3);
+        int res=format.compareTo(config_time);
+        if(res>=0){
             change = "最终";
         }
         mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是"+change+"本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +

@@ -12,6 +12,9 @@ import java.util.List;
 public interface IDemandExtDao extends IDemandDao {
 
     public List<DemandDO> getReqTaskByUK(DemandDO demandDO);
+    // 查询是否有相同编号
+    public List<DemandDO> getReqTaskByNo(DemandDO demandDO);
+
 
     public List<DemandDO> getReqTaskByUKImpl(DemandDO demandDO);
 
