@@ -984,7 +984,29 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         }
         return workloadLockedStateBO1;
     }
+    @Override
+    public void updateFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO) {
+        WorkloadLockedStateDO workloadLockedStateDO = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateDO(), workloadLockedStateBO);
+        workloadLockedStateDao.updateFeedback(workloadLockedStateDO);
+    }
 
+    @Override
+    public WorkloadLockedStateBO getFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO) {
+
+        WorkloadLockedStateDO workloadLockedStateDO = workloadLockedStateDao.getFeedback(workloadLockedStateBO.getEntrymonth());
+        WorkloadLockedStateBO workloadLockedStateBO1 =new WorkloadLockedStateBO();
+        //查询结果为空则新建该月份的数据
+        if(JudgeUtils.isNull(workloadLockedStateDO)){
+            WorkloadLockedStateDO workloadLockedStateDO1 =new WorkloadLockedStateDO();
+            workloadLockedStateDO1.setEntrymonth(workloadLockedStateBO.getEntrymonth());
+            workloadLockedStateDO1.setStatus(WORKLOADENTRYSTATUSOPEN);
+            workloadLockedStateDao.insertFeedback(workloadLockedStateDO1);
+            workloadLockedStateBO1= BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), workloadLockedStateDO1);
+        }else {
+            workloadLockedStateBO1 = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), workloadLockedStateDO);
+        }
+        return workloadLockedStateBO1;
+    }
     /**
      * 设置默认值（操作人，操作时间）
      * @param bean

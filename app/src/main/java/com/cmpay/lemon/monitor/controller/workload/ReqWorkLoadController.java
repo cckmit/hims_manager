@@ -281,4 +281,25 @@ public class ReqWorkLoadController {
         WorkLoadDTO workLoadDTO = BeanUtils.copyPropertiesReturnDest(new WorkLoadDTO(), workloadLockedStateBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, workLoadDTO);
     }
+    /*
+     *  修改月份工作量录入状态
+     */
+    @RequestMapping("/updateFeedbackEntryStatus")
+    public GenericRspDTO updateFeedbackEntryStatus(@RequestBody UpdateReqWorkLoadDTO updateReqWorkLoadDTO) {
+        WorkloadLockedStateBO workloadLockedStateBO = BeanUtils.copyPropertiesReturnDest(new WorkloadLockedStateBO(), updateReqWorkLoadDTO);
+        reqWorkLoadService.updateFeedbackEntryStatus(workloadLockedStateBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    /*
+     *  获取月份工作量录入状态
+     */
+    @RequestMapping("/getFeedbackEntryStatus")
+    public GenericRspDTO<WorkLoadDTO> getFeedbackEntryStatus(@RequestBody GetReqWorkLoadDTO getReqWorkLoadDTO) {
+        WorkloadLockedStateBO workloadLockedStateBO = new WorkloadLockedStateBO();
+        workloadLockedStateBO.setEntrymonth(getReqWorkLoadDTO.getEntrymonth());
+        workloadLockedStateBO = reqWorkLoadService.getFeedbackEntryStatus(workloadLockedStateBO);
+        WorkLoadDTO workLoadDTO = BeanUtils.copyPropertiesReturnDest(new WorkLoadDTO(), workloadLockedStateBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, workLoadDTO);
+    }
 }

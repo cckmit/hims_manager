@@ -12,4 +12,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface IWorkloadLockedStateDao extends BaseDao<WorkloadLockedStateDO, String> {
+    WorkloadLockedStateDO getFeedback(String entrymonth) ;
+    void  insertFeedback(WorkloadLockedStateDO workloadLockedStateDO);
+    void updateFeedback(WorkloadLockedStateDO workloadLockedStateDO);
 }

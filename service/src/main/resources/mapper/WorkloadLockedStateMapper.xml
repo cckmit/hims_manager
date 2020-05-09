@@ -17,6 +17,12 @@
         from workload_locked_state
         where entryMonth = #{entrymonth,jdbcType=VARCHAR}
     </select>
+    <select id="getFeedback" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from feedback_locked_state
+        where entryMonth = #{entrymonth,jdbcType=VARCHAR}
+    </select>
 
     <delete id="delete" parameterType="java.lang.String" >
         delete from workload_locked_state
@@ -43,8 +49,38 @@
         </trim>
     </insert>
 
+    <insert id="insertFeedback" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        insert into feedback_locked_state
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="entrymonth != null" >
+                entryMonth,
+            </if>
+            <if test="status != null" >
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="entrymonth != null" >
+                #{entrymonth,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                #{status,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
         update workload_locked_state
+        <set >
+            <if test="status != null" >
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where entryMonth = #{entrymonth,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateFeedback" parameterType="com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO" >
+        update feedback_locked_state
         <set >
             <if test="status != null" >
                 status = #{status,jdbcType=VARCHAR},

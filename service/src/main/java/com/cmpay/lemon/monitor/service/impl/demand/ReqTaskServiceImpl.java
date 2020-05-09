@@ -1554,9 +1554,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     public void WeedAndMonthFeedback(DemandBO reqTask) {
-        DemandDO demandDO = new DemandDO();
-        BeanConvertUtils.convert(demandDO, reqTask);
-        demandDao.WeedAndMonthFeedback(demandDO);
+        //查询原数据
+        DemandDO demandDO = demandDao.get(reqTask.getReqInnerSeq());
+        //如果修改了需求当前阶段
+        if(!reqTask.getPreCurPeriod().equals(demandDO.getPreCurPeriod())){
+            //登记需求阶段记录表
+            String remarks="手动修改";
+            reqPlanService.registrationDemandPhaseRecordForm(reqTask,remarks);
+        }
+        DemandDO aDo = new DemandDO();
+        BeanConvertUtils.convert(aDo, reqTask);
+        demandDao.WeedAndMonthFeedback(aDo);
     }
 
 

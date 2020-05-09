@@ -56,4 +56,7 @@ public interface ReqWorkLoadService {
     void updateWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
 
     WorkloadLockedStateBO getWorkloadEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
+    void updateFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
+
+    WorkloadLockedStateBO getFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
 }
