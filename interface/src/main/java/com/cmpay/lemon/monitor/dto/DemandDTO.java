@@ -90,6 +90,7 @@ public class DemandDTO extends GenericDTO {
     private String reqAbnorType;
 
     private String revisionTimeNote;
+    private String firstLevelOrganization;
 
     /**
      * 页数
@@ -748,9 +749,13 @@ public class DemandDTO extends GenericDTO {
         this.revisionTimeNote = revisionTimeNote;
     }
 
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
 
-
-
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     @Override
     public String toString() {
@@ -807,6 +812,7 @@ public class DemandDTO extends GenericDTO {
                 ", leadDeptWorkload='" + leadDeptWorkload + '\'' +
                 ", coorDeptWorkload='" + coorDeptWorkload + '\'' +
                 ", isSvnBuild='" + isSvnBuild + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
                 ", proId='" + proId + '\'' +
                 ", projectStartTm='" + projectStartTm + '\'' +
                 ", actPrdUploadTm='" + actPrdUploadTm + '\'' +
@@ -821,6 +827,8 @@ public class DemandDTO extends GenericDTO {
                 ", creatUser='" + creatUser + '\'' +
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
+                ", revisionTimeNote='" + revisionTimeNote + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

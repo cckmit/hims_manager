@@ -501,6 +501,7 @@
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
         SELECT
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
@@ -589,6 +590,9 @@
             </if>
             <if test="endMonRemark eq '02'">
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+                AND  a.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
             </if>
         </where>
         ORDER BY a.req_inner_seq desc
@@ -718,6 +722,7 @@
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID') AS pre_cur_period,
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND t.DIC_ID='REQ_PEROID') AS cur_mon_target,
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_mon_period AND t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
@@ -800,6 +805,9 @@
             </if>
             <if test="endMonRemark eq '02'">
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+               AND  a.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
             </if>
         </where>
         ORDER BY a.req_inner_seq asc

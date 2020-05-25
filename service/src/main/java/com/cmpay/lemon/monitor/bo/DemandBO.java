@@ -91,6 +91,7 @@ public class DemandBO {
     private String reqAbnorType;
     //时间修改备注
     private String revisionTimeNote;
+    private String firstLevelOrganization;
     /**
      * 页数
      */
@@ -731,6 +732,14 @@ public class DemandBO {
         this.revisionTimeNote = revisionTimeNote;
     }
 
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
     @Override
     public String toString() {
         return "DemandBO{" +
@@ -787,6 +796,7 @@ public class DemandBO {
                 ", coorDeptWorkload='" + coorDeptWorkload + '\'' +
                 ", isSvnBuild='" + isSvnBuild + '\'' +
                 ", jiraKey='" + jiraKey + '\'' +
+                ", isMonthSer='" + isMonthSer + '\'' +
                 ", proId='" + proId + '\'' +
                 ", projectStartTm='" + projectStartTm + '\'' +
                 ", actPrdUploadTm='" + actPrdUploadTm + '\'' +
@@ -801,6 +811,8 @@ public class DemandBO {
                 ", creatUser='" + creatUser + '\'' +
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
+                ", revisionTimeNote='" + revisionTimeNote + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

@@ -20,32 +20,32 @@ import java.util.Vector;
 
 public class MultiMailsender {
     private static Logger logger = Logger.getLogger(MultiMailsender.class);
-  
+
     public static boolean sendMailtoMultiReceiver(MailSenderInfo mailInfo){
-    	 // 判断是否需要身份认证      
-	      MyAuthenticator authenticator = null;     
-	     Properties pro = mailInfo.getProperties();     
-	      //如果需要身份认证，则创建一个密码验证器       
-	      if (mailInfo.isValidate()) {      
-	        authenticator = new MyAuthenticator(mailInfo.getUserName(), mailInfo.getPassword());     
-	      }      
-	      // 根据邮件会话属性和密码验证器构造一个发送邮件的session      
+    	 // 判断是否需要身份认证
+	      MyAuthenticator authenticator = null;
+	     Properties pro = mailInfo.getProperties();
+	      //如果需要身份认证，则创建一个密码验证器
+	      if (mailInfo.isValidate()) {
+	        authenticator = new MyAuthenticator(mailInfo.getUserName(), mailInfo.getPassword());
+	      }
+	      // 根据邮件会话属性和密码验证器构造一个发送邮件的session
 	      Session sendMailSession = Session.getDefaultInstance(pro,authenticator);
-	      try {      
-	      // 根据session创建一个邮件消息      
+	      try {
+	      // 根据session创建一个邮件消息
 	      Message mailMessage = new MimeMessage(sendMailSession);
-	      // 创建邮件发送者地址      
+	      // 创建邮件发送者地址
 	      Address from = new InternetAddress(mailInfo.getFromAddress());
-	      // 设置邮件消息的发送者      
-	      mailMessage.setFrom(from); 
-	      
-	      // 创建邮件的接收者地址，并设置到邮件消息中      
-	      String[] mailToAddress = mailInfo.getToAddress() ;  
-	      int len = mailToAddress.length ;  
+	      // 设置邮件消息的发送者
+	      mailMessage.setFrom(from);
+
+	      // 创建邮件的接收者地址，并设置到邮件消息中
+	      String[] mailToAddress = mailInfo.getToAddress() ;
+	      int len = mailToAddress.length ;
 	      Address to[] = new InternetAddress[len] ;
-	      for(int i=0;i<len;i++){  
+	      for(int i=0;i<len;i++){
 	          to[i] = new InternetAddress(mailToAddress[i]) ;
-	      }  
+	      }
 	      mailMessage.setRecipients(Message.RecipientType.TO,to);
 	   // 获取抄送者信息
         String[] ccs = mailInfo.getCcs();
@@ -58,48 +58,48 @@ public class MultiMailsender {
             // 将抄送者信息设置到邮件信息中，注意类型为Message.RecipientType.CC
             mailMessage.setRecipients(Message.RecipientType.CC, ccAdresses);
         }
-	      // 设置邮件消息的主题      
-	      mailMessage.setSubject(mailInfo.getSubject());      
-	      // 设置邮件消息发送的时间      
-	      mailMessage.setSentDate(new Date());      
-	      // MiniMultipart类是一个容器类，包含MimeBodyPart类型的对象      
+	      // 设置邮件消息的主题
+	      mailMessage.setSubject(mailInfo.getSubject());
+	      // 设置邮件消息发送的时间
+	      mailMessage.setSentDate(new Date());
+	      // MiniMultipart类是一个容器类，包含MimeBodyPart类型的对象
 	      Multipart mainPart = new MimeMultipart();
-	      // 创建一个包含HTML内容的MimeBodyPart      
+	      // 创建一个包含HTML内容的MimeBodyPart
 	      BodyPart html = new MimeBodyPart();
-	      // 设置HTML内容      
-	      html.setContent(mailInfo.getContent(), "text/html; charset=utf-8");      
-	      mainPart.addBodyPart(html);      
-	      //向multipart中添加附件  
-	      Vector<File> file = mailInfo.getFile() ;  
+	      // 设置HTML内容
+	      html.setContent(mailInfo.getContent(), "text/html; charset=utf-8");
+	      mainPart.addBodyPart(html);
+	      //向multipart中添加附件
+	      Vector<File> file = mailInfo.getFile() ;
 	      //file.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
 	      file.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
-	      String fileName = mailInfo.getFileName() ;  
-	      Enumeration<File> efile = file.elements() ;  
-	      while(efile.hasMoreElements()){  
+	      String fileName = mailInfo.getFileName() ;
+	      Enumeration<File> efile = file.elements() ;
+	      while(efile.hasMoreElements()){
 	          MimeBodyPart mdpFile = new MimeBodyPart() ;
-	          fileName = efile.nextElement().toString() ;  
-	          FileDataSource fds = new FileDataSource(fileName) ;  
-	          mdpFile.setDataHandler(new DataHandler(fds)) ;  
-	          //这个方法可以解决乱码问题  
+	          fileName = efile.nextElement().toString() ;
+	          FileDataSource fds = new FileDataSource(fileName) ;
+	          mdpFile.setDataHandler(new DataHandler(fds)) ;
+	          //这个方法可以解决乱码问题
 	          String fileName1 = MimeUtility.encodeText(fds.getName()) ;
-	          mdpFile.setFileName(fileName1) ;  
+	          mdpFile.setFileName(fileName1) ;
 	          mainPart.addBodyPart(mdpFile) ;
-	      }  
-	      file.removeAllElements() ;  
-	      // 将MiniMultipart对象设置为邮件内容      
-	      mailMessage.setContent(mainPart);     
-	      // 发送邮件      
+	      }
+	      file.removeAllElements() ;
+	      // 将MiniMultipart对象设置为邮件内容
+	      mailMessage.setContent(mainPart);
+	      // 发送邮件
 	      Transport transport = sendMailSession.getTransport("smtp");
           transport.connect("smtp.qiye.163.com", Constant.P_EMAIL_NAME, Constant.P_EMAIL_PSWD);
           transport.sendMessage(mailMessage, mailMessage.getAllRecipients());
-        
+
           transport.close();
-	      
-	      return true;      
+
+	      return true;
 	      } catch (Exception ex) {
 	          ex.printStackTrace();
-	      }      
-	      return false;      
+	      }
+	      return false;
     }
 
     public static boolean sendMailtoMultiTest(MultiMailSenderInfo mailInfo){
@@ -197,7 +197,7 @@ public class MultiMailsender {
             }
         }
     }
-    
+
 
     public static boolean sendMailtoMultiCC(MultiMailSenderInfo mailInfo){
         MyAuthenticator authenticator = null;
@@ -288,42 +288,64 @@ public class MultiMailsender {
     public static void main(String[] args) throws Exception{
 //        // 创建邮件信息
 //
-//    	System.out.println("ss");
-//        // 创建邮件信息
-//        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
-//        mailInfo.setMailServerHost("smtp.qiye.163.com");
-//        mailInfo.setMailServerPort("25");
-//        mailInfo.setValidate(true);
-//        mailInfo.setUsername(Constant.EMAIL_NAME);
-//        mailInfo.setPassword(Constant.EMAIL_PSWD);
-//        mailInfo.setFromAddress(Constant.EMAIL_NAME);
-//        mailInfo.setSubject("不用管测试");
-//        mailInfo.setContent("hahahahhah,测试\n\rMytestmail1111111111\n\r");
-//
-//
-//        String[] receivers = new String[]{"tu_yi@hisuntech.com","wu_lr1@hisuntech.com"};
-//        String[] ccs=new String[]{"tu_yi1@hisuntech.com","wu_lr@hisuntech.com"};
-//        mailInfo.setReceivers(receivers);
-//        mailInfo.setCcs(ccs);
-//        Vector<File> files = new Vector<File>() ;
-//        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档 (2).txt"));
-//        files.add(new File("C:\\Users\\tuyi\\Desktop\\新建文本文档1.txt"));
-//        mailInfo.setFile(files) ;
-//        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-//        System.out.println(isSend);
+    	System.out.println("ss");
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+        StringBuffer cont = new StringBuffer();
+        cont.append("<html>\n" +
+                "    <head></head>\n" +
+                "    <body>\n" +
+                "    <p>尊敬的"+"涂毅"+"你好：</p>");
+        cont.append("<p>欢迎加入金科开发者，账号默认为邮箱的前缀，密码系统随机生成。<br/>\n" +
+                "    请妥善保管密码，遗忘密码可登录金科学院进行密码重置。<br/>");
+        cont.append("您的账号为："+"ty"+"<br/>");
+        cont.append("你的密码为："+"123456"+"</p>");
+        cont.append("<p>此账号和密码是多个系统的登录凭证。开发者常用的系统有：<br/>\n" +
+                "    1、<a href=\"http://172.16.48.100:8090/\">金科学院</a> <br/>\n" +
+                "    2、<a href=\"http://172.16.50.200:8080/\">金科Jira</a><br/>\n" +
+                "    3、<a href=\"http://172.16.50.222:82/\">GitLab</a><br/>\n" +
+                "    4、<a href=\"http://172.16.54.77:8080/\">新Jenkins</a><br/>\n" +
+                "    5、<a href=\"http://172.16.50.222:9000/\">SonarQube</a></p>\n" +
+                "    <p>感谢您的使用，祝工作顺利！</p>\n" +
+                "    </body>\n" +
+                "    </html>");
+        String email=new String(cont);
+        mailInfo.setSubject("测试邮件");
+        mailInfo.setContent(email);
+
+
+        String[] receivers = new String[]{"tu_yi@hisuntech.com"};
+        mailInfo.setReceivers(receivers);
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        System.out.println(isSend);
         //多个编号集合
-        String crMore = ";;;;123164;;;;;;;;;;;;;;;;;;";
-        boolean crflag = false;
-        String[] crMore_list = null;
-        if(!("".equals(crMore)||crMore==null)){
-            crflag = true;
-            crMore_list =crMore.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";").split(";");
-        }
-        System.err.println(crMore_list.length);
-        for(int i=0;i<crMore_list.length;i++){
-            System.err.println(crMore_list[i]);
-        }
+        //<html>
+//    <head></head>
+////    <body>
+////    <p>尊敬的%s你好：</p>
+////    <p>欢迎加入金科开发者，账号默认为邮箱的前缀，密码系统随机生成。<br/>
+////                请妥善保管密码，遗忘密码可登录金科学院进行密码重置。<br/>
+////                您的账号为：%s<br/>
+////        你的密码为：%s</p>
+////
+////    <p>此账号和密码是多个系统的登录凭证。开发者常用的系统有：<br/>
+////                1、<a href="http://172.16.48.100:8090/">金科学院</a> <br/>
+////                2、<a href="http://172.16.50.200:8080/">金科Jira</a><br/>
+////                3、<a href="http://172.16.50.222:82/">GitLab</a><br/>
+////                4、<a href="http://172.16.54.77:8080/">新Jenkins</a><br/>
+////                5、<a href="http://172.16.50.222:9000/">SonarQube</a></p>
+////    <p>感谢您的使用，祝工作顺利！</p>
+////    </body>
+////    </html>
+
+
     }
-    
-  
+
+
 }

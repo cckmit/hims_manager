@@ -1,6 +1,6 @@
 /*
  * @ClassName CenterDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-07-25 11:01:18
  */
@@ -56,6 +56,8 @@ public class DemandDO extends BaseDO {
     private String prdFinshTm;
     @Excel(name = "UAT更新时间")
     private String uatUpdateTm;
+    @Excel(name = "一级团队")
+    private String firstLevelOrganization;
     @Excel(name = "高阳开发负责部门")
     private String devpLeadDept;
     @Excel(name = "高阳开发配合部门")
@@ -130,6 +132,15 @@ public class DemandDO extends BaseDO {
     private String planEndTime;
     @Excel(name = "上次修改状态备注")
     private String requirementStatusModificationNotes;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
     public void setIsMonthSer(String isMonthSer) {
         this.isMonthSer = isMonthSer;
     }
@@ -805,6 +816,7 @@ public class DemandDO extends BaseDO {
                 ", riskSolution='" + riskSolution + '\'' +
                 ", prdFinshTm='" + prdFinshTm + '\'' +
                 ", uatUpdateTm='" + uatUpdateTm + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", devpCoorDept='" + devpCoorDept + '\'' +
                 ", productMng='" + productMng + '\'' +
@@ -850,6 +862,11 @@ public class DemandDO extends BaseDO {
                 ", creatUser='" + creatUser + '\'' +
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
+                ", isMonthSer='" + isMonthSer + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", planStartTime='" + planStartTime + '\'' +
+                ", planEndTime='" + planEndTime + '\'' +
+                ", requirementStatusModificationNotes='" + requirementStatusModificationNotes + '\'' +
                 '}';
     }
 }

@@ -87,6 +87,7 @@ public class DemandReqDTO extends PageableRspDTO {
     private String updateUser;
     private String reqAbnorType;
     private List<String> ids;
+    private String firstLevelOrganization;
     /**
      * 页数
      */
@@ -131,6 +132,14 @@ public class DemandReqDTO extends PageableRspDTO {
 
     public void setIds(List<String> ids) {
         this.ids = ids;
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
     }
 
     public DemandReqDTO() {
@@ -820,8 +829,10 @@ public class DemandReqDTO extends PageableRspDTO {
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
                 ", ids=" + ids +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", orderDirection='" + orderDirection + '\'' +
                 '}';
     }
 }

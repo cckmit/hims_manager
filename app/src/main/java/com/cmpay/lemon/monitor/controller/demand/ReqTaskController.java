@@ -46,6 +46,7 @@ public class ReqTaskController {
     @RequestMapping(value = "/list" ,method = RequestMethod.POST)
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        System.err.println(demandBO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));

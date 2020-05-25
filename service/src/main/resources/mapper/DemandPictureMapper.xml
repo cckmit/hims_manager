@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandPictureDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        <id column="pic_id" property="picId" jdbcType="VARCHAR" />
+        <id column="pic_name" property="picName" jdbcType="VARCHAR" />
+        <result column="pic_local" property="picLocal" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        pic_id, pic_name, pic_local
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDOKey" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        where pic_id = #{picId,jdbcType=VARCHAR}
+          and pic_name = #{picName,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDOKey" >
+        delete from t_demand_picture
+        where pic_id = #{picId,jdbcType=VARCHAR}
+          and pic_name = #{picName,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        insert into t_demand_picture
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="picId != null" >
+                pic_id,
+            </if>
+            <if test="picName != null" >
+                pic_name,
+            </if>
+            <if test="picLocal != null" >
+                pic_local,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="picId != null" >
+                #{picId,jdbcType=VARCHAR},
+            </if>
+            <if test="picName != null" >
+                #{picName,jdbcType=VARCHAR},
+            </if>
+            <if test="picLocal != null" >
+                #{picLocal,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        update t_demand_picture
+        <set >
+            <if test="picLocal != null" >
+                pic_local = #{picLocal,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pic_id = #{picId,jdbcType=VARCHAR}
+          and pic_name = #{picName,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        <where >
+            <if test="picId != null" >
+                and pic_id = #{picId,jdbcType=VARCHAR}
+            </if>
+            <if test="picName != null" >
+                and pic_name = #{picName,jdbcType=VARCHAR}
+            </if>
+            <if test="picLocal != null" >
+                and pic_local = #{picLocal,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

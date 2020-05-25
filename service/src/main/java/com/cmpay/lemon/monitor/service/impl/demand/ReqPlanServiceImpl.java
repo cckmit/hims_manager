@@ -1988,11 +1988,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             if(coorDept.indexOf("产品测试部")!=-1){
                 coorDeptString = coorDeptString -1;
             }
+            if(coorDept.indexOf("产品测试团队")!=-1){
+                coorDeptString = coorDeptString -1;
+            }
             coorDeptArray=new String[coorDeptString] ;
             if(StringUtils.isNotBlank(coorDept)){
                 String[] coorDeptArr=coorDept.split(",");
                 for (int i = 0,j= 0; i < coorDeptArr.length; i++) {
-                    if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])) {
+                    if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])|| "产品测试团队".equals(coorDeptArr[i])) {
                         continue;
                     }
                     coorDeptArray[j] =coorDeptArr[i];
