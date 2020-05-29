@@ -1,4 +1,19 @@
 server:
+  bucket: mca
+  bucketUser: mpl
+  key: 9HScyIXgLE1x5MZg4nILXMzVK3ACMzxuv47DPNTvMGhK0qjG0BDZjwonGfXu2SNZ
+  uploadV0Url: http://172.16.49.234:80/upload/v0
+  uploadV1Url:  http://172.16.49.234:80/upload/v1/upload
+  watermarkV0Url: http://172.16.49.234:80/watermark/v0
+  accessTokenV1Url: http://172.16.49.234:80/upload/v1/access-token
+  ip: http://211.138.236.210:18480/
+  domain: https://uat.cmpay.com/
+  realNamePhotoSize: 30720
+  transferFilePath: /app/dining/upload/transferFilePath
+  compressedPicturePath: /app/dining/upload/compressedPicturePath
+  projectDomain: http://211.138.236.210:1999/sit
+  imageExpireTime: 3600000
+  pdfPath: /app/dining/upload/pdfExpert
   port: 6005
 eureka:
   client:
@@ -9,7 +24,7 @@ eureka:
 spring:
   redis:
     cluster:
-      nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+      nodes: 172.16.49.73:6679,172.16.49.73:6680,172.16.49.74:6679,172.16.49.74:6680,172.16.49.75:6679,172.16.49.75:6680
     password:  '*****'
   jackson:
     time-zone: "GMT+8"
@@ -17,7 +32,7 @@ lemon:
   alerting:
     redis:
       cluster:
-        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+        nodes: 172.16.49.73:6679,172.16.49.73:6680,172.16.49.74:6679,172.16.49.74:6680,172.16.49.75:6679,172.16.49.75:6680
         password:  '*****'
   dataSources:
     primary:
@@ -33,13 +48,13 @@ lemon:
       url: jdbc:oracle:thin:@172.16.49.65:1521:motion
       username: pubadm
       password: 'pub#123a'
-    dsUat:
-      type: com.alibaba.druid.pool.DruidDataSource
-      validationQuery: 'select 1 from dual'
-      driverClassName: oracle.jdbc.driver.OracleDriver
-      url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
-      username: payadm
-      password: 'vse0#sf3'
+#    dsUat:
+#      type: com.alibaba.druid.pool.DruidDataSource
+#      validationQuery: 'select 1 from dual'
+#      driverClassName: oracle.jdbc.driver.OracleDriver
+#      url: jdbc:oracle:thin:@//172.16.49.193:1521/uatsrv1
+#      username: payadm
+#      password: 'vse0#sf3'
   dynamicDataSource:
     enabled: true
     defaultDataSource: primary
@@ -47,12 +62,11 @@ lemon:
     redis:
       password: '*****'
       cluster:
-        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
+        nodes: 172.16.49.73:6679,172.16.49.73:6680,172.16.49.74:6679,172.16.49.74:6680,172.16.49.75:6679,172.16.49.75:6680
   cache:
     redis:
       password: '*****'
       cluster:
-        nodes: 172.16.49.135:6679,172.16.49.135:6680,172.16.49.136:6679,172.16.49.136:6680,172.16.49.137:6679,172.16.49.137:6680
-
+        nodes: 172.16.49.73:6679,172.16.49.73:6680,172.16.49.74:6679,172.16.49.74:6680,172.16.49.75:6679,172.16.49.75:6680
 
 

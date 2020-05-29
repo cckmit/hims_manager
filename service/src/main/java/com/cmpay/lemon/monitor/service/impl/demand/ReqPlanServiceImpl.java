@@ -60,6 +60,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -146,6 +147,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private ReqTaskService reqTaskService;
     @Autowired
     SystemUserService userService;
+    @Autowired
+    private IDemandPictureDao iDemandPictureDao;
 
 
 
@@ -428,6 +431,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changesInLegacyWorkload(String req_impl_mon){
         try {
+            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            // 操作人
+            String user = userService.getFullname(SecurityUtils.getLoginName());
             //找到为完成状态且工作量未录入完的需求
             List<DemandDO> list = demandDao.findUnFinishReq1(req_impl_mon);
             //获取下个月时间
@@ -441,6 +447,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String update_user = SecurityUtils.getLoginUserId();
             for (int i = 0; i < list.size(); i++) {
                 DemandDO demand = list.get(i);
+                String picReqinnerseq = list.get(i).getReqInnerSeq();
                 // 需求类型变为存量
                 demand.setReqType("02");
                 // 需求实施月份，转为下个月
@@ -470,9 +477,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 vo.setReqNo(demand.getReqNo());
                 vo.setReqImplMon(demand.getReqImplMon());
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
+                //获取下一条内部编号
+                String nextInnerSeq = getNextInnerSeq();
                 if (dem.size() == 0) {
                     String reqInnerSeq = demand.getReqInnerSeq();
-                    demand.setReqInnerSeq(getNextInnerSeq());
+                    demand.setReqInnerSeq(nextInnerSeq);
                     demandDao.insertStockReq(demand);
                     // 登记需求变更明细表
                     DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
@@ -516,6 +525,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //若下月已有该条需求则不做处理
                    /* demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);*/
+                }
+                // 插入jk领导审核记录
+                if("是".equals(demand.getIsApprovalProcess())){
+                    DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
+                    demandPictureDO.setPicId(null);
+                    demandPictureDO.setPicReqinnerseq(nextInnerSeq);
+                    demandPictureDO.setPicUser(user);
+                    demandPictureDO.setPicTime(time);
+                    demandPictureDO.setPicMoth(last_month);
+                    demandPictureDO.setPicReqnm(list.get(i).getReqNm());
+                    demandPictureDO.setPicReqno(list.get(i).getReqNo());
+                    //登记JK需求审核表
+                    iDemandPictureDao.insert(demandPictureDO);
                 }
 
             }
@@ -1091,6 +1113,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
+            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            // 操作人
+            String user = userService.getFullname(SecurityUtils.getLoginName());
             //获取下个月时间
             SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
             Date month = simpleDateFormatMonth.parse(req_impl_mon);
@@ -1102,6 +1127,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String update_user = SecurityUtils.getLoginUserId();
             for (int i = 0; i < list.size(); i++) {
                 DemandDO demand = list.get(i);
+                String picReqinnerseq = list.get(i).getReqInnerSeq();
                 // 需求类型变为存量
                 demand.setReqType("02");
                 // 需求实施月份，转为下个月
@@ -1132,9 +1158,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 vo.setReqNo(demand.getReqNo());
                 vo.setReqImplMon(demand.getReqImplMon());
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
+                //获取下一条内部编号
+                String nextInnerSeq = getNextInnerSeq();
                 if (dem.size() == 0) {
                     String reqInnerSeq = demand.getReqInnerSeq();
-                    demand.setReqInnerSeq(getNextInnerSeq());
+                    demand.setReqInnerSeq(nextInnerSeq);
                     demandDao.insertStockReq(demand);
                     // 登记需求变更明细表
                     DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
@@ -1178,6 +1206,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //若下月已有该需求则不做修改
                   /*  demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);*/
+                }
+                // 插入jk领导审核记录
+                if("是".equals(demand.getIsApprovalProcess())){
+                    DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
+                    demandPictureDO.setPicId(null);
+                    demandPictureDO.setPicReqinnerseq(nextInnerSeq);
+                    demandPictureDO.setPicUser(user);
+                    demandPictureDO.setPicTime(time);
+                    demandPictureDO.setPicMoth(last_month);
+                    demandPictureDO.setPicReqnm(list.get(i).getReqNm());
+                    demandPictureDO.setPicReqno(list.get(i).getReqNo());
+                    //登记JK需求审核表
+                    iDemandPictureDao.insert(demandPictureDO);
                 }
 
             }
@@ -2424,13 +2465,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demandDO.setTestFinshTm(map.get(i).get(8).toString().trim());
                 demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString().trim());
                 demandDO.setCurMonTarget(map.get(i).get(10).toString().trim());
-                demandDO.setDevpLeadDept(map.get(i).get(11).toString().trim());
-                demandDO.setDevpCoorDept(map.get(i).get(12).toString().trim());
-                demandDO.setProductMng(map.get(i).get(13).toString().trim());
-                demandDO.setDevpEng(map.get(i).get(14).toString().trim());
-                demandDO.setFrontEng(map.get(i).get(15).toString().trim());
-                demandDO.setTestEng(map.get(i).get(16).toString().trim());
-                demandDO.setProjectMng(map.get(i).get(17).toString().trim());
+                demandDO.setDevpLeadDept(map.get(i).get(12).toString().trim());
+                demandDO.setDevpCoorDept(map.get(i).get(13).toString().trim());
+                demandDO.setProductMng(map.get(i).get(14).toString().trim());
+                demandDO.setDevpEng(map.get(i).get(15).toString().trim());
+                demandDO.setFrontEng(map.get(i).get(16).toString().trim());
+                demandDO.setTestEng(map.get(i).get(17).toString().trim());
+                demandDO.setProjectMng(map.get(i).get(18).toString().trim());
                 demandDOS.add(demandDO);
             }
         } catch (FileNotFoundException e) {

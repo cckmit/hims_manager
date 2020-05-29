@@ -566,9 +566,9 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 DevpWorkLoadList.add(devpDemand);
             }
             list = dealDevpWorkload(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
-            headerNames = new String[]{"银行合作研发部","移动支付研发部","营销服务研发部","电商支付研发部","风控大数据研发部",
-                    "互联网金融研发部","前端技术研发部","基础应用研发部","客户端研发部","公共缴费研发部","产品测试部",
-                    "平台架构部", "产品研究部","设计项目组","资金归集项目组","客服中间层项目组","行业拓展事业部","团体组织交费项目组"};
+            headerNames = new String[]{"质量监督组","平台架构研发团队","产品测试团队","前端技术研发团队","金融业务研发团队",
+                    "客户业务研发团队","支付业务研发团队","商户业务研发团队", "智慧食堂研发团队", "业务中台研发团队",
+                    "资金归集项目组","设计项目组","团体组织交费项目组","客服中间层项目组"};
 
             OutputStream os = null;
             response.reset();
@@ -628,7 +628,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     }
                 }
                 // 删除文件
-                new File(createFile).delete();
+                 new File(createFile).delete();
             } catch (UnsupportedEncodingException e) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("各部门工作量月统计汇总报表导出失败");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -691,15 +691,13 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void updateReqWorkLoad(DemandBO bean) {
-
-        System.err.println(11112233);
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, bean);
         workLoadDao.updateReqWorkLoad(demandDO);
     }
 
     private List<Double> dealDevpWorkload(List<DemandBO> rowList){
-        List<Double> list = Arrays.asList(new Double[18]);
+        List<Double> list = Arrays.asList(new Double[14]);
         for (int i = 0; i < rowList.size(); i++) {
             //配合部门工作量
             String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
@@ -716,59 +714,65 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         String devp = str.split(":")[0];
         Double workload = Double.valueOf(str.split(":")[1]);
         switch (devp) {
-            case "银行合作研发部":
+            case "质量监督组":
                 list.set(0, workload + (list.get(0) == null ? 0:list.get(0)) );
                 break;
-            case "移动支付研发部":
+            case "平台架构研发团队":
                 list.set(1, workload + (list.get(1) == null ? 0:list.get(1)) );
                 break;
-            case "营销服务研发部":
+            case "产品测试团队":
                 list.set(2, workload + (list.get(2) == null ? 0:list.get(2)) );
                 break;
-            case "电商支付研发部":
+            case "前端技术研发团队":
                 list.set(3, workload + (list.get(3) == null ? 0:list.get(3)) );
                 break;
-            case "风控大数据研发部":
+            case "信用购机研发组":
                 list.set(4, workload + (list.get(4) == null ? 0:list.get(4)) );
                 break;
-            case "互联网金融研发部":
+            case "号码借研发组":
+                list.set(4, workload + (list.get(4) == null ? 0:list.get(4)) );
+                break;
+            case "营销活动研发组":
                 list.set(5, workload + (list.get(5) == null ? 0:list.get(5)) );
                 break;
-            case "前端技术研发部":
+            case "渠道产品研发组":
+                list.set(5, workload + (list.get(5) == null ? 0:list.get(5)) );
+                break;
+            case "聚合支付研发组":
                 list.set(6, workload + (list.get(6) == null ? 0:list.get(6)) );
                 break;
-            case "基础应用研发部":
+            case "话费充值研发组":
+                list.set(6, workload + (list.get(6) == null ? 0:list.get(6)) );
+                break;
+            case "商户业务研发团队":
                 list.set(7, workload + (list.get(7) == null ? 0:list.get(7)) );
                 break;
-            case "客户端研发部":
+            case "智慧食堂研发团队":
                 list.set(8, workload + (list.get(8) == null ? 0:list.get(8)) );
                 break;
-            case "公共缴费研发部":
+            case "银行&公共中心研发组":
                 list.set(9, workload + (list.get(9) == null ? 0:list.get(9)) );
                 break;
-            case "产品测试部":
-                list.set(10, workload + (list.get(10) == null ? 0:list.get(10)) );
+            case "用户&清算&账务研发组":
+                list.set(9, workload + (list.get(9) == null ? 0:list.get(9)) );
                 break;
-            case "平台架构部":
-                list.set(11, workload + (list.get(11) == null ? 0:list.get(11)) );
+            case "支付研发组":
+                list.set(9, workload + (list.get(9) == null ? 0:list.get(9)) );
                 break;
-            case "产品研究部":
-                list.set(12, workload + (list.get(12) == null ? 0:list.get(12)) );
-                break;
-            case "设计项目组":
-                list.set(13, workload + (list.get(13) == null ? 0:list.get(13)) );
+            case "营销研发组":
+                list.set(9, workload + (list.get(9) == null ? 0:list.get(9)) );
                 break;
             case "资金归集项目组":
-                list.set(14, workload + (list.get(14) == null ? 0:list.get(14)) );
+                list.set(10, workload + (list.get(10) == null ? 0:list.get(10)) );
                 break;
-            case "客服中间层项目组":
-                list.set(15, workload + (list.get(15) == null ? 0:list.get(15)) );
-                break;
-            case "行业拓展事业部":
-                list.set(16, workload + (list.get(16) == null ? 0:list.get(16)) );
+            case "设计项目组":
+                list.set(11, workload + (list.get(11) == null ? 0:list.get(11)) );
                 break;
             case "团体组织交费项目组":
-                list.set(17, workload + (list.get(17) == null ? 0:list.get(17)) );
+                list.set(12, workload + (list.get(12) == null ? 0:list.get(12)) );
+                break;
+            case "客服中间层项目组":
+                list.set(13, workload + (list.get(13) == null ? 0:list.get(13)) );
                 break;
 
             default:

@@ -1,6 +1,6 @@
 /*
  * @ClassName CenterDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-07-25 11:01:18
  */
@@ -36,9 +36,11 @@ public class PlanDO extends BaseDO {
     private String expPrdReleaseTm;
     @Excel(name = "本月预计完成阶段")
     private String curMonTarget;
-    @Excel(name = "高阳开发负责部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
-    @Excel(name = "高阳开发配合部门")
+    @Excel(name = "二级配合团队")
     private String devpCoorDept;
     @Excel(name = "高阳产品经理")
     private String productMng;
@@ -116,6 +118,14 @@ public class PlanDO extends BaseDO {
     private String updateUser;
     private String reqAbnorType;
     public PlanDO() {
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
     }
 
     public String getAssignee() {
@@ -757,46 +767,50 @@ public class PlanDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "DemandDO{" +
-                "reqProDept='" + reqProDept + '\'' +
+        return "PlanDO{" +
+                "reqPrdLine='" + reqPrdLine + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", reqSts='" + reqSts + '\'' +
+                ", prdFinshTm='" + prdFinshTm + '\'' +
+                ", uatUpdateTm='" + uatUpdateTm + '\'' +
+                ", testFinshTm='" + testFinshTm + '\'' +
+                ", expPrdReleaseTm='" + expPrdReleaseTm + '\'' +
+                ", curMonTarget='" + curMonTarget + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", devpCoorDept='" + devpCoorDept + '\'' +
+                ", productMng='" + productMng + '\'' +
+                ", devpEng='" + devpEng + '\'' +
+                ", frontEng='" + frontEng + '\'' +
+                ", testEng='" + testEng + '\'' +
+                ", projectMng='" + projectMng + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", planStartTime='" + planStartTime + '\'' +
+                ", planEndTime='" + planEndTime + '\'' +
+                ", reqProDept='" + reqProDept + '\'' +
                 ", reqProposer='" + reqProposer + '\'' +
                 ", reqMnger='" + reqMnger + '\'' +
-                ", reqPrdLine='" + reqPrdLine + '\'' +
-                ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
                 ", expInput=" + expInput +
                 ", isCut='" + isCut + '\'' +
                 ", monRemark='" + monRemark + '\'' +
-                ", expPrdReleaseTm='" + expPrdReleaseTm + '\'' +
                 ", preMonPeriod='" + preMonPeriod + '\'' +
-                ", curMonTarget='" + curMonTarget + '\'' +
-                ", reqInnerSeq='" + reqInnerSeq + '\'' +
-                ", reqNo='" + reqNo + '\'' +
                 ", inputRes=" + inputRes +
                 ", devCycle=" + devCycle +
                 ", riskFeedbackTm='" + riskFeedbackTm + '\'' +
-                ", preCurPeriod='" + preCurPeriod + '\'' +
                 ", riskSolution='" + riskSolution + '\'' +
-                ", prdFinshTm='" + prdFinshTm + '\'' +
-                ", uatUpdateTm='" + uatUpdateTm + '\'' +
-                ", devpLeadDept='" + devpLeadDept + '\'' +
-                ", devpCoorDept='" + devpCoorDept + '\'' +
-                ", productMng='" + productMng + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
                 ", reqImplMon='" + reqImplMon + '\'' +
                 ", reqType='" + reqType + '\'' +
-                ", reqSts='" + reqSts + '\'' +
                 ", actPrdFinshTm='" + actPrdFinshTm + '\'' +
                 ", devpResMng='" + devpResMng + '\'' +
-                ", projectMng='" + projectMng + '\'' +
                 ", qaMng='" + qaMng + '\'' +
                 ", configMng='" + configMng + '\'' +
-                ", devpEng='" + devpEng + '\'' +
-                ", frontEng='" + frontEng + '\'' +
-                ", testEng='" + testEng + '\'' +
                 ", actUatUpdateTm='" + actUatUpdateTm + '\'' +
                 ", preTm='" + preTm + '\'' +
-                ", testFinshTm='" + testFinshTm + '\'' +
                 ", actTestFinshTm='" + actTestFinshTm + '\'' +
                 ", endMonRemark='" + endMonRemark + '\'' +
                 ", endFeedbackTm='" + endFeedbackTm + '\'' +

@@ -91,6 +91,23 @@ public class DemandDTO extends GenericDTO {
 
     private String revisionTimeNote;
     private String firstLevelOrganization;
+    private String isApprovalProcess;
+    private String site;
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+    public String getIsApprovalProcess() {
+        return isApprovalProcess;
+    }
+
+    public void setIsApprovalProcess(String isApprovalProcess) {
+        this.isApprovalProcess = isApprovalProcess;
+    }
 
     /**
      * 页数
@@ -829,6 +846,7 @@ public class DemandDTO extends GenericDTO {
                 ", reqAbnorType='" + reqAbnorType + '\'' +
                 ", revisionTimeNote='" + revisionTimeNote + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

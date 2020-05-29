@@ -15,15 +15,15 @@ public class DepartmentMonthlyDetailBO {
     private String reqNm;
     @Excel(name = "总工作量")
     private int totalWorkload;
-    @Excel(name = "主导部门完成情况")
+    @Excel(name = "二级主导团队完成情况")
     private String leadDeptWorkload;
-    @Excel(name = "配合部门完成情况")
+    @Excel(name = "二级配合团队完成情况")
     private String coorDeptWorkload;
     @Excel(name = "本月录入工作量")
     private int monInputWorkload;
-    @Excel(name = "主导部门本月工作量")
+    @Excel(name = "二级主导团队本月工作量")
     private String leadDeptWorkload1;
-    @Excel(name = "配合部门本月工作量")
+    @Excel(name = "二级配合团队本月工作量")
     private String coorDeptWorkload1;
 
     public String getDevpLeadDept() {

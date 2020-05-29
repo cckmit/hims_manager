@@ -97,6 +97,15 @@ public class DemandReqDTO extends PageableRspDTO {
      */
     private int pageSize;
     private String orderDirection;
+    private String isApprovalProcess;
+
+    public String getIsApprovalProcess() {
+        return isApprovalProcess;
+    }
+
+    public void setIsApprovalProcess(String isApprovalProcess) {
+        this.isApprovalProcess = isApprovalProcess;
+    }
 
     public String getOrderDirection() {
         return orderDirection;
@@ -833,6 +842,7 @@ public class DemandReqDTO extends PageableRspDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", orderDirection='" + orderDirection + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 '}';
     }
 }

@@ -15,7 +15,7 @@ public class BaseWorkloadBO {
     private String reqNm;
     @Excel(name = "产品名称")
     private String reqPrdLine;
-    @Excel(name = "需求主导部门")
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
     @Excel(name = "开发负责人")
     private String devpResMng;
@@ -29,6 +29,17 @@ public class BaseWorkloadBO {
     private int remainWorkload;
     @Excel(name = "需求当前阶段")
     private String preCurPeriod;
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
     public String getReqInnerSeq() {
         return reqInnerSeq;
     }
@@ -129,6 +140,9 @@ public class BaseWorkloadBO {
                 ", totalWorkload=" + totalWorkload +
                 ", inputWorkload=" + inputWorkload +
                 ", monInputWorkload=" + monInputWorkload +
+                ", remainWorkload=" + remainWorkload +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }

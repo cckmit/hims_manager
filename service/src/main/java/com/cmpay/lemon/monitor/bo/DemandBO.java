@@ -92,6 +92,24 @@ public class DemandBO {
     //时间修改备注
     private String revisionTimeNote;
     private String firstLevelOrganization;
+    private String isApprovalProcess;
+    private String site;
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+
+    public String getIsApprovalProcess() {
+        return isApprovalProcess;
+    }
+
+    public void setIsApprovalProcess(String isApprovalProcess) {
+        this.isApprovalProcess = isApprovalProcess;
+    }
     /**
      * 页数
      */
@@ -813,6 +831,7 @@ public class DemandBO {
                 ", reqAbnorType='" + reqAbnorType + '\'' +
                 ", revisionTimeNote='" + revisionTimeNote + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';
