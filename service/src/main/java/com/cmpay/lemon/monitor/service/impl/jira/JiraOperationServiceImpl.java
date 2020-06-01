@@ -71,7 +71,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     //业务成功标识
     final static  String SUCCESS="success";
     //测试部门
-    final static  String TESTINGDIVISION="产品测试部";
+    final static  String TESTINGDIVISION="产品测试团队";
     //部门参数未匹配
     final static  String DEPARTMENTDIDNOTMATCH="主导部门错误(部门参数未匹配)";
 
