@@ -53,7 +53,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     final static  Integer PROJECTTYPE_FCPT=10104;
     //jira项目类型 团体缴费项目 jira编号
     final static  Integer PROJECTTYPE_GPPT=10102;
-
+    //jira项目类型 团体缴费项目 jira编号
+    final static  Integer PROJECTTYPE_CSPT=10103;
     //EPIC任务 jira编号
     final static  Integer ISSUETYPE_EPIC=10000;
     //开发主任务 jira编号
@@ -99,6 +100,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             createIssueEpicRequestBO.setProject(PROJECTTYPE_FCPT);
         }else if("团体组织交费项目组".equals(demandBO.getDevpLeadDept())){
             createIssueEpicRequestBO.setProject(PROJECTTYPE_GPPT);
+        }else if("客服中间层项目组".equals(demandBO.getDevpLeadDept())){
+            createIssueEpicRequestBO.setProject(PROJECTTYPE_CSPT);
         }
         else {
             if(LemonUtils.getEnv().equals(Env.SIT)) {
@@ -203,6 +206,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             createMainTaskRequestBO.setProject(PROJECTTYPE_FCPT);
         }else if("团体组织交费项目组".equals(demandBO.getDevpLeadDept())){
             createMainTaskRequestBO.setProject(PROJECTTYPE_GPPT);
+        }else if("客服中间层项目组".equals(demandBO.getDevpLeadDept())){
+            createMainTaskRequestBO.setProject(PROJECTTYPE_CSPT);
         }
         else {
             if(LemonUtils.getEnv().equals(Env.SIT)) {
