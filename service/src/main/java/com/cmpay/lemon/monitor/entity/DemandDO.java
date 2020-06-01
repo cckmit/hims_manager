@@ -1,6 +1,6 @@
 /*
  * @ClassName CenterDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-07-25 11:01:18
  */
@@ -56,9 +56,11 @@ public class DemandDO extends BaseDO {
     private String prdFinshTm;
     @Excel(name = "UAT更新时间")
     private String uatUpdateTm;
-    @Excel(name = "高阳开发负责部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
-    @Excel(name = "高阳开发配合部门")
+    @Excel(name = "二级配合团队")
     private String devpCoorDept;
     @Excel(name = "高阳产品经理")
     private String productMng;
@@ -130,6 +132,25 @@ public class DemandDO extends BaseDO {
     private String planEndTime;
     @Excel(name = "上次修改状态备注")
     private String requirementStatusModificationNotes;
+    @Excel(name = "基地领导是否审批")
+    private String isApprovalProcess;
+
+    public String getIsApprovalProcess() {
+        return isApprovalProcess;
+    }
+
+    public void setIsApprovalProcess(String isApprovalProcess) {
+        this.isApprovalProcess = isApprovalProcess;
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
     public void setIsMonthSer(String isMonthSer) {
         this.isMonthSer = isMonthSer;
     }
@@ -805,6 +826,7 @@ public class DemandDO extends BaseDO {
                 ", riskSolution='" + riskSolution + '\'' +
                 ", prdFinshTm='" + prdFinshTm + '\'' +
                 ", uatUpdateTm='" + uatUpdateTm + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", devpCoorDept='" + devpCoorDept + '\'' +
                 ", productMng='" + productMng + '\'' +
@@ -850,6 +872,12 @@ public class DemandDO extends BaseDO {
                 ", creatUser='" + creatUser + '\'' +
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
+                ", isMonthSer='" + isMonthSer + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", planStartTime='" + planStartTime + '\'' +
+                ", planEndTime='" + planEndTime + '\'' +
+                ", requirementStatusModificationNotes='" + requirementStatusModificationNotes + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 '}';
     }
 }

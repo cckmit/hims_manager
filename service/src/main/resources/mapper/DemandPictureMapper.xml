@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandPictureDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        <id column="pic_id" property="picId" jdbcType="INTEGER" />
+        <result column="pic_name" property="picName" jdbcType="VARCHAR" />
+        <result column="pic_local" property="picLocal" jdbcType="VARCHAR" />
+        <result column="pic_user" property="picUser" jdbcType="VARCHAR" />
+        <result column="pic_time" property="picTime" jdbcType="VARCHAR" />
+        <result column="pic_moth" property="picMoth" jdbcType="VARCHAR" />
+        <result column="pic_reqInnerSeq" property="picReqinnerseq" jdbcType="VARCHAR" />
+        <result column="pic_reqNo" property="picReqno" jdbcType="VARCHAR" />
+        <result column="pic_reqNm" property="picReqnm" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        pic_id, pic_name, pic_local, pic_user, pic_time, pic_moth, pic_reqInnerSeq, pic_reqNo,
+        pic_reqNm
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        where pic_id = #{picId,jdbcType=INTEGER}
+    </select>
+
+    <select id="findOne" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        where pic_reqInnerSeq = #{picReqinnerseq,jdbcType=INTEGER}
+    </select>
+
+    <select id="showOne" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO"  >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        <where >
+            <if test="picReqinnerseq != null" >
+                and pic_reqInnerSeq = #{picReqinnerseq,jdbcType=VARCHAR}
+            </if>
+            <if test="picMoth != null" >
+                and pic_moth = #{picMoth,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_demand_picture
+        where pic_id = #{picId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        insert into t_demand_picture
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="picId != null" >
+                pic_id,
+            </if>
+            <if test="picName != null" >
+                pic_name,
+            </if>
+            <if test="picLocal != null" >
+                pic_local,
+            </if>
+            <if test="picUser != null" >
+                pic_user,
+            </if>
+            <if test="picTime != null" >
+                pic_time,
+            </if>
+            <if test="picMoth != null" >
+                pic_moth,
+            </if>
+            <if test="picReqinnerseq != null" >
+                pic_reqInnerSeq,
+            </if>
+            <if test="picReqno != null" >
+                pic_reqNo,
+            </if>
+            <if test="picReqnm != null" >
+                pic_reqNm,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="picId != null" >
+                #{picId,jdbcType=INTEGER},
+            </if>
+            <if test="picName != null" >
+                #{picName,jdbcType=VARCHAR},
+            </if>
+            <if test="picLocal != null" >
+                #{picLocal,jdbcType=VARCHAR},
+            </if>
+            <if test="picUser != null" >
+                #{picUser,jdbcType=VARCHAR},
+            </if>
+            <if test="picTime != null" >
+                #{picTime,jdbcType=VARCHAR},
+            </if>
+            <if test="picMoth != null" >
+                #{picMoth,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqinnerseq != null" >
+                #{picReqinnerseq,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqno != null" >
+                #{picReqno,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqnm != null" >
+                #{picReqnm,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        update t_demand_picture
+        <set >
+            <if test="picName != null" >
+                pic_name = #{picName,jdbcType=VARCHAR},
+            </if>
+            <if test="picLocal != null" >
+                pic_local = #{picLocal,jdbcType=VARCHAR},
+            </if>
+            <if test="picUser != null" >
+                pic_user = #{picUser,jdbcType=VARCHAR},
+            </if>
+            <if test="picTime != null" >
+                pic_time = #{picTime,jdbcType=VARCHAR},
+            </if>
+            <if test="picMoth != null" >
+                pic_moth = #{picMoth,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqinnerseq != null" >
+                pic_reqInnerSeq = #{picReqinnerseq,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqno != null" >
+                pic_reqNo = #{picReqno,jdbcType=VARCHAR},
+            </if>
+            <if test="picReqnm != null" >
+                pic_reqNm = #{picReqnm,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pic_id = #{picId,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandPictureDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_picture
+        <where >
+            <if test="picId != null" >
+                and pic_id = #{picId,jdbcType=INTEGER}
+            </if>
+            <if test="picName != null" >
+                and pic_name = #{picName,jdbcType=VARCHAR}
+            </if>
+            <if test="picLocal != null" >
+                and pic_local = #{picLocal,jdbcType=VARCHAR}
+            </if>
+            <if test="picUser != null" >
+                and pic_user = #{picUser,jdbcType=VARCHAR}
+            </if>
+            <if test="picTime != null" >
+                and pic_time = #{picTime,jdbcType=VARCHAR}
+            </if>
+            <if test="picMoth != null" >
+                and pic_moth = #{picMoth,jdbcType=VARCHAR}
+            </if>
+            <if test="picReqinnerseq != null" >
+                and pic_reqInnerSeq = #{picReqinnerseq,jdbcType=VARCHAR}
+            </if>
+            <if test="picReqno != null" >
+                and pic_reqNo = #{picReqno,jdbcType=VARCHAR}
+            </if>
+            <if test="picReqnm != null" >
+                and pic_reqNm = #{picReqnm,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

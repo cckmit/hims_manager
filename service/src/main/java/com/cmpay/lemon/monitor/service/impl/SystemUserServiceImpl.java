@@ -135,36 +135,44 @@ public class SystemUserServiceImpl implements SystemUserService {
             permiUserDO.setDeptId("001");
         }else if("资金归集项目组".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("002");
-        }else if("银行合作研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("003");
-        }else if("营销服务研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("004");
-        }else if("移动支付研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("005");
+        }else if("质量监督组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0019");
+        }else if("平台架构研发团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0020");
+        }else if("产品测试团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0021");
         }else if("团体组织交费项目组".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("006");
         }else if("设计项目组".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("007");
-        }else if("产品测试部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("008");
-        }else if("前端技术研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("009");
-        }else if("平台架构部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0010");
-        }else if("客户端研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0011");
+        }else if("前端技术研发团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0022");
+        }else if("信用购机研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0023");
+        }else if("号码借研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0024");
+        }else if("营销活动研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0025");
+        }else if("渠道产品研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0026");
+        }else if("聚合支付研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0027");
+        }else if("话费充值研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0028");
+        }else if("商户业务研发团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0029");
+        }else if("智慧食堂研发团队".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0030");
+        }else if("银行&公共中心研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0031");
+        }else if("用户&清算&账务研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0032");
+        }else if("支付研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0033");
+        }else if("营销研发组".equals(userDO.getDepartment())){
+            permiUserDO.setDeptId("0034");
         }else if("客服中间层项目组".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("0012");
-        }else if("基础应用研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0013");
-        }else if("互联网金融研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0014");
-        }else if("公共缴费研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0015");
-        }else if("风控大数据研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0016");
-        }else if("电商支付研发部".equals(userDO.getDepartment())){
-            permiUserDO.setDeptId("0017");
         }else if("运维团队".equals(userDO.getDepartment())){
             permiUserDO.setDeptId("0018");
         }

@@ -35,7 +35,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
@@ -102,6 +104,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IErcdmgErorDao iErcdmgErorDao;
     @Autowired
     private IUserExtDao iUserDao;
+    @Autowired
+    private IDemandPictureDao iDemandPictureDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -1566,6 +1570,107 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         BeanConvertUtils.convert(aDo, reqTask);
         demandDao.WeedAndMonthFeedback(aDo);
     }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void approvalProcess(MultipartFile file,String ids){
+        // 操作人
+        String user = userService.getFullname(SecurityUtils.getLoginName());
+        // 操作时间
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String[] idsList= ids.split("~");
+        if (file.isEmpty()) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择上传文件!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
 
+        //依据环境配置路径
+        String path="";
+        String wwwpath="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/approval/process/";
+            wwwpath= "/home/devms/wwwroot/home/devms/temp/approval/process/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/approval/process/";
+            wwwpath= "/home/devadm/wwwroot/home/devadm/temp/approval/process/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        for ( int i =0;i<idsList.length;i++){
+            String reqInnerSeq = idsList[i];
+            // 获取需求信息
+            DemandDO demandDO = demandDao.get(reqInnerSeq);
+            // 存储地址
+            String picLocal = path + reqInnerSeq;
+            File fileDir = new File(wwwpath +reqInnerSeq);
+            File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
+            if(fileDir.exists()){
+                File[] oldFile = fileDir.listFiles();
+                for(File o:oldFile) o.delete();
+            }else{
+                fileDir.mkdir();
+            }
+            try {
+                file.transferTo(filePath);
+                // 是，已上传则修改
+                if("是".equals(demandDO.getIsApprovalProcess())){
+                    DemandPictureDO demandPictureDO = new DemandPictureDO();
+                    demandPictureDO.setPicReqinnerseq(demandDO.getReqInnerSeq());
+                    demandPictureDO.setPicMoth(demandDO.getReqImplMon());
+                    DemandPictureDO demandPicture = iDemandPictureDao.showOne(demandPictureDO);
+                    demandPicture.setPicName(file.getOriginalFilename());
+                    demandPicture.setPicLocal(picLocal);
+                    demandPicture.setPicUser(user);
+                    demandPicture.setPicTime(time);
+                    demandPicture.setPicMoth(demandDO.getReqImplMon());
+                    demandPicture.setPicReqnm(demandDO.getReqNm());
+                    demandPicture.setPicReqno(demandDO.getReqNo());
+                    //修改JK需求审核表
+                    iDemandPictureDao.update(demandPicture);
+                }
+                else{
+                    // 没有上传新增
+                    DemandPictureDO demandPicture = new DemandPictureDO();
+                    demandPicture.setPicReqinnerseq(reqInnerSeq);
+                    demandPicture.setPicName(file.getOriginalFilename());
+                    demandPicture.setPicLocal(picLocal);
+                    demandPicture.setPicUser(user);
+                    demandPicture.setPicTime(time);
+                    demandPicture.setPicMoth(demandDO.getReqImplMon());
+                    demandPicture.setPicReqnm(demandDO.getReqNm());
+                    demandPicture.setPicReqno(demandDO.getReqNo());
+                    //登记JK需求审核表
+                    iDemandPictureDao.insert(demandPicture);
+                }
 
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+
+    }
+    @Override
+    public DemandBO approvalFindOne(String id,String month){
+        DemandPictureDO demandPictureDO = new DemandPictureDO();
+        demandPictureDO.setPicReqinnerseq(id);
+        demandPictureDO.setPicMoth(month);
+        DemandPictureDO demandPicture = iDemandPictureDao.showOne(demandPictureDO);
+        System.err.println(demandPicture);
+        DemandBO demandBO = new DemandBO();
+        String site = demandPicture.getPicLocal() + "/"+demandPicture.getPicName();
+        System.err.println(site);
+        demandBO.setSite(site);
+        return demandBO;
+    }
 }

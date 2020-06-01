@@ -39,7 +39,6 @@ public class ReqWeekController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<DemandRspDTO> getUserInfoPage(@RequestBody DemandReqDTO reqDTO) {
-        System.out.println("需求周反馈");
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         DemandRspBO demandRspBO = reqPlanService.findDemand(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();

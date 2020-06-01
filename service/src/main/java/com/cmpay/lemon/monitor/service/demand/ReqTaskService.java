@@ -145,4 +145,12 @@ public interface ReqTaskService {
     void WeedAndMonthFeedback(DemandBO reqTask);
 
     DemandCurperiodHistoryRspBO findDemandCurperiodDetails(DemandChangeDetailsBO demandChangeDetailsBO);
+
+    /**
+     * 批量导入
+     *
+     * @param file
+     */
+    void approvalProcess(MultipartFile file,String ids);
+    DemandBO approvalFindOne(String id,String month);
 }

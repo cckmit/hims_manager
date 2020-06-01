@@ -46,6 +46,7 @@ public class ReqTaskController {
     @RequestMapping(value = "/list" ,method = RequestMethod.POST)
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        System.err.println(demandBO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
@@ -232,5 +233,32 @@ public class ReqTaskController {
         jiraOperationService.jiraTestMainTaskBatchEdit(file);
         return GenericRspDTO.newSuccessInstance();
     }
+    /**
+     * 文档上传接收文档
+     *
+     * @return
+     */
+    @PostMapping("/approval/process")
+    public GenericRspDTO approvalProcess(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        String ids = request.getParameter("ids");
+        System.err.println(ids + "==="+file.getOriginalFilename());
+        reqTaskService.approvalProcess(file,ids);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
 
+    /**
+     * 查看金科领导审批照片
+     *
+     * @return
+     */
+    @PostMapping("/approval/findOne")
+    public GenericRspDTO approvalFindOne(@RequestBody DemandReqDTO reqDTO) {
+        String reqInnerSeq = reqDTO.getReqInnerSeq();
+        String month = reqDTO.getReqImplMon();
+        System.err.println(reqInnerSeq);
+        System.err.println(month);
+        DemandBO demandBO = reqTaskService.approvalFindOne(reqInnerSeq,month);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
+    }
 }

@@ -22,9 +22,9 @@ public class DemandCompletionReportBO {
     private String reqAbnormal;
     @Excel(name = "进度异常率")
     private String reqAbnormalRate;
-    @Excel(name = "投产率")
+    @Excel(name = "完成率")
     private String reqFinishRate;
-     @Excel(name = "完成率")
+     @Excel(name = "投产率")
     private String total;
     @Excel(name = "需求不准确率")
     private String reqInaccuracyRate;

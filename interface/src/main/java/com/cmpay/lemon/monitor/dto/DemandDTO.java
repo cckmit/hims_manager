@@ -90,6 +90,24 @@ public class DemandDTO extends GenericDTO {
     private String reqAbnorType;
 
     private String revisionTimeNote;
+    private String firstLevelOrganization;
+    private String isApprovalProcess;
+    private String site;
+
+    public String getSite() {
+        return site;
+    }
+
+    public void setSite(String site) {
+        this.site = site;
+    }
+    public String getIsApprovalProcess() {
+        return isApprovalProcess;
+    }
+
+    public void setIsApprovalProcess(String isApprovalProcess) {
+        this.isApprovalProcess = isApprovalProcess;
+    }
 
     /**
      * 页数
@@ -748,9 +766,13 @@ public class DemandDTO extends GenericDTO {
         this.revisionTimeNote = revisionTimeNote;
     }
 
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
 
-
-
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     @Override
     public String toString() {
@@ -807,6 +829,7 @@ public class DemandDTO extends GenericDTO {
                 ", leadDeptWorkload='" + leadDeptWorkload + '\'' +
                 ", coorDeptWorkload='" + coorDeptWorkload + '\'' +
                 ", isSvnBuild='" + isSvnBuild + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
                 ", proId='" + proId + '\'' +
                 ", projectStartTm='" + projectStartTm + '\'' +
                 ", actPrdUploadTm='" + actPrdUploadTm + '\'' +
@@ -821,6 +844,9 @@ public class DemandDTO extends GenericDTO {
                 ", creatUser='" + creatUser + '\'' +
                 ", updateUser='" + updateUser + '\'' +
                 ", reqAbnorType='" + reqAbnorType + '\'' +
+                ", revisionTimeNote='" + revisionTimeNote + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

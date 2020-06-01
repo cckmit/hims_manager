@@ -189,6 +189,12 @@
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         from t_demand_info
         where req_inner_seq=#{reqInnerSeq}
@@ -501,6 +507,15 @@
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
         SELECT
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND t.pic_moth =#{reqImplMon}
+            </if>
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
@@ -589,6 +604,15 @@
             </if>
             <if test="endMonRemark eq '02'">
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
+            </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+                AND  a.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+            </if>
+            <if test="isApprovalProcess !=null and isApprovalProcess != '' and isApprovalProcess == '是'.toString()">
+                AND  a.req_inner_seq in  ( SELECT pic_reqInnerSeq FROM t_demand_picture )
+            </if>
+            <if test="isApprovalProcess !=null and isApprovalProcess != '' and isApprovalProcess == '否'.toString()">
+                AND  a.req_inner_seq not in  ( SELECT pic_reqInnerSeq FROM t_demand_picture )
             </if>
         </where>
         ORDER BY a.req_inner_seq desc
@@ -718,6 +742,15 @@
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_cur_period AND t.DIC_ID='REQ_PEROID') AS pre_cur_period,
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND t.DIC_ID='REQ_PEROID') AS cur_mon_target,
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME = pre_mon_period AND t.DIC_ID='REQ_PEROID') AS pre_mon_period,
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND t.pic_moth =#{reqImplMon}
+            </if>
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         FROM t_demand_info a
         <where>
@@ -801,6 +834,9 @@
             <if test="endMonRemark eq '02'">
                 AND a.end_mon_remark is NOT NULL AND trim(a.end_mon_remark) != ''
             </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+               AND  a.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+            </if>
         </where>
         ORDER BY a.req_inner_seq asc
     </select>
@@ -819,6 +855,16 @@
         (SELECT
         VALUE FROM t_permi_dic_data t WHERE t.NAME = cur_mon_target AND
         t.DIC_ID='REQ_PEROID') AS cur_mon_target,
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq
+            <if test="reqImplMon != null and reqImplMon != ''">
+                AND t.pic_moth =#{reqImplMon}
+            </if>
+
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List1" />
         FROM t_demand_info a
         <where>
@@ -908,6 +954,11 @@
 
     <select id="findUnFinishReq" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         select
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq and t.pic_moth =#{reqImplMon}
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         from t_demand_info
         where req_impl_mon=#{reqImplMon}
