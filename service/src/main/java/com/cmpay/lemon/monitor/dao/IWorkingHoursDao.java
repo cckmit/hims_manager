@@ -1,6 +1,6 @@
 /*
  * @ClassName IWorkingHoursDao
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-04-30 15:59:10
  */
@@ -19,6 +19,9 @@ public interface IWorkingHoursDao extends BaseDao<WorkingHoursDO, String> {
     List<WorkingHoursDO> findSum(WorkingHoursDO workingHoursDO);
     List<WorkingHoursDO> findWeekSum(WorkingHoursDO workingHoursDO);
     List<WorkingHoursDO> findMonthSum(WorkingHoursDO workingHoursDO);
+    List<WorkingHoursDO> findSumB(WorkingHoursDO workingHoursDO);
+    List<WorkingHoursDO> findWeekSumB(WorkingHoursDO workingHoursDO);
+    List<WorkingHoursDO> findMonthSumB(WorkingHoursDO workingHoursDO);
     // 日期
     List<WorkingHoursDO> findList(WorkingHoursDO workingHoursDO);
     // 周

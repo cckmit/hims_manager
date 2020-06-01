@@ -10,6 +10,16 @@ import java.util.List;
  */
 public class WorkingHoursRspDTO extends PageableRspDTO {
     private List<WorkingHoursDTO> vpnInfoDTOS = new ArrayList<>();
+    private List<WorkingHoursDTO> vpnInfoBDTOS = new ArrayList<>();
+
+    public List<WorkingHoursDTO> getVpnInfoBDTOS() {
+        return vpnInfoBDTOS;
+    }
+
+    public void setVpnInfoBDTOS(List<WorkingHoursDTO> vpnInfoBDTOS) {
+        this.vpnInfoBDTOS = vpnInfoBDTOS;
+    }
+
     private List<String> stringList = new ArrayList<>();
 
     public List<WorkingHoursDTO> getVpnInfoDTOS() {

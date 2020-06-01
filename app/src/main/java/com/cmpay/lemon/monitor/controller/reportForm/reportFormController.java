@@ -159,10 +159,19 @@ import java.util.List;
         reportLista = reqDataCountService.getReportForm7(workingHoursDTO.getDevpLeadDept(),workingHoursDTO.getSelectTime(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
         WorkingHoursRspDTO reqDataCountRspDTO = new WorkingHoursRspDTO();
         List<WorkingHoursDTO> reqDataCountDTOListA = new LinkedList<>();
+
         reportLista.forEach(m->
                 reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
         );
         reqDataCountRspDTO.setVpnInfoDTOS(reqDataCountDTOListA);
+        List<WorkingHoursBO> reportListb = new ArrayList<>();
+        reportListb = reqDataCountService.getReportForm7B(workingHoursDTO.getDevpLeadDept(),workingHoursDTO.getSelectTime(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        List<WorkingHoursDTO> reqDataCountDTOListB = new LinkedList<>();
+        reportListb.forEach(m->
+                reqDataCountDTOListB.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
+        );
+        reqDataCountRspDTO.setVpnInfoBDTOS(reqDataCountDTOListB);
+        // 统计部门
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
     //部门员工工时

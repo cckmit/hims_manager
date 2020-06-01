@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-04-29 16:02:39
  */
@@ -59,6 +59,8 @@ public class WorkingHoursDTO extends GenericDTO {
     private String updatedtime;
     // 总公时
     private String sumTime;
+    // 总部门人数
+    private String sumDept;
     /**
      * 页数
      */
@@ -68,6 +70,14 @@ public class WorkingHoursDTO extends GenericDTO {
      */
     private int pageSize;
     private String selectTime;
+
+    public String getSumDept() {
+        return sumDept;
+    }
+
+    public void setSumDept(String sumDept) {
+        this.sumDept = sumDept;
+    }
 
     public String getSelectTime() {
         return selectTime;
@@ -212,8 +222,10 @@ public class WorkingHoursDTO extends GenericDTO {
                 ", startedtime='" + startedtime + '\'' +
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
+                ", sumDept='" + sumDept + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", selectTime='" + selectTime + '\'' +
                 '}';
     }
 }

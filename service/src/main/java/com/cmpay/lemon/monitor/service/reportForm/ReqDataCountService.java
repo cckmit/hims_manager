@@ -64,6 +64,7 @@ public interface ReqDataCountService {
 
     // 部门员工工时报表
     List<WorkingHoursBO> getReportForm7(String devpLeadDept,String date,String date1,String date2);
+    List<WorkingHoursBO> getReportForm7B(String devpLeadDept,String date,String date1,String date2);
     // 部门工时报表
     List<String> getReportForm8(String date);
     // 部门员工工时报表
