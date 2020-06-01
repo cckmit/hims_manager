@@ -108,7 +108,7 @@ public class CreateIssueMainTaskRequestBO extends CreateIssueRequestBO {
 
     @Override
     public String toString() {
-        if(this.devpLeadDept.equals("产品测试团队")){
+        if(this.devpLeadDept.equals("产品测试团队")||this.devpLeadDept.equals("产品测试部")){
             return "{\n" +
                     "    \"fields\":{\n" +
                     "        \"summary\":\""+this.getSummary()+"\",\n" +
