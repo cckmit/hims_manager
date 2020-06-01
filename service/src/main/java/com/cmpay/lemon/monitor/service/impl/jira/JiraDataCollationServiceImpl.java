@@ -115,7 +115,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setJiratype(jiraTaskBodyBO.getJiraType());
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
-            jiraBasicInfoDO.setDepartment("产品测试部");
+            jiraBasicInfoDO.setDepartment("产品测试团队");
             jiraBasicInfoDO.setDescription("问题描述");
         } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
 
@@ -148,7 +148,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setJiratype(jiraTaskBodyBO.getJiraType());
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
-            jiraBasicInfoDO.setDepartment("产品测试部");
+            jiraBasicInfoDO.setDepartment("产品测试团队");
             jiraBasicInfoDO.setDescription("问题描述");
         } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
 
@@ -210,7 +210,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 if (StringUtils.isNotBlank(jiraTaskBodyBO.getDepartment())) {
                     workingHoursDO.setDevpLeadDept(jiraTaskBodyBO.getDepartment());
                 } else {
-                    workingHoursDO.setDevpLeadDept("产品测试部");
+                    workingHoursDO.setDevpLeadDept("产品测试团队");
                 }
                 workingHoursDO.setComment(jiraWorklogDO.getComment());
                 workingHoursDO.setCreatedtime(jiraWorklogDO.getCreatedtime());

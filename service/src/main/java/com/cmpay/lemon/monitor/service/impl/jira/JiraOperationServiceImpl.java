@@ -314,7 +314,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         String epicKey = demandJiraDO.getJiraKey();
 
         //获取jira epic key获取测试主任务
-        DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
+        DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试团队_测试主任务");
         if(demandJiraDevelopMasterTaskDO==null){
             return;
         }
@@ -379,7 +379,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             DemandJiraDO demandJiraDO = demandJiraDao.get(m.getReqInnerSeq());
             String epicKey = demandJiraDO.getJiraKey();
             //获取jira epic key获取测试主任务
-            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试部_测试主任务");
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = demandJiraDevelopMasterTaskDao.get(epicKey + "_产品测试团队_测试主任务");
             if(demandJiraDevelopMasterTaskDO==null){
                 return;
             }
