@@ -341,6 +341,36 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		);
 		return workingHoursBOS;
 	}
+
+	@Override
+	public List<WorkingHoursBO> getReportForm7B(String devpLeadDept,String date,String date1,String date2){
+		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		List<WorkingHoursDO> impl = null;
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDevpLeadDept(devpLeadDept);
+		if(StringUtils.isBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如日期、周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		if(StringUtils.isNotBlank(date)&&StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date);
+			impl = iWorkingHoursDao.findSumB(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
+		}
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
+		}
+
+		impl.forEach(m->
+				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+		);
+		return workingHoursBOS;
+	}
 	@Override
 	public List<String> getReportForm8(String date){
 		System.err.println(date+"++++++"+date);
@@ -571,6 +601,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				demandTypeStatisticsBO.setProOperator(m.getProOperator());
 				demandTypeStatisticsBO.setScheduleTime(m.getScheduleTime());
 				demandTypeStatisticsBO.setApplicationDept(m.getApplicationDept());
+				demandTypeStatisticsBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 				DemandTypeStatisticsBOList.add(demandTypeStatisticsBO);
 			});
 		}
@@ -609,6 +640,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				demandTypeStatisticsBO.setActUatUploadTm(m.getActUatUploadTm());
 				demandTypeStatisticsBO.setActPreUploadTm(m.getActPreUploadTm());
 				demandTypeStatisticsBO.setActProductionUploadTm(m.getActProductionUploadTm());
+                demandTypeStatisticsBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 				demandTypeStatisticsBO.setDevpLeadDept(m.getDevpLeadDept());
 				demandTypeStatisticsBO.setProductMng(m.getProductMng());
 				demandTypeStatisticsBO.setDevpEng(m.getDevpEng());
@@ -644,6 +676,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			reportListb.forEach(m ->
 					{
 						DemandImplementationReportBO demandImplementationReportBO = new DemandImplementationReportBO();
+						demandImplementationReportBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 						demandImplementationReportBO.setDevpLeadDept(m.getDevpLeadDept());
 						demandImplementationReportBO.setReqDevp(m.getReqDevp());
 						demandImplementationReportBO.setReqOper(m.getReqOper());
@@ -698,6 +731,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			reportListb.forEach(m ->
 					{
 						DemandCompletionReportBO demandCompletionReportBO = new DemandCompletionReportBO();
+						demandCompletionReportBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 						demandCompletionReportBO.setDevpLeadDept(m.getDevpLeadDept());
 						demandCompletionReportBO.setReqTotal(m.getReqTotal());
 						demandCompletionReportBO.setReqAcceptance(m.getReqAcceptance());

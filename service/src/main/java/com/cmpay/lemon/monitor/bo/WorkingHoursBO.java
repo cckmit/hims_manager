@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-04-29 16:02:39
  */
@@ -60,6 +60,8 @@ public class WorkingHoursBO extends BaseDO {
     private String updatedtime;
     // 总公时
     private String sumTime;
+    // 总部门人数
+    private String sumDept;
     /**
      * 页数
      */
@@ -196,6 +198,14 @@ public class WorkingHoursBO extends BaseDO {
         this.pageSize = pageSize;
     }
 
+    public String getSumDept() {
+        return sumDept;
+    }
+
+    public void setSumDept(String sumDept) {
+        this.sumDept = sumDept;
+    }
+
     @Override
     public String toString() {
         return "WorkingHoursBO{" +
@@ -212,8 +222,10 @@ public class WorkingHoursBO extends BaseDO {
                 ", startedtime='" + startedtime + '\'' +
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
+                ", sumDept='" + sumDept + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", selectTime='" + selectTime + '\'' +
                 '}';
     }
 }

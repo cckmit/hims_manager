@@ -25,7 +25,9 @@ public class DemandUploadDocumentBO {
     private String actPreUploadTm;
     @Excel(name = "投产验证报告上传时间")
     private String actProductionUploadTm;
-    @Excel(name = "主导部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
     @Excel(name = "产品经理")
     private String productMng;
@@ -37,6 +39,14 @@ public class DemandUploadDocumentBO {
     private String testEng;
     @Excel(name = "需求当前阶段")
     private String preCurPeriod;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getReqNo() {
         return reqNo;
@@ -179,6 +189,7 @@ public class DemandUploadDocumentBO {
                 ", actUatUploadTm='" + actUatUploadTm + '\'' +
                 ", actPreUploadTm='" + actPreUploadTm + '\'' +
                 ", actProductionUploadTm='" + actProductionUploadTm + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", productMng='" + productMng + '\'' +
                 ", devpEng='" + devpEng + '\'' +

@@ -78,6 +78,7 @@ public class ReqDataCountDO extends BaseDO {
     private String reqNm;
     private String preCurPeriod;
     private String expPrdReleaseTm;
+    private String firstLevelOrganization;
 
     //本月受理需求总数：本月需求总数-暂停-取消
     private String reqAcceptance;
@@ -85,6 +86,14 @@ public class ReqDataCountDO extends BaseDO {
     private String reqInaccuracyRate;
     //进度异常率：进度异常的需求/本月受理需求总数
     private String reqAbnormalRate;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getReqPrd() {
         return reqPrd;

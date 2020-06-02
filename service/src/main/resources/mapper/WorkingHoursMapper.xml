@@ -17,6 +17,7 @@
         <result column="updatedTime" property="updatedtime" jdbcType="VARCHAR" />
         <result column="sumTime" property="sumTime" jdbcType="VARCHAR" />
         <result column="selectTime" property="selectTime" jdbcType="VARCHAR" />
+        <result column="sumDept" property="sumDept" jdbcType="VARCHAR" />
     </resultMap>
 
     <resultMap id="sm" type="com.cmpay.lemon.monitor.entity.DepartmentWorkDO">
@@ -28,12 +29,12 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
+        jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName,
         devp_lead_dept, comment, createdTime, startedTime, updatedTime
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_working_hours
         where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
@@ -165,7 +166,7 @@
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_working_hours
         <where >
@@ -249,8 +250,65 @@
         </where>
         group by a.fullname
     </select>
+    <select id="findSumB" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(1) sumDept ,sum(c.sumTime) sumTime  from
+        (
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department devp_lead_dept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+        and LEFT(b.createdTime,10)= #{selectTime,jdbcType=VARCHAR}
+        <where>
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                and department = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by a.fullname
+        ) c
+    </select>
+    <select id="findWeekSumB" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(1) sumDept ,sum(c.sumTime) sumTime  from
+        (
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department devp_lead_dept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+        and YEARWEEK(date_format(b.createdTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+        <where>
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                and department = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by a.fullname
+        ) c
+    </select>
+    <select id="findMonthSumB" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(1) sumDept ,sum(c.sumTime) sumTime   from
+        (
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department  devp_lead_dept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+        and LEFT(b.createdTime,10) like CONCAT('%',#{selectTime},'%')
+        <where >
+            <if test="devpLeadDept != null and devpLeadDept != ''" >
+                and department = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+        </where>
+        group by a.fullname
+        ) c
+    </select>
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
         select
+        <include refid="Base_Column_List" />
+        from
+        (select
         <include refid="Base_Column_List" />
         from t_working_hours
         <where >
@@ -260,10 +318,14 @@
             <if test="createdtime != null||createdtime != ''" >
                 and LEFT(createdTime,10) = #{selectTime,jdbcType=VARCHAR}
             </if>
-        </where>
+        </where> )c GROUP BY c.issuekey
     </select>
 
     <select id="findListWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        (
         select
         <include refid="Base_Column_List" />
         from t_working_hours
@@ -275,8 +337,13 @@
                 and YEARWEEK(date_format(createdTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
             </if>
         </where>
+        )c GROUP BY c.issuekey
     </select>
     <select id="findListMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        <include refid="Base_Column_List" />
+        from
+        (
         select
         <include refid="Base_Column_List" />
         from t_working_hours
@@ -288,6 +355,7 @@
                 and LEFT(createdTime,10)  like CONCAT('%',#{selectTime},'%')
             </if>
         </where>
+        )c GROUP BY c.issuekey
     </select>
 
     <select id="findDeptHours" resultMap="sm" parameterType="java.lang.String"  >

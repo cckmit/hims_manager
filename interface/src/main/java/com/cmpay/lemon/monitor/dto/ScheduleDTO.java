@@ -35,6 +35,16 @@ public class ScheduleDTO extends GenericDTO {
     private String urgentReasonPhrase;
     // 主导部门
     private String applicationDept;
+    // 一级团队
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getApplicationDept() {
         return applicationDept;

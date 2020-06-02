@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-04-30 15:59:10
  */
@@ -71,6 +71,8 @@ public class WorkingHoursDO extends BaseDO {
     // 总公时
     private String sumTime;
     private String selectTime;
+    // 总部门人数
+    private String sumDept;
 
     public String getJiraworklogkey() {
         return jiraworklogkey;
@@ -174,5 +176,34 @@ public class WorkingHoursDO extends BaseDO {
 
     public void setSumTime(String sumTime) {
         this.sumTime = sumTime;
+    }
+
+    public String getSumDept() {
+        return sumDept;
+    }
+
+    public void setSumDept(String sumDept) {
+        this.sumDept = sumDept;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkingHoursDO{" +
+                "jiraworklogkey='" + jiraworklogkey + '\'' +
+                ", issuekey='" + issuekey + '\'' +
+                ", timespnet='" + timespnet + '\'' +
+                ", subtaskname='" + subtaskname + '\'' +
+                ", assignmentDepartment='" + assignmentDepartment + '\'' +
+                ", name='" + name + '\'' +
+                ", displayname='" + displayname + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", comment='" + comment + '\'' +
+                ", createdtime='" + createdtime + '\'' +
+                ", startedtime='" + startedtime + '\'' +
+                ", updatedtime='" + updatedtime + '\'' +
+                ", sumTime='" + sumTime + '\'' +
+                ", selectTime='" + selectTime + '\'' +
+                ", sumDept='" + sumDept + '\'' +
+                '}';
     }
 }
