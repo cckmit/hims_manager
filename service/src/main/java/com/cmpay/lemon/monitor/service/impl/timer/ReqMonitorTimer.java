@@ -65,7 +65,7 @@ public class ReqMonitorTimer {
 //		reqTaskService.updateUnFinishReq(month);
 //	}
 	@Scheduled(cron = "0 40 23 * * ?")
-	public void getIssueModifiedWithinOneDay() {
+	 public void getIssueModifiedWithinOneDay() {
 		//如果是dev环境则不处理
 		if(LemonUtils.getEnv().equals(Env.DEV)) {
 			return;

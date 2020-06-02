@@ -13,6 +13,7 @@ import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     @Autowired
     SystemUserService systemUserService;
 
-
+    @Async
     public void getIssueModifiedWithinOneDay() {
         List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
         int i=0;
@@ -57,9 +58,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         }
         if(JudgeUtils.isNotEmpty(jiraTaskBodyBOList)){
             jiraTaskBodyBOList.forEach(m->{
-                JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                this.registerJiraBasicInfo(jiraTaskBodyBO);
-                this.registerWorklogs(jiraTaskBodyBO);
+                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                    this.registerJiraBasicInfo(jiraTaskBodyBO);
+                    this.registerWorklogs(jiraTaskBodyBO);
             });
         }
 
@@ -106,7 +107,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             this.registerWorklogs(jiraTaskBodyBO);
         });
     }
-    private JiraTaskBodyBO registerJiraBasicInfo(JiraTaskBodyBO jiraTaskBodyBO) {
+    @Async
+    public JiraTaskBodyBO registerJiraBasicInfo(JiraTaskBodyBO jiraTaskBodyBO) {
         JiraBasicInfoDO jiraBasicInfoDO = new JiraBasicInfoDO();
         jiraBasicInfoDO.setJirakey(jiraTaskBodyBO.getJiraKey());
         jiraBasicInfoDO.setAggregatetimespent(jiraTaskBodyBO.getAggregatetimespent());
@@ -169,8 +171,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
         return jiraTaskBodyBO;
     }
-
-    private void registerWorklogs(JiraTaskBodyBO jiraTaskBodyBO) {
+    @Async
+     void registerWorklogs(JiraTaskBodyBO jiraTaskBodyBO) {
         List<JiraWorklogBO> worklogs = JiraUtil.getWorklogs(jiraTaskBodyBO);
         for (int i = 0; i < worklogs.size(); i++) {
             JiraWorklogDO jiraWorklogDO = new JiraWorklogDO();
