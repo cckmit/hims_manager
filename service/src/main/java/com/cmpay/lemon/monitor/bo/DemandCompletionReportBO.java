@@ -4,7 +4,9 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 
 public class DemandCompletionReportBO {
 
-    @Excel(name = "开发主导部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
     @Excel(name = "本月总需求")
     private String reqTotal;
@@ -29,6 +31,13 @@ public class DemandCompletionReportBO {
     @Excel(name = "需求不准确率")
     private String reqInaccuracyRate;
 
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getDevpLeadDept() {
         return devpLeadDept;

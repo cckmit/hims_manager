@@ -41,6 +41,15 @@ public class ScheduleDO extends AbstractDO {
     private String notProductionImpact;
     private String urgentReasonPhrase;
     private String proNeed;
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getProNeed() {
         return proNeed;
@@ -360,6 +369,9 @@ public class ScheduleDO extends AbstractDO {
                 ", operApplicationReason='" + operApplicationReason + '\'' +
                 ", notProductionImpact='" + notProductionImpact + '\'' +
                 ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", applicationDept='" + applicationDept + '\'' +
                 '}';
     }
 }

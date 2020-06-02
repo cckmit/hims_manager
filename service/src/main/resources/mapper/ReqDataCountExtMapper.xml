@@ -41,6 +41,7 @@
 		<result property="infoDevp" jdbcType="VARCHAR" column="info_devp" />
 		<result property="busiDevp" jdbcType="VARCHAR" column="busi_devp" />
 		<result property="goveDevp" jdbcType="VARCHAR" column="gove_devp" />
+		<result property="firstLevelOrganization" jdbcType="VARCHAR" column="firstLevelOrganization" />
 	</resultMap>
 
 	<resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandDO">
@@ -111,6 +112,7 @@
 		<result property="actUatUploadTm" jdbcType="VARCHAR" column="act_uat_upload_tm" />
 		<result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
 		<result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
+		<result property="firstLevelOrganization" jdbcType="VARCHAR" column="firstLevelOrganization" />
 	</resultMap>
 
 	<resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
@@ -135,6 +137,7 @@
 		<result property="operApplicationReason"  jdbcType="VARCHAR"      column="oper_application_reason"/>
 		<result property="analysis"  jdbcType="VARCHAR"      column="analysis"/>
 		<result property="applicationDept"  jdbcType="VARCHAR"      column="application_dept"/>
+		<result property="firstLevelOrganization" jdbcType="VARCHAR" column="firstLevelOrganization" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -225,13 +228,13 @@
 
 	<sql id="recJoins">
 	</sql>
-	
+
 	<select id="getProg" resultMap="rt">
 		SELECT
 			sum( CASE WHEN pre_cur_period != '17' THEN 1 ELSE 0 END ) req_ing,
-			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper 
+			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper
 		FROM
-			t_demand_info 
+			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 	</select>
 
@@ -241,46 +244,46 @@
 			sum( CASE WHEN pre_cur_period IN ( '04', '05', '06', '07', '08', '09', '10' ) THEN 1 ELSE 0 END ) req_devp,
 			sum( CASE WHEN pre_cur_period IN ( '11', '12', '13' ) THEN 1 ELSE 0 END ) req_test,
 			sum( CASE WHEN pre_cur_period IN ( '14', '15', '16' ) THEN 1 ELSE 0 END ) req_pre,
-			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper 
+			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper
 		FROM
 			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 	</select>
-	
+
 	<select id="getAbnoByDept" resultMap="rt">
 		SELECT
 			devp_lead_dept,
 			#sum( CASE WHEN req_sts != '05' THEN 1 ELSE 0 END ) req_usual,
 			sum( CASE WHEN req_sts = '05' THEN 1 ELSE 0 END )	req_unusual
 		FROM
-			t_demand_info 
+			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 		group by devp_lead_dept
 	</select>
-	
+
 	<select id="getAbnoByLine" resultMap="rt">
 		SELECT
-			(SELECT VALUE FROM t_permi_dic_data t 
+			(SELECT VALUE FROM t_permi_dic_data t
 			WHERE t.NAME = req_prd_line AND t.DIC_ID='PRD_LINE') AS req_prd_line,
 			#sum( CASE WHEN req_sts != '05' THEN 1 ELSE 0 END ) req_usual,
 			sum( CASE WHEN req_sts = '05' THEN 1 ELSE 0 END )	req_unusual
 		FROM
-			t_demand_info 
+			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 		group by req_prd_line
 	</select>
-	
+
 	<select id="getProgByDept" resultMap="rt">
 		SELECT
 			devp_lead_dept,
 			sum( CASE WHEN pre_cur_period != '17' THEN 1 ELSE 0 END ) req_ing,
-			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper 
+			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper
 		FROM
-			t_demand_info 
+			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 		group by devp_lead_dept
 	</select>
-	
+
 	<select id="getProgDetlByDept" resultMap="rt">
 		SELECT
 			devp_lead_dept,
@@ -288,28 +291,29 @@
 			sum( CASE WHEN pre_cur_period IN ( '04', '05', '06', '07', '08', '09', '10' ) THEN 1 ELSE 0 END ) req_devp,
 			sum( CASE WHEN pre_cur_period IN ( '11', '12', '13' ) THEN 1 ELSE 0 END ) req_test,
 			sum( CASE WHEN pre_cur_period IN ( '14', '15', '16' ) THEN 1 ELSE 0 END ) req_pre,
-			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper 
+			sum( CASE WHEN pre_cur_period = '17' THEN 1 ELSE 0 END ) req_oper
 		FROM
 			t_demand_info
 		WHERE req_impl_mon BETWEEN #{0} AND #{1}
 		group by devp_lead_dept
 	</select>
-	
+
 	<select id="getImpl" resultMap="rt">
 		SELECT
 			sum( CASE WHEN pre_cur_period IN ( '10', '20', '30' ) THEN 1 ELSE 0 END ) req_prd,
 			sum( CASE WHEN pre_cur_period IN ( '40', '50', '80', '90', '100', '110' ) THEN 1 ELSE 0 END ) req_devp,
 			sum( CASE WHEN pre_cur_period IN ( '60', '70', '120', '130', '140' ) THEN 1 ELSE 0 END ) req_test,
 			sum( CASE WHEN pre_cur_period IN ( '150', '160', '170' ) THEN 1 ELSE 0 END ) req_pre,
-			sum( CASE WHEN pre_cur_period = '180' THEN 1 ELSE 0 END ) req_oper 
+			sum( CASE WHEN pre_cur_period = '180' THEN 1 ELSE 0 END ) req_oper
 		FROM
 			t_demand_info
 		WHERE req_impl_mon = #{0}
 		  and req_sts not in ( '30', '40','60' )
 	</select>
-	
+
 	<select id="getImplByDept" resultMap="rt">
 		SELECT
+		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS 		firstLevelOrganization,
 			CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END devp_lead_dept,
 			sum( CASE WHEN pre_cur_period IN ( '10', '20', '30' ) THEN 1 ELSE 0 END ) req_prd,
 			sum( CASE WHEN pre_cur_period IN ( '40', '50', '80', '90', '100', '110' ) THEN 1 ELSE 0 END ) req_devp,
@@ -321,7 +325,7 @@
 			t_demand_info
 		WHERE req_impl_mon = #{0}
 		  and req_sts not in ( '30', '40','60' )
-		GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)	
+		GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
 	</select>
 
 	<select id="getComp" resultMap="rt">
@@ -350,6 +354,7 @@
 
 	<select id="getCompByDept" resultMap="rt">
 		select a.*,
+		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS 		firstLevelOrganization,
                round( a.req_total - a.req_suspend - a.req_cancel ) req_acceptance,
                concat(round( ((a.req_suspend + a.req_cancel) / a.req_total )* 100 , 2 ),'%') req_inaccuracy_rate,
                concat(round( ( req_abnormal / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ),'%') req_abnormal_rate,
@@ -370,7 +375,7 @@
 				GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
 		)a
 	</select>
-	
+
 	<select id="getReqSts" resultMap="rt">
 		SELECT
 			sum( CASE WHEN req_type is not null and req_type != '' THEN 1 ELSE 0 END ) req_total,
@@ -385,6 +390,7 @@
 
 	<select id="getProduction" resultMap="sm">
 		SELECT
+		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = application_dept) AS  firstLevelOrganization,
 			t.pro_number 'pro_number' ,
 			 p.pro_need 'pro_need' ,
 			 p.application_dept 'application_dept',
@@ -409,6 +415,7 @@
 		a.act_uat_upload_tm 'act_uat_upload_tm',
 		a.act_pre_upload_tm 'act_pre_upload_tm',
 		a.act_production_upload_tm 'act_production_upload_tm',
+		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS  'firstLevelOrganization' ,
 		b.devp_lead_dept 'devp_lead_dept',
 		b.product_mng 'product_mng',
 		b.devp_eng 'devp_eng',
@@ -657,7 +664,7 @@
 			</if>
 		</where>
 	</select>
-	
+
 	<select  id="findNumberByCondition" resultType="int"  parameterType="map">
 		SELECT
 		count(1)
@@ -745,7 +752,7 @@
 			</if>
 		</where>
 	</select>
-	
+
 	<select id="selectByCenter" resultMap="rt" parameterType="map">
 		SELECT
 			count(*) total,
@@ -783,7 +790,7 @@
 			</if>
 		</where>
 	</select>
-	
+
 	<select id="selectByProduct" resultMap="rt" parameterType="map">
 		SELECT
 			count(*) total,
@@ -805,7 +812,7 @@
 			</if>
 		</where>
 	</select>
-	
+
 	<select id="selectByTest" resultMap="rt" parameterType="map">
 		SELECT
 			count(*) total,
@@ -826,9 +833,9 @@
 			</if>
 		</where>
 	</select>
-	
+
 	<select id="selectByEng" resultMap="rt" parameterType="map">
-		
+
 	</select>
 
 </mapper>

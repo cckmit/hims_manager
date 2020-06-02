@@ -3,8 +3,9 @@ package com.cmpay.lemon.monitor.bo;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 
 public class DemandImplementationReportBO {
-
-    @Excel(name = "开发主导部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String devpLeadDept;
     @Excel(name = "需求阶段")
     private String reqPrd;
@@ -73,5 +74,13 @@ public class DemandImplementationReportBO {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
     }
 }

@@ -601,6 +601,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				demandTypeStatisticsBO.setProOperator(m.getProOperator());
 				demandTypeStatisticsBO.setScheduleTime(m.getScheduleTime());
 				demandTypeStatisticsBO.setApplicationDept(m.getApplicationDept());
+				demandTypeStatisticsBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 				DemandTypeStatisticsBOList.add(demandTypeStatisticsBO);
 			});
 		}
@@ -639,6 +640,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				demandTypeStatisticsBO.setActUatUploadTm(m.getActUatUploadTm());
 				demandTypeStatisticsBO.setActPreUploadTm(m.getActPreUploadTm());
 				demandTypeStatisticsBO.setActProductionUploadTm(m.getActProductionUploadTm());
+                demandTypeStatisticsBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 				demandTypeStatisticsBO.setDevpLeadDept(m.getDevpLeadDept());
 				demandTypeStatisticsBO.setProductMng(m.getProductMng());
 				demandTypeStatisticsBO.setDevpEng(m.getDevpEng());
@@ -674,6 +676,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			reportListb.forEach(m ->
 					{
 						DemandImplementationReportBO demandImplementationReportBO = new DemandImplementationReportBO();
+						demandImplementationReportBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 						demandImplementationReportBO.setDevpLeadDept(m.getDevpLeadDept());
 						demandImplementationReportBO.setReqDevp(m.getReqDevp());
 						demandImplementationReportBO.setReqOper(m.getReqOper());
@@ -728,6 +731,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			reportListb.forEach(m ->
 					{
 						DemandCompletionReportBO demandCompletionReportBO = new DemandCompletionReportBO();
+						demandCompletionReportBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
 						demandCompletionReportBO.setDevpLeadDept(m.getDevpLeadDept());
 						demandCompletionReportBO.setReqTotal(m.getReqTotal());
 						demandCompletionReportBO.setReqAcceptance(m.getReqAcceptance());

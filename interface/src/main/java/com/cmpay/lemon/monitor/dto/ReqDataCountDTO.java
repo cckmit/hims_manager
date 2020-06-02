@@ -86,6 +86,8 @@ public class ReqDataCountDTO extends GenericDTO {
     private String reqInaccuracyRate;
     //进度异常率：进度异常的需求/本月受理需求总数
     private String reqAbnormalRate;
+    // 一级团队
+    private String firstLevelOrganization;
 
     public String getReqPrd() {
         return reqPrd;
@@ -413,5 +415,61 @@ public class ReqDataCountDTO extends GenericDTO {
 
     public void setReqAbnormalRate(String reqAbnormalRate) {
         this.reqAbnormalRate = reqAbnormalRate;
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
+    @Override
+    public String toString() {
+        return "ReqDataCountDTO{" +
+                "reqPrd='" + reqPrd + '\'' +
+                ", reqDevp='" + reqDevp + '\'' +
+                ", reqTest='" + reqTest + '\'' +
+                ", reqPre='" + reqPre + '\'' +
+                ", reqOper='" + reqOper + '\'' +
+                ", reqIng='" + reqIng + '\'' +
+                ", reqUsual='" + reqUsual + '\'' +
+                ", reqUnusual='" + reqUnusual + '\'' +
+                ", reqPrdLine='" + reqPrdLine + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", reportStartMon='" + reportStartMon + '\'' +
+                ", reportEndMon='" + reportEndMon + '\'' +
+                ", total='" + total + '\'' +
+                ", reqTotal='" + reqTotal + '\'' +
+                ", reqFinish='" + reqFinish + '\'' +
+                ", reqSuspend='" + reqSuspend + '\'' +
+                ", reqCancel='" + reqCancel + '\'' +
+                ", reqAbnormal='" + reqAbnormal + '\'' +
+                ", reqFinishRate='" + reqFinishRate + '\'' +
+                ", reqIncre='" + reqIncre + '\'' +
+                ", reqStock='" + reqStock + '\'' +
+                ", reqReplace='" + reqReplace + '\'' +
+                ", reqJump='" + reqJump + '\'' +
+                ", financeDevp='" + financeDevp + '\'' +
+                ", qualityDevp='" + qualityDevp + '\'' +
+                ", innoDevp='" + innoDevp + '\'' +
+                ", elecDevp='" + elecDevp + '\'' +
+                ", riskDevp='" + riskDevp + '\'' +
+                ", financialDevp='" + financialDevp + '\'' +
+                ", commDevp='" + commDevp + '\'' +
+                ", infoDevp='" + infoDevp + '\'' +
+                ", busiDevp='" + busiDevp + '\'' +
+                ", goveDevp='" + goveDevp + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", expPrdReleaseTm='" + expPrdReleaseTm + '\'' +
+                ", reqAcceptance='" + reqAcceptance + '\'' +
+                ", reqInaccuracyRate='" + reqInaccuracyRate + '\'' +
+                ", reqAbnormalRate='" + reqAbnormalRate + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                '}';
     }
 }

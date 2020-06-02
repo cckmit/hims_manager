@@ -31,6 +31,7 @@ public class ScheduleBO {
     private String operApplicationReason;
     private String notProductionImpact;
     private String urgentReasonPhrase;
+    private String firstLevelOrganization;
     // 主导部门
     private String applicationDept;
 
@@ -63,36 +64,12 @@ public class ScheduleBO {
     public ScheduleBO() {
     }
 
-    @Override
-    public String toString() {
-        return "ScheduleBO{" +
-                "seqId=" + seqId +
-                ", proNumber='" + proNumber + '\'' +
-                ", proOperator='" + proOperator + '\'' +
-                ", operationType='" + operationType + '\'' +
-                ", scheduleTime=" + scheduleTime +
-                ", preOperation='" + preOperation + '\'' +
-                ", afterOperation='" + afterOperation + '\'' +
-                ", operationReason='" + operationReason + '\'' +
-                ", proType='" + proType + '\'' +
-                ", isOperationProduction='" + isOperationProduction + '\'' +
-                ", operRequestContent='" + operRequestContent + '\'' +
-                ", proposeDate='" + proposeDate + '\'' +
-                ", isRefSql='" + isRefSql + '\'' +
-                ", sysOperType='" + sysOperType + '\'' +
-                ", operStatus='" + operStatus + '\'' +
-                ", applicationSector='" + applicationSector + '\'' +
-                ", operApplicant='" + operApplicant + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", developmentLeader='" + developmentLeader + '\'' +
-                ", svntabName='" + svntabName + '\'' +
-                ", analysis='" + analysis + '\'' +
-                ", operApplicationReason='" + operApplicationReason + '\'' +
-                ", notProductionImpact='" + notProductionImpact + '\'' +
-                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
-                ", pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                '}';
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
     }
 
     public int getSeqId() {
@@ -301,5 +278,40 @@ public class ScheduleBO {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleBO{" +
+                "seqId=" + seqId +
+                ", proNumber='" + proNumber + '\'' +
+                ", proOperator='" + proOperator + '\'' +
+                ", operationType='" + operationType + '\'' +
+                ", scheduleTime=" + scheduleTime +
+                ", preOperation='" + preOperation + '\'' +
+                ", afterOperation='" + afterOperation + '\'' +
+                ", operationReason='" + operationReason + '\'' +
+                ", proType='" + proType + '\'' +
+                ", isOperationProduction='" + isOperationProduction + '\'' +
+                ", operRequestContent='" + operRequestContent + '\'' +
+                ", proposeDate='" + proposeDate + '\'' +
+                ", isRefSql='" + isRefSql + '\'' +
+                ", sysOperType='" + sysOperType + '\'' +
+                ", operStatus='" + operStatus + '\'' +
+                ", applicationSector='" + applicationSector + '\'' +
+                ", operApplicant='" + operApplicant + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", svntabName='" + svntabName + '\'' +
+                ", analysis='" + analysis + '\'' +
+                ", operApplicationReason='" + operApplicationReason + '\'' +
+                ", notProductionImpact='" + notProductionImpact + '\'' +
+                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

@@ -10,12 +10,22 @@ public class DemandTypeProductionBO {
     private String proNumber;
     @Excel(name = "需求名称")
     private String proNeed;
-    @Excel(name = "主导部门")
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "二级主导团队")
     private String applicationDept;
     @Excel(name = "录入人")
     private String proOperator;
     @Excel(name = "操作时间")
     private LocalDateTime scheduleTime;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getProNumber() {
         return proNumber;

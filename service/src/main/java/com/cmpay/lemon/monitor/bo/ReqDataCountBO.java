@@ -83,6 +83,15 @@ public class ReqDataCountBO  {
     private String reqInaccuracyRate;
     //进度异常率：进度异常的需求/本月受理需求总数
     private String reqAbnormalRate;
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
 
     public String getReqPrd() {
         return reqPrd;
@@ -430,7 +439,7 @@ public class ReqDataCountBO  {
                 ", total='" + total + '\'' +
                 ", reqTotal='" + reqTotal + '\'' +
                 ", reqFinish='" + reqFinish + '\'' +
-                ", ReqSuspend='" + reqSuspend + '\'' +
+                ", reqSuspend='" + reqSuspend + '\'' +
                 ", reqCancel='" + reqCancel + '\'' +
                 ", reqAbnormal='" + reqAbnormal + '\'' +
                 ", reqFinishRate='" + reqFinishRate + '\'' +
@@ -456,6 +465,7 @@ public class ReqDataCountBO  {
                 ", reqAcceptance='" + reqAcceptance + '\'' +
                 ", reqInaccuracyRate='" + reqInaccuracyRate + '\'' +
                 ", reqAbnormalRate='" + reqAbnormalRate + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }
