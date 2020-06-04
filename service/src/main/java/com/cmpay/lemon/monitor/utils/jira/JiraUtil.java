@@ -164,8 +164,6 @@ public class JiraUtil {
 
     //修改测试主任务
     public static void EditTheTestMainTask(JiraTaskBodyBO jiraTaskBodyBO) {
-        System.err.println(jiraTaskBodyBO.getEditTestMainTaskBody());
-        System.err.println(CREATEISSUEURL + "/" + jiraTaskBodyBO.getJiraKey());
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)

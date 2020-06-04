@@ -1,5 +1,7 @@
 package com.cmpay.lemon.monitor.bo.jira;
 
+import com.cmpay.lemon.common.utils.JudgeUtils;
+
 public class JiraTaskBodyBO {
     /**
      * jira任务编号  jiraKey
@@ -154,16 +156,30 @@ public class JiraTaskBodyBO {
 
     public String  getEditTestMainTaskBody(){
 
-        return "{\n" +
+        return
+                "{\n" +
                 "\"fields\": {\n" +
                 "\t \"assignee\": {\n" +
                 "\t \"name\":\""+this.getAssignee()+"\"\n" +
-                "\t },\n" +
-                "    \"customfield_10252\":\""+  this.getPlanStartTime()+"\",\n" +
-                "    \"customfield_10253\":\""+  this.getPlanEndTime()+"\"\n" +
+                "\t }"+
+                        this.getCustomfield_10252()+
+                        this.getCustomfield_10253()+
                 "  }\n" +
                 "}";
     }
 
-
+    public String  getCustomfield_10252(){
+        if(JudgeUtils.isNotBlank(this.getPlanStartTime())) {
+            return ",\n"  +
+                    "\"customfield_10252\":\"" + this.getPlanStartTime() + "\"";
+        }
+        return "";
+    }
+    public String  getCustomfield_10253(){
+        if(JudgeUtils.isNotBlank(this.getPlanStartTime())) {
+            return  ",\n" +
+                    "\"customfield_10253\":\""+  this.getPlanEndTime()+"\"\n";
+        }
+        return "";
+    }
 }
