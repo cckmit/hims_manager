@@ -261,4 +261,19 @@ public class ReqTaskController {
         DemandBO demandBO = reqTaskService.approvalFindOne(reqInnerSeq,month);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
     }
+    /**
+     *需求名称编号变更明细
+     */
+    @PostMapping("/numberNameChangeDetail")
+    public GenericRspDTO<DemandNameChangeRspDTO> numberNameChangeDetail (@RequestBody DemandNameChangeDTO req) {
+        DemandNameChangeBO demandNameChangeBO = BeanUtils.copyPropertiesReturnDest(new DemandNameChangeBO(), req);
+        DemandnNameChangeRspBO demandnNameChangeRspBO = reqTaskService.numberNameChangeDetail(demandNameChangeBO);
+        DemandNameChangeRspDTO rspDTO = new DemandNameChangeRspDTO();
+        rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandnNameChangeRspBO.getDemandNameChangeBOS(), DemandNameChangeDTO.class));
+        rspDTO.setPageNum(demandnNameChangeRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(demandnNameChangeRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(demandnNameChangeRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(demandnNameChangeRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 }

@@ -56,8 +56,6 @@ public class DemandDO extends BaseDO {
     private String prdFinshTm;
     @Excel(name = "UAT更新时间")
     private String uatUpdateTm;
-    @Excel(name = "一级主导团队")
-    private String firstLevelOrganization;
     @Excel(name = "二级主导团队")
     private String devpLeadDept;
     @Excel(name = "二级配合团队")
@@ -68,6 +66,8 @@ public class DemandDO extends BaseDO {
     private String reqStartMon;
     @Excel(name = "需求实施月份")
     private String reqImplMon;
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
     @Excel(name = "需求类型")
     private String reqType;
     @Excel(name = "需求状态")
