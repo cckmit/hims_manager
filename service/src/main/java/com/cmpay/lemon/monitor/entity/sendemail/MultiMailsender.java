@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.entity.sendemail;
 
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -12,10 +13,7 @@ import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
+import java.util.*;
 
 
 public class MultiMailsender {
@@ -286,65 +284,18 @@ public class MultiMailsender {
     }
 
     public static void main(String[] args) throws Exception{
-//        // 创建邮件信息
-//
-    	System.out.println("ss");
-        // 创建邮件信息
-        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
-        mailInfo.setMailServerHost("smtp.qiye.163.com");
-        mailInfo.setMailServerPort("25");
-        mailInfo.setValidate(true);
-        mailInfo.setUsername(Constant.EMAIL_NAME);
-        mailInfo.setPassword(Constant.EMAIL_PSWD);
-        mailInfo.setFromAddress(Constant.EMAIL_NAME);
-        StringBuffer cont = new StringBuffer();
-        cont.append("<html>\n" +
-                "    <head></head>\n" +
-                "    <body>\n" +
-                "    <p>尊敬的"+"涂毅"+"你好：</p>");
-        cont.append("<p>欢迎加入金科开发者，账号默认为邮箱的前缀，密码系统随机生成。<br/>\n" +
-                "    请妥善保管密码，遗忘密码可登录金科学院进行密码重置。<br/>");
-        cont.append("您的账号为："+"ty"+"<br/>");
-        cont.append("你的密码为："+"123456"+"</p>");
-        cont.append("<p>此账号和密码是多个系统的登录凭证。开发者常用的系统有：<br/>\n" +
-                "    1、<a href=\"http://172.16.48.100:8090/\">金科学院</a> <br/>\n" +
-                "    2、<a href=\"http://172.16.50.200:8080/\">金科Jira</a><br/>\n" +
-                "    3、<a href=\"http://172.16.50.222:82/\">GitLab</a><br/>\n" +
-                "    4、<a href=\"http://172.16.54.77:8080/\">新Jenkins</a><br/>\n" +
-                "    5、<a href=\"http://172.16.50.222:9000/\">SonarQube</a></p>\n" +
-                "    <p>感谢您的使用，祝工作顺利！</p>\n" +
-                "    </body>\n" +
-                "    </html>");
-        String email=new String(cont);
-        mailInfo.setSubject("测试邮件");
-        mailInfo.setContent(email);
 
-
-        String[] receivers = new String[]{"tu_yi@hisuntech.com"};
-        mailInfo.setReceivers(receivers);
-        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        System.out.println(isSend);
-        //多个编号集合
-        //<html>
-//    <head></head>
-////    <body>
-////    <p>尊敬的%s你好：</p>
-////    <p>欢迎加入金科开发者，账号默认为邮箱的前缀，密码系统随机生成。<br/>
-////                请妥善保管密码，遗忘密码可登录金科学院进行密码重置。<br/>
-////                您的账号为：%s<br/>
-////        你的密码为：%s</p>
-////
-////    <p>此账号和密码是多个系统的登录凭证。开发者常用的系统有：<br/>
-////                1、<a href="http://172.16.48.100:8090/">金科学院</a> <br/>
-////                2、<a href="http://172.16.50.200:8080/">金科Jira</a><br/>
-////                3、<a href="http://172.16.50.222:82/">GitLab</a><br/>
-////                4、<a href="http://172.16.54.77:8080/">新Jenkins</a><br/>
-////                5、<a href="http://172.16.50.222:9000/">SonarQube</a></p>
-////    <p>感谢您的使用，祝工作顺利！</p>
-////    </body>
-////    </html>
-
-
+        String a =UUID.randomUUID().toString();
+        System.err.println(a);
+        String aa = "";
+        if(StringUtils.isNotBlank(aa)){
+            aa = "";
+        }
+        if(aa.equals("123")){
+            System.err.println("111111111111");
+        }else{
+            System.err.println("22222222222");
+        }
     }
 
 

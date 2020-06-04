@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandNameChangeExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="new_req_inner_seq" property="newReqInnerSeq" jdbcType="VARCHAR" />
+        <result column="new_req_no" property="newReqNo" jdbcType="VARCHAR" />
+        <result column="new_req_nm" property="newReqNm" jdbcType="VARCHAR" />
+        <result column="old_req_inner_seq" property="oldReqInnerSeq" jdbcType="VARCHAR" />
+        <result column="old_req_no" property="oldReqNo" jdbcType="VARCHAR" />
+        <result column="old_req_nm" property="oldReqNm" jdbcType="VARCHAR" />
+        <result column="operator" property="operator" jdbcType="VARCHAR" />
+        <result column="operation_time" property="operationTime" jdbcType="VARCHAR" />
+        <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, new_req_inner_seq, new_req_no, new_req_nm, old_req_inner_seq, old_req_no, old_req_nm,
+        operator, operation_time, uuid
+    </sql>
+
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_name_change
+        where uuid in  (
+        select distinct  uuid   from t_demand_name_change
+        <where >
+            <if test="newReqInnerSeq != null and newReqInnerSeq != ''" >
+                and new_req_inner_seq = #{newReqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="newReqNo != null and newReqNo !='' " >
+                or new_req_no = #{newReqNo,jdbcType=VARCHAR}
+            </if>
+        </where>
+        )
+    </select>
+
+    <select id="findOne" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_demand_name_change
+        <where >
+            <if test="newReqInnerSeq != null and newReqInnerSeq != ''" >
+                and new_req_inner_seq = #{newReqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="newReqNo != null and newReqNo !='' " >
+                and new_req_no = #{newReqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="newReqNm != null  and newReqNm !='' " >
+                and new_req_nm = #{newReqNm,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

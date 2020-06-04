@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandNameChangeDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="new_req_inner_seq" property="newReqInnerSeq" jdbcType="VARCHAR" />
+        <result column="new_req_no" property="newReqNo" jdbcType="VARCHAR" />
+        <result column="new_req_nm" property="newReqNm" jdbcType="VARCHAR" />
+        <result column="old_req_inner_seq" property="oldReqInnerSeq" jdbcType="VARCHAR" />
+        <result column="old_req_no" property="oldReqNo" jdbcType="VARCHAR" />
+        <result column="old_req_nm" property="oldReqNm" jdbcType="VARCHAR" />
+        <result column="operator" property="operator" jdbcType="VARCHAR" />
+        <result column="operation_time" property="operationTime" jdbcType="VARCHAR" />
+        <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, new_req_inner_seq, new_req_no, new_req_nm, old_req_inner_seq, old_req_no, old_req_nm, 
+        operator, operation_time, uuid
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_name_change
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_demand_name_change
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        insert into t_demand_name_change
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="newReqInnerSeq != null" >
+                new_req_inner_seq,
+            </if>
+            <if test="newReqNo != null" >
+                new_req_no,
+            </if>
+            <if test="newReqNm != null" >
+                new_req_nm,
+            </if>
+            <if test="oldReqInnerSeq != null" >
+                old_req_inner_seq,
+            </if>
+            <if test="oldReqNo != null" >
+                old_req_no,
+            </if>
+            <if test="oldReqNm != null" >
+                old_req_nm,
+            </if>
+            <if test="operator != null" >
+                operator,
+            </if>
+            <if test="operationTime != null" >
+                operation_time,
+            </if>
+            <if test="uuid != null" >
+                uuid,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="newReqInnerSeq != null" >
+                #{newReqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="newReqNo != null" >
+                #{newReqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="newReqNm != null" >
+                #{newReqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqInnerSeq != null" >
+                #{oldReqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqNo != null" >
+                #{oldReqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqNm != null" >
+                #{oldReqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null" >
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="operationTime != null" >
+                #{operationTime,jdbcType=VARCHAR},
+            </if>
+            <if test="uuid != null" >
+                #{uuid,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        update t_demand_name_change
+        <set >
+            <if test="newReqInnerSeq != null" >
+                new_req_inner_seq = #{newReqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="newReqNo != null" >
+                new_req_no = #{newReqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="newReqNm != null" >
+                new_req_nm = #{newReqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqInnerSeq != null" >
+                old_req_inner_seq = #{oldReqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqNo != null" >
+                old_req_no = #{oldReqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="oldReqNm != null" >
+                old_req_nm = #{oldReqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null" >
+                operator = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="operationTime != null" >
+                operation_time = #{operationTime,jdbcType=VARCHAR},
+            </if>
+            <if test="uuid != null" >
+                uuid = #{uuid,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandNameChangeDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_name_change
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="newReqInnerSeq != null" >
+                and new_req_inner_seq = #{newReqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="newReqNo != null" >
+                and new_req_no = #{newReqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="newReqNm != null" >
+                and new_req_nm = #{newReqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="oldReqInnerSeq != null" >
+                and old_req_inner_seq = #{oldReqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="oldReqNo != null" >
+                and old_req_no = #{oldReqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="oldReqNm != null" >
+                and old_req_nm = #{oldReqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="operator != null" >
+                and operator = #{operator,jdbcType=VARCHAR}
+            </if>
+            <if test="operationTime != null" >
+                and operation_time = #{operationTime,jdbcType=VARCHAR}
+            </if>
+            <if test="uuid != null" >
+                and uuid = #{uuid,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

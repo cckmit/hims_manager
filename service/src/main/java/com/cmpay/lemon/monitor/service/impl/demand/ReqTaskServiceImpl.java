@@ -106,6 +106,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IUserExtDao iUserDao;
     @Autowired
     private IDemandPictureDao iDemandPictureDao;
+    @Autowired
+    private IDemandNameChangeExtDao iDemandNameChangeExtDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -262,6 +264,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(DemandBO demandBO) {
+        // 操作人
+        String user = userService.getFullname(SecurityUtils.getLoginName());
+        // 操作时间
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         //校验数据
         checkReqTask(demandBO);
         //设置时间
@@ -320,12 +326,29 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //登记需求表
             demandDao.insert(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
 
+            // 登记需求名称及编号变更明细表 ，因为是新增需求，故老编号名称为空
+            DemandNameChangeDO demandNameChangeDO = new DemandNameChangeDO();
+            // 新内部编号
+            demandNameChangeDO.setNewReqInnerSeq(demandBO.getReqInnerSeq());
+            // 新名称
+            demandNameChangeDO.setNewReqNm(demandBO.getReqNm());
+            // 新编号
+            demandNameChangeDO.setNewReqNo(demandBO.getReqNo());
+            // 操作人
+            demandNameChangeDO.setOperator(user);
+            // 操作时间
+            demandNameChangeDO.setOperationTime(time);
+            // 唯一标识
+            demandNameChangeDO.setUuid(UUID.randomUUID().toString());
+            // 插入数据
+            iDemandNameChangeExtDao.insert(demandNameChangeDO);
+
             String reqInnerSeq = demandDao.getMaxInnerSeq().getReqInnerSeq();
             // 登记需求变更明细表
             demandChangeDetailsDO.setReqInnerSeq(reqInnerSeq);
             demandChangeDetailsDO.setReqNo(demandBO.getReqNo());
             demandChangeDetailsDO.setReqNm(demandBO.getReqNm());
-            demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+            demandChangeDetailsDO.setCreatUser(user);
             demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
             demandChangeDetailsDO.setIdentification(reqInnerSeq);
             demandChangeDetailsDO.setReqImplMon(demandBO.getReqImplMon());
@@ -344,7 +367,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
             demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
             //获取当前操作员
-            demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+            demandStateHistoryDO.setCreatUser(user);
             demandStateHistoryDO.setCreatTime(LocalDateTime.now());
             //登记需求状态历史表
             demandStateHistoryDao.insert(demandStateHistoryDO);
@@ -428,6 +451,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
+        // 操作人
+        String user = userService.getFullname(SecurityUtils.getLoginName());
+        // 操作时间
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         //校验数据
         checkReqTask(demandBO);
         // 如果是超级管理员或者需求管理员，不验证
@@ -460,6 +487,73 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             checkReqNo(demandBO,demandDO);
         }
         try {
+            // 判断需求编号，需求名称是否发生变化，如改变则登记需求名称及编号变更明细表
+            String oldReqNo = demandDO.getReqNo();
+            String oldReqNm = demandDO.getReqNm();
+            String newReqNo = demandBO.getReqNo();
+            String newReqNm = demandBO.getReqNm();
+            if(newReqNo == null){
+                newReqNm = "";
+            }
+            if(newReqNm == null){
+                newReqNm = "";
+            }
+            if(oldReqNo == null){
+                oldReqNo = "";
+            }
+            if(oldReqNm == null){
+                oldReqNm = "";
+            }
+            if(!oldReqNo.equals(newReqNo)  || !oldReqNm.equals(newReqNm) ){
+                DemandNameChangeDO demandNameChangeDO = new DemandNameChangeDO();
+                // 新内部编号
+                demandNameChangeDO.setNewReqInnerSeq(demandDO.getReqInnerSeq());
+                // 新名称
+                demandNameChangeDO.setNewReqNm(demandDO.getReqNm());
+                // 新编号
+                demandNameChangeDO.setNewReqNo(demandDO.getReqNo());
+                // 操作人
+                demandNameChangeDO.setOperator(user);
+                // 操作时间
+                demandNameChangeDO.setOperationTime(time);
+                // 登记表，先查询有无历史记录
+                DemandNameChangeDO nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
+                // 如果nameChangeDO为空
+                if (JudgeUtils.isNull(nameChangeDO)) {
+                    // 新内部编号
+                    demandNameChangeDO.setNewReqInnerSeq(demandBO.getReqInnerSeq());
+                    // 新名称
+                    demandNameChangeDO.setNewReqNm(demandBO.getReqNm());
+                    // 新编号
+                    demandNameChangeDO.setNewReqNo(demandBO.getReqNo());
+                    // 老内部编号
+                    demandNameChangeDO.setOldReqInnerSeq(demandDO.getReqInnerSeq());
+                    // 老名称
+                    demandNameChangeDO.setOldReqNm(demandDO.getReqNm());
+                    // 老编号
+                    demandNameChangeDO.setOldReqNo(demandDO.getReqNo());
+                    // 唯一标识
+                    demandNameChangeDO.setUuid(UUID.randomUUID().toString());
+                }else{
+                    // 新内部编号
+                    demandNameChangeDO.setNewReqInnerSeq(demandBO.getReqInnerSeq());
+                    // 新名称
+                    demandNameChangeDO.setNewReqNm(demandBO.getReqNm());
+                    // 新编号
+                    demandNameChangeDO.setNewReqNo(demandBO.getReqNo());
+                    // 老内部编号
+                    demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.getNewReqInnerSeq());
+                    // 老名称
+                    demandNameChangeDO.setOldReqNm(nameChangeDO.getNewReqNm());
+                    // 老编号
+                    demandNameChangeDO.setOldReqNo(nameChangeDO.getNewReqNo());
+                    // 唯一标识
+                    demandNameChangeDO.setUuid(nameChangeDO.getUuid());
+                }
+                // 插入
+                iDemandNameChangeExtDao.insert(demandNameChangeDO);
+
+            }
             //如果修改了需求节点计划时间
             if(demandBO.getRevisionTimeNote()!=null&&!demandBO.getRevisionTimeNote().isEmpty()){
                 reqPlanService.registrationTimeNodeHistoryTable(demandBO);
@@ -642,7 +736,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void doBatchImport(MultipartFile file) {
-
+        // 操作人
+        String user = userService.getFullname(SecurityUtils.getLoginName());
+        // 操作时间
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         File f = null;
         List<DemandDO> demandDOS=new ArrayList<>();
         try {
@@ -851,12 +948,29 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 String reqInnerSeq = m.getReqInnerSeq();
                 m.setReqInnerSeq(nextInnerSeq);
                 demandDao.insert(m);
+                // 登记需求名称及编号变更明细表 ，因为是新增需求，故老编号名称为空
+                DemandNameChangeDO demandNameChangeDO = new DemandNameChangeDO();
+                // 新内部编号
+                demandNameChangeDO.setNewReqInnerSeq(m.getReqInnerSeq());
+                // 新名称
+                demandNameChangeDO.setNewReqNm(m.getReqNm());
+                // 新编号
+                demandNameChangeDO.setNewReqNo(m.getReqNo());
+                // 操作人
+                demandNameChangeDO.setOperator(user);
+                // 操作时间
+                demandNameChangeDO.setOperationTime(time);
+                // 唯一标识
+                demandNameChangeDO.setUuid(UUID.randomUUID().toString());
+                // 插入数据
+                iDemandNameChangeExtDao.insert(demandNameChangeDO);
+
                 // 登记需求变更明细表
                 DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
                 demandChangeDetailsDO.setReqInnerSeq(m.getReqInnerSeq());
                 demandChangeDetailsDO.setReqNo(m.getReqNo());
                 demandChangeDetailsDO.setReqNm(m.getReqNm());
-                demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                demandChangeDetailsDO.setCreatUser(user);
                 demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
                 demandChangeDetailsDO.setIdentification(nextInnerSeq);
                 demandChangeDetailsDO.setReqImplMon(m.getReqImplMon());
@@ -874,7 +988,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                 //登记需求状态历史表
                 //获取当前操作员
-                demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                demandStateHistoryDO.setCreatUser(user);
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                 demandStateHistoryDao.insert(demandStateHistoryDO);
             });
@@ -897,6 +1011,75 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 m.setInputRes(demandDO.getInputRes());
                 m.setDevCycle(demandDO.getDevCycle());
                 m.setExpInput(demandDO.getExpInput());
+                System.err.println(demandDO.getReqNo() +"===="+m.getReqNo());
+                System.err.println(demandDO.getReqNm() +"===="+m.getReqNm());
+                // 判断需求编号，需求名称是否发生变化，如改变则登记需求名称及编号变更明细表
+                String oldReqNo = demandDO.getReqNo();
+                String oldReqNm = demandDO.getReqNm();
+                String newReqNo = m.getReqNo();
+                String newReqNm = m.getReqNm();
+                if(newReqNo == null){
+                    newReqNm = "";
+                }
+                if(newReqNm == null){
+                    newReqNm = "";
+                }
+                if(oldReqNo == null){
+                    oldReqNo = "";
+                }
+                if(oldReqNm == null){
+                    oldReqNm = "";
+                }
+                if(!oldReqNo.equals(newReqNo)  || !oldReqNm.equals(newReqNm) ){
+                    DemandNameChangeDO demandNameChangeDO = new DemandNameChangeDO();
+                    // 新内部编号
+                    demandNameChangeDO.setNewReqInnerSeq(demandDO.getReqInnerSeq());
+                    // 新名称
+                    demandNameChangeDO.setNewReqNm(demandDO.getReqNm());
+                    // 新编号
+                    demandNameChangeDO.setNewReqNo(demandDO.getReqNo());
+                    // 操作人
+                    demandNameChangeDO.setOperator(user);
+                    // 操作时间
+                    demandNameChangeDO.setOperationTime(time);
+                    // 登记表，先查询有无历史记录
+                    DemandNameChangeDO nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
+                    // 如果nameChangeDO为空
+                    if (JudgeUtils.isNull(nameChangeDO)) {
+                        // 新内部编号
+                        demandNameChangeDO.setNewReqInnerSeq(m.getReqInnerSeq());
+                        // 新名称
+                        demandNameChangeDO.setNewReqNm(m.getReqNm());
+                        // 新编号
+                        demandNameChangeDO.setNewReqNo(m.getReqNo());
+                        // 老内部编号
+                        demandNameChangeDO.setOldReqInnerSeq(demandDO.getReqInnerSeq());
+                        // 老名称
+                        demandNameChangeDO.setOldReqNm(demandDO.getReqNm());
+                        // 老编号
+                        demandNameChangeDO.setOldReqNo(demandDO.getReqNo());
+                        // 唯一标识
+                        demandNameChangeDO.setUuid(UUID.randomUUID().toString());
+                    }else{
+                        // 新内部编号
+                        demandNameChangeDO.setNewReqInnerSeq(m.getReqInnerSeq());
+                        // 新名称
+                        demandNameChangeDO.setNewReqNm(m.getReqNm());
+                        // 新编号
+                        demandNameChangeDO.setNewReqNo(m.getReqNo());
+                        // 老内部编号
+                        demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.getNewReqInnerSeq());
+                        // 老名称
+                        demandNameChangeDO.setOldReqNm(nameChangeDO.getNewReqNm());
+                        // 老编号
+                        demandNameChangeDO.setOldReqNo(nameChangeDO.getNewReqNo());
+                        // 唯一标识
+                        demandNameChangeDO.setUuid(nameChangeDO.getUuid());
+                    }
+                    // 插入
+                    iDemandNameChangeExtDao.insert(demandNameChangeDO);
+
+                }
                 demandDao.update(m);
             });
 
@@ -1673,4 +1856,22 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandBO.setSite(site);
         return demandBO;
     }
+    @Override
+    public DemandnNameChangeRspBO numberNameChangeDetail(DemandNameChangeBO demandNameChangeBO ){
+        PageInfo<DemandNameChangeBO>  pageInfo =  getDemandnNameChange( demandNameChangeBO);
+        List<DemandNameChangeBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandNameChangeBO.class);
+        DemandnNameChangeRspBO demandnNameChangeRspBO = new DemandnNameChangeRspBO();
+        demandnNameChangeRspBO.setDemandNameChangeBOS(demandBOList);
+        demandnNameChangeRspBO.setPageInfo(pageInfo);
+        return  demandnNameChangeRspBO;
+    }
+
+    private PageInfo<DemandNameChangeBO> getDemandnNameChange(DemandNameChangeBO demandNameChangeBO) {
+        DemandNameChangeDO demandNameChangeDO = new DemandNameChangeDO();
+        BeanConvertUtils.convert(demandNameChangeDO, demandNameChangeBO);
+        PageInfo<DemandNameChangeBO> pageInfo = PageUtils.pageQueryWithCount(demandNameChangeBO.getPageNum(), demandNameChangeBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(iDemandNameChangeExtDao.findList(demandNameChangeDO), DemandNameChangeBO.class));
+        return pageInfo;
+    }
+
 }

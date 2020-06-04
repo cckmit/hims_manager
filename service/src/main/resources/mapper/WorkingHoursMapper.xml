@@ -33,6 +33,11 @@
         devp_lead_dept, comment, createdTime, startedTime, updatedTime
     </sql>
 
+    <sql id="Base_Column_ListB" >
+        jiraWorklogKey, issuekey, subtaskName, assignment_department, name, displayName,
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime
+    </sql>
+
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />
@@ -214,7 +219,7 @@
         department  devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and LEFT(b.createdTime,10)= #{selectTime,jdbcType=VARCHAR}
+        and LEFT(b.startedTime,10)= #{selectTime,jdbcType=VARCHAR}
         <where>
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -228,7 +233,7 @@
         department  devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and YEARWEEK(date_format(b.createdTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+        and YEARWEEK(date_format(b.startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
         <where >
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -242,7 +247,7 @@
         department  devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and LEFT(b.createdTime,10) like CONCAT('%',#{selectTime},'%')
+        and LEFT(b.startedTime,10) like CONCAT('%',#{selectTime},'%')
         <where >
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -259,7 +264,7 @@
         department devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and LEFT(b.createdTime,10)= #{selectTime,jdbcType=VARCHAR}
+        and LEFT(b.startedTime,10)= #{selectTime,jdbcType=VARCHAR}
         <where>
             <if test="devpLeadDept != null and devpLeadDept != ''">
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -277,7 +282,7 @@
         department devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and YEARWEEK(date_format(b.createdTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+        and YEARWEEK(date_format(b.startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
         <where>
             <if test="devpLeadDept != null and devpLeadDept != ''">
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -295,7 +300,7 @@
         department  devp_lead_dept
         from sys_user a left join t_working_hours b
         on a.fullname=b.displayName
-        and LEFT(b.createdTime,10) like CONCAT('%',#{selectTime},'%')
+        and LEFT(b.startedTime,10) like CONCAT('%',#{selectTime},'%')
         <where >
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
@@ -306,7 +311,8 @@
     </select>
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
         select
-        <include refid="Base_Column_List" />
+        sum(timeSpnet) timeSpnet ,
+        <include refid="Base_Column_ListB" />
         from
         (select
         <include refid="Base_Column_List" />
@@ -315,15 +321,16 @@
             <if test="displayname != null||displayname != ''" >
                 and displayName = #{displayname,jdbcType=VARCHAR}
             </if>
-            <if test="createdtime != null||createdtime != ''" >
-                and LEFT(createdTime,10) = #{selectTime,jdbcType=VARCHAR}
+            <if test="startedtime != null||startedtime != ''" >
+                and LEFT(startedTime,10) = #{selectTime,jdbcType=VARCHAR}
             </if>
         </where> )c GROUP BY c.issuekey
     </select>
 
     <select id="findListWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
         select
-        <include refid="Base_Column_List" />
+        sum(timeSpnet) timeSpnet ,
+        <include refid="Base_Column_ListB" />
         from
         (
         select
@@ -333,15 +340,16 @@
             <if test="displayname != null||displayname != ''" >
                 and displayName = #{displayname,jdbcType=VARCHAR}
             </if>
-            <if test="createdtime != null||createdtime != ''" >
-                and YEARWEEK(date_format(createdTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+            <if test="startedtime != null||startedtime != ''" >
+                and YEARWEEK(date_format(startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
             </if>
         </where>
         )c GROUP BY c.issuekey
     </select>
     <select id="findListMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
         select
-        <include refid="Base_Column_List" />
+        sum(timeSpnet) timeSpnet ,
+        <include refid="Base_Column_ListB" />
         from
         (
         select
@@ -351,8 +359,8 @@
             <if test="displayname != null||displayname != ''" >
                 and displayName = #{displayname,jdbcType=VARCHAR}
             </if>
-            <if test="createdtime != null||createdtime != ''" >
-                and LEFT(createdTime,10)  like CONCAT('%',#{selectTime},'%')
+            <if test="startedtime != null||startedtime != ''" >
+                and LEFT(startedTime,10)  like CONCAT('%',#{selectTime},'%')
             </if>
         </where>
         )c GROUP BY c.issuekey
@@ -370,7 +378,7 @@
         count(case when a.totaltime>=28800 then 1 else null end)   deight,
         count(case when 28800 > a.totaltime then 1 else null end)  xeight
         from sys_user b left join
-        (select sum(timeSpnet) totaltime,displayName,assignment_department from t_working_hours where LEFT(createdTime,10) = #{selectTime} GROUP BY displayName) a
+        (select sum(timeSpnet) totaltime,displayName,assignment_department from t_working_hours where LEFT(startedTime,10) = #{selectTime} GROUP BY displayName) a
         on b.fullname=a.displayName
         group by b.department ) c
     </select>
