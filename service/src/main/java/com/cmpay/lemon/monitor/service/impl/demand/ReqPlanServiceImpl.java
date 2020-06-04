@@ -1317,10 +1317,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
                 DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
-                System.err.println("需求状态：="+demand.getReqSts());
                 //判断需求是否为取消，暂停需求，不是则跳过
                 if(!REQSUSPEND.equals(demand.getReqSts())&&!REQCANCEL.equals(demand.getReqSts())){
-                    System.err.println("此需求不是异常需求");
                     continue;
                 }
                 if(!permissionCheck(ids.get(i))){
@@ -1414,6 +1412,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
     }
     private void SyncJira(DemandDO demand, String reqInnerSeq) {
+
         DemandJiraDO demandJiraDO = demandJiraDao.get(reqInnerSeq);
         //若已存在对应jira任务，则更新jira关联表
         if(JudgeUtils.isNotNull(demandJiraDO)){

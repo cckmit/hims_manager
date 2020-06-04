@@ -35,7 +35,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -1011,8 +1010,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 m.setInputRes(demandDO.getInputRes());
                 m.setDevCycle(demandDO.getDevCycle());
                 m.setExpInput(demandDO.getExpInput());
-                System.err.println(demandDO.getReqNo() +"===="+m.getReqNo());
-                System.err.println(demandDO.getReqNm() +"===="+m.getReqNm());
                 // 判断需求编号，需求名称是否发生变化，如改变则登记需求名称及编号变更明细表
                 String oldReqNo = demandDO.getReqNo();
                 String oldReqNm = demandDO.getReqNm();
