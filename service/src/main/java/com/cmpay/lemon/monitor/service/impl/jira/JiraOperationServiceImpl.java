@@ -95,7 +95,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if(date1.getTime()<date2.getTime()){
+        if(date1.getTime()<=date2.getTime()){
             return;
         }
 
