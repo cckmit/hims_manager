@@ -2,7 +2,9 @@ package com.cmpay.lemon.monitor.bo;
 
 import java.util.Date;
 
-
+/**
+ * @author ty
+ */
 public class BaseConditionBO {
     public final static int PAGE_SHOW_COUNT = 20;
     private int pageNum = 1;

@@ -1,6 +1,6 @@
 /*
  * @ClassName DemandTimeFrameHistoryDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-12-02 17:57:24
  */
@@ -9,7 +9,9 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
 import java.time.LocalDateTime;
-
+/**
+ * @author TY
+ */
 @DataObject
 public class DemandTimeFrameHistoryBO{
     /**
@@ -252,5 +254,31 @@ public class DemandTimeFrameHistoryBO{
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandTimeFrameHistoryBO{" +
+                "id=" + id +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", prdFinshTm='" + prdFinshTm + '\'' +
+                ", expPrdReleaseTm='" + expPrdReleaseTm + '\'' +
+                ", uatUpdateTm='" + uatUpdateTm + '\'' +
+                ", testFinshTm='" + testFinshTm + '\'' +
+                ", preTm='" + preTm + '\'' +
+                ", oldPrdFinshTm='" + oldPrdFinshTm + '\'' +
+                ", oldExpPrdReleaseTm='" + oldExpPrdReleaseTm + '\'' +
+                ", oldUatUpdateTm='" + oldUatUpdateTm + '\'' +
+                ", oldTestFinshTm='" + oldTestFinshTm + '\'' +
+                ", oldPreTm='" + oldPreTm + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", identification='" + identification + '\'' +
+                ", creatUser='" + creatUser + '\'' +
+                ", creatTime=" + creatTime +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

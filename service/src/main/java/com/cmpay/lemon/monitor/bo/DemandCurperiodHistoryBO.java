@@ -4,7 +4,9 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
 import java.time.LocalDateTime;
-
+/**
+ * @author: TY
+ */
 @DataObject
 public class DemandCurperiodHistoryBO  {
     /**
@@ -126,5 +128,21 @@ public class DemandCurperiodHistoryBO  {
 
     public void setCreatTime(LocalDateTime creatTime) {
         this.creatTime = creatTime;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandCurperiodHistoryBO{" +
+                "id=" + id +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", oldPreCurPeriod='" + oldPreCurPeriod + '\'' +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", identification='" + identification + '\'' +
+                ", creatUser='" + creatUser + '\'' +
+                ", creatTime=" + creatTime +
+                '}';
     }
 }

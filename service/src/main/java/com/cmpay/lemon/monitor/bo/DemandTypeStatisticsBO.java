@@ -1,7 +1,9 @@
 package com.cmpay.lemon.monitor.bo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-
+/**
+ * @author TY
+ */
 public class DemandTypeStatisticsBO {
 
     @Excel(name = "本月总需求")
@@ -53,5 +55,16 @@ public class DemandTypeStatisticsBO {
 
     public void setReqJump(String reqJump) {
         this.reqJump = reqJump;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandTypeStatisticsBO{" +
+                "reqTotal='" + reqTotal + '\'' +
+                ", reqIncre='" + reqIncre + '\'' +
+                ", reqStock='" + reqStock + '\'' +
+                ", reqReplace='" + reqReplace + '\'' +
+                ", reqJump='" + reqJump + '\'' +
+                '}';
     }
 }

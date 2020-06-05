@@ -1,6 +1,6 @@
 /*
  * @ClassName DemandStateHistoryDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-11-14 09:52:51
  */

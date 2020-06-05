@@ -5,7 +5,9 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 import com.cmpay.lemon.framework.page.PageInfo;
 
 import java.util.List;
-
+/**
+ * @author: TY
+ */
 @DataObject
 public class DemandCurperiodHistoryRspBO {
     List<DemandCurperiodHistoryBO> demandCurperiodHistoryBOList;
@@ -25,5 +27,13 @@ public class DemandCurperiodHistoryRspBO {
 
     public void setPageInfo(PageInfo<DemandCurperiodHistoryBO> pageInfo) {
         this.pageInfo = pageInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandCurperiodHistoryRspBO{" +
+                "demandCurperiodHistoryBOList=" + demandCurperiodHistoryBOList +
+                ", pageInfo=" + pageInfo +
+                '}';
     }
 }

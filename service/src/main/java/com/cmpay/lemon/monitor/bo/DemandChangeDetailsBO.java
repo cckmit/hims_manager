@@ -1,6 +1,6 @@
 /*
  * @ClassName DemandChangeDetailsDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-11-13 10:55:00
  */
@@ -9,7 +9,6 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
 import java.time.LocalDateTime;
-
 @DataObject
 public class DemandChangeDetailsBO  {
     /**

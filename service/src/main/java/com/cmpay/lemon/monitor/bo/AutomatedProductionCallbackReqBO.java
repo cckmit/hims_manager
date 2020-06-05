@@ -1,5 +1,7 @@
 package com.cmpay.lemon.monitor.bo;
-
+/**
+ * @author ty
+ */
 public class AutomatedProductionCallbackReqBO {
     String proNumber;
     String status;
@@ -35,5 +37,15 @@ public class AutomatedProductionCallbackReqBO {
 
     public void setEnv(String env) {
         this.env = env;
+    }
+
+    @Override
+    public String toString() {
+        return "AutomatedProductionCallbackReqBO{" +
+                "proNumber='" + proNumber + '\'' +
+                ", status='" + status + '\'' +
+                ", remark='" + remark + '\'' +
+                ", env='" + env + '\'' +
+                '}';
     }
 }

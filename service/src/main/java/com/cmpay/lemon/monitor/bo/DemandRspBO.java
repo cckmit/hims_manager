@@ -3,7 +3,9 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.lemon.framework.page.PageInfo;
 
 import java.util.List;
-
+/**
+ * @author TY
+ */
 public class DemandRspBO {
     List<DemandBO> demandBOList;
     PageInfo<DemandBO> pageInfo;
@@ -22,5 +24,13 @@ public class DemandRspBO {
 
     public void setPageInfo(PageInfo<DemandBO> pageInfo) {
         this.pageInfo = pageInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandRspBO{" +
+                "demandBOList=" + demandBOList +
+                ", pageInfo=" + pageInfo +
+                '}';
     }
 }

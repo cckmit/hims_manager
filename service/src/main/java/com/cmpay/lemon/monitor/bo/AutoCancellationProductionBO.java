@@ -2,11 +2,16 @@ package com.cmpay.lemon.monitor.bo;
 
 /**
  * 取消自动化投产包
+ * @author ty
  */
 public class AutoCancellationProductionBO {
-    //取消原因
+    /**
+    取消原因
+     */
     private String reason;
-    //投产编号
+    /**
+    投产编号
+     */
     private String proNumber;
 
     public String getReason() {

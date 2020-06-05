@@ -3,7 +3,9 @@ package com.cmpay.lemon.monitor.bo;
 import cn.afterturn.easypoi.excel.annotation.Excel;
 
 import java.time.LocalDateTime;
-
+/**
+ * @author TY
+ */
 public class DemandTypeProductionBO {
 
     @Excel(name = "投产编号")
@@ -65,5 +67,17 @@ public class DemandTypeProductionBO {
 
     public void setScheduleTime(LocalDateTime scheduleTime) {
         this.scheduleTime = scheduleTime;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandTypeProductionBO{" +
+                "proNumber='" + proNumber + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", proOperator='" + proOperator + '\'' +
+                ", scheduleTime=" + scheduleTime +
+                '}';
     }
 }
