@@ -1317,8 +1317,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
                 DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
-                //判断需求是否为取消，暂停需求，不是则跳过
-                if(!REQSUSPEND.equals(demand.getReqSts())&&!REQCANCEL.equals(demand.getReqSts())){
+                //判断需求是否暂停需求，不是则跳过
+                if(!REQSUSPEND.equals(demand.getReqSts())){
                     continue;
                 }
                 if(!permissionCheck(ids.get(i))){
