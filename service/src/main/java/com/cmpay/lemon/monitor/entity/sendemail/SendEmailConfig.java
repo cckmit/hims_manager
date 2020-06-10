@@ -7,7 +7,7 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import java.util.Properties;
 
 /**
- * description： 
+ * description：
  * @author wang_hui
  * @date 2017年5月8日
  */
@@ -19,24 +19,24 @@ public class SendEmailConfig {
 	//private String devMail="wu_lr@hisuntech.com";
 	public static final String SEND_MAIL = "sendmail.properties";
 	/**
-	 * 
+	 *
 	 * 类名：读取发送邮件sendmail.properties
 	 * 描述：getParamValue
 	 * @author 方小勇
 	 * @date 2018年2月2日 下午2:17:40
 	 */
 	public static String getParamValue(String paramKey){
-		Properties prop = new Properties();       
-		 try{  
-		     prop.load(SendEmailConfig.class.getClassLoader().getResourceAsStream(SEND_MAIL));  
-		     System.out.println(prop.getProperty(paramKey));  
-		 }  
-		 catch(Exception e){  
-		     System.out.println(e);  
-		 }  
+		Properties prop = new Properties();
+		 try{
+		     prop.load(SendEmailConfig.class.getClassLoader().getResourceAsStream(SEND_MAIL));
+		     System.out.println(prop.getProperty(paramKey));
+		 }
+		 catch(Exception e){
+		     System.out.println(e);
+		 }
 	    return  prop.getProperty(paramKey);
 	}
-	
+
 	public SendEmailConfig(){
 		//以前是从配置文件获取,重构没有引入配置文件
 		if(LemonUtils.getEnv().equals(Env.SIT)) {
@@ -59,7 +59,7 @@ public class SendEmailConfig {
 		}*/
 	};
 	/**
-	 * 
+	 *
 	 * description : 正常投产发送   （含不做预投产邮件发送者）
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -71,7 +71,7 @@ public class SendEmailConfig {
 		if(env.equals("DEV")) {
 			return devMail;
 		}else if(env.equals("PRO")){
-			if(isPre)  
+			if(isPre)
 				return "version_it@hisuntech.com;huang_jh@hisuntech.com";
 			else {
 				String paramValue = "version_it@hisuntech.com;huang_jh@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;dong_jm@hisuntech.com";
@@ -82,7 +82,7 @@ public class SendEmailConfig {
 		/*if(env.equals("DEV")) {
 			return devMail;
 		}else if(env.equals("PRO")){
-			if(isPre)  
+			if(isPre)
 				return "version_it@hisuntech.com;huang_jh@hisuntech.com";//预投产做验证
 			//预投产不做验证
 			else return "version_it@hisuntech.com;huang_jh@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;dong_jm@hisuntech.com";
@@ -90,7 +90,7 @@ public class SendEmailConfig {
 		return "";*/
 	}
 	/**
-	 * 
+	 *
 	 * description : 正常投产抄送  --没有用到！！！
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -100,9 +100,9 @@ public class SendEmailConfig {
 	public String getNormalMailCopy(){
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 非正常投产发送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -119,9 +119,9 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 非正常投产抄送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -136,9 +136,9 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 救火更新发送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -150,14 +150,18 @@ public class SendEmailConfig {
 		if(env.equals("DEV")){
 			return devMail;
 		}else if(env.equals("PRO")){
-			if(isPre) return "version_it@hisuntech.com;huang_jh@hisuntech.com";
-			else return "version_it@hisuntech.com;huang_jh@hisuntech.com;dong_jm@hisuntech.com";
+			if(isPre) {
+				return "version_it@hisuntech.com;huang_jh@hisuntech.com";
+			}
+			else {
+				return "version_it@hisuntech.com;huang_jh@hisuntech.com;dong_jm@hisuntech.com";
+			}
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 救火更新抄送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -173,9 +177,9 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 系统操作发送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -190,9 +194,9 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : 系统操作抄送
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -207,9 +211,9 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : DBA人员
 	 * @author wang_hui
 	 * 2017年5月8日
@@ -224,14 +228,14 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * description : SQL审批人员
 	 * @author wang_hui
 	 * 2017年5月8日
 	 *
-	 * @return 
+	 * @return
 	 */
 	public String getSqlMailTo(){
 		if(env.equals("DEV")){
@@ -241,20 +245,21 @@ public class SendEmailConfig {
 		}
 		return "";
 	}
-	
+
 
     public String[] getErroCodeMailTo()
     {
-        if(env.equals("DEV"))
-            return (new String[] {
-                devMail
-            });
-        if(env.equals("PRO"))
-            return (new String[] {
-                "dong_jm@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com"
-            });
-        else
-            return null;
+        if(env.equals("DEV")){
+			return (new String[] {
+					devMail
+			});
+		}else if(env.equals("PRO")){
+			return (new String[] {
+					"dong_jm@hisuntech.com", "wujinyan@hisuntech.com", "xiao_hua@hisuntech.com", "liu_dm@hisuntech.com", "liujia3@hisuntech.com", "liu_sch@hisuntech.com"
+			});
+		}
+		return null;
+
     }
 
 }

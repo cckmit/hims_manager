@@ -1,7 +1,9 @@
 package com.cmpay.lemon.monitor.bo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-
+/**
+ * @author: TY
+ */
 public class DemandImplementationReportBO {
     @Excel(name = "一级主导团队")
     private String firstLevelOrganization;
@@ -82,5 +84,19 @@ public class DemandImplementationReportBO {
 
     public void setFirstLevelOrganization(String firstLevelOrganization) {
         this.firstLevelOrganization = firstLevelOrganization;
+    }
+
+    @Override
+    public String toString() {
+        return "DemandImplementationReportBO{" +
+                "firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", reqPrd='" + reqPrd + '\'' +
+                ", reqDevp='" + reqDevp + '\'' +
+                ", reqTest='" + reqTest + '\'' +
+                ", reqPre='" + reqPre + '\'' +
+                ", reqOper='" + reqOper + '\'' +
+                ", total='" + total + '\'' +
+                '}';
     }
 }

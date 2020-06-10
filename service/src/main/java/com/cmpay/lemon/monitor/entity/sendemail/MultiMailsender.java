@@ -121,8 +121,9 @@ public class MultiMailsender {
                     String mailTOAddressSTR = "";
                     for (String toMailAddress : mailToAddress) {
                         // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
-                        if (fail_mail.indexOf(toMailAddress) < 0)
+                        if (fail_mail.indexOf(toMailAddress) < 0){
                             mailTOAddressSTR += toMailAddress + ";";
+                        }
                     }
                     mailTOAddressSTR = mailTOAddressSTR.substring(0, mailTOAddressSTR.length() - 1);
 
@@ -141,8 +142,9 @@ public class MultiMailsender {
                     String mailCCAddressSTR = "";
                     for (String ccMailAddress : ccs) {
                         // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
-                        if ( fail_mail.indexOf(ccMailAddress) < 0)
+                        if ( fail_mail.indexOf(ccMailAddress) < 0){
                             mailCCAddressSTR += ccMailAddress + ";";
+                        }
                     }
                     mailCCAddressSTR = mailCCAddressSTR.substring(0, mailCCAddressSTR.length() - 1);
 
@@ -222,8 +224,9 @@ public class MultiMailsender {
                     String mailCCAddressSTR = "";
                     for (String ccMailAddress : ccs) {
                         // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
-                        if ( fail_mail.indexOf(ccMailAddress) < 0)
+                        if ( fail_mail.indexOf(ccMailAddress) < 0){
                             mailCCAddressSTR += ccMailAddress + ";";
+                        }
                     }
                     mailCCAddressSTR = mailCCAddressSTR.substring(0, mailCCAddressSTR.length() - 1);
 

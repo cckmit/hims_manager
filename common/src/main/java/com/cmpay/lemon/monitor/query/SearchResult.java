@@ -41,7 +41,7 @@ public class SearchResult {
      * @return { records: 查询结果集, count: countSQL 执行结果}
      */
     public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<String, Object>();
+        Map<String, Object> map = new HashMap<String, Object>(16);
         map.put("count", count);
         map.put("records", resultSet);
         return map;

@@ -1,5 +1,7 @@
 package com.cmpay.lemon.monitor.bo;
-
+/**
+ * @author ty
+ */
 public class AutomatedProductionBO {
     String env;
     String proNumber;
@@ -44,5 +46,14 @@ public class AutomatedProductionBO {
                 "\t\"env\":\"0\",\n" +
                 "\t\"remark\":\"其他\"\n" +
                 "}";
+    }
+
+    @Override
+    public String toString() {
+        return "AutomatedProductionBO{" +
+                "env='" + env + '\'' +
+                ", proNumber='" + proNumber + '\'' +
+                ", proPkgName='" + proPkgName + '\'' +
+                '}';
     }
 }

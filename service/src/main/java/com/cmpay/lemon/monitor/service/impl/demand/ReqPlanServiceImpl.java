@@ -81,9 +81,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     //技术负责人
     private static final Long SUPERADMINISTRATOR3 =(long)5006;
 
-    //30 需求状态为暂停
+    //30 需求状态为取消
     private static final String REQSUSPEND ="30";
-    //40 需求状态为取消
+    //40 需求状态为暂停
     private static final String REQCANCEL ="40";
     // 30 需求定稿
     private static final int REQCONFIRM = 30;
@@ -448,6 +448,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < list.size(); i++) {
                 DemandDO demand = list.get(i);
                 String picReqinnerseq = list.get(i).getReqInnerSeq();
+                DemandDO demandDO1 = demandDao.get(picReqinnerseq);
                 // 需求类型变为存量
                 demand.setReqType("02");
                 // 需求实施月份，转为下个月
@@ -504,6 +505,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //更新需求状态历史表
                     DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                     demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck((demandDO1.getReqSts())));
                     String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
                     demandStateHistoryDO.setReqSts(reqSts);
                     demandStateHistoryDO.setRemarks("存量变更录入");
@@ -1128,6 +1130,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < list.size(); i++) {
                 DemandDO demand = list.get(i);
                 String picReqinnerseq = list.get(i).getReqInnerSeq();
+                DemandDO demandDO1 = demandDao.get(picReqinnerseq);
                 // 需求类型变为存量
                 demand.setReqType("02");
                 // 需求实施月份，转为下个月
@@ -1185,6 +1188,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //更新需求状态历史表
                     DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                     demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck((demandDO1.getReqSts())));
                     String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
                     demandStateHistoryDO.setReqSts(reqSts);
                     demandStateHistoryDO.setRemarks("存量变更录入");
@@ -1317,8 +1321,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
                 DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
-                //判断需求是否为取消，暂停需求，不是则跳过
-                if(!REQSUSPEND.equals(demand.getReqSts())&&!REQCANCEL.equals(demand.getReqSts())){
+                DemandDO demandDO1 = demandDao.get(ids.get(i));
+                System.err.println(demand.getReqSts());
+                //判断需求是否暂停需求，不是则跳过
+                if(!REQCANCEL.equals(demand.getReqSts())){
                     continue;
                 }
                 if(!permissionCheck(ids.get(i))){
@@ -1383,9 +1389,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //更新需求状态历史表
                     DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
                     demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck((demandDO1.getReqSts())));
                     String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
                     demandStateHistoryDO.setReqSts(reqSts);
-                    demandStateHistoryDO.setRemarks("存量变更录入");
+                    demandStateHistoryDO.setRemarks("需求重新启动");
                     demandStateHistoryDO.setReqNo(demand.getReqNo());
                     demandStateHistoryDO.setReqNm(demand.getReqNm());
                     //获取当前操作员
@@ -1402,6 +1409,26 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 } else {
                     demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);
+                    //更新需求状态历史表
+                    DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                    demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                    demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck((demandDO1.getReqSts())));
+                    String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
+                    demandStateHistoryDO.setReqSts(reqSts);
+                    demandStateHistoryDO.setRemarks("需求重新启动");
+                    demandStateHistoryDO.setReqNo(demand.getReqNo());
+                    demandStateHistoryDO.setReqNm(demand.getReqNm());
+                    //获取当前操作员
+                    demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                    demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                    //依据内部需求编号查唯一标识
+                    String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                    if(identificationByReqInnerSeq==null){
+                        identificationByReqInnerSeq=demand.getReqInnerSeq();;
+                    }
+                    demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                    //登记需求状态历史表
+                    demandStateHistoryDao.insert(demandStateHistoryDO);
                 }
             }
         } catch (Exception e) {

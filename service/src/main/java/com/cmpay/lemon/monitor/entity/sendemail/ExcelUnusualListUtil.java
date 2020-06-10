@@ -27,7 +27,7 @@ public class ExcelUnusualListUtil {
 		book.close();
 		return file.getAbsolutePath();
 	}
-	
+
 	private  void setHeader(WritableSheet sheet, List<ProductionBO> rowList) throws WriteException {
 		WritableCellFormat headerFormat = new WritableCellFormat();
 		//水平居中对齐
@@ -41,7 +41,7 @@ public class ExcelUnusualListUtil {
 		//设置背景颜色
 		headerFormat.setBackground(Colour.GREY_25_PERCENT);
 		ProductionBO msb = rowList.get(0);
-		 sheet.mergeCells(0, 0, 5, 0); 
+		 sheet.mergeCells(0, 0, 5, 0);
 			addCell(sheet, 0, 0, "正常投产(非投产日)申请表", headerFormat,1000,5);
 			addCell(sheet, 1,0, "需求名称及内容简述", headerFormat,0,20);
 			addCell(sheet, 2,0, "申请部门", headerFormat,0,20);
@@ -75,10 +75,10 @@ public class ExcelUnusualListUtil {
 			addCell(sheet, 11,0, "备注 (影响范围,其它补充说明)", headerFormat,0,40);
 			}
 			//addCell(sheet, 7,0, "当天不投产的影响", headerFormat,0,20);
-			
+
 
 	}
-	
+
 	private  String[] setBody(WritableSheet sheet, List<ProductionBO> rowList) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setAlignment(Alignment.LEFT); // 水平居中对齐
@@ -93,44 +93,44 @@ public class ExcelUnusualListUtil {
 		BigDecimal totalWorkloadPoint = new BigDecimal(0.0);
 		BigDecimal currentWorkloadPoint = new BigDecimal(0.0);
 		String [] params = new String[3];
-		
-		
-		sheet.mergeCells(1, 1, 5, 1); 
+
+
+		sheet.mergeCells(1, 1, 5, 1);
 		addCell(sheet, 1,1, msb.getProNeed(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 2,1, msb.getApplicationDept(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 2,3, msb.getProApplicant(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 2,5, msb.getApplicantTel(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 3,1, msb.getProNumber(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 3,3, msb.getProChecker(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 3,5, msb.getCheckerTel(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 4,1, msb.getValidation(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 4,3, msb.getIdentifier(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 4,5, msb.getIdentifierTel(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 5,3,msb.getProModule(), bodyFormat,0,20);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if(msb.getProDate()!=null)
-		addCell(sheet, 5,1,sdf.format(msb.getProDate()), bodyFormat,0,20);
-		
+		if(msb.getProDate()!=null){
+			addCell(sheet, 5,1,sdf.format(msb.getProDate()), bodyFormat,0,20);
+		}
 		addCell(sheet, 5,5,msb.getBusinessPrincipal(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 6,1,msb.getProManager(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 6,3,msb.getIsRefCerificate(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 6,5,msb.getDevelopmentLeader(), bodyFormat,0,20);
 
 		addCell(sheet, 7,1,msb.getApprover(), bodyFormat,0,20);
-		
+
 		addCell(sheet, 7,3,msb.getProOperation(), bodyFormat,0,20);
 		addCell(sheet, 7,5,msb.getUpdateOperator(), bodyFormat,0,20);
 		addCell(sheet, 8,1,msb.getIsFallback(), bodyFormat,0,40);
@@ -146,25 +146,25 @@ public class ExcelUnusualListUtil {
 			sheet.mergeCells(1, 11, 5, 12);
 			addCell(sheet, 11,1,msb.getRemark(), bodyFormat,0,20);
 		}
-		
+
 		params[0]=String.valueOf(totalRow);
 		params[1]=String.valueOf(totalWorkloadPoint);
 		params[2]=String.valueOf(currentWorkloadPoint);
 		return params;
 	}
-	
+
 	private  void setTotal(WritableSheet sheet, List<ProductionBO> rowList, String[] params) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setAlignment(Alignment.CENTRE); // 水平居中对齐
 		bodyFormat.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
 		bodyFormat.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
-		
+
 		WritableCellFormat bodyFormatLeft = new WritableCellFormat();
 		bodyFormatLeft.setAlignment(Alignment.LEFT); // 水平居中对齐
 		bodyFormatLeft.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
 		bodyFormatLeft.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
 		}
-	
+
 	private static void addCell(WritableSheet sheet, int row, int column, String data, WritableCellFormat format, int rowWidth, int columnWidth) throws WriteException {
 		Label label = new Label(column,row,data,format);
 		if (rowWidth==0) {

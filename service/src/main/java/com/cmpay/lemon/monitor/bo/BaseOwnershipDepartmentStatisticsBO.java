@@ -1,7 +1,9 @@
 package com.cmpay.lemon.monitor.bo;
 
 import cn.afterturn.easypoi.excel.annotation.Excel;
-
+/**
+ * @author ty
+ */
 public class BaseOwnershipDepartmentStatisticsBO {
 
     @Excel(name = "需求阶段")
@@ -123,5 +125,23 @@ public class BaseOwnershipDepartmentStatisticsBO {
 
     public void setTotal(String total) {
         this.total = total;
+    }
+
+    @Override
+    public String toString() {
+        return "BaseOwnershipDepartmentStatisticsBO{" +
+                "reqPrd='" + reqPrd + '\'' +
+                ", financeDevp='" + financeDevp + '\'' +
+                ", qualityDevp='" + qualityDevp + '\'' +
+                ", innoDevp='" + innoDevp + '\'' +
+                ", elecDevp='" + elecDevp + '\'' +
+                ", riskDevp='" + riskDevp + '\'' +
+                ", financialDevp='" + financialDevp + '\'' +
+                ", commDevp='" + commDevp + '\'' +
+                ", infoDevp='" + infoDevp + '\'' +
+                ", busiDevp='" + busiDevp + '\'' +
+                ", goveDevp='" + goveDevp + '\'' +
+                ", total='" + total + '\'' +
+                '}';
     }
 }

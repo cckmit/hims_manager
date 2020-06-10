@@ -28,4 +28,12 @@ public class DemandTimeFrameHistoryRspBO extends PageableRspDTO {
     public void setPageInfo(PageInfo<DemandTimeFrameHistoryBO> pageInfo) {
         this.pageInfo = pageInfo;
     }
+
+    @Override
+    public String toString() {
+        return "DemandTimeFrameHistoryRspBO{" +
+                "demandTimeFrameHistoryBOList=" + demandTimeFrameHistoryBOList +
+                ", pageInfo=" + pageInfo +
+                '}';
+    }
 }
