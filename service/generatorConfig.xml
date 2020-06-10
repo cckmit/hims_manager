@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 <generatorConfiguration>
     <classPathEntry
-            location="C:\Users\tuyi\.gradle\caches\modules-2\files-2.1\mysql\mysql-connector-java\5.1.34\240221147d8f9e26b25625bc3c4660cfb8ac92ac\mysql-connector-java-5.1.34-sources.jar"/>
+            location="C:\Users\MI\.gradle\caches\modules-2\files-2.1\mysql\mysql-connector-java\5.1.34\240221147d8f9e26b25625bc3c4660cfb8ac92ac\mysql-connector-java-5.1.34-sources.jar"/>
     <context id="mysql" targetRuntime="MyBatis3"
              defaultModelType="lemonflat">
 
@@ -46,9 +46,10 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="t_vpn_info" domainObjectName="VpnInfoDO" enableCountByExample="false"
+        <table tableName="t_working_hours" domainObjectName="WorkingHoursDO" enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>
+
     </context>
 </generatorConfiguration>

@@ -44,6 +44,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     SystemUserService systemUserService;
 
     @Async
+    @Override
     public void getIssueModifiedWithinOneDay() {
         List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
         int i=0;
@@ -58,14 +59,18 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         }
         if(JudgeUtils.isNotEmpty(jiraTaskBodyBOList)){
             jiraTaskBodyBOList.forEach(m->{
+                try {
                     JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
                     this.registerJiraBasicInfo(jiraTaskBodyBO);
                     this.registerWorklogs(jiraTaskBodyBO);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             });
         }
 
     }
-
+    @Override
     public void getEpicRelatedTasks(DemandBO demandBO) {
         //1.需求编号找到对应的epic
         DemandJiraDO demandJiraDO = demandJiraDao.get(demandBO.getReqInnerSeq());
