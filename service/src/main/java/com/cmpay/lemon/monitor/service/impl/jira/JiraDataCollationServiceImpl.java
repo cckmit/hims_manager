@@ -185,7 +185,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraWorklogDO.setIssuekey(jiraTaskBodyBO.getJiraKey());
             jiraWorklogDO.setName(worklogs.get(i).getName());
             jiraWorklogDO.setDisplayname(worklogs.get(i).getDisplayname());
-            jiraWorklogDO.setComment(worklogs.get(i).getComment());
+           // jiraWorklogDO.setComment(worklogs.get(i).getComment());
             jiraWorklogDO.setCreatedtime(worklogs.get(i).getCreatedtime());
             jiraWorklogDO.setUpdatedtime(worklogs.get(i).getUpdatedtime());
             jiraWorklogDO.setStartedtime(worklogs.get(i).getStartedtime());

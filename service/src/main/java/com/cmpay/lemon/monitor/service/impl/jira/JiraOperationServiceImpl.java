@@ -411,7 +411,6 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             String epicKey = "";
             try {
                 epicKey = demandJiraDO.getJiraKey();
-                System.err.println(epicKey);
             } catch (Exception e) {
                 return;
             }
