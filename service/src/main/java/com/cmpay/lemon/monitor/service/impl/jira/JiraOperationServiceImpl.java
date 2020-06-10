@@ -374,12 +374,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
-                jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(0).toString());
+                jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(1).toString());
                 if (!JudgeUtils.isBlank(map.get(i).get(19).toString().trim())) {
                     jiraTaskBodyBO.setAssignee(map.get(i).get(19).toString().trim());
                 }
-                System.err.println(map.get(i).get(19).toString().trim());
-                System.err.println(i);
                 if (!JudgeUtils.isBlank(map.get(i).get(20).toString())) {
                     jiraTaskBodyBO.setPlanStartTime(map.get(i).get(20).toString().trim());
                 } else {
