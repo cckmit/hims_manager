@@ -34,6 +34,8 @@ public interface IReqDataCountDao extends BaseDao<DemandDO,String> {
 
 	//需求完成情况统计
 	List<ReqDataCountDO> getCompByDept(String reqImplMon);
+	//需求完成情况统计
+	List<ReqDataCountDO> getCompByDept2(String reqImplMon);
 
 	//需求类型统计
 	List<ReqDataCountDO> getReqSts(String reqImplMon);
@@ -50,20 +52,20 @@ public interface IReqDataCountDao extends BaseDao<DemandDO,String> {
 	//查询本月需求详情
 	List<ReqDataCountDO> selectDetl(ReqMngDO vo);
 	Integer findNumberByCondition(ReqMngDO vo);
-	
+
 	//按中心经理查询
     ReqDataCountDO selectByCenter(ReqMngDO vo);
-	
+
 	//按产品查询
     ReqDataCountDO selectByProduct(ReqMngDO vo);
-		
+
 	//按测试查询
     ReqDataCountDO selectByTest(ReqMngDO vo);
-		
+
 	//按开发查询
     ReqDataCountDO selectByEng(ReqMngDO vo);
     @Override
 	List<DemandDO> find(DemandDO bean);
-	
+
 }
 

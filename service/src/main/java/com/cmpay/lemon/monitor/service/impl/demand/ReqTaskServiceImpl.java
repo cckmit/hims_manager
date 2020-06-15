@@ -74,7 +74,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private static final int UPDATEUAT = 120;
     // 140 完成UAT测试
     private static final int FINISHUATTEST = 140;
-
+    // 老产品线
+    private static final String OLDPRDLINE = "老产品线";
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqTaskServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
@@ -853,8 +854,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             dictionaryDO.setDicId("PRD_LINE");
             dictionaryDO.setValue(m.getReqPrdLine());
             List<DictionaryDO> dic = dictionaryDao.getDicByDicId(dictionaryDO);
-            if (dic.size() == 0) {
+            if (dic.size() == 0 ) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"产品名称字典项不存在");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            if(OLDPRDLINE.equals(dic.get(0).getRemark())){
+                MsgEnum.ERROR_IMPORT.setMsgInfo("第"+i+"行"+"产品名称为老产品线名称已经废弃，请选择新的产品线名称");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
             m.setReqPrdLine(dic.get(0).getName());

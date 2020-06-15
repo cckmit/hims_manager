@@ -21,6 +21,7 @@ import java.util.Map;
 @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
 public class DictionaryServiceImpl implements DictionaryService {
     static final String  WORKLOADLOCKSTATUS="WORKLOAD_LOCK_STATUS";
+    static final String  PRDLINE="PRD_LINE";
     @Autowired
     private IDictionaryExtDao dictionaryDao;
 
@@ -28,6 +29,10 @@ public class DictionaryServiceImpl implements DictionaryService {
     public DictionaryBO getDicByDicId(DictionaryDO dictionaryDO) {
 
         List<DictionaryDO> dictionaryDOList = dictionaryDao.getDicByDicId(dictionaryDO);
+        // 产品线只展示最新数据
+        if(PRDLINE.equals(dictionaryDO.getDicId())){
+            dictionaryDOList = dictionaryDOList.subList(0,44);
+        }
 
         List<DictionaryBO> dictionaryBOList = BeanConvertUtils.convertList(dictionaryDOList, DictionaryBO.class);
         DictionaryBO dictionaryBO = new DictionaryBO();

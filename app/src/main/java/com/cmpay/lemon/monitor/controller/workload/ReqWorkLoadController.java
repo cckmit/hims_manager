@@ -139,6 +139,17 @@ public class ReqWorkLoadController {
         reqWorkLoadService.exportExcel(request,response, demandBO, "3", "基地工作量");
         return GenericRspDTO.newSuccessInstance();
     }
+    // 各二级部门工作量月统计明细报表导出
+    @RequestMapping("/goExportCountForDevp2")
+    public GenericRspDTO<NoBody> goExportCountForDevp2(@RequestBody DemandReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        DemandBO demandBO = new DemandBO();
+        BeanConvertUtils.convert(demandBO, reqDTO);
+        if (StringUtils.isBlank(demandBO.getReqImplMon())) {
+            demandBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
+        }
+        reqWorkLoadService.goExportCountForDevp2(request,response, demandBO, "3");
+        return GenericRspDTO.newSuccessInstance();
+    }
 
     /**
      * 查询主导部门工作量占比

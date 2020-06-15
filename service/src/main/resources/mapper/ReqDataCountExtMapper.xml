@@ -375,6 +375,29 @@
 				GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
 		)a
 	</select>
+	<select id="getCompByDept2" resultMap="rt">
+		select a.*,
+               round( a.req_total - a.req_suspend - a.req_cancel ) req_acceptance,
+               concat(round( ((a.req_suspend + a.req_cancel) / a.req_total )* 100 , 2 ),'%') req_inaccuracy_rate,
+               concat(round( ( req_abnormal / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ),'%') req_abnormal_rate,
+			   concat(round( ( a.req_finish / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ), '%' ) req_finish_rate,
+			   concat(round( a.req_oper / (a.req_total  - a.req_suspend - a.req_cancel ) * 100 , 2 ), '%' ) total
+		from (
+				SELECT
+				(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS 		firstLevelOrganization,
+
+					count(*) req_total,
+					sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
+					(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) ) req_finish,
+					sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend,
+					sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel,
+					sum( CASE WHEN req_abnor_type not like '%01%' THEN 1 ELSE 0 END ) req_abnormal
+				FROM
+					t_demand_info
+				WHERE req_impl_mon =#{0} and req_sts!='60'
+				GROUP BY (CASE WHEN coalesce (firstLevelOrganization,'') = '' THEN '无' ELSE firstLevelOrganization END	)
+		)a
+	</select>
 
 	<select id="getReqSts" resultMap="rt">
 		SELECT

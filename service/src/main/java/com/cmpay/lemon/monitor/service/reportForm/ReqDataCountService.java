@@ -97,6 +97,7 @@ public interface ReqDataCountService {
     void downloadDemandImplementationReport(String month, HttpServletResponse response);
 
     void downloadDemandCompletionReport(String month, HttpServletResponse response);
+    void downloadDemandCompletionReport2(String month, HttpServletResponse response);
 
     void downloadBaseOwnershipDepartmentStatistics(String month, HttpServletResponse response);
     DemandRspBO findDemand(DemandBO demandBO);

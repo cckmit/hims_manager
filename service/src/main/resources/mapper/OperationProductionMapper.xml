@@ -239,6 +239,9 @@
         <if test="proNumber != null and proNumber != ''">
             and pro_number LIKE CONCAT('%',#{proNumber},'%')
         </if>
+        <if test="proNeed != null and proNeed != ''">
+            and pro_need LIKE CONCAT('%',#{proNeed},'%')
+        </if>
         <if test="isOperationProduction != null and isOperationProduction != ''">
             and is_operation_production = #{isOperationProduction}
         </if>
