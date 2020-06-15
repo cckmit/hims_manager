@@ -22,10 +22,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqTaskServiceImpl;
 import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
-import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.DateUtil;
-import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
-import com.cmpay.lemon.monitor.utils.ReqWorkLoadExcelUtil;
+import com.cmpay.lemon.monitor.utils.*;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -638,7 +635,95 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
     }
+    @Override
+    public void goExportCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type){
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        List list = null;
+        String[] headerNames =null;
+        List<DemandDO>  mon_input_workload_list = workLoadDao.goExportCountForDevp(demandDO);
+        List<DemandBO> DevpWorkLoadList = new ArrayList<>();
+        for (int i = 0; i < mon_input_workload_list.size(); i++){
+            DemandDO demand = mon_input_workload_list.get(i);
+            DemandBO demandBO1 = new DemandBO();
+            BeanConvertUtils.convert(demandBO1, demand);
+            DemandBO devpDemand = getWorkLoad(demandBO1);
+            devpDemand.setCoorDeptWorkload(devpDemand.getLeadDeptWorkload()+devpDemand.getCoorDeptWorkload());
+            DevpWorkLoadList.add(devpDemand);
+        }
+        list = dealDevpWorkload2(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
+        headerNames = new String[]{"质量监督组","平台架构研发团队","产品测试团队","前端技术研发团队","信用购机研发组","号码借研发组",
+                "营销活动研发组","渠道产品研发组","聚合支付研发组","话费充值研发组","商户业务研发团队", "智慧食堂研发团队", "银行&公共中心研发组",
+                "用户&清算&账务研发组","支付研发组","营销研发组","资金归集项目组","设计项目组","团体组织交费项目组","客服中间层项目组"};
 
+        OutputStream os = null;
+        response.reset();
+
+        String path="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            path= "/home/devms/temp/propkg/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            path= "/home/devadm/temp/propkg/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        try {
+            String fileName = "summarize.xls";
+            String filePath = path + fileName;
+            ReqWorkLoadExcelUtil2 util = new ReqWorkLoadExcelUtil2();
+            String createFile = util.createExcel(filePath, list, null,headerNames,type);
+            //告诉浏览器允许所有的域访问
+            //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+            //resp.addHeader("Access-Control-Allow-Origin", "*");
+            //解决办法通过获取Origin请求头来动态设置
+            String origin = request.getHeader("Origin");
+            if (StringUtils.isNotBlank(origin)) {
+                response.addHeader("Access-Control-Allow-Origin", origin);
+            }
+            //允许带有cookie访问
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            //告诉浏览器允许跨域访问的方法
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            //告诉浏览器允许带有Content-Type,header1,header2头的请求访问
+            //resp.addHeader("Access-Control-Allow-Headers", "Content-Type,header1,header2");
+            //设置支持所有的自定义请求头
+            String headers = request.getHeader("Access-Control-Request-Headers");
+            if (StringUtils.isNotBlank(headers)) {
+                response.addHeader("Access-Control-Allow-Headers", headers);
+            }
+            //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.setContentType("application/octet-stream; charset=utf-8");
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + fileName);
+            try {
+                os = response.getOutputStream();
+                os.write(org.apache.commons.io.FileUtils.readFileToByteArray(new File(filePath)));
+                os.flush();
+            } catch (IOException e) {
+                throw e;
+            } finally {
+                if (os != null) {
+                    try {
+                        os.close();
+                    } catch (IOException e) {
+                        throw e;
+                    }
+                }
+            }
+            // 删除文件
+            new File(createFile).delete();
+        } catch (UnsupportedEncodingException e) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("各部门工作量月统计汇总报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        } catch (Exception e) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("各部门工作量月统计汇总报表导出失败");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+    }
     //获取本月各部门工作量占比
     @Override
     public  DemandBO getWorkLoad(DemandBO demand) {
@@ -773,6 +858,91 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 break;
             case "客服中间层项目组":
                 list.set(13, workload + (list.get(13) == null ? 0:list.get(13)) );
+                break;
+
+            default:
+                break;
+        }
+        return list;
+    }
+
+    private List<Double> dealDevpWorkload2(List<DemandBO> rowList){
+        List<Double> list = Arrays.asList(new Double[20]);
+        for (int i = 0; i < rowList.size(); i++) {
+            //配合部门工作量
+            String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
+            if (StringUtils.isNotBlank(coorList[0])){
+                for (int j = 0; j < coorList.length; j++) {
+                    list = addWorkload2(list,coorList[j]);
+                }
+            }
+        }
+
+        return list;
+    }
+    private List<Double> addWorkload2(List<Double> list,String str){
+        String devp = str.split(":")[0];
+        Double workload = Double.valueOf(str.split(":")[1]);
+        switch (devp) {
+            case "质量监督组":
+                list.set(0, workload + (list.get(0) == null ? 0:list.get(0)) );
+                break;
+            case "平台架构研发团队":
+                list.set(1, workload + (list.get(1) == null ? 0:list.get(1)) );
+                break;
+            case "产品测试团队":
+                list.set(2, workload + (list.get(2) == null ? 0:list.get(2)) );
+                break;
+            case "前端技术研发团队":
+                list.set(3, workload + (list.get(3) == null ? 0:list.get(3)) );
+                break;
+            case "信用购机研发组":
+                list.set(4, workload + (list.get(4) == null ? 0:list.get(4)) );
+                break;
+            case "号码借研发组":
+                list.set(5, workload + (list.get(5) == null ? 0:list.get(5)) );
+                break;
+            case "营销活动研发组":
+                list.set(6, workload + (list.get(6) == null ? 0:list.get(6)) );
+                break;
+            case "渠道产品研发组":
+                list.set(7, workload + (list.get(7) == null ? 0:list.get(7)) );
+                break;
+            case "聚合支付研发组":
+                list.set(8, workload + (list.get(8) == null ? 0:list.get(8)) );
+                break;
+            case "话费充值研发组":
+                list.set(9, workload + (list.get(9) == null ? 0:list.get(9)) );
+                break;
+            case "商户业务研发团队":
+                list.set(10, workload + (list.get(10) == null ? 0:list.get(10)) );
+                break;
+            case "智慧食堂研发团队":
+                list.set(11, workload + (list.get(11) == null ? 0:list.get(11)) );
+                break;
+            case "银行&公共中心研发组":
+                list.set(12, workload + (list.get(12) == null ? 0:list.get(12)) );
+                break;
+            case "用户&清算&账务研发组":
+                list.set(13, workload + (list.get(13) == null ? 0:list.get(13)) );
+                break;
+            case "支付研发组":
+                list.set(14, workload + (list.get(14) == null ? 0:list.get(14)) );
+                break;
+            case "营销研发组":
+                list.set(15, workload + (list.get(15) == null ? 0:list.get(15)) );
+                break;
+            case "资金归集项目组":
+                list.set(16, workload + (list.get(16) == null ? 0:list.get(16)) );
+                break;
+            case "设计项目组":
+                list.set(17, workload + (list.get(17) == null ? 0:list.get(17)) );
+                break;
+            case "团体组织交费项目组":
+                list.set(18, workload + (list.get(18) == null ? 0:list.get(18)) );
+                break;
+            case "客服中间层项目组":
+                list.set(19, workload + (list.get(19) == null ? 0:list.get(19)) );
                 break;
 
             default:

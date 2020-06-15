@@ -221,6 +221,15 @@ import java.util.List;
         reqDataCountService.downloadDemandCompletionReport(reqDataCountReqDTO.getReqImplMon(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
+    @RequestMapping("/downloadreportform21")
+    public  GenericRspDTO<NoBody> downloadReportForm21(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
+            reqDataCountReqDTO.setReqImplMon(month);
+        }
+        reqDataCountService.downloadDemandCompletionReport2(reqDataCountReqDTO.getReqImplMon(),response);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+    }
 
     @RequestMapping("/downloadreportform3")
     public  GenericRspDTO<NoBody> downloadReportForm3(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {

@@ -49,6 +49,7 @@ public interface ReqWorkLoadService {
      * @param file_nm 文件名
      */
     void exportExcel(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type, String file_nm);
+    void goExportCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type);
     void updateReqWorkLoad(DemandBO bean);
     DemandBO getWorkLoad(DemandBO demand);
     void update(DemandBO bean);

@@ -278,6 +278,14 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		return reqDataCountBOS;
 	}
 
+	public List<ReqDataCountBO> getCompByDept2(String reqImplMon) {
+		List<ReqDataCountBO> reqDataCountBOS = new LinkedList<>();
+		reqDataCountDao.getCompByDept2(reqImplMon).forEach(m->
+				reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new ReqDataCountBO(), m))
+		);
+
+		return reqDataCountBOS;
+	}
 	@Override
 	public List<ReqDataCountBO> getReqSts(String reqImplMon) {
 		List<ReqDataCountBO> reqDataCountBOS = new LinkedList<>();
@@ -777,6 +785,49 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 			}
 			// 设置excel的文件名称
 			String excelName = "需求完成情况报表" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+			response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+			response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+			workbook.write(bufferedOutPut);
+			bufferedOutPut.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+			BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+		}
+
+	}
+	@Override
+	public void downloadDemandCompletionReport2(String month, HttpServletResponse response) {
+		List<ReqDataCountBO> reportListb = this.getCompByDept2(month);
+		List<DemandCompletionReportBO> demandCompletionReportBOList =  new ArrayList<>();
+		if (JudgeUtils.isNotEmpty(reportListb)) {
+			reportListb.forEach(m ->
+					{
+						DemandCompletionReportBO demandCompletionReportBO = new DemandCompletionReportBO();
+						demandCompletionReportBO.setFirstLevelOrganization(m.getFirstLevelOrganization());
+						demandCompletionReportBO.setReqTotal(m.getReqTotal());
+						demandCompletionReportBO.setReqAcceptance(m.getReqAcceptance());
+						demandCompletionReportBO.setReqOper(m.getReqOper());
+						demandCompletionReportBO.setReqFinish(m.getReqFinish());
+						demandCompletionReportBO.setReqSuspend(m.getReqSuspend());
+						demandCompletionReportBO.setReqCancel(m.getReqCancel());
+						demandCompletionReportBO.setReqAbnormal(m.getReqAbnormal());
+						demandCompletionReportBO.setReqAbnormalRate(m.getReqAbnormalRate());
+						demandCompletionReportBO.setReqFinishRate(m.getReqFinishRate());
+						demandCompletionReportBO.setTotal(m.getTotal());
+						demandCompletionReportBO.setReqInaccuracyRate(m.getReqInaccuracyRate());
+						demandCompletionReportBOList.add(demandCompletionReportBO);
+					}
+			);
+		}
+		Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandCompletionReportBO.class, demandCompletionReportBOList);
+		try (OutputStream output = response.getOutputStream();
+			 BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+			// 判断数据
+			if (workbook == null) {
+				BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+			}
+			// 设置excel的文件名称
+			String excelName = "一级团队需求完成情况报表" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
 			response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
 			response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
 			workbook.write(bufferedOutPut);
