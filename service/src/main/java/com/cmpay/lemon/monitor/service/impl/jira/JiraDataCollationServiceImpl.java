@@ -1,7 +1,6 @@
 package com.cmpay.lemon.monitor.service.impl.jira;
 
 import com.cmpay.lemon.common.utils.JudgeUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
@@ -12,11 +11,15 @@ import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -191,7 +194,19 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraWorklogDO.setStartedtime(worklogs.get(i).getStartedtime());
             jiraWorklogDO.setTimespnet(worklogs.get(i).getTimespnet());
             JiraWorklogDO jiraWorklogDO1 = jiraWorklogDao.get(worklogs.get(i).getJiraWorklogKey());
-            System.out.println(worklogs.get(i).getJiraWorklogKey());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            int betweenDate=0;
+            try {
+                Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                 betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(betweenDate>1){
+                continue;
+            }
+
             if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
                 String date1 = StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10);
                 String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
