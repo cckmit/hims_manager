@@ -134,6 +134,15 @@ public class DemandDO extends BaseDO {
     private String requirementStatusModificationNotes;
     @Excel(name = "基地领导是否审批")
     private String isApprovalProcess;
+    private String preCurPeriod2;
+
+    public String getPreCurPeriod2() {
+        return preCurPeriod2;
+    }
+
+    public void setPreCurPeriod2(String preCurPeriod2) {
+        this.preCurPeriod2 = preCurPeriod2;
+    }
 
     public String getIsApprovalProcess() {
         return isApprovalProcess;
@@ -826,12 +835,12 @@ public class DemandDO extends BaseDO {
                 ", riskSolution='" + riskSolution + '\'' +
                 ", prdFinshTm='" + prdFinshTm + '\'' +
                 ", uatUpdateTm='" + uatUpdateTm + '\'' +
-                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", devpCoorDept='" + devpCoorDept + '\'' +
                 ", productMng='" + productMng + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
                 ", reqImplMon='" + reqImplMon + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", reqType='" + reqType + '\'' +
                 ", reqSts='" + reqSts + '\'' +
                 ", actPrdFinshTm='" + actPrdFinshTm + '\'' +
@@ -878,6 +887,7 @@ public class DemandDO extends BaseDO {
                 ", planEndTime='" + planEndTime + '\'' +
                 ", requirementStatusModificationNotes='" + requirementStatusModificationNotes + '\'' +
                 ", isApprovalProcess='" + isApprovalProcess + '\'' +
+                ", preCurPeriod2='" + preCurPeriod2 + '\'' +
                 '}';
     }
 }
