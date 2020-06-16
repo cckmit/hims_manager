@@ -461,6 +461,9 @@
 			<if test="productMng != null and productMng != ''">
 				AND b.product_mng = #{productMng}
 			</if>
+			<if test="firstLevelOrganization != null and firstLevelOrganization != ''">
+				AND  b.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+			</if>
 		</where>
 		  ORDER BY  project_start_tm desc
 	</select>

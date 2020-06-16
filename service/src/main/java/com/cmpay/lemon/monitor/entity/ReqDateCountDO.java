@@ -1,6 +1,6 @@
 /*
  * @ClassName CenterDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-07-25 11:01:18
  */
@@ -19,7 +19,7 @@ public class ReqDateCountDO extends BaseDO {
     String devpLeadDept;
     //产品经理
     String productMng;
-
+    private String firstLevelOrganization;
     String dayNumber;
     public ReqDateCountDO() {
     }
@@ -54,5 +54,24 @@ public class ReqDateCountDO extends BaseDO {
 
     public void setDayNumber(String dayNumber) {
         this.dayNumber = dayNumber;
+    }
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
+    @Override
+    public String toString() {
+        return "ReqDateCountDO{" +
+                "reqImplMon='" + reqImplMon + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", productMng='" + productMng + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", dayNumber='" + dayNumber + '\'' +
+                '}';
     }
 }

@@ -10,6 +10,8 @@ public class ReqDataCountReqDTO {
 
     String dayNumber;
 
+    private String firstLevelOrganization;
+
     public String getReqImplMon() {
         return reqImplMon;
     }
@@ -42,6 +44,14 @@ public class ReqDataCountReqDTO {
         this.productMng = productMng;
     }
 
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
     @Override
     public String toString() {
         return "ReqDataCountReqDTO{" +
@@ -49,6 +59,7 @@ public class ReqDataCountReqDTO {
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", productMng='" + productMng + '\'' +
                 ", dayNumber='" + dayNumber + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }
