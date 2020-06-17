@@ -17,14 +17,14 @@ public class DemandUploadDocumentBO {
     private String actWorkloadUploadTm;
     @Excel(name = "sit测试报告上传时间")
     private String actSitUploadTm;
-    @Excel(name = "测试案例上传时间")
-    private String actTestCasesUploadTm;
     @Excel(name = "uat测试报告上传时间")
     private String actUatUploadTm;
     @Excel(name = "预投产验证报告上传时间")
     private String actPreUploadTm;
     @Excel(name = "投产验证报告上传时间")
     private String actProductionUploadTm;
+    @Excel(name = "需求当前阶段")
+    private String preCurPeriod;
     @Excel(name = "一级主导团队")
     private String firstLevelOrganization;
     @Excel(name = "二级主导团队")
@@ -38,7 +38,7 @@ public class DemandUploadDocumentBO {
     @Excel(name = "测试人员")
     private String testEng;
     @Excel(name = "需求当前阶段")
-    private String preCurPeriod;
+    private String noUpload;
 
     public String getFirstLevelOrganization() {
         return firstLevelOrganization;
@@ -96,12 +96,12 @@ public class DemandUploadDocumentBO {
         this.actSitUploadTm = actSitUploadTm;
     }
 
-    public String getActTestCasesUploadTm() {
-        return actTestCasesUploadTm;
+    public String getNoUpload() {
+        return noUpload;
     }
 
-    public void setActTestCasesUploadTm(String actTestCasesUploadTm) {
-        this.actTestCasesUploadTm = actTestCasesUploadTm;
+    public void setNoUpload(String noUpload) {
+        this.noUpload = noUpload;
     }
 
     public String getActUatUploadTm() {
@@ -185,17 +185,17 @@ public class DemandUploadDocumentBO {
                 ", actPrdUploadTm='" + actPrdUploadTm + '\'' +
                 ", actWorkloadUploadTm='" + actWorkloadUploadTm + '\'' +
                 ", actSitUploadTm='" + actSitUploadTm + '\'' +
-                ", actTestCasesUploadTm='" + actTestCasesUploadTm + '\'' +
                 ", actUatUploadTm='" + actUatUploadTm + '\'' +
                 ", actPreUploadTm='" + actPreUploadTm + '\'' +
                 ", actProductionUploadTm='" + actProductionUploadTm + '\'' +
+                ", preCurPeriod='" + preCurPeriod + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", productMng='" + productMng + '\'' +
                 ", devpEng='" + devpEng + '\'' +
                 ", frontEng='" + frontEng + '\'' +
                 ", testEng='" + testEng + '\'' +
-                ", preCurPeriod='" + preCurPeriod + '\'' +
+                ", noUpload='" + noUpload + '\'' +
                 '}';
     }
 }

@@ -117,7 +117,24 @@ public class DemandDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+    private String preCurPeriod2;
 
+    public String getPreCurPeriod2() {
+        return preCurPeriod2;
+    }
+
+    public void setPreCurPeriod2(String preCurPeriod2) {
+        this.preCurPeriod2 = preCurPeriod2;
+    }
+    private Integer noUpload;
+
+    public Integer getNoUpload() {
+        return noUpload;
+    }
+
+    public void setNoUpload(Integer noUpload) {
+        this.noUpload = noUpload;
+    }
     public DemandDTO() {
     }
 
@@ -847,8 +864,11 @@ public class DemandDTO extends GenericDTO {
                 ", revisionTimeNote='" + revisionTimeNote + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", isApprovalProcess='" + isApprovalProcess + '\'' +
+                ", site='" + site + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", preCurPeriod2='" + preCurPeriod2 + '\'' +
+                ", noUpload=" + noUpload +
                 '}';
     }
 }

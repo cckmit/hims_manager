@@ -138,7 +138,7 @@ import java.util.List;
             reqDataCountReqDTO.setReqImplMon(month);
         }
         List<DemandBO> reportLista = new ArrayList<>();
-        reportLista = reqDataCountService.getReportForm6(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng());
+        reportLista = reqDataCountService.getReportForm6(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng(),reqDataCountReqDTO.getFirstLevelOrganization());
         DemandRspDTO reqDataCountRspDTO = new DemandRspDTO();
         List<DemandDTO> reqDataCountDTOListA = new LinkedList<>();
         reportLista.forEach(m->
@@ -265,7 +265,7 @@ import java.util.List;
         if(reqDataCountReqDTO.getReqImplMon()==null||reqDataCountReqDTO.getReqImplMon().equals("")){
             reqDataCountReqDTO.setReqImplMon(month);
         }
-        reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng(),response);
+        reqDataCountService.downloadDemandUploadDocumentBO(reqDataCountReqDTO.getReqImplMon(),reqDataCountReqDTO.getDevpLeadDept(),reqDataCountReqDTO.getProductMng(),reqDataCountReqDTO.getFirstLevelOrganization(),response);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
     }
 

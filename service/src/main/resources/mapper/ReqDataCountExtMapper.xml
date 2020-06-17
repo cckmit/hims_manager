@@ -113,6 +113,8 @@
 		<result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
 		<result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
 		<result property="firstLevelOrganization" jdbcType="VARCHAR" column="firstLevelOrganization" />
+		<result property="preCurPeriod2" jdbcType="VARCHAR" column="pre_cur_period2" />
+
 	</resultMap>
 
 	<resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
@@ -444,6 +446,7 @@
 		b.devp_eng 'devp_eng',
 		b.front_eng 'front_eng',
 		b.test_eng 'test_eng',
+		b.pre_cur_period 'pre_cur_period2',
 		(select value from t_permi_dic_data where dic_id ='REQ_PEROID' and name =b.pre_cur_period) 'pre_cur_period'
 		from t_demand_extra a ,t_demand_info b
 		<where>
@@ -457,6 +460,9 @@
 			</if>
 			<if test="productMng != null and productMng != ''">
 				AND b.product_mng = #{productMng}
+			</if>
+			<if test="firstLevelOrganization != null and firstLevelOrganization != ''">
+				AND  b.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
 			</if>
 		</where>
 		  ORDER BY  project_start_tm desc
