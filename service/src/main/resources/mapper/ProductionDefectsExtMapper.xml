@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionDefectsExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="serialNumber" property="serialnumber" jdbcType="VARCHAR" />
+        <result column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStatus" property="processstatus" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="currentSession" property="currentsession" jdbcType="VARCHAR" />
+        <result column="currentExecutor" property="currentexecutor" jdbcType="VARCHAR" />
+        <result column="problemRaiser" property="problemraiser" jdbcType="VARCHAR" />
+        <result column="questionTitle" property="questiontitle" jdbcType="VARCHAR" />
+        <result column="questionNumber" property="questionnumber" jdbcType="VARCHAR" />
+        <result column="questionDetails" property="questiondetails" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="problemAttributionDept" property="problemattributiondept" jdbcType="VARCHAR" />
+        <result column="personInCharge" property="personincharge" jdbcType="VARCHAR" />
+        <result column="questionType" property="questiontype" jdbcType="VARCHAR" />
+        <result column="identifyTheProblem" property="identifytheproblem" jdbcType="VARCHAR" />
+        <result column="developmentLeader" property="developmentleader" jdbcType="VARCHAR" />
+        <result column="updateType" property="updatetype" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, serialNumber, documentNumber, processStatus, processStartDate, currentSession, 
+        currentExecutor, problemRaiser, questionTitle, questionNumber, questionDetails, solution, 
+        problemAttributionDept, personInCharge, questionType, identifyTheProblem, developmentLeader, 
+        updateType
+    </sql>
+
+
+    <select id="findAll" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="serialnumber != null and serialnumber != ''"  >
+                and serialNumber = #{serialnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="documentnumber != null and documentnumber != ''" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstatus != null and processstatus != ''" >
+                and processStatus = #{processstatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null and processstartdate != ''" >
+                and processStartDate = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="currentsession != null and currentsession != ''" >
+                and currentSession = #{currentsession,jdbcType=VARCHAR}
+            </if>
+            <if test="currentexecutor != null and currentexecutor != ''" >
+                and currentExecutor = #{currentexecutor,jdbcType=VARCHAR}
+            </if>
+            <if test="problemraiser != null and problemraiser != ''" >
+                and problemRaiser = #{problemraiser,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontitle != null and questiontitle != ''" >
+                AND questionTitle LIKE CONCAT('%',#{questiontitle},'%')
+            </if>
+            <if test="questionnumber != null and questionnumber != ''" >
+                and questionNumber = #{questionnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="questiondetails != null and questiondetails != ''" >
+                and questionDetails = #{questiondetails,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="problemattributiondept != null and problemattributiondept != ''" >
+                and problemAttributionDept = #{problemattributiondept,jdbcType=VARCHAR}
+            </if>
+            <if test="personincharge != null and personincharge != ''" >
+                and personInCharge = #{personincharge,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontype != null and questiontype != ''" >
+                and questionType = #{questiontype,jdbcType=VARCHAR}
+            </if>
+            <if test="identifytheproblem != null and identifytheproblem != ''" >
+                and identifyTheProblem = #{identifytheproblem,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentleader != null and developmentleader != ''" >
+                and developmentLeader = #{developmentleader,jdbcType=VARCHAR}
+            </if>
+            <if test="updatetype != null and updatetype != ''" >
+                and updateType = #{updatetype,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

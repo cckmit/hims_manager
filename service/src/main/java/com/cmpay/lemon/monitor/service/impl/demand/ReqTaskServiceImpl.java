@@ -108,6 +108,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IDemandPictureDao iDemandPictureDao;
     @Autowired
     private IDemandNameChangeExtDao iDemandNameChangeExtDao;
+    @Autowired
+    private IProductionDefectsExtDao productionDefectsDao;
+    @Autowired
+    ISmokeTestRegistrationDao smokeTestRegistrationDao;
+    @Autowired
+    ISmokeTestFailedCountDao smokeTestFailedCountDao;
+
+
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -1244,6 +1252,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     /**
      *  文件压缩
      */
+    @Override
     public String ZipFiles(File[] srcfile, File zipfile, boolean flag) {
         try {
             byte[] buf = new byte[1024];
@@ -1866,6 +1875,96 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandnNameChangeRspBO.setDemandNameChangeBOS(demandBOList);
         demandnNameChangeRspBO.setPageInfo(pageInfo);
         return  demandnNameChangeRspBO;
+    }
+
+    @Override
+    public void productionDefectIntroduction(MultipartFile file) {
+        File f = null;
+        LinkedList<ProductionDefectsDO> productionDefectsDOLinkedList = new LinkedList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f = File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                //productionDefects
+//流水号 serialNumber   文号  documentNumber	流程状态 processStatus	流程开始日期	 processStartDate 当前环节	currentSession
+// 当前执行人	currentExecutor 问题录入(问题提出人) problemRaiser	问题录入(问题标题)	questionTitle
+// 问题录入(问题编号)	questionNumber 问题录入(问题详细)questionDetails	问题分析(问题原因及解决方案)	solution
+// 问题分析(问题归属部门)problemAttributionDept	问题分析(问题负责人)	personInCharge 问题分析(问题类型)	questionType
+// 回复审核(问题定位) identifyTheProblem	程序修改(开发负责人) developmentLeader	程序修改(更新类型) updateType
+                ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
+                productionDefectsDO.setSerialnumber(map.get(i).get(0).toString().trim());
+                productionDefectsDO.setDocumentnumber(map.get(i).get(1).toString().trim());
+                productionDefectsDO.setProcessstatus(map.get(i).get(2).toString().trim());
+                productionDefectsDO.setProcessstartdate(map.get(i).get(3).toString().trim());
+                productionDefectsDO.setCurrentsession(map.get(i).get(4).toString().trim());
+                productionDefectsDO.setCurrentexecutor(map.get(i).get(5).toString().trim());
+                productionDefectsDO.setProblemraiser(map.get(i).get(6).toString().trim());
+                productionDefectsDO.setQuestiontitle(map.get(i).get(7).toString().trim());
+                productionDefectsDO.setQuestionnumber(map.get(i).get(8).toString().trim());
+                productionDefectsDO.setQuestiondetails(map.get(i).get(9).toString().trim());
+                productionDefectsDO.setSolution(map.get(i).get(10).toString().trim());
+                productionDefectsDO.setProblemattributiondept(map.get(i).get(11).toString().trim());
+                productionDefectsDO.setPersonincharge(map.get(i).get(12).toString().trim());
+                productionDefectsDO.setQuestiontype(map.get(i).get(13).toString().trim());
+                productionDefectsDO.setIdentifytheproblem(map.get(i).get(14).toString().trim());
+                productionDefectsDO.setDevelopmentleader(map.get(i).get(15).toString().trim());
+                productionDefectsDO.setUpdatetype(map.get(i).get(16).toString().trim());
+                productionDefectsDOLinkedList.add(productionDefectsDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } finally {
+            f.delete();
+        }
+                productionDefectsDOLinkedList.forEach(m->{
+                    ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
+                    productionDefectsDO.setSerialnumber(m.getSerialnumber());
+                    List<ProductionDefectsDO> productionDefectsDOS = productionDefectsDao.find(productionDefectsDO);
+                    if(JudgeUtils.isEmpty(productionDefectsDOS)){
+                        productionDefectsDao.insert(m);
+                    }else{
+                        m.setId(productionDefectsDOS.get(0).getId());
+                        productionDefectsDao.update(m);
+                    }
+                });
+    }
+
+    @Override
+    public void smokeTestRegistration(SmokeTestRegistrationBO smokeTestRegistrationBO) {
+        SmokeTestRegistrationDO smokeTestRegistrationDO = BeanUtils.copyPropertiesReturnDest(new SmokeTestRegistrationDO(), smokeTestRegistrationBO);
+        smokeTestRegistrationDao.insert(smokeTestRegistrationDO);
+        SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
+        smokeTestFailedCountDO.setJiraKey(smokeTestRegistrationBO.getJiraKey());
+        List<SmokeTestFailedCountDO> smokeTestFailedCountDOS = smokeTestFailedCountDao.find(smokeTestFailedCountDO);
+        if(JudgeUtils.isEmpty(smokeTestFailedCountDOS)){
+            smokeTestFailedCountDO.setJiraKey(smokeTestRegistrationBO.getJiraKey());
+            smokeTestFailedCountDO.setCount(1);
+            smokeTestFailedCountDO.setReqNo(smokeTestRegistrationBO.getReqNo());
+            smokeTestFailedCountDao.insert(smokeTestFailedCountDO);
+        }else{
+            smokeTestFailedCountDOS.get(0).setCount(smokeTestFailedCountDOS.get(0).getCount()+1);
+            smokeTestFailedCountDao.update(smokeTestFailedCountDOS.get(0));
+        }
     }
 
     private PageInfo<DemandNameChangeBO> getDemandnNameChange(DemandNameChangeBO demandNameChangeBO) {

@@ -2,40 +2,26 @@ package com.cmpay.lemon.monitor.controller.error;
 
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
-import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionBO;
 import com.cmpay.lemon.monitor.bo.ErcdmgErrorComditionRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.*;
-import com.cmpay.lemon.monitor.entity.ErcdmgUpdmgnDO;
-import com.cmpay.lemon.monitor.entity.ErrorRecordBeanDO;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionReqDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgErrorComditionRspDTO;
+import com.cmpay.lemon.monitor.dto.ErcdmgUpdmgnDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.errror.ErrorService;
 import com.cmpay.lemon.monitor.service.errror.UpdmgnService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
-import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
-import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author: zhou_xiong
@@ -61,10 +47,8 @@ public class UpdmgnController {
      */
     @RequestMapping("/list")
     public GenericRspDTO<ErcdmgErrorComditionRspDTO> getUserInfoPage(@RequestBody ErcdmgErrorComditionReqDTO reqDTO) {
-        System.err.println(reqDTO);
         ErcdmgErrorComditionBO demandBO = BeanUtils.copyPropertiesReturnDest(new ErcdmgErrorComditionBO(), reqDTO);
         ErcdmgErrorComditionRspBO demandRspBO = updmgnService.searchErroeList(demandBO);
-        System.err.println(demandRspBO);
         ErcdmgErrorComditionRspDTO rspDTO = new ErcdmgErrorComditionRspDTO();
         rspDTO.setErcdmgUpdmgnDTOS(BeanConvertUtils.convertList(demandRspBO.getErcdmgUpdmgnBOList(), ErcdmgUpdmgnDTO.class));
         rspDTO.setPageNum(demandRspBO.getUpdmgnBOPageInfo().getPageNum());

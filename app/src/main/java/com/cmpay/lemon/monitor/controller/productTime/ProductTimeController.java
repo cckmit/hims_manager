@@ -10,7 +10,6 @@ import com.cmpay.lemon.monitor.dto.ProductionTimeDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeReqDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
-import com.cmpay.lemon.monitor.service.impl.timer.ReqMonitorTimer;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,15 +31,13 @@ public class ProductTimeController {
 
     @Autowired
     private ProductTimeService productTimeService;
-    @Autowired
-    ReqMonitorTimer reqMonitorTimer;
     @RequestMapping("/list")
-    public GenericRspDTO<ProductionTimeRspDTO> list(GenericDTO<NoBody> req){
+    public GenericRspDTO<ProductionTimeRspDTO> list(GenericDTO<NoBody> req) {
         ProductionTimeRspDTO productionTimeRspDTO = new ProductionTimeRspDTO();
         // --------- 查询
         List<ProductionTimeBO> productTimeBOList = productTimeService.productTimeList();
         LinkedList<ProductionTimeDTO> productTimeDTOList = new LinkedList<>();
-        productTimeBOList.forEach(m->{
+        productTimeBOList.forEach(m -> {
             productTimeDTOList.add(BeanUtils.copyPropertiesReturnDest(new ProductionTimeDTO(), m));
         });
         productionTimeRspDTO.setProductTimes(productTimeDTOList);
@@ -50,20 +47,19 @@ public class ProductTimeController {
         cal.setTime(new Date());
         // 设置投产日最小值
         productionTimeRspDTO.setMinProDate(sdf.format(cal.getTime()));
-        cal.add(cal.DATE, 7 - cal.get(cal.DAY_OF_WEEK));
+        cal.add(Calendar.DATE, 7 - cal.get(Calendar.DAY_OF_WEEK));
         // 设置投产日最大值
         productionTimeRspDTO.setMaxProDate(sdf.format(cal.getTime()));
 
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, productionTimeRspDTO);
     }
 
-    // 更新投产所有时间信息
     @RequestMapping("/updateProductTime")
-    public GenericRspDTO update(@RequestBody ProductionTimeReqDTO productionTimeReqDTO){
+    public GenericRspDTO update(@RequestBody ProductionTimeReqDTO productionTimeReqDTO) {
         List<ProductionTimeDTO> productTime = productionTimeReqDTO.getProductTime();
         if (!productTime.isEmpty()) {
-            productTime.forEach(m->{
-                productTimeService.updateProductTime(BeanUtils.copyPropertiesReturnDest(new ProductionTimeBO(),m));
+            productTime.forEach(m -> {
+                productTimeService.updateProductTime(BeanUtils.copyPropertiesReturnDest(new ProductionTimeBO(), m));
             });
         }
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);

@@ -46,7 +46,6 @@ public class ReqTaskController {
     @RequestMapping(value = "/list" ,method = RequestMethod.POST)
     public GenericRspDTO<DemandRspDTO> findAll(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
-        System.err.println(demandBO);
         DemandRspBO demandRspBO = reqTaskService.find(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
@@ -275,5 +274,24 @@ public class ReqTaskController {
         rspDTO.setTotal(demandnNameChangeRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(demandnNameChangeRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    /**
+     * 生产缺陷导入
+     */
+    @PostMapping("/productionDefectIntroduction")
+    public GenericRspDTO<NoBody> productionDefectIntroduction(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        reqTaskService.productionDefectIntroduction(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 冒烟测试不通过登登记
+     */
+    @PostMapping("/smokeTestRegistration")
+    public GenericRspDTO<NoBody> smokeTestRegistration(@RequestBody SmokeTestRegistrationDTO req) {
+        SmokeTestRegistrationBO smokeTestRegistrationBO = BeanUtils.copyPropertiesReturnDest(new SmokeTestRegistrationBO(), req);
+        reqTaskService.smokeTestRegistration(smokeTestRegistrationBO);
+        return GenericRspDTO.newSuccessInstance();
     }
 }

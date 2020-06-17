@@ -76,8 +76,9 @@ public class BaseUtil {
     public static String distinctStr(String compareStr, String splitReg) {
         String tmpStr = "";
         for (String str : compareStr.split(splitReg)) {
-            if (tmpStr.indexOf(str) < 0)
+            if (tmpStr.indexOf(str) < 0) {
                 tmpStr += splitReg + str;
+            }
         }
         return tmpStr.substring(1, tmpStr.length());
     }

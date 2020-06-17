@@ -11,7 +11,9 @@ import java.util.Random;
  *
  */
 public class CreateSequence {
-	private  static Integer temp=100001; 
+	private  static Integer temp=100001;
+	private static Integer temp1=999999;
+	private static Integer temp2=100001;
 	private static Integer temp5=10001;
 	/**
 	 * 默认生成20位(年月日时分秒+从100001~999999累加的6位数)
@@ -20,8 +22,12 @@ public class CreateSequence {
 	public static synchronized String getSequence(){
 		String date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String sequence=date+temp;
-		if (temp<999999)temp++;
-		else temp=100001;
+		if (temp<temp1){
+			temp++;
+		}
+		else {
+			temp=temp2;
+		}
 		return sequence;
 	}
 	
@@ -32,8 +38,12 @@ public class CreateSequence {
 	public static synchronized String getSequence_5(){
 		String date = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String sequence=date+temp5;
-		if (temp5<99999)temp5++;
-		else temp5=10001;
+		if (temp5<temp1){
+			temp5++;
+		}
+		else {
+			temp5=temp2;
+		}
 		return sequence;
 	}
 	

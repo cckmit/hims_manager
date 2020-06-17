@@ -49,6 +49,7 @@ public class MonitorConstants {
      * 需求管理uri
      */
     public static final String REQINDEX_PATH = BASE_URI + "/index2";
+
     /**
      * 需求计划uri
      */
@@ -104,6 +105,10 @@ public class MonitorConstants {
      * 字典uri
      */
     public static final String DICTIONARY_PATH = BASE_URI + "/dic";
+    /**
+     * 生产缺陷uri
+     */
+    public static final String DEFECT_PATH = BASE_URI + "/defect";
 
     /**
      * 超级管理员ID

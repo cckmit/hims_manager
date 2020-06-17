@@ -106,13 +106,13 @@ public class CreateIssueEpicRequestBO extends CreateIssueRequestBO {
                 "        \"project\":{\n" +
                 "            \"id\":\""+this.getProject()+"\"\n" +
                 "        },\n" +
-                "        \""+this.JIRA_EPICNAME+"\": \""+this.getSummary()+"\",\n" +
+                "        \""+JIRA_EPICNAME+"\": \""+this.getSummary()+"\",\n" +
                 "        \n" +
-                "        \""+this.JIRA_REQINNERSEQ+"\":\""+this.getReqInnerSeq()+"\",\n" +
+                "        \""+JIRA_REQINNERSEQ+"\":\""+this.getReqInnerSeq()+"\",\n" +
                 "        \n" +
                 "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +
-                "        \""+this.JIRA_DEPARTMENT+"\":{\n" +
+                "        \""+ JIRA_DEPARTMENT+"\":{\n" +
                 "        \t\"value\":\""+this.getDevpLeadDept()+"\"\n" +
                 "        },\n" +
                 "         \"assignee\": {\n" +

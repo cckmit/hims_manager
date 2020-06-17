@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionDefectsDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="serialNumber" property="serialnumber" jdbcType="VARCHAR" />
+        <result column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStatus" property="processstatus" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="currentSession" property="currentsession" jdbcType="VARCHAR" />
+        <result column="currentExecutor" property="currentexecutor" jdbcType="VARCHAR" />
+        <result column="problemRaiser" property="problemraiser" jdbcType="VARCHAR" />
+        <result column="questionTitle" property="questiontitle" jdbcType="VARCHAR" />
+        <result column="questionNumber" property="questionnumber" jdbcType="VARCHAR" />
+        <result column="questionDetails" property="questiondetails" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="problemAttributionDept" property="problemattributiondept" jdbcType="VARCHAR" />
+        <result column="personInCharge" property="personincharge" jdbcType="VARCHAR" />
+        <result column="questionType" property="questiontype" jdbcType="VARCHAR" />
+        <result column="identifyTheProblem" property="identifytheproblem" jdbcType="VARCHAR" />
+        <result column="developmentLeader" property="developmentleader" jdbcType="VARCHAR" />
+        <result column="updateType" property="updatetype" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, serialNumber, documentNumber, processStatus, processStartDate, currentSession, 
+        currentExecutor, problemRaiser, questionTitle, questionNumber, questionDetails, solution, 
+        problemAttributionDept, personInCharge, questionType, identifyTheProblem, developmentLeader, 
+        updateType
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_defects
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_production_defects
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        insert into t_production_defects
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="serialnumber != null" >
+                serialNumber,
+            </if>
+            <if test="documentnumber != null" >
+                documentNumber,
+            </if>
+            <if test="processstatus != null" >
+                processStatus,
+            </if>
+            <if test="processstartdate != null" >
+                processStartDate,
+            </if>
+            <if test="currentsession != null" >
+                currentSession,
+            </if>
+            <if test="currentexecutor != null" >
+                currentExecutor,
+            </if>
+            <if test="problemraiser != null" >
+                problemRaiser,
+            </if>
+            <if test="questiontitle != null" >
+                questionTitle,
+            </if>
+            <if test="questionnumber != null" >
+                questionNumber,
+            </if>
+            <if test="questiondetails != null" >
+                questionDetails,
+            </if>
+            <if test="solution != null" >
+                solution,
+            </if>
+            <if test="problemattributiondept != null" >
+                problemAttributionDept,
+            </if>
+            <if test="personincharge != null" >
+                personInCharge,
+            </if>
+            <if test="questiontype != null" >
+                questionType,
+            </if>
+            <if test="identifytheproblem != null" >
+                identifyTheProblem,
+            </if>
+            <if test="developmentleader != null" >
+                developmentLeader,
+            </if>
+            <if test="updatetype != null" >
+                updateType,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="serialnumber != null" >
+                #{serialnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="documentnumber != null" >
+                #{documentnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processstatus != null" >
+                #{processstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="processstartdate != null" >
+                #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="currentsession != null" >
+                #{currentsession,jdbcType=VARCHAR},
+            </if>
+            <if test="currentexecutor != null" >
+                #{currentexecutor,jdbcType=VARCHAR},
+            </if>
+            <if test="problemraiser != null" >
+                #{problemraiser,jdbcType=VARCHAR},
+            </if>
+            <if test="questiontitle != null" >
+                #{questiontitle,jdbcType=VARCHAR},
+            </if>
+            <if test="questionnumber != null" >
+                #{questionnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="questiondetails != null" >
+                #{questiondetails,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="problemattributiondept != null" >
+                #{problemattributiondept,jdbcType=VARCHAR},
+            </if>
+            <if test="personincharge != null" >
+                #{personincharge,jdbcType=VARCHAR},
+            </if>
+            <if test="questiontype != null" >
+                #{questiontype,jdbcType=VARCHAR},
+            </if>
+            <if test="identifytheproblem != null" >
+                #{identifytheproblem,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentleader != null" >
+                #{developmentleader,jdbcType=VARCHAR},
+            </if>
+            <if test="updatetype != null" >
+                #{updatetype,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        update t_production_defects
+        <set >
+            <if test="serialnumber != null" >
+                serialNumber = #{serialnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="documentnumber != null" >
+                documentNumber = #{documentnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processstatus != null" >
+                processStatus = #{processstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="processstartdate != null" >
+                processStartDate = #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="currentsession != null" >
+                currentSession = #{currentsession,jdbcType=VARCHAR},
+            </if>
+            <if test="currentexecutor != null" >
+                currentExecutor = #{currentexecutor,jdbcType=VARCHAR},
+            </if>
+            <if test="problemraiser != null" >
+                problemRaiser = #{problemraiser,jdbcType=VARCHAR},
+            </if>
+            <if test="questiontitle != null" >
+                questionTitle = #{questiontitle,jdbcType=VARCHAR},
+            </if>
+            <if test="questionnumber != null" >
+                questionNumber = #{questionnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="questiondetails != null" >
+                questionDetails = #{questiondetails,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                solution = #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="problemattributiondept != null" >
+                problemAttributionDept = #{problemattributiondept,jdbcType=VARCHAR},
+            </if>
+            <if test="personincharge != null" >
+                personInCharge = #{personincharge,jdbcType=VARCHAR},
+            </if>
+            <if test="questiontype != null" >
+                questionType = #{questiontype,jdbcType=VARCHAR},
+            </if>
+            <if test="identifytheproblem != null" >
+                identifyTheProblem = #{identifytheproblem,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentleader != null" >
+                developmentLeader = #{developmentleader,jdbcType=VARCHAR},
+            </if>
+            <if test="updatetype != null" >
+                updateType = #{updatetype,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="serialnumber != null" >
+                and serialNumber = #{serialnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="documentnumber != null" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstatus != null" >
+                and processStatus = #{processstatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null" >
+                and processStartDate = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="currentsession != null" >
+                and currentSession = #{currentsession,jdbcType=VARCHAR}
+            </if>
+            <if test="currentexecutor != null" >
+                and currentExecutor = #{currentexecutor,jdbcType=VARCHAR}
+            </if>
+            <if test="problemraiser != null" >
+                and problemRaiser = #{problemraiser,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontitle != null" >
+                and questionTitle = #{questiontitle,jdbcType=VARCHAR}
+            </if>
+            <if test="questionnumber != null" >
+                and questionNumber = #{questionnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="questiondetails != null" >
+                and questionDetails = #{questiondetails,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="problemattributiondept != null" >
+                and problemAttributionDept = #{problemattributiondept,jdbcType=VARCHAR}
+            </if>
+            <if test="personincharge != null" >
+                and personInCharge = #{personincharge,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontype != null" >
+                and questionType = #{questiontype,jdbcType=VARCHAR}
+            </if>
+            <if test="identifytheproblem != null" >
+                and identifyTheProblem = #{identifytheproblem,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentleader != null" >
+                and developmentLeader = #{developmentleader,jdbcType=VARCHAR}
+            </if>
+            <if test="updatetype != null" >
+                and updateType = #{updatetype,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -154,4 +154,8 @@ public interface ReqTaskService {
     void approvalProcess(MultipartFile file,String ids);
     DemandBO approvalFindOne(String id,String month);
     DemandnNameChangeRspBO numberNameChangeDetail(DemandNameChangeBO demandNameChangeBO );
+
+    void productionDefectIntroduction(MultipartFile file);
+
+    void smokeTestRegistration(SmokeTestRegistrationBO smokeTestRegistrationBO);
 }

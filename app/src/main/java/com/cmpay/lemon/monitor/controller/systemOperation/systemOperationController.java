@@ -1,4 +1,4 @@
-package com.cmpay.lemon.monitor.controller.systemOperation;
+package com.cmpay.lemon.monitor.controller.systemoperation;
 
 
 import com.cmpay.framework.data.response.GenericRspDTO;

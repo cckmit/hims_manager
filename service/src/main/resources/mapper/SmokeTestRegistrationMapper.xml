@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISmokeTestRegistrationDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="testers" property="testers" jdbcType="VARCHAR" />
+        <result column="testDescription" property="testdescription" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_smoke_test_registration
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_smoke_test_registration
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        insert into t_smoke_test_registration
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="reqNm != null" >
+                req_nm,
+            </if>
+            <if test="reqNo != null" >
+                req_no,
+            </if>
+            <if test="reqInnerSeq != null" >
+                req_inner_seq,
+            </if>
+            <if test="jiraKey != null" >
+                jira_key,
+            </if>
+            <if test="testers != null" >
+                testers,
+            </if>
+            <if test="testdescription != null" >
+                testDescription,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="reqNm != null" >
+                #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="reqInnerSeq != null" >
+                #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraKey != null" >
+                #{jiraKey,jdbcType=VARCHAR},
+            </if>
+            <if test="testers != null" >
+                #{testers,jdbcType=VARCHAR},
+            </if>
+            <if test="testdescription != null" >
+                #{testdescription,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        update t_smoke_test_registration
+        <set >
+            <if test="reqNm != null" >
+                req_nm = #{reqNm,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="reqInnerSeq != null" >
+                req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR},
+            </if>
+            <if test="jiraKey != null" >
+                jira_key = #{jiraKey,jdbcType=VARCHAR},
+            </if>
+            <if test="testers != null" >
+                testers = #{testers,jdbcType=VARCHAR},
+            </if>
+            <if test="testdescription != null" >
+                testDescription = #{testdescription,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_smoke_test_registration
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="reqNm != null" >
+                and req_nm = #{reqNm,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="reqInnerSeq != null" >
+                and req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraKey != null" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="testers != null" >
+                and testers = #{testers,jdbcType=VARCHAR}
+            </if>
+            <if test="testdescription != null" >
+                and testDescription = #{testdescription,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
