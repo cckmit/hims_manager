@@ -73,18 +73,18 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Service
 public class ReqPlanServiceImpl implements ReqPlanService {
     //超级管理员
-    private static final Long SUPERADMINISTRATOR =(long)10506;
+    private static final Long SUPERADMINISTRATOR = (long) 10506;
     //团队主管
-    private static final Long SUPERADMINISTRATOR1 =(long)5004;
+    private static final Long SUPERADMINISTRATOR1 = (long) 5004;
     //产品经理
-    private static final Long SUPERADMINISTRATOR2 =(long)5002;
+    private static final Long SUPERADMINISTRATOR2 = (long) 5002;
     //技术负责人
-    private static final Long SUPERADMINISTRATOR3 =(long)5006;
+    private static final Long SUPERADMINISTRATOR3 = (long) 5006;
 
     //30 需求状态为取消
-    private static final String REQSUSPEND ="30";
+    private static final String REQSUSPEND = "30";
     //40 需求状态为暂停
-    private static final String REQCANCEL ="40";
+    private static final String REQCANCEL = "40";
     // 30 需求定稿
     private static final int REQCONFIRM = 30;
     // 50 技术方案定稿
@@ -124,7 +124,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Autowired
     private IPermiUserDao permiUserDao;
     @Autowired
-    private  IUserRoleExtDao userRoleExtDao;
+    private IUserRoleExtDao userRoleExtDao;
     @Autowired
     private JiraOperationService jiraOperationService;
     @Autowired
@@ -164,7 +164,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
-        String time= DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
         PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
         List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
 
@@ -226,7 +226,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         return demandRspBO;
     }
 
-    private PageInfo<DemandBO>  getPageInfo(DemandBO demandBO) {
+    private PageInfo<DemandBO> getPageInfo(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
@@ -264,7 +264,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     public void delete(String req_inner_seq) {
         try {
             DemandDO demandDO = demandDao.get(req_inner_seq);
-            if(StringUtils.isNotEmpty(demandDO.getReqNo())){
+            if (StringUtils.isNotEmpty(demandDO.getReqNo())) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("已有REQ需求编号的需求，禁止删除");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -275,11 +275,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.DB_DELETE_FAILED);
         }
     }
+
     /**
      * 得到指定月的天数
-     * */
-    public int getMonthLastDay(int year, int month)
-    {
+     */
+    public int getMonthLastDay(int year, int month) {
         Calendar a = Calendar.getInstance();
         a.set(Calendar.YEAR, year);
         a.set(Calendar.MONTH, month - 1);
@@ -288,51 +288,52 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         int maxDate = a.get(Calendar.DATE);
         return maxDate;
     }
+
     // 判断是否为角色权限
-    public boolean isDepartmentManager(Long juese , Long userid){
+    public boolean isDepartmentManager(Long juese, Long userid) {
         //查询该操作员角色
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setRoleId(juese);
         userRoleDO.setUserNo(userid);
-        List<UserRoleDO> userRoleDOS =new LinkedList<>();
-        userRoleDOS  = userRoleExtDao.find(userRoleDO);
-        if (!userRoleDOS.isEmpty()){
-            return true ;
+        List<UserRoleDO> userRoleDOS = new LinkedList<>();
+        userRoleDOS = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()) {
+            return true;
         }
-        return false ;
+        return false;
     }
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void update(DemandBO demandBO) {
         //1、“本月期望目标“为”完成产品发布“时，”预计产品发布日期“必须为本月；
         //2、“本月期望目标“为非”完成产品发布“时，”预计产品发布日期“必须是下月之后；
-        int year = Integer.parseInt(demandBO.getReqImplMon().substring(0,4));
-        int month = Integer.parseInt(demandBO.getReqImplMon().substring(5,7));
-        String startdata = demandBO.getReqImplMon()+"-01";
-        String enddata = demandBO.getReqImplMon()+"-"+getMonthLastDay(year,month);
-        if("180".equals(demandBO.getCurMonTarget())){
-            if(demandBO.getExpPrdReleaseTm().compareTo(startdata)<0||demandBO.getExpPrdReleaseTm().compareTo(enddata)>0){
+        int year = Integer.parseInt(demandBO.getReqImplMon().substring(0, 4));
+        int month = Integer.parseInt(demandBO.getReqImplMon().substring(5, 7));
+        String startdata = demandBO.getReqImplMon() + "-01";
+        String enddata = demandBO.getReqImplMon() + "-" + getMonthLastDay(year, month);
+        if ("180".equals(demandBO.getCurMonTarget())) {
+            if (demandBO.getExpPrdReleaseTm().compareTo(startdata) < 0 || demandBO.getExpPrdReleaseTm().compareTo(enddata) > 0) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为完成产品发布时，预计产品发布日期必须为本月！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-        }else{
-            if(demandBO.getExpPrdReleaseTm().compareTo(enddata)<0){
+        } else {
+            if (demandBO.getExpPrdReleaseTm().compareTo(enddata) < 0) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("本月期望目标为非完成产品发布时，预计产品发布日期必须为下月之后！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
         // 如果项目经理不为空，则判断项目经理是否为产品经理技术负责人或团队主管，否则报错
-        if(StringUtils.isNotBlank(demandBO.getProjectMng())){
-            TPermiUser tPermiUser=iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
-            if(tPermiUser==null){
+        if (StringUtils.isNotBlank(demandBO.getProjectMng())) {
+            TPermiUser tPermiUser = iErcdmgErorDao.findByUsername(demandBO.getProjectMng());
+            if (tPermiUser == null) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:"+demandBO.getProjectMng()+"在系统中不存在，请确定后重新输入");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的项目经理名称:" + demandBO.getProjectMng() + "在系统中不存在，请确定后重新输入");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             UserDO userByUserName = iUserDao.getUserByUserName(tPermiUser.getUserId());
-            if(!isDepartmentManager(SUPERADMINISTRATOR1,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR3,userByUserName.getUserNo())&&!isDepartmentManager(SUPERADMINISTRATOR2,userByUserName.getUserNo())){
+            if (!isDepartmentManager(SUPERADMINISTRATOR1, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR3, userByUserName.getUserNo()) && !isDepartmentManager(SUPERADMINISTRATOR2, userByUserName.getUserNo())) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("项目经理需为产品经理,部门技术负责人或团队主管！");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -355,7 +356,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
             setDefaultUser(demandBO);
             //时间修改备注不为空时，登记
-            if(!demandBO.getRevisionTimeNote().isEmpty()){
+            if (!demandBO.getRevisionTimeNote().isEmpty()) {
                 registrationTimeNodeHistoryTable(demandBO);
                 //项目计划变更 发送邮件
                 productionChangeEmail(demandBO);
@@ -371,18 +372,18 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
 
     //项目计划变更 发送邮件
-    public void productionChangeEmail(DemandBO demandBO){
+    public void productionChangeEmail(DemandBO demandBO) {
         Map<String, String> resMap = new HashMap<>();
         resMap = reqPlanService.getMailbox(demandBO.getReqInnerSeq());
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
-        String devpEmail =  resMap.get("devpEmail");
+        String devpEmail = resMap.get("devpEmail");
         String jdEmail = resMap.get("jdEmail");
 
         String subject = "【项目计划变更】" + demandBO.getReqNo() + "_" + demandBO.getReqNm() + "_"
-                + userService.getFullname(SecurityUtils.getLoginName()) ;
+                + userService.getFullname(SecurityUtils.getLoginName());
         String content = projectChangeContent(demandBO);
-        String message = reqPlanService.sendMail(proMemberEmail, testDevpEmail+devpEmail, content, subject, null);
+        String message = reqPlanService.sendMail(proMemberEmail, testDevpEmail + devpEmail, content, subject, null);
         //String message = reqPlanService.sendMail("tu_yi@hisuntech.com", "wu_lr@hisuntech.com", content, subject, null);
         if (StringUtils.isNotBlank(message)) {
             //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
@@ -391,6 +392,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
 
     }
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void registrationTimeNodeHistoryTable(DemandBO demandBO) {
@@ -416,9 +418,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandTimeFrameHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
         demandTimeFrameHistoryDO.setCreatTime(LocalDateTime.now());
         String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandBO.getReqInnerSeq());
-        if(identification!=null){
+        if (identification != null) {
             demandTimeFrameHistoryDO.setIdentification(identification);
-        }else {
+        } else {
             demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryDO.getReqInnerSeq());
         }
         demandTimeFrameHistoryDao.insert(demandTimeFrameHistoryDO);
@@ -429,7 +431,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void changesInLegacyWorkload(String req_impl_mon){
+    public void changesInLegacyWorkload(String req_impl_mon) {
         try {
             String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             // 操作人
@@ -458,7 +460,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //月初备注置空
                 demand.setMonRemark("");
                 //月底备注置空
-                demand.setEndMonRemark("该需求为"+req_impl_mon+"已完成需求，不在本月考核，放在本月为录入剩余工作量");
+                demand.setEndMonRemark("该需求为" + req_impl_mon + "已完成需求，不在本月考核，放在本月为录入剩余工作量");
                 demand.setEndFeedbackTm("");
                 // 是否核减置空
                 demand.setIsCut("");
@@ -493,8 +495,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
 
                     String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
-                    if(identification==null){
-                        identification=reqInnerSeq;
+                    if (identification == null) {
+                        identification = reqInnerSeq;
                     }
                     demandChangeDetailsDO.setIdentification(identification);
                     demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
@@ -513,8 +515,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setReqNm(demand.getReqNm());
                     //依据内部需求编号查唯一标识
                     String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
-                    if(identificationByReqInnerSeq==null){
-                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                    if (identificationByReqInnerSeq == null) {
+                        identificationByReqInnerSeq = demand.getReqInnerSeq();
                     }
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //获取当前操作员
@@ -523,13 +525,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //登记需求状态历史表
                     demandStateHistoryDao.insert(demandStateHistoryDO);
 
-                }else {
+                } else {
                     //若下月已有该条需求则不做处理
                    /* demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);*/
                 }
                 // 插入jk领导审核记录
-                if("是".equals(demand.getIsApprovalProcess())){
+                if ("是".equals(demand.getIsApprovalProcess())) {
                     DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
                     demandPictureDO.setPicId(null);
                     demandPictureDO.setPicReqinnerseq(nextInnerSeq);
@@ -548,31 +550,32 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             LOGGER.error("存量需求转存失败：" + e.getMessage());
             //"存量需求转存失败" + e.getMessage();
             MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
-            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
+            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE);
         }
     }
 
     /**
      * 登记需求阶段更变历史表
+     *
      * @param demandBO
      */
     @Override
-    public void registrationDemandPhaseRecordForm(DemandBO demandBO,String remarks ) {
+    public void registrationDemandPhaseRecordForm(DemandBO demandBO, String remarks) {
         DemandDO demandDO = demandDao.get(demandBO.getReqInnerSeq());
         DemandCurperiodHistoryDO demandCurperiodHistoryDO = new DemandCurperiodHistoryDO();
 
         demandCurperiodHistoryDO.setReqInnerSeq(demandBO.getReqInnerSeq());
         demandCurperiodHistoryDO.setReqNo(demandDO.getReqNo());
         demandCurperiodHistoryDO.setReqNm(demandDO.getReqNm());
-        demandCurperiodHistoryDO.setOldPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID",demandDO.getPreCurPeriod()));
+        demandCurperiodHistoryDO.setOldPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID", demandDO.getPreCurPeriod()));
         String req_peroid = dictionaryService.findFieldName("REQ_PEROID", demandDO.getPreCurPeriod());
-        demandCurperiodHistoryDO.setPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID",demandBO.getPreCurPeriod()));
+        demandCurperiodHistoryDO.setPreCurPeriod(dictionaryService.findFieldValue("REQ_PEROID", demandBO.getPreCurPeriod()));
         demandCurperiodHistoryDO.setRemarks(remarks);
 
         //依据内部需求编号查唯一标识
         String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandDO.getReqInnerSeq());
-        if(identificationByReqInnerSeq==null){
-            identificationByReqInnerSeq=demandDO.getReqInnerSeq();
+        if (identificationByReqInnerSeq == null) {
+            identificationByReqInnerSeq = demandDO.getReqInnerSeq();
         }
         demandCurperiodHistoryDO.setIdentification(identificationByReqInnerSeq);
         //获取当前操作员
@@ -580,6 +583,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandCurperiodHistoryDO.setCreatTime(LocalDateTime.now());
         //登记需求状态历史表
         demandCurperiodHistoryDao.insert(demandCurperiodHistoryDO);
+    }
+
+    @Override
+    public void modifyFolder() {
+
     }
 
     @Override
@@ -591,13 +599,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 根据内部编号查询项目启动信息
      */
     @Override
-    public  ProjectStartBO goProjectStart(String reqInnerSeq){
+    public ProjectStartBO goProjectStart(String reqInnerSeq) {
         DemandDO demandDO = demandDao.get(reqInnerSeq);
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
         //获取登录名
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         String projectMng = demandDO.getProjectMng();
         if (!currentUser.equals(projectMng)) {
             //"项目启动失败，只能有项目经理进行项目启动"
@@ -611,16 +619,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         resMap = reqPlanService.getMailbox(reqInnerSeq);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
-        String devpEmail =  resMap.get("devpEmail");
+        String devpEmail = resMap.get("devpEmail");
         String jdEmail = resMap.get("jdEmail");
-        if (StringUtils.isNotBlank(proMemberEmail)){
+        if (StringUtils.isNotBlank(proMemberEmail)) {
             projectStartDO.setSendTo(proMemberEmail);
-        }else{
+        } else {
             projectStartDO.setSendTo("");
         }
-        if (StringUtils.isNotBlank(testDevpEmail)){
-            projectStartDO.setCopyTo(testDevpEmail+devpEmail);
-        }else{
+        if (StringUtils.isNotBlank(testDevpEmail)) {
+            projectStartDO.setCopyTo(testDevpEmail + devpEmail);
+        } else {
             projectStartDO.setCopyTo("");
         }
         return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
@@ -630,12 +638,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 根据内部编号查询项目启动信息
      */
     @Override
-    public  ProjectStartBO uploadFile(String reqInnerSeq){
+    public ProjectStartBO uploadFile(String reqInnerSeq) {
         DemandDO demandDO = demandDao.get(reqInnerSeq);
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
-        if(JudgeUtils.isNull(demandDO.getIsSvnBuild())||"否".equals(demandDO.getIsSvnBuild())){
+        if (JudgeUtils.isNull(demandDO.getIsSvnBuild()) || "否".equals(demandDO.getIsSvnBuild())) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
@@ -647,16 +655,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         resMap = reqPlanService.getMailbox(reqInnerSeq);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
-        String devpEmail =  resMap.get("devpEmail");
+        String devpEmail = resMap.get("devpEmail");
         String jdEmail = resMap.get("jdEmail");
-        if (StringUtils.isNotBlank(proMemberEmail)){
+        if (StringUtils.isNotBlank(proMemberEmail)) {
             projectStartDO.setSendTo(proMemberEmail);
-        }else{
+        } else {
             projectStartDO.setSendTo("");
         }
-        if (StringUtils.isNotBlank(testDevpEmail)){
-            projectStartDO.setCopyTo(testDevpEmail+devpEmail);
-        }else{
+        if (StringUtils.isNotBlank(testDevpEmail)) {
+            projectStartDO.setCopyTo(testDevpEmail + devpEmail);
+        } else {
             projectStartDO.setCopyTo("");
         }
         return BeanUtils.copyPropertiesReturnDest(new ProjectStartBO(), projectStartDO);
@@ -666,7 +674,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * 获取邮箱
      */
     @Override
-    public Map<String,String> getMailbox(String reqInnerSeq){
+    public Map<String, String> getMailbox(String reqInnerSeq) {
         Map<String, String> resMap = new HashMap<>();
         DemandDO demandDO = new DemandDO();
         //发送的邮箱
@@ -776,13 +784,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             jdEmail = demandDO.getMonRemark() + ";";
         }
         String[] devpCoorDepts = null;
-        if(StringUtils.isNotEmpty(bean.getDevpCoorDept())){
-             devpCoorDepts  = bean.getDevpCoorDept().split(",");
-        }else{
+        if (StringUtils.isNotEmpty(bean.getDevpCoorDept())) {
+            devpCoorDepts = bean.getDevpCoorDept().split(",");
+        } else {
             devpCoorDepts = new String[1];
         }
         //查询部门邮箱(主导部门和配合部门，去除配合部门测试部)
-        demandDO = planDao.findDevpEmail(devpCoorDepts  ,reqInnerSeq);
+        demandDO = planDao.findDevpEmail(devpCoorDepts, reqInnerSeq);
         if (demandDO != null) {
             devpEmail = demandDO.getMonRemark() + ";";
         }
@@ -795,13 +803,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         resMap.put("jdEmail", jdEmail);
         return resMap;
     }
+
     /**
      * 项目启动
      *
      * @param
      */
     @Override
-    public void projectStart(ProjectStartBO projectStartBO, HttpServletRequest request){
+    public void projectStart(ProjectStartBO projectStartBO, HttpServletRequest request) {
         // 项目启动邮件
         String sendTo = projectStartBO.getSendTo();
         String copyTo = projectStartBO.getCopyTo();
@@ -812,7 +821,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String req_inner_seq = projectStartBO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(req_inner_seq);
         DemandDO bean = demandDao.get(req_inner_seq);
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         if (null == reqPlan) {
             //"项目启动失败，找不到该需求对应信息!"
             BusinessException.throwBusinessException(MsgEnum.ERROR_PLAN_NULL);
@@ -823,7 +832,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandDao.update(bean);
             reqPlan.setReqNo(projectStartBO.getReqNo());
 
-            if(StringUtils.isBlank(reqPlan.getReqNo())||StringUtils.isBlank(reqPlan.getReqNm())){
+            if (StringUtils.isBlank(reqPlan.getReqNo()) || StringUtils.isBlank(reqPlan.getReqNm())) {
                 //"项目启动失败，需求编号和需求名称不能为空!"
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQNO_REQNM_ISBLANK);
             }
@@ -872,13 +881,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         } catch (Exception e) {
             e.printStackTrace();
             //return ajaxDoneError("项目启动失败，SVN项目建立成功，启动邮件发送失败：" + e.getMessage());
-            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:"+e.getMessage());
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + e.getMessage());
             BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
         }
     }
 
     /**
      * 判断必填内容不为空 时间人员配置
+     *
      * @param reqPlan
      * @return
      */
@@ -900,41 +910,40 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private String bulidSvnProjrct(DemandDO reqTask, HttpServletRequest request) {
         //连接svn失败后报错，项目启动失败
         try {
-        // 身份验证
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
-        SVNClientManager clientManager = SVNUtil.authSvn(SvnConstant.SvnPath,authManager);
+            // 身份验证
+            ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName, SvnConstant.SvnPassWord);
+            SVNClientManager clientManager = SVNUtil.authSvn(SvnConstant.SvnPath, authManager);
 
-            String reqNo=reqTask.getReqNo();
-            int start=reqNo.indexOf("-")+1;
-            String reqMonth=reqNo.substring(start,start+6);
+            String reqNo = reqTask.getReqNo();
+            int start = reqNo.indexOf("-") + 1;
+            String reqMonth = reqNo.substring(start, start + 6);
             SVNURL urlDir = SVNURL.parseURIEncoded(SvnConstant.SvnPath + reqMonth);
             //每月文件夹是否存在
-            boolean isURLDirExist = SVNUtil.isURLExist(urlDir,authManager);
+            boolean isURLDirExist = SVNUtil.isURLExist(urlDir, authManager);
             if (!isURLDirExist) {
                 SVNUtil.makeDirectory(clientManager, urlDir, "创建每月文档");
             }
-            String dirNm = reqMonth+"/"+reqNo + "_" + reqTask.getReqNm();
+            String dirNm = reqMonth + "/" + reqNo + "_" + reqTask.getReqNm();
             SVNURL url = SVNURL.parseURIEncoded(SvnConstant.SvnPath + dirNm);
             // 判断项目是否已经建立
-            boolean isURLExist = SVNUtil.isURLExist(url,authManager);
+            boolean isURLExist = SVNUtil.isURLExist(url, authManager);
             if (isURLExist) {
                 return "";
             }
             SVNUtil.makeDirectory(clientManager, url, "项目启动创建文件夹");
-            String path="";
-            if(LemonUtils.getEnv().equals(Env.SIT)) {
-                path=  SvnConstant.ProjectTemplatePathdevms;
-            }
-            else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                path=  SvnConstant.ProjectTemplatePathdevadm;
-            }else {
+            String path = "";
+            if (LemonUtils.getEnv().equals(Env.SIT)) {
+                path = SvnConstant.ProjectTemplatePathdevms;
+            } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+                path = SvnConstant.ProjectTemplatePathdevadm;
+            } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             File file = new File(path);
             // 导入文件夹
-            if(SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true) == null){
+            if (SVNUtil.importDirectory(clientManager, file, url, "项目启动创建子文件夹", true) == null) {
                 return "项目启动SVN创建子文件夹失败";
             }
             return "";
@@ -946,6 +955,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     /**
      * 项目启动邮件内容
+     *
      * @param reqTask
      * @return
      */
@@ -975,14 +985,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         content.append("<br/>");
         try {
             String prdFinshTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[]{"yyyy-MM-dd"}));
             String uatUpdateTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[]{"yyyy-MM-dd"}));
             String testFinishTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[] { "yyyy-MM-dd" }));
-            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[]{"yyyy-MM-dd"}));
+            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[]{"yyyy-MM-dd"}));
             String oprFisnTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[]{"yyyy-MM-dd"}));
             content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
             content.append("<br/>");
             content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
@@ -998,8 +1008,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return content.toString();
     }
+
     /**
      * 项目计划变更邮件内容
+     *
      * @param reqTask
      * @return
      */
@@ -1011,11 +1023,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         content.append("<br/>");
         content.append("人员计划如下：");
         content.append("<br/>");
-        if( !StringUtils.isEmpty(reqTask.getProjectMng())){
+        if (!StringUtils.isEmpty(reqTask.getProjectMng())) {
             projectMng = reqTask.getProjectMng();
         }
-        content.append("&nbsp;&nbsp;项目经理：" + projectMng );
-       // content.append("&nbsp;&nbsp;项目经理：" + reqTask.getProjectMng());
+        content.append("&nbsp;&nbsp;项目经理：" + projectMng);
+        // content.append("&nbsp;&nbsp;项目经理：" + reqTask.getProjectMng());
         content.append("<br/>");
         content.append("&nbsp;&nbsp;产品经理：" + reqTask.getProductMng());
         content.append("<br/>");
@@ -1034,14 +1046,14 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         content.append("<br/>");
         try {
             String prdFinshTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getPrdFinshTm(), new String[]{"yyyy-MM-dd"}));
             String uatUpdateTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getUatUpdateTm(), new String[]{"yyyy-MM-dd"}));
             String testFinishTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[] { "yyyy-MM-dd" }));
-            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[]{"yyyy-MM-dd"}));
+            String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[]{"yyyy-MM-dd"}));
             String oprFisnTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[] { "yyyy-MM-dd" }));
+                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[]{"yyyy-MM-dd"}));
             content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
             content.append("<br/>");
             content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
@@ -1057,8 +1069,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return content.toString();
     }
+
     /**
      * 发送邮件
+     *
      * @param sendTo
      * @param copyTo
      * @param content
@@ -1085,10 +1099,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         mailInfo.setUsername(Constant.EMAIL_NAME);
         mailInfo.setPassword(Constant.EMAIL_PSWD);
         mailInfo.setFromAddress(Constant.EMAIL_NAME);
-        sendTo=sendTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
+        sendTo = sendTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
         mailInfo.setReceivers(sendTo.split(";"));
         if (StringUtils.isNotBlank(copyTo)) {
-            copyTo=copyTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
+            copyTo = copyTo.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";");
             mailInfo.setCcs(copyTo.split(";"));
         }
         if (null != attachFiles) {
@@ -1106,12 +1120,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         return null;
 
     }
+
     /**
      * 存量变更
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void changeReq(String req_impl_mon){
+    public void changeReq(String req_impl_mon) {
         try {
             // 找到实施月份为本月、需求状态为未完成的状态、非取消和暂停的需求
             List<DemandDO> list = demandDao.findUnFinishReq(req_impl_mon);
@@ -1176,8 +1191,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
 
                     String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
-                    if(identification==null){
-                        identification=reqInnerSeq;
+                    if (identification == null) {
+                        identification = reqInnerSeq;
                     }
                     demandChangeDetailsDO.setIdentification(identification);
                     demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
@@ -1196,8 +1211,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setReqNm(demand.getReqNm());
                     //依据内部需求编号查唯一标识
                     String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
-                    if(identificationByReqInnerSeq==null){
-                        identificationByReqInnerSeq=demand.getReqInnerSeq();
+                    if (identificationByReqInnerSeq == null) {
+                        identificationByReqInnerSeq = demand.getReqInnerSeq();
                     }
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //获取当前操作员
@@ -1206,13 +1221,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     //登记需求状态历史表
                     demandStateHistoryDao.insert(demandStateHistoryDO);
 
-                }else {
+                } else {
                     //若下月已有该需求则不做修改
                   /*  demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);*/
                 }
                 // 插入jk领导审核记录
-                if("是".equals(demand.getIsApprovalProcess())){
+                if ("是".equals(demand.getIsApprovalProcess())) {
                     DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
                     demandPictureDO.setPicId(null);
                     demandPictureDO.setPicReqinnerseq(nextInnerSeq);
@@ -1231,19 +1246,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             LOGGER.error("存量需求转存失败：" + e.getMessage());
             //"存量需求转存失败" + e.getMessage();
             MsgEnum.ERROR_FAIL_CHANGE.setMsgInfo("存量需求转存失败:" + e.getMessage());
-            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE );
+            BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_CHANGE);
         }
     }
+
     //判断是否是该项目产品经理或者部门经理
     public boolean permissionCheck(String reqInnerSeq) {
         //查询该操作员是否为超级管理员
         UserRoleDO userRoleDO = new UserRoleDO();
         userRoleDO.setRoleId(SUPERADMINISTRATOR);
         userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
-        List<UserRoleDO> userRoleDOS =new LinkedList<>();
-        userRoleDOS  = userRoleExtDao.find(userRoleDO);
-        if (!userRoleDOS.isEmpty()){
-            return true ;
+        List<UserRoleDO> userRoleDOS = new LinkedList<>();
+        userRoleDOS = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()) {
+            return true;
         }
 
         //当前操作员姓名
@@ -1251,8 +1267,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String loginName = SecurityUtils.getLoginName();
         permiUserDO.setUserId(loginName);
         List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
-        if(permiUserDOS.isEmpty()){
-            return false ;
+        if (permiUserDOS.isEmpty()) {
+            return false;
         }
         String userName = permiUserDOS.get(0).getUserName();
         //依据内部需求编号查内部需求
@@ -1264,53 +1280,55 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
 
         //判断开发主导部门和部门经理不为空
-        if(!(StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng)))){
+        if (!(StringUtils.isBlank(devpLeadDept) && (StringUtils.isBlank(productMng)))) {
             //有产品经理，无主导部门,判断该操作员是否是该产品经理
-            if(!StringUtils.isBlank(productMng)&&(StringUtils.isBlank(devpLeadDept))){
+            if (!StringUtils.isBlank(productMng) && (StringUtils.isBlank(devpLeadDept))) {
 
 
-                if(productMng.equals(userName)) {
+                if (productMng.equals(userName)) {
                     return true;
-                }else{
-                    return false ;
+                } else {
+                    return false;
                 }
             }
             //有主导部门，无产品经理,判断该操作员是否是该开发部门项目经理 devpLeadDept
-            if(!StringUtils.isBlank(devpLeadDept)&&(StringUtils.isBlank(productMng))){
+            if (!StringUtils.isBlank(devpLeadDept) && (StringUtils.isBlank(productMng))) {
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
                 String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
-                if(deptManagerName.equals(userName)) {
+                if (deptManagerName.equals(userName)) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
             //有主导部门，产品经理,判断该操作员是否是该开发部门项目经理 或产品经理
-            if(!StringUtils.isBlank(productMng)&&(!StringUtils.isBlank(devpLeadDept))){
+            if (!StringUtils.isBlank(productMng) && (!StringUtils.isBlank(devpLeadDept))) {
                 permiDeptDO.setDeptName(devpLeadDept);
                 //获得开发主导部门查询该部门部门经理
                 List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
                 String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
-                if(deptManagerName.equals(userName)||productMng.equals(userName)) {
+                if (deptManagerName.equals(userName) || productMng.equals(userName)) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
-        }else{
+        } else {
             return false;
         }
         return false;
     }
+
     /**
      * 需求重新启动
-     * @param  ids 需求内部编号
+     *
+     * @param ids 需求内部编号
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void rebooting(List<String> ids){
+    public void rebooting(List<String> ids) {
         try {
             //获取当前月时间
             Date date = new Date();
@@ -1324,10 +1342,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 DemandDO demandDO1 = demandDao.get(ids.get(i));
                 System.err.println(demand.getReqSts());
                 //判断需求是否暂停需求，不是则跳过
-                if(!REQCANCEL.equals(demand.getReqSts())){
+                if (!REQCANCEL.equals(demand.getReqSts())) {
                     continue;
                 }
-                if(!permissionCheck(ids.get(i))){
+                if (!permissionCheck(ids.get(i))) {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("非当前需求产品经理和开发主导部门部门经理不能重新启动！");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1378,8 +1396,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandChangeDetailsDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
                     demandChangeDetailsDO.setCreatTime(LocalDateTime.now());
                     String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
-                    if(identification==null){
-                        identification=reqInnerSeq;
+                    if (identification == null) {
+                        identification = reqInnerSeq;
                     }
                     demandChangeDetailsDO.setIdentification(identification);
                     demandChangeDetailsDO.setReqImplMon(demand.getReqImplMon());
@@ -1400,8 +1418,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                     //依据内部需求编号查唯一标识
                     String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
-                    if(identificationByReqInnerSeq==null){
-                        identificationByReqInnerSeq=reqInnerSeq;
+                    if (identificationByReqInnerSeq == null) {
+                        identificationByReqInnerSeq = reqInnerSeq;
                     }
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //登记需求状态历史表
@@ -1423,8 +1441,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                     //依据内部需求编号查唯一标识
                     String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
-                    if(identificationByReqInnerSeq==null){
-                        identificationByReqInnerSeq=demand.getReqInnerSeq();;
+                    if (identificationByReqInnerSeq == null) {
+                        identificationByReqInnerSeq = demand.getReqInnerSeq();
                     }
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //登记需求状态历史表
@@ -1438,11 +1456,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
     }
+
     private void SyncJira(DemandDO demand, String reqInnerSeq) {
 
         DemandJiraDO demandJiraDO = demandJiraDao.get(reqInnerSeq);
         //若已存在对应jira任务，则更新jira关联表
-        if(JudgeUtils.isNotNull(demandJiraDO)){
+        if (JudgeUtils.isNotNull(demandJiraDO)) {
             demandJiraDO.setReqInnerSeq(demand.getReqInnerSeq());
             demandJiraDO.setCreatTime(LocalDateTime.now());
             demandJiraDao.insert(demandJiraDO);
@@ -1461,6 +1480,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         return false;
     }*/
+
     /**
      * 查找最大内部用户号
      */
@@ -1484,11 +1504,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             }
         }
     }
+
     /**
-     *文档上传
+     * 文档上传
      */
     @Override
-    public void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files ,HttpServletRequest request){
+    public void uploadProjrctFile(ProjectStartBO reqDTO, MultipartFile[] files, HttpServletRequest request) {
         String uploadPeriod = reqDTO.getUploadPeriod();
         String innerReqSeq = reqDTO.getReqInnerSeq();
         DemandDO reqPlan = demandDao.get(innerReqSeq);
@@ -1507,36 +1528,36 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：请选择相应需求阶段进行文件上传!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        String reqNo=reqPlan.getReqNo();
-        if(StringUtils.isBlank(reqNo)){
+        String reqNo = reqPlan.getReqNo();
+        if (StringUtils.isBlank(reqNo)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：需求编号不能为空!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        int start=reqNo.indexOf("-")+1;
-        String reqMonth=reqNo.substring(start,start+6);
-        String monthDir="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + reqMonth;
-        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
-            monthDir= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + reqMonth;
-        }else {
+        int start = reqNo.indexOf("-") + 1;
+        String reqMonth = reqNo.substring(start, start + 6);
+        String monthDir = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            monthDir = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + reqMonth;
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            monthDir = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + reqMonth;
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
-        if(!(new File(monthDir).exists())){
+        if (!(new File(monthDir).exists())) {
             FileUtils.createDirectory(monthDir);
         }
-        String directoryName = reqMonth+"/"+reqNo+"_" + reqPlan.getReqNm();
+        String directoryName = reqMonth + "/" + reqNo + "_" + reqPlan.getReqNm();
         String svnRoot = SvnConstant.SvnPath + directoryName;
         // 查看本地是否checkout
-        String localSvnPath="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName;
-        }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
-            localSvnPath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName;
-        }else {
+        String localSvnPath = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName;
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            localSvnPath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName;
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1594,7 +1615,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         // 上传文档到本地SVN工作空间
         Map<String, Object> map = null;
         try {
-            map = commitFile(files, svnRoot, localSvnPath,directoryName, reqPlan, request);
+            map = commitFile(files, svnRoot, localSvnPath, directoryName, reqPlan, request);
             //更新文档上传时间
             updateExtraTm(reqPlan);
         } catch (Exception e) {
@@ -1609,7 +1630,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         Vector<File> attachFiles = (Vector<File>) map.get("files");
-        if (StringUtils.equals(uploadPeriod, ReqPeriodConstants.REQ_CONFIRM) || StringUtils.equals(uploadPeriod,ReqPeriodConstants.TECH_DOC_CONFIRM)
+        if (StringUtils.equals(uploadPeriod, ReqPeriodConstants.REQ_CONFIRM) || StringUtils.equals(uploadPeriod, ReqPeriodConstants.TECH_DOC_CONFIRM)
                 || StringUtils.equals(uploadPeriod, ReqPeriodConstants.FINISH_SIT_TEST)) {
             // 下发文档邮件
             String sendTo = reqDTO.getSendTo();
@@ -1618,10 +1639,10 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败，收件人必填，多个“;”分割!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
-            String  subject= reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
+            String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+            String subject = reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
-            String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject+"-"+currentUser, attachFiles);
+            String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject + "-" + currentUser, attachFiles);
             if (StringUtils.isNotEmpty(msg)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1630,20 +1651,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         // period：下拉框阶段值+10  curPeriod：需求当前阶段，上传文档的状态+10大于需求当前阶段时更新状态到下一个阶段
         if (!ReqPeriodConstants.FINISH_PRD.equals(uploadPeriod) && (period > curPeriod)) {
             //但状态为测试时，变为开发编码阶段
-            if(period==60||period==70){
-                period=80;
+            if (period == 60 || period == 70) {
+                period = 80;
             }
             String preCurPeriod = period + "";
             reqPlan.setPreCurPeriod(preCurPeriod);
             //查询原数据
             DemandDO demandDO = demandDao.get(reqPlan.getReqInnerSeq());
             //如果修改了需求当前阶段
-            if(!reqPlan.getPreCurPeriod().equals(demandDO.getPreCurPeriod())){
+            if (!reqPlan.getPreCurPeriod().equals(demandDO.getPreCurPeriod())) {
                 DemandBO demandBO = new DemandBO();
                 BeanConvertUtils.convert(demandBO, reqPlan);
                 //登记需求阶段记录表
-                String remarks="文档上传自动修改";
-                reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+                String remarks = "文档上传自动修改";
+                reqPlanService.registrationDemandPhaseRecordForm(demandBO, remarks);
             }
             //上传文档更新需求状态
             if (!"30".equals(reqPlan.getReqSts()) && !"40".equals(reqPlan.getReqSts())) {
@@ -1662,15 +1683,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandDao.updatePreCurPeriod(reqPlan);
         }
     }
-
-    private String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath) {
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
+    @Override
+    public String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath) {
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName, SvnConstant.SvnPassWord);
         SVNClientManager clientManager = null;
         File localSvnDir = new File(localSvnPath);
         if (!localSvnDir.exists()) {
             clientManager = SVNUtil.authSvn(svnRoot, authManager);
             try {
-                if(!SVNUtil.isURLExist(SVNURL.parseURIEncoded(svnRoot),authManager)){
+                if (!SVNUtil.isURLExist(SVNURL.parseURIEncoded(svnRoot), authManager)) {
                     return "文档上传失败:请先进行项目启动!";
                 }
                 SVNUtil.checkout(clientManager, SVNURL.parseURIEncoded(svnRoot), SVNRevision.HEAD, new File(localSvnPath), SVNDepth.INFINITY);
@@ -1684,7 +1705,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     /**
      * 文档上传svn
-     * @param files 需求文档
+     *
+     * @param files         需求文档
      * @param svnRoot
      * @param localSvnPath
      * @param directoryName
@@ -1692,7 +1714,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      * @param request
      * @return
      */
-    private Map<String, Object> commitFile(MultipartFile[] files, String svnRoot, String localSvnPath, String directoryName,DemandDO reqTask,
+    private Map<String, Object> commitFile(MultipartFile[] files, String svnRoot, String localSvnPath, String directoryName, DemandDO reqTask,
                                            HttpServletRequest request) {
         SVNClientManager clientManager;
         String importFilePath = null;
@@ -1703,26 +1725,26 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             File fl = null;
             String[] attachFileNames = null;
             for (MultipartFile importfile : files) {
-                String loacalpath=localSvnPath;
-                String svnPath=svnRoot;
+                String loacalpath = localSvnPath;
+                String svnPath = svnRoot;
                 if (!importfile.isEmpty()) {
                     try {
                         String fileName = importfile.getOriginalFilename();
-                        if(!fileName.startsWith(reqTask.getReqNo()+"_"+reqTask.getReqNm())){
+                        if (!fileName.startsWith(reqTask.getReqNo() + "_" + reqTask.getReqNm())) {
                             map.put("message", "文档提交到SVN失败：文件名与需求名不一致，请检查");
                             return map;
                         }
-                        if(fileName.contains("评审表")){
-                            if(LemonUtils.getEnv().equals(Env.SIT)) {
-                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName + "/评审文档/";
-                            }else  if(LemonUtils.getEnv().equals(Env.DEV)) {
-                                loacalpath= com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName + "/评审文档/";
-                            }else {
+                        if (fileName.contains("评审表")) {
+                            if (LemonUtils.getEnv().equals(Env.SIT)) {
+                                loacalpath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVMS + directoryName + "/评审文档/";
+                            } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+                                loacalpath = com.cmpay.lemon.monitor.utils.Constant.PROJECTDOC_PATH_DEVADM + directoryName + "/评审文档/";
+                            } else {
                                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                             }
-                            svnPath = SvnConstant.SvnPath+directoryName + "/评审文档/";
+                            svnPath = SvnConstant.SvnPath + directoryName + "/评审文档/";
                         }
                         // 文件保存路径
                         importFilePath = loacalpath + fileName;
@@ -1731,56 +1753,55 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                         fl = new File(importFilePath);
                         attachFileNames = fl.getAbsolutePath().split(";");
                         for (int i = 0; i < attachFileNames.length; i++) {
-                            if ("\\".equals(File.separator)){
+                            if ("\\".equals(File.separator)) {
                                 attachFileNames[i].replace("/", "\\");
-                            }
-                            else if ("/".equals(File.separator)) {
+                            } else if ("/".equals(File.separator)) {
                                 attachFileNames[i].replace("\\", "/");
                             }
                         }
                         // 保存本地svn
                         importfile.transferTo(fl);
-                        File newWordLod =null;
+                        File newWordLod = null;
                         //功能点解析
-                        if (fileName.contains("原子功能点评估表(内部考核)")||fileName.contains("原子功能点评估表（内部考核）")) {
-                            String  msg=saveWordLoad(reqTask, map, importFilePath);
-                            if(StringUtils.isNotBlank(msg)){
-                                map.put("message",msg);
+                        if (fileName.contains("原子功能点评估表(内部考核)") || fileName.contains("原子功能点评估表（内部考核）")) {
+                            String msg = saveWordLoad(reqTask, map, importFilePath);
+                            if (StringUtils.isNotBlank(msg)) {
+                                map.put("message", msg);
                                 return map;
                             }
                             //转换成基地对应的功能点
-                            String newfileName=fileName.replaceAll("原子功能点评估表(内部考核)", "原子功能点评估表(电子工单)").replaceAll("原子功能点评估表（内部考核）", "原子功能点评估表(电子工单)");
-                            msg=copyWorLoadFile(importFilePath,request,loacalpath+newfileName);
-                            if(StringUtils.isNotEmpty(msg)){
-                                map.put("message",msg);
+                            String newfileName = fileName.replaceAll("原子功能点评估表(内部考核)", "原子功能点评估表(电子工单)").replaceAll("原子功能点评估表（内部考核）", "原子功能点评估表(电子工单)");
+                            msg = copyWorLoadFile(importFilePath, request, loacalpath + newfileName);
+                            if (StringUtils.isNotEmpty(msg)) {
+                                map.put("message", msg);
                                 return map;
                             }
                             //将装换的功能点添加到附件中
-                            newWordLod=new File(loacalpath+newfileName);
+                            newWordLod = new File(loacalpath + newfileName);
                             attachFiles.add(newWordLod);
                         }
-                        if (!fileName.contains("内部考核")||!fileName.contains("原子功能点评估表（内部考核）")) {
+                        if (!fileName.contains("内部考核") || !fileName.contains("原子功能点评估表（内部考核）")) {
                             // 文件添加到需要发送的邮件组去
                             attachFiles.add(fl);
                         }
                         // 上传到SVN
-                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName,SvnConstant.SvnPassWord);
-                        clientManager = SVNUtil.authSvn(svnPath,authManager);
+                        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(SvnConstant.SvnUserName, SvnConstant.SvnPassWord);
+                        clientManager = SVNUtil.authSvn(svnPath, authManager);
                         clientManager.getWCClient().doCleanup(new File(loacalpath));
                         clientManager.getDiffClient().setIgnoreExternals(true);
-                        SVNUtil.checkVersiondDirectory(clientManager,fl);
+                        SVNUtil.checkVersiondDirectory(clientManager, fl);
                         SVNUtil.commit(clientManager, fl, true, "文档提交");
-                        if(newWordLod!=null){
-                            SVNUtil.checkVersiondDirectory(clientManager,newWordLod);
+                        if (newWordLod != null) {
+                            SVNUtil.checkVersiondDirectory(clientManager, newWordLod);
                             SVNUtil.commit(clientManager, newWordLod, true, "文档提交");
                         }
-                        if( SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY) == 0){
+                        if (SVNUtil.update(clientManager, new File(loacalpath), SVNRevision.HEAD, SVNDepth.INFINITY) == 0) {
                             map.put("message", "文档提交到SVN失败");
                             return map;
                         }
 
                     } catch (Exception e) {
-                        map.put("message", "文档提交到SVN失败："+e.getMessage());
+                        map.put("message", "文档提交到SVN失败：" + e.getMessage());
                         return map;
                     }
                 }
@@ -1812,16 +1833,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (StringUtils.isBlank(totalWorkload)) {
             return "功能点合计不能为空！";
         }
-        int totWork=0;
-        try{
-            totWork=Double.valueOf(totalWorkload).intValue();
-        }catch(Exception e){
+        int totWork = 0;
+        try {
+            totWork = Double.valueOf(totalWorkload).intValue();
+        } catch (Exception e) {
             return "功能点合计不为数字";
         }
         //占比
-        Map<String,String> result=checkDeptRate(totWork,deptInfo,reqTask);
-        String msg=result.get("message");
-        if(!StringUtils.isBlank(msg)){
+        Map<String, String> result = checkDeptRate(totWork, deptInfo, reqTask);
+        String msg = result.get("message");
+        if (!StringUtils.isBlank(msg)) {
             return msg;
         }
         // 更新工作量信息
@@ -1842,22 +1863,22 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             DemandDO demanddo = new DemandDO();
             demanddo.setReqNo(reqTask.getReqNo());
             List<DemandDO> demandBOList = demandDao.find(demanddo);
-            if(!demandBOList.isEmpty()){
-                for(int i=0;i<demandBOList.size();i++){
+            if (!demandBOList.isEmpty()) {
+                for (int i = 0; i < demandBOList.size(); i++) {
                     DemandDO demand = demandBOList.get(i);
                     if (!JudgeUtils.isNull(demand)) {
-                            demand.setTotalWorkload(totWork);
-                            demand.setLeadDeptPro(result.get("leadDeptRate"));
-                            demand.setCoorDeptPro(result.get("coorDeptRate"));
-                            demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
-                            demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
-                            demand.setRemainWorkload(totWork-demand.getInputWorkload());
-                            planDao.updateReqWorkLoad(demand);
-                        }
+                        demand.setTotalWorkload(totWork);
+                        demand.setLeadDeptPro(result.get("leadDeptRate"));
+                        demand.setCoorDeptPro(result.get("coorDeptRate"));
+                        demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
+                        demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
+                        demand.setRemainWorkload(totWork - demand.getInputWorkload());
+                        planDao.updateReqWorkLoad(demand);
                     }
+                }
             }
         } catch (NumberFormatException e) {
-            return "功能点导入失败："+e.getMessage();
+            return "功能点导入失败：" + e.getMessage();
         }
         return null;
     }
@@ -1866,7 +1887,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
      *
      */
     public String[] paserWorkLoad(String filePath) throws Exception {
-        String [] params = new String[4];
+        String[] params = new String[4];
         boolean isExcel2003 = filePath.endsWith(".xls");
         boolean isExcel2007 = filePath.endsWith(".xlsx");
         org.apache.poi.ss.usermodel.Workbook wb = null;
@@ -1874,23 +1895,23 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             if (isExcel2003) {
                 wb = new HSSFWorkbook(new FileInputStream(new File(filePath)));
                 int sheetNum = wb.getNumberOfSheets();
-                if (sheetNum!=3) {
-                    params[0]=("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为"+sheetNum+"个Sheet！");
+                if (sheetNum != 3) {
+                    params[0] = ("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为" + sheetNum + "个Sheet！");
                     return params;
                 }
                 HSSFSheet sheet = (HSSFSheet) wb.getSheetAt(0);
                 params = parseHSSFSheetExcel(sheet);
-            } else if(isExcel2007) {
+            } else if (isExcel2007) {
                 wb = new XSSFWorkbook(new FileInputStream(new File(filePath)));
                 int sheetNum = wb.getNumberOfSheets();
-                if (sheetNum!=3) {
-                    params[0]=("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为"+sheetNum+"个Sheet！");
+                if (sheetNum != 3) {
+                    params[0] = ("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为" + sheetNum + "个Sheet！");
                     return params;
                 }
                 XSSFSheet sheet = (XSSFSheet) wb.getSheetAt(0);
                 params = parseXSSFSheetExcel(sheet);
             } else {
-                params[0]=("导入文件不符合要求！");
+                params[0] = ("导入文件不符合要求！");
                 return params;
             }
         } catch (FileNotFoundException e) {
@@ -1900,7 +1921,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception(e.getMessage());
-        }finally {
+        } finally {
             if (wb != null) {
                 try {
                     wb.close();
@@ -1914,67 +1935,67 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     //针对2003版本
     private String[] parseHSSFSheetExcel(HSSFSheet sheet) throws Exception {
-        String [] params = new String[3];
-        int  rows  = sheet.getPhysicalNumberOfRows();
+        String[] params = new String[3];
+        int rows = sheet.getPhysicalNumberOfRows();
         // 检查文件行数，若少于2行则提示错误
         if (rows < 8) {
-            params[0]=("导入文件文件格式有误");
+            params[0] = ("导入文件文件格式有误");
             return params;
         }
         //获取cr编号
-        HSSFRow rowCR   = sheet.getRow(1);
+        HSSFRow rowCR = sheet.getRow(1);
         HSSFCell cellCR = rowCR.getCell(3);
-        params[1]=cellCR != null?cellCR.getStringCellValue():null;
+        params[1] = cellCR != null ? cellCR.getStringCellValue() : null;
 
         //获取部门占比
-        HSSFRow rowDept   = sheet.getRow(3);
+        HSSFRow rowDept = sheet.getRow(3);
         HSSFCell cellDept = rowDept.getCell(1);
-        params[2]=cellDept != null?cellDept.getStringCellValue():null;
+        params[2] = cellDept != null ? cellDept.getStringCellValue() : null;
 
         //工作量
-        HSSFRow rowWL   = sheet.getRow(7);
+        HSSFRow rowWL = sheet.getRow(7);
         HSSFCell cellWL = rowWL.getCell(10);
-        params[3]=cellWL != null?""+cellWL.getNumericCellValue():null;
+        params[3] = cellWL != null ? "" + cellWL.getNumericCellValue() : null;
 
-        LOGGER.info("cr+部门占比+工作量："+params[0]+":"+params[1]+":"+params[2]);
+        LOGGER.info("cr+部门占比+工作量：" + params[0] + ":" + params[1] + ":" + params[2]);
 
         return params;
     }
 
     //针对2007版本
-    private String [] parseXSSFSheetExcel(XSSFSheet sheet) throws Exception {
+    private String[] parseXSSFSheetExcel(XSSFSheet sheet) throws Exception {
 
-        String [] params = new String[4];
-        int  rows  = sheet.getPhysicalNumberOfRows();
+        String[] params = new String[4];
+        int rows = sheet.getPhysicalNumberOfRows();
 
         // 检查文件行数，若少于2行则提示错误
         if (rows < 8) {
-            params[0]=("导入文件文件格式有误");
+            params[0] = ("导入文件文件格式有误");
             return params;
         }
         //获取cr编号
-        XSSFRow rowCR   = sheet.getRow(1);
+        XSSFRow rowCR = sheet.getRow(1);
         XSSFCell cellCR = rowCR.getCell(3);
-        params[1]=cellCR != null?cellCR.getStringCellValue():null;
+        params[1] = cellCR != null ? cellCR.getStringCellValue() : null;
 
         //获取部门占比
-        XSSFRow rowDept   = sheet.getRow(3);
+        XSSFRow rowDept = sheet.getRow(3);
         XSSFCell cellDept = rowDept.getCell(1);
-        params[2]=cellDept != null?cellDept.getStringCellValue():null;
+        params[2] = cellDept != null ? cellDept.getStringCellValue() : null;
 
         //工作量
-        XSSFRow rowWL   = sheet.getRow(7);
+        XSSFRow rowWL = sheet.getRow(7);
         XSSFCell cellWL = rowWL.getCell(10);
-        params[3]=cellWL != null?""+cellWL.getNumericCellValue():null;
+        params[3] = cellWL != null ? "" + cellWL.getNumericCellValue() : null;
 
-        LOGGER.info("cr+部门占比+工作量："+params[0]+":"+params[1]+":"+params[2]);
+        LOGGER.info("cr+部门占比+工作量：" + params[0] + ":" + params[1] + ":" + params[2]);
 
         return params;
 
     }
 
     /**
-     *工作量检查
+     * 工作量检查
      */
     public Map<String, String> checkDeptRate(int totWork, String deptInfo, DemandDO demand) {
         deptInfo = deptInfo.replaceAll("：", ":").replaceAll("；", ";");
@@ -1989,8 +2010,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String leadDeptRate = "";
         String leadDpetWorkLoad = "";
         String coorDpetWorkLoad = "";
-        Set<String> leadDeptName=new HashSet<>();
-        Set<String> coorDeptName=new HashSet<>();
+        Set<String> leadDeptName = new HashSet<>();
+        Set<String> coorDeptName = new HashSet<>();
         for (int i = 0; i < deptrates.length; i++) {
             String perRate = deptrates[i];
             if (StringUtils.isNotEmpty(perRate)) {
@@ -2010,11 +2031,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 }
                 try {
                     if (StringUtils.isBlank(dictionaryService.findFieldName("DEV_DEPT", detailRate[0]))) {
-                        map.put("message", "不存在部门："+detailRate[0]);
+                        map.put("message", "不存在部门：" + detailRate[0]);
                         return map;
                     }
                 } catch (Exception e) {
-                    map.put("message", "不存在部门："+detailRate[0]);
+                    map.put("message", "不存在部门：" + detailRate[0]);
                     return map;
                 }
                 if (detailRate[0].equals(demand.getDevpLeadDept())) {
@@ -2040,32 +2061,32 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             map.put("message", "【工作量占比(配合部门投入占比)】合计应等于100%，  请修改后重新导入！");
             return map;
         }
-        int size=leadDeptName.size()+coorDeptName.size();
-        if(deptrates.length!=size){
+        int size = leadDeptName.size() + coorDeptName.size();
+        if (deptrates.length != size) {
             map.put("message", "存在重复的配合部门信息请检查！");
             return map;
         }
-        String coorDept=demand.getDevpCoorDept();
+        String coorDept = demand.getDevpCoorDept();
         String[] coorDeptArray = {};
-        if(!coorDept.isEmpty()){
+        if (!coorDept.isEmpty()) {
             int coorDeptString = coorDept.split(",").length;
-            if(coorDept.indexOf("产品研究部")!=-1){
-                coorDeptString = coorDeptString -1;
+            if (coorDept.indexOf("产品研究部") != -1) {
+                coorDeptString = coorDeptString - 1;
             }
-            if(coorDept.indexOf("产品测试部")!=-1){
-                coorDeptString = coorDeptString -1;
+            if (coorDept.indexOf("产品测试部") != -1) {
+                coorDeptString = coorDeptString - 1;
             }
-            if(coorDept.indexOf("产品测试团队")!=-1){
-                coorDeptString = coorDeptString -1;
+            if (coorDept.indexOf("产品测试团队") != -1) {
+                coorDeptString = coorDeptString - 1;
             }
-            coorDeptArray=new String[coorDeptString] ;
-            if(StringUtils.isNotBlank(coorDept)){
-                String[] coorDeptArr=coorDept.split(",");
-                for (int i = 0,j= 0; i < coorDeptArr.length; i++) {
-                    if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])|| "产品测试团队".equals(coorDeptArr[i])) {
+            coorDeptArray = new String[coorDeptString];
+            if (StringUtils.isNotBlank(coorDept)) {
+                String[] coorDeptArr = coorDept.split(",");
+                for (int i = 0, j = 0; i < coorDeptArr.length; i++) {
+                    if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i]) || "产品测试团队".equals(coorDeptArr[i])) {
                         continue;
                     }
-                    coorDeptArray[j] =coorDeptArr[i];
+                    coorDeptArray[j] = coorDeptArr[i];
                     j++;
                 }
             }
@@ -2073,21 +2094,21 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
 
         String[] devOnlyIds = new String[coorDeptName.size()];
-        devOnlyIds =coorDeptName.toArray(devOnlyIds);
-        if(coorDeptArray.length == devOnlyIds.length){
+        devOnlyIds = coorDeptName.toArray(devOnlyIds);
+        if (coorDeptArray.length == devOnlyIds.length) {
             Arrays.sort(coorDeptArray);
             Arrays.sort(devOnlyIds);
             if (!Arrays.equals(coorDeptArray, devOnlyIds)) {
                 map.put("message", "功能点文档中配合部门与上传月份需求中配合部门不一致！");
                 return map;
             }
-        }else{
+        } else {
             map.put("message", "功能点文档中配合部门与上传月份需求中配合部门不一致！");
             return map;
         }
 
-        if((totWork-demand.getInputWorkload()<0)){
-            String msg = demand.getReqImplMon()+"月的已录入工作量超过总工作量，剩余工作量不能为负数！";
+        if ((totWork - demand.getInputWorkload() < 0)) {
+            String msg = demand.getReqImplMon() + "月的已录入工作量超过总工作量，剩余工作量不能为负数！";
             map.put("message", msg);
             return map;
         }
@@ -2096,20 +2117,21 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         map.put("coorDeptRate", coorDeptRate);
         map.put("leadDpetWorkLoad", leadDpetWorkLoad);
         map.put("coorDpetWorkLoad", coorDpetWorkLoad);
-        map.put("remainWordkLoad", String.valueOf(totWork-demand.getInputWorkload()));
+        map.put("remainWordkLoad", String.valueOf(totWork - demand.getInputWorkload()));
         return map;
     }
+
     /**
      * 原子功能点文档转换
      */
-    public String copyWorLoadFile(String importFilePath,HttpServletRequest request,String loacalpath) {
-        String tempPath="";
+    public String copyWorLoadFile(String importFilePath, HttpServletRequest request, String loacalpath) {
+        String tempPath = "";
 
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            tempPath= "/home/devms/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
-        } else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            tempPath= "/home/devadm/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
-        }else {
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            tempPath = "/home/devms/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            tempPath = "/home/devadm/template/excelTemplate/原子功能点评估表_导入使用.xlsx";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -2118,17 +2140,17 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         Map<String, Object> resMap;
         try {
             resMap = paserCopyWorkLoad(importFilePath);
-            String[] paramsHead=(String[]) resMap.get("paramHead");
-            if(StringUtils.isNotEmpty(paramsHead[0])){
+            String[] paramsHead = (String[]) resMap.get("paramHead");
+            if (StringUtils.isNotEmpty(paramsHead[0])) {
                 return paramsHead[0];
             }
             // 需求编号
             String crNum = paramsHead[1];
             // 总工作量
             String totalWorkload = paramsHead[3];
-            String reqName=paramsHead[4];
-            String prdLine=paramsHead[5];
-            String reqDesc=paramsHead[6];
+            String reqName = paramsHead[4];
+            String prdLine = paramsHead[5];
+            String reqDesc = paramsHead[6];
             //读取List数据
             String attachFileNames[] = tempPath.split(";");
             for (int i = 0; i < attachFileNames.length; i++) {
@@ -2137,71 +2159,72 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 else if ("/".equals(File.separator))
                     attachFileNames[i].replace("\\", "/");
             }
-            TemplateExportParams param = new TemplateExportParams(tempPath,true);
+            TemplateExportParams param = new TemplateExportParams(tempPath, true);
             param.setColForEach(true);
             Map<String, Object> mapHead = new HashMap<String, Object>();
-            mapHead.put("reqNo",crNum);
+            mapHead.put("reqNo", crNum);
             mapHead.put("reqName", reqName);
             mapHead.put("prdLine", prdLine);
             mapHead.put("reqDesc", reqDesc);
             mapHead.put("totalWorkload", totalWorkload);
             // 构造数据
-            List<Map<String, Object>> listMap =(List<Map<String, Object>>) resMap.get("dataList");
+            List<Map<String, Object>> listMap = (List<Map<String, Object>>) resMap.get("dataList");
             mapHead.put("totalNum", listMap.size());
             mapHead.put("dataList", listMap);
-            String message=GenWorkLoadExcelUtil.createXLSX(mapHead, tempPath, loacalpath);
+            String message = GenWorkLoadExcelUtil.createXLSX(mapHead, tempPath, loacalpath);
             return message;
             //打开excel报错问题修复
         } catch (Exception e1) {
             e1.printStackTrace();
-            return "功能点转化错误："+e1.getMessage();
+            return "功能点转化错误：" + e1.getMessage();
         }
     }
 
     /**
      * copy原子功能点文档
+     *
      * @param filePath
      * @return
      * @throws Exception
      */
-    private static Map<String,Object> paserCopyWorkLoad(String filePath) throws Exception {
+    private static Map<String, Object> paserCopyWorkLoad(String filePath) throws Exception {
         Map<String, Object> resMap = new HashMap<>();
-        String [] params = new String[4];
+        String[] params = new String[4];
         boolean isExcel2003 = filePath.endsWith(".xls");
         boolean isExcel2007 = filePath.endsWith(".xlsx");
         org.apache.poi.ss.usermodel.Workbook wb = null;
         try {
-            FileInputStream in=	new FileInputStream(new File(filePath));
+            FileInputStream in = new FileInputStream(new File(filePath));
             if (isExcel2003) {//针对2003版本
                 wb = new HSSFWorkbook(in);
                 int sheetNum = wb.getNumberOfSheets();
-                if (sheetNum!=3) {
-                    params[0]=("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为"+sheetNum+"个Sheet！");
+                if (sheetNum != 3) {
+                    params[0] = ("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为" + sheetNum + "个Sheet！");
                     resMap.put("params", params);
                     return resMap;
                 }
                 HSSFSheet sheet = (HSSFSheet) wb.getSheetAt(0);
                 resMap = parseCopyHSSFSheetExcel(sheet);
 
-            } else if(isExcel2007) {//针对2007版本
+            } else if (isExcel2007) {//针对2007版本
                 wb = new XSSFWorkbook(in);
                 int sheetNum = wb.getNumberOfSheets();
-                if (sheetNum!=3) {
-                    params[0]=("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为"+sheetNum+"个Sheet！");
+                if (sheetNum != 3) {
+                    params[0] = ("导入文件不符合要求，功能点标准模板为3个Sheet，但导入文件为" + sheetNum + "个Sheet！");
                     resMap.put("params", params);
                     return resMap;
                 }
                 XSSFSheet sheet = (XSSFSheet) wb.getSheetAt(0);
                 resMap = parseCopyXSSFSheetExcel(sheet);
             } else {
-                params[0]=("导入文件不符合要求！");
+                params[0] = ("导入文件不符合要求！");
                 resMap.put("params", params);
                 return resMap;
             }
         } catch (Exception e) {
             throw new Exception(e.getMessage());
-        }finally{
-            if(wb!=null){
+        } finally {
+            if (wb != null) {
                 try {
                     wb.close();
                 } catch (IOException e) {
@@ -2213,43 +2236,43 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
 
     //针对2003版本
-    private static Map<String,Object> parseCopyHSSFSheetExcel(HSSFSheet sheet) throws Exception {
-        Map<String,Object > resMap=new HashMap<String,Object>();
-        String [] params = new String[6];
-        int  rows  = sheet.getPhysicalNumberOfRows();
+    private static Map<String, Object> parseCopyHSSFSheetExcel(HSSFSheet sheet) throws Exception {
+        Map<String, Object> resMap = new HashMap<String, Object>();
+        String[] params = new String[6];
+        int rows = sheet.getPhysicalNumberOfRows();
         // 检查文件行数，若少于2行则提示错误
         if (rows < 8) {
-            params[0]=("导入文件文件格式有误");
+            params[0] = ("导入文件文件格式有误");
             resMap.put("params", params);
             return resMap;
         }
-        HSSFRow rowCR   = sheet.getRow(1);
+        HSSFRow rowCR = sheet.getRow(1);
         //需求名称
-        HSSFCell cellNm= rowCR.getCell(1);
-        params[4]=cellNm != null?cellNm.getStringCellValue():null;
+        HSSFCell cellNm = rowCR.getCell(1);
+        params[4] = cellNm != null ? cellNm.getStringCellValue() : null;
 
         //所属产品
-        HSSFCell cellPrdLine= rowCR.getCell(9);
-        params[5]=cellPrdLine != null?cellPrdLine.getStringCellValue():null;
+        HSSFCell cellPrdLine = rowCR.getCell(9);
+        params[5] = cellPrdLine != null ? cellPrdLine.getStringCellValue() : null;
 
         //获取cr编号
         HSSFCell cellCR = rowCR.getCell(3);
-        params[1]=cellCR != null?cellCR.getStringCellValue():null;
+        params[1] = cellCR != null ? cellCR.getStringCellValue() : null;
 
         //获取部门占比
-        HSSFRow rowDept   = sheet.getRow(3);
+        HSSFRow rowDept = sheet.getRow(3);
         HSSFCell cellDept = rowDept.getCell(1);
-        params[2]=cellDept != null?cellDept.getStringCellValue():null;
+        params[2] = cellDept != null ? cellDept.getStringCellValue() : null;
 
         //需求描述
-        HSSFRow rowReqDesc   = sheet.getRow(4);
+        HSSFRow rowReqDesc = sheet.getRow(4);
         HSSFCell cellReqDesc = rowReqDesc.getCell(1);
-        params[6]=cellReqDesc != null?cellReqDesc.getStringCellValue():null;
+        params[6] = cellReqDesc != null ? cellReqDesc.getStringCellValue() : null;
 
         //工作量
-        HSSFRow rowWL   = sheet.getRow(7);
+        HSSFRow rowWL = sheet.getRow(7);
         HSSFCell cellWL = rowWL.getCell(10);
-        params[3]=cellWL != null?""+cellWL.getNumericCellValue():null;
+        params[3] = cellWL != null ? "" + cellWL.getNumericCellValue() : null;
         resMap.put("paramHead", params);
 
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
@@ -2258,33 +2281,33 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             if (row == null)
                 break;
             // 原子功能点名称
-            Map<String,Object > map=new HashMap<String, Object>();
+            Map<String, Object> map = new HashMap<String, Object>();
             String bussNm = row.getCell(0).getStringCellValue();
             map.put("bussNm", bussNm);
-            if(StringUtils.isBlank(bussNm)){
+            if (StringUtils.isBlank(bussNm)) {
                 resMap.put("dataList", listMap);
                 return resMap;
             }
-            String workLoadName = row.getCell(1)==null?"":row.getCell(1).getStringCellValue();
-            map.put("workLoadName",workLoadName);
-            String wordType=row.getCell(2)==null?"":row.getCell(2).getStringCellValue();
+            String workLoadName = row.getCell(1) == null ? "" : row.getCell(1).getStringCellValue();
+            map.put("workLoadName", workLoadName);
+            String wordType = row.getCell(2) == null ? "" : row.getCell(2).getStringCellValue();
             map.put("wordType", wordType);
-            String modifyType=row.getCell(3)==null?"":row.getCell(3).getStringCellValue();
+            String modifyType = row.getCell(3) == null ? "" : row.getCell(3).getStringCellValue();
             map.put("modifyType", modifyType);
-            String comlexType=row.getCell(4)==null?"":row.getCell(4).getStringCellValue();
+            String comlexType = row.getCell(4) == null ? "" : row.getCell(4).getStringCellValue();
             map.put("comlexType", comlexType);
-            String isConn=row.getCell(5)==null?"":row.getCell(5).getStringCellValue();
+            String isConn = row.getCell(5) == null ? "" : row.getCell(5).getStringCellValue();
             map.put("isConn", isConn);
-            String workLoadNameComb=row.getCell(6)==null?"":row.getCell(6).getStringCellValue();
+            String workLoadNameComb = row.getCell(6) == null ? "" : row.getCell(6).getStringCellValue();
             map.put("workLoadNameComb", workLoadNameComb);
-            String atomCode=row.getCell(7)==null?"":row.getCell(7).getStringCellValue();
+            String atomCode = row.getCell(7) == null ? "" : row.getCell(7).getStringCellValue();
             map.put("atomCode", atomCode);
-            String cellNum=Double.valueOf(row.getCell(8)==null?0:row.getCell(8).getNumericCellValue()).intValue()+"";
+            String cellNum = Double.valueOf(row.getCell(8) == null ? 0 : row.getCell(8).getNumericCellValue()).intValue() + "";
             map.put("cellNum", cellNum);
-            String cellWord=Double.valueOf(row.getCell(9)==null?0:row.getCell(9).getNumericCellValue()).intValue()+"";
+            String cellWord = Double.valueOf(row.getCell(9) == null ? 0 : row.getCell(9).getNumericCellValue()).intValue() + "";
             map.put("cellWord", cellWord);
-            String workLoad=Double.valueOf(params[3]).intValue()+"";
-            map.put("totalWorkLoad",workLoad);
+            String workLoad = Double.valueOf(params[3]).intValue() + "";
+            map.put("totalWorkLoad", workLoad);
             listMap.add(map);
         }
         resMap.put("dataList", listMap);
@@ -2292,82 +2315,82 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     }
 
     //针对2007版本
-    private static Map<String,Object> parseCopyXSSFSheetExcel(XSSFSheet sheet) throws Exception {
-        Map<String,Object > resMap=new HashMap<String,Object>();
-        String [] params = new String[7];
-        int  rows  = sheet.getPhysicalNumberOfRows();
+    private static Map<String, Object> parseCopyXSSFSheetExcel(XSSFSheet sheet) throws Exception {
+        Map<String, Object> resMap = new HashMap<String, Object>();
+        String[] params = new String[7];
+        int rows = sheet.getPhysicalNumberOfRows();
 
         // 检查文件行数，若少于2行则提示错误
         if (rows < 8) {
-            params[0]=("导入文件文件格式有误");
+            params[0] = ("导入文件文件格式有误");
             resMap.put("params", params);
             return resMap;
         }
 
-        XSSFRow rowCR   = sheet.getRow(1);
+        XSSFRow rowCR = sheet.getRow(1);
         //获取cr编号
         XSSFCell cellCR = rowCR.getCell(3);
-        params[1]=cellCR != null?cellCR.getStringCellValue():null;
+        params[1] = cellCR != null ? cellCR.getStringCellValue() : null;
 
         //获取部门占比
-        XSSFRow rowDept   = sheet.getRow(3);
+        XSSFRow rowDept = sheet.getRow(3);
         XSSFCell cellDept = rowDept.getCell(1);
-        params[2]=cellDept != null?cellDept.getStringCellValue():null;
+        params[2] = cellDept != null ? cellDept.getStringCellValue() : null;
 
         //需求名称
-        XSSFCell cellNm= rowCR.getCell(1);
-        params[4]=cellNm != null?cellNm.getStringCellValue():null;
+        XSSFCell cellNm = rowCR.getCell(1);
+        params[4] = cellNm != null ? cellNm.getStringCellValue() : null;
 
         //所属产品
-        XSSFCell cellPrdLine= rowCR.getCell(9);
-        params[5]=cellPrdLine != null?cellPrdLine.getStringCellValue():null;
+        XSSFCell cellPrdLine = rowCR.getCell(9);
+        params[5] = cellPrdLine != null ? cellPrdLine.getStringCellValue() : null;
 
         //需求描述
-        XSSFRow rowReqDesc   = sheet.getRow(4);
+        XSSFRow rowReqDesc = sheet.getRow(4);
         XSSFCell cellReqDesc = rowReqDesc.getCell(1);
-        params[6]=cellReqDesc != null?cellReqDesc.getStringCellValue():null;
+        params[6] = cellReqDesc != null ? cellReqDesc.getStringCellValue() : null;
 
         //工作量
-        XSSFRow rowWL   = sheet.getRow(7);
+        XSSFRow rowWL = sheet.getRow(7);
         XSSFCell cellWL = rowWL.getCell(10);
-        params[3]=cellWL != null?""+cellWL.getNumericCellValue():null;
+        params[3] = cellWL != null ? "" + cellWL.getNumericCellValue() : null;
         resMap.put("paramHead", params);
 
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         for (int i = 7; i < rows; i++) {
             Row row = sheet.getRow(i);
-            if (row == null){
+            if (row == null) {
                 break;
             }
             // 原子功能点名称
-            Map<String,Object > map=new HashMap<String, Object>();
-            String bussNm = row.getCell(0)==null?"":row.getCell(0).getStringCellValue();
-            if(StringUtils.isBlank(bussNm)){
+            Map<String, Object> map = new HashMap<String, Object>();
+            String bussNm = row.getCell(0) == null ? "" : row.getCell(0).getStringCellValue();
+            if (StringUtils.isBlank(bussNm)) {
                 resMap.put("dataList", listMap);
                 return resMap;
             }
             map.put("bussNm", bussNm);
-            String workLoadName = row.getCell(1)==null?"":row.getCell(1).getStringCellValue();
-            map.put("workLoadName",workLoadName);
-            String wordType=row.getCell(2)==null?"":row.getCell(2).getStringCellValue();
+            String workLoadName = row.getCell(1) == null ? "" : row.getCell(1).getStringCellValue();
+            map.put("workLoadName", workLoadName);
+            String wordType = row.getCell(2) == null ? "" : row.getCell(2).getStringCellValue();
             map.put("wordType", wordType);
-            String modifyType=row.getCell(3)==null?"":row.getCell(3).getStringCellValue();
+            String modifyType = row.getCell(3) == null ? "" : row.getCell(3).getStringCellValue();
             map.put("modifyType", modifyType);
-            String comlexType=row.getCell(4)==null?"":row.getCell(4).getStringCellValue();
+            String comlexType = row.getCell(4) == null ? "" : row.getCell(4).getStringCellValue();
             map.put("comlexType", comlexType);
-            String isConn=row.getCell(5)==null?"":row.getCell(5).getStringCellValue();
+            String isConn = row.getCell(5) == null ? "" : row.getCell(5).getStringCellValue();
             map.put("isConn", isConn);
-            String workLoadNameComb=row.getCell(6)==null?"":row.getCell(6).getStringCellValue();
+            String workLoadNameComb = row.getCell(6) == null ? "" : row.getCell(6).getStringCellValue();
             map.put("workLoadNameComb", workLoadNameComb);
-            String atomCode=row.getCell(7)==null?"":row.getCell(7).getStringCellValue();
+            String atomCode = row.getCell(7) == null ? "" : row.getCell(7).getStringCellValue();
             map.put("atomCode", atomCode);
 
-            String cellNum=Double.valueOf(row.getCell(8)==null?0:row.getCell(8).getNumericCellValue()).intValue()+"";
+            String cellNum = Double.valueOf(row.getCell(8) == null ? 0 : row.getCell(8).getNumericCellValue()).intValue() + "";
             map.put("cellNum", cellNum);
-            String cellWord=Double.valueOf(row.getCell(9)==null?0:row.getCell(9).getNumericCellValue()).intValue()+"";
+            String cellWord = Double.valueOf(row.getCell(9) == null ? 0 : row.getCell(9).getNumericCellValue()).intValue() + "";
             map.put("cellWord", cellWord);
-            String workLoad=Double.valueOf(params[3]).intValue()+"";
-            map.put("totalWorkLoad",workLoad);
+            String workLoad = Double.valueOf(params[3]).intValue() + "";
+            map.put("totalWorkLoad", workLoad);
             listMap.add(map);
         }
         resMap.put("dataList", listMap);
@@ -2377,60 +2400,64 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     /**
      * 更新文档上传时间
+     *
      * @param bean
      */
     public void updateExtraTm(DemandDO bean) {
         List<DemandDO> list = demandDao.getExtraTm(bean);
         if (list.size() == 0) {
             demandDao.insertExtraTm(bean);
-        }else {
+        } else {
             bean.setProId(list.get(0).getProId());
             demandDao.updateExtraTm(bean);
         }
     }
+
     /**
      * 获取当前需求阶段
      */
     @Override
     public String getReqPeriod(String preCurPeriod) {
         String reqPeriod = preCurPeriod;
-        if("".equals(reqPeriod)||reqPeriod==null){
+        if ("".equals(reqPeriod) || reqPeriod == null) {
             return "";
         }
         if (new Integer(reqPeriod) <= REQCONFIRM) {
             reqPeriod = "30";
-        }else if (new Integer(reqPeriod) <= TECHDOCCONFIRM) {
+        } else if (new Integer(reqPeriod) <= TECHDOCCONFIRM) {
             reqPeriod = "50";
-        }else if (new Integer(reqPeriod) <= TESTCASECONFIRM) {
+        } else if (new Integer(reqPeriod) <= TESTCASECONFIRM) {
             reqPeriod = "70";
-        }else if (new Integer(reqPeriod) <= FINISHSITTEST) {
+        } else if (new Integer(reqPeriod) <= FINISHSITTEST) {
             reqPeriod = "110";
-        }else if (new Integer(reqPeriod) <= FINISHUATTEST) {
+        } else if (new Integer(reqPeriod) <= FINISHUATTEST) {
             reqPeriod = "140";
-        }else if (new Integer(reqPeriod) <= FINISHPRETEST) {
+        } else if (new Integer(reqPeriod) <= FINISHPRETEST) {
             reqPeriod = "160";
-        }else if (new Integer(reqPeriod) <= FINISHPRD) {
+        } else if (new Integer(reqPeriod) <= FINISHPRD) {
             reqPeriod = "180";
         }
         return reqPeriod;
     }
+
     private List<DemandDO> reqPlan(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
         return demandDao.getReqPlan(demandDO);
     }
+
     @Override
     public void getReqPlan(HttpServletResponse response, DemandBO demandBO) {
         List<DemandDO> demandDOList = reqPlan(demandBO);
         // 从jira 获取测试部所需要的数据
         try {
             jiraOperationService.getJiraIssue(demandDOList);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        List<PlanDO> planDOList = new  LinkedList<>();
-        demandDOList.forEach(m->{
-            planDOList.add(BeanUtils.copyPropertiesReturnDest(new PlanDO(),m));
+        List<PlanDO> planDOList = new LinkedList<>();
+        demandDOList.forEach(m -> {
+            planDOList.add(BeanUtils.copyPropertiesReturnDest(new PlanDO(), m));
         });
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), PlanDO.class, planDOList);
         try (OutputStream output = response.getOutputStream();
@@ -2453,31 +2480,32 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     /**
      * 需求计划导入
+     *
      * @param file
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void doBatchImport(MultipartFile file) {
         File f = null;
-        List<DemandDO> demandDOS=new ArrayList<>();
+        List<DemandDO> demandDOS = new ArrayList<>();
         try {
             //MultipartFile转file
             String originalFilename = file.getOriginalFilename();
             //获取后缀名
             String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
-            if(suffix.equals("xls")){
-                suffix=".xls";
-            }else if(suffix.equals("xlsm")||suffix.equals("xlsx")){
-                suffix=".xlsx";
-            }else {
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
                 BusinessException.throwBusinessException("文件类型错误");
             }
-            f=File.createTempFile("tmp", suffix);
+            f = File.createTempFile("tmp", suffix);
             file.transferTo(f);
             String filepath = f.getPath();
             //excel转java类
             ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
-            Map<Integer, Map<Integer,Object>> map = excelReader.readExcelContent();
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 DemandDO demandDO = new DemandDO();
                 demandDO.setReqPrdLine(map.get(i).get(0).toString().trim());
@@ -2503,16 +2531,16 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
-        }finally {
+        } finally {
             f.delete();
         }
         List<DemandDO> insertList = new ArrayList<>();
         List<DemandDO> updateList = new ArrayList<>();
         demandDOS.forEach(m -> {
-            int i = demandDOS.indexOf(m)+2;
+            int i = demandDOS.indexOf(m) + 2;
             if (StringUtils.isBlank(m.getReqNm())) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo("第" + i + "行的需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
@@ -2627,8 +2655,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                 //依据内部需求编号查唯一标识
                 String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(reqInnerSeq);
-                if(identificationByReqInnerSeq==null){
-                    identificationByReqInnerSeq=reqInnerSeq;
+                if (identificationByReqInnerSeq == null) {
+                    identificationByReqInnerSeq = reqInnerSeq;
                 }
                 demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                 demandStateHistoryDao.insert(demandStateHistoryDO);
@@ -2669,13 +2697,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
 
     @Override
     public DemandTimeFrameHistoryRspBO findTimeNodeModificationDetails(DemandTimeFrameHistoryBO demandTimeFrameHistoryBO) {
-        if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&!demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+        if (!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty() && !demandTimeFrameHistoryBO.getReqNo().isEmpty()) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只需要传一个条件!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        if(!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+        if (!demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty() && demandTimeFrameHistoryBO.getReqNo().isEmpty()) {
             String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandTimeFrameHistoryBO.getReqInnerSeq());
-            if(identification==null){
+            if (identification == null) {
                 DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
                 demandTimeFrameHistoryDO.setIdentification(demandTimeFrameHistoryBO.getReqInnerSeq());
                 PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),
@@ -2696,12 +2724,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
             demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
             return demandTimeFrameHistoryRspBO;
-        }else if(demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty()&&!demandTimeFrameHistoryBO.getReqNo().isEmpty()){
+        } else if (demandTimeFrameHistoryBO.getReqInnerSeq().isEmpty() && !demandTimeFrameHistoryBO.getReqNo().isEmpty()) {
             DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
             demandChangeDetailsDO.setReqNo(demandTimeFrameHistoryBO.getReqNo());
-            List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
+            List<DemandChangeDetailsDO> demandChangeDetailsDOS = null;
             demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
-            if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
+            if (JudgeUtils.isEmpty(demandChangeDetailsDOS)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
@@ -2715,7 +2743,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandTimeFrameHistoryRspBO.setDemandTimeFrameHistoryBOList(demandTimeFrameHistoryBOS);
             demandTimeFrameHistoryRspBO.setPageInfo(pageInfo);
             return demandTimeFrameHistoryRspBO;
-        }else{
+        } else {
             //未传参数 输出所有
             DemandTimeFrameHistoryDO demandTimeFrameHistoryDO = new DemandTimeFrameHistoryDO();
             PageInfo<DemandTimeFrameHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandTimeFrameHistoryBO.getPageNum(), demandTimeFrameHistoryBO.getPageSize(),

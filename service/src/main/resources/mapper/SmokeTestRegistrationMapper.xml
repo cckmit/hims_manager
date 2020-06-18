@@ -10,10 +10,11 @@
         <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
         <result column="testers" property="testers" jdbcType="VARCHAR" />
         <result column="testDescription" property="testdescription" jdbcType="VARCHAR" />
+        <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription
+        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription, test_Date
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -52,6 +53,9 @@
             <if test="testdescription != null" >
                 testDescription,
             </if>
+            <if test="testDate != null" >
+                test_Date,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -74,6 +78,9 @@
             </if>
             <if test="testdescription != null" >
                 #{testdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="testDate != null" >
+                #{testDate,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -98,6 +105,9 @@
             </if>
             <if test="testdescription != null" >
                 testDescription = #{testdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="testDate != null" >
+                test_Date = #{testDate,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -128,6 +138,9 @@
             </if>
             <if test="testdescription != null" >
                 and testDescription = #{testdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="testDate != null" >
+                and test_Date = #{testDate,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

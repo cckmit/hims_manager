@@ -31,7 +31,7 @@
     </sql>
 
 
-    <select id="findAll" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
         select 
         <include refid="Base_Column_List" />
         from t_production_defects
@@ -91,5 +91,6 @@
                 and updateType = #{updatetype,jdbcType=VARCHAR}
             </if>
         </where>
+        order by processStartDate desc
     </select>
 </mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISmokeTestRegistrationExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="req_inner_seq" property="reqInnerSeq" jdbcType="VARCHAR" />
+        <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="testers" property="testers" jdbcType="VARCHAR" />
+        <result column="testDescription" property="testdescription" jdbcType="VARCHAR" />
+        <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription, test_Date
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_smoke_test_registration
+        <where >
+            <if test="id != null and serialnumber != ''" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="reqNm != null and reqNm != ''" >
+                AND req_nm LIKE CONCAT('%',#{reqNm},'%')
+            </if>
+            <if test="reqNo != null and reqNo != ''" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="reqInnerSeq != null and reqInnerSeq != ''" >
+                and req_inner_seq = #{reqInnerSeq,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraKey != null and jiraKey != ''" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="testers != null and testers != ''" >
+                and testers = #{testers,jdbcType=VARCHAR}
+            </if>
+            <if test="testdescription != null and testdescription != ''" >
+                and testDescription = #{testdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="testDate != null and testDate != ''" >
+                and test_Date = #{testDate,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by test_Date desc
+    </select>
+
+</mapper>

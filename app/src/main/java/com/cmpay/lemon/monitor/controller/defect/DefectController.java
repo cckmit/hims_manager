@@ -5,10 +5,10 @@ import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.monitor.bo.ProductionDefectsBO;
 import com.cmpay.lemon.monitor.bo.ProductionDefectsRspBO;
+import com.cmpay.lemon.monitor.bo.SmokeTestRegistrationBO;
+import com.cmpay.lemon.monitor.bo.SmokeTestRegistrationRspBO;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
-import com.cmpay.lemon.monitor.dto.ProductionDefectsDTO;
-import com.cmpay.lemon.monitor.dto.ProductionDefectsReqDTO;
-import com.cmpay.lemon.monitor.dto.ProductionDefectsRspDTO;
+import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.defects.DefectsService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -25,7 +25,7 @@ public class DefectController {
     DefectsService defectsService;
 
 
-    @RequestMapping(value = "/list", method = RequestMethod.POST)
+    @RequestMapping(value = "/findDefectList", method = RequestMethod.POST)
     public GenericRspDTO<ProductionDefectsRspDTO> findDefectAll(@RequestBody ProductionDefectsReqDTO productionDefectsReqDTO) {
         ProductionDefectsBO productionDefectsBO = BeanUtils.copyPropertiesReturnDest(new ProductionDefectsBO(), productionDefectsReqDTO);
 
@@ -39,6 +39,19 @@ public class DefectController {
         rspDTO.setPageSize(productionDefectsRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+    @RequestMapping(value = "/findTestFailedList", method = RequestMethod.POST)
+    public GenericRspDTO<SmokeTestRegistrationRsqDTO> smokeTestFailedQuery(@RequestBody SmokeTestRegistrationReqDTO smokeTestRegistrationReqDTO) {
+        SmokeTestRegistrationBO smokeTestRegistrationBO = BeanUtils.copyPropertiesReturnDest(new SmokeTestRegistrationBO(), smokeTestRegistrationReqDTO);
 
+        SmokeTestRegistrationRspBO smokeTestRegistrationRspBO = defectsService.smokeTestFailedQuery(smokeTestRegistrationBO);
+
+        SmokeTestRegistrationRsqDTO rspDTO = new SmokeTestRegistrationRsqDTO();
+        rspDTO.setSmokeTestRegistrationDTOList(BeanConvertUtils.convertList(smokeTestRegistrationRspBO.getSmokeTestRegistrationBOList(), SmokeTestRegistrationDTO.class));
+        rspDTO.setPageNum(smokeTestRegistrationRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(smokeTestRegistrationRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(smokeTestRegistrationRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(smokeTestRegistrationRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 
 }

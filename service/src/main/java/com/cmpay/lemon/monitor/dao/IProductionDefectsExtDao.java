@@ -14,5 +14,5 @@ import java.util.List;
 @Mapper
 public interface IProductionDefectsExtDao extends IProductionDefectsDao {
 
-    List<ProductionDefectsDO> findAll(ProductionDefectsDO productionDefectsDO);
+    List<ProductionDefectsDO> findList(ProductionDefectsDO productionDefectsDO);
 }

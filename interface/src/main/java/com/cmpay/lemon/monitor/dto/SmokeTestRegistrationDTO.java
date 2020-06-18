@@ -31,6 +31,10 @@ public class SmokeTestRegistrationDTO {
      * @Fields testdescription
      */
     private String testdescription;
+    /**
+     * @Fields testDate
+     */
+    private String testDate;
 
     public String getReqNm() {
         return reqNm;
@@ -78,6 +82,14 @@ public class SmokeTestRegistrationDTO {
 
     public void setTestdescription(String testdescription) {
         this.testdescription = testdescription;
+    }
+
+    public String getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(String testDate) {
+        this.testDate = testDate;
     }
 
     @Override

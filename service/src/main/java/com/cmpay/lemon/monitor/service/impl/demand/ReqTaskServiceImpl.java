@@ -111,7 +111,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Autowired
     private IProductionDefectsExtDao productionDefectsDao;
     @Autowired
-    ISmokeTestRegistrationDao smokeTestRegistrationDao;
+    ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
     @Autowired
     ISmokeTestFailedCountDao smokeTestFailedCountDao;
 

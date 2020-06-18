@@ -55,13 +55,32 @@ public class SVNUtil {
      */
     public static SVNCommitInfo makeDirectory(SVNClientManager clientManager, SVNURL url, String commitMessage) {
         try {
-            return clientManager.getCommitClient().doMkDir(new SVNURL[]{url}, commitMessage);
+              return  clientManager.getCommitClient().doMkDir(new SVNURL[]{url}, commitMessage);
         } catch (SVNException e) {
             logger.error(e.getErrorMessage(), e);
         }
         return null;
     }
-    
+    /**
+     * 修改文件夹
+     */
+    public static void modifyFolder(SVNClientManager clientManager, SVNURL oldUrl, SVNURL newUrl,File file) {
+
+
+
+        try {
+            SVNURL urlDir = SVNURL.parseURIEncoded("http://10.9.10.115:18080/svn/Projectdoc/209902");
+            SVNUtil.makeDirectory(clientManager,urlDir,"REQ-20990213-2190_测试2233");
+             SVNURL urlDir1 = SVNURL.parseURIEncoded("http://10.9.10.115:18080/svn/Projectdoc/209902/REQ-20990213-2190_测试");
+            SVNURL urlDir2 = SVNURL.parseURIEncoded("http://10.9.10.115:18080/svn/Projectdoc/209902/REQ-20990213-2190_测试2233");
+            clientManager.getUpdateClient().doRelocate(file,urlDir1,urlDir2,true);
+            return ;
+        } catch (SVNException e) {
+            System.err.println(333);
+            logger.error(e.getErrorMessage(), e);
+        }
+        return ;
+    }
     
    
     /**

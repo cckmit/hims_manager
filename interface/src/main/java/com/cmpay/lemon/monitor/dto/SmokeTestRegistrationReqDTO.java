@@ -1,14 +1,14 @@
-package com.cmpay.lemon.monitor.bo;
-
 /*
  * @ClassName DemandNameChangeDO
  * @Description
  * @version 1.0
  * @Date 2020-06-03 10:21:06
  */
+package com.cmpay.lemon.monitor.dto;
 
+import com.cmpay.framework.data.response.PageableRspDTO;
 
-public class SmokeTestRegistrationBO {
+public class SmokeTestRegistrationReqDTO extends PageableRspDTO {
     /**
      * @Fields reqNm
      */
@@ -33,18 +33,6 @@ public class SmokeTestRegistrationBO {
      * @Fields testdescription
      */
     private String testdescription;
-    /**
-     * @Fields testDate
-     */
-    private String testDate;
-    /**
-     * 页数
-     */
-    private int pageNum;
-    /**
-     * 页面大小
-     */
-    private int pageSize;
 
     public String getReqNm() {
         return reqNm;
@@ -94,27 +82,15 @@ public class SmokeTestRegistrationBO {
         this.testdescription = testdescription;
     }
 
-    public int getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public String getTestDate() {
-        return testDate;
-    }
-
-    public void setTestDate(String testDate) {
-        this.testDate = testDate;
+    @Override
+    public String toString() {
+        return "SmokeTestRegistrationDTO{" +
+                "reqNm='" + reqNm + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
+                ", testers='" + testers + '\'' +
+                ", testdescription='" + testdescription + '\'' +
+                '}';
     }
 }

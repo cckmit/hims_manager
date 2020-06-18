@@ -2,7 +2,7 @@
  * @ClassName SmokeTestRegistrationDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-17 14:10:37
+ * @Date 2020-06-18 14:35:53
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -36,9 +36,13 @@ public class SmokeTestRegistrationDO extends BaseDO {
      */
     private String testers;
     /**
-     * @Fields testdescription 
+     * @Fields testdescription
      */
     private String testdescription;
+    /**
+     * @Fields testDate 
+     */
+    private String testDate;
 
     public Integer getId() {
         return id;
@@ -94,5 +98,13 @@ public class SmokeTestRegistrationDO extends BaseDO {
 
     public void setTestdescription(String testdescription) {
         this.testdescription = testdescription;
+    }
+
+    public String getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(String testDate) {
+        this.testDate = testDate;
     }
 }

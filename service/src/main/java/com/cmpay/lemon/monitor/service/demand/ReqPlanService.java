@@ -120,4 +120,9 @@ public interface ReqPlanService {
     void changesInLegacyWorkload(String reqImplMon);
 
     void registrationDemandPhaseRecordForm(DemandBO demandBO,String remarks ) ;
+
+
+     void modifyFolder();
+
+    public String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath);
 }

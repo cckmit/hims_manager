@@ -6,10 +6,13 @@
  */
 package com.cmpay.lemon.monitor.dao;
 
-import com.cmpay.lemon.framework.dao.BaseDao;
 import com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
-public interface ISmokeTestRegistrationDao extends BaseDao<SmokeTestRegistrationDO, Integer> {
+public interface ISmokeTestRegistrationExtDao extends  ISmokeTestRegistrationDao{
+
+    List<SmokeTestRegistrationDO> findList(SmokeTestRegistrationDO smokeTestRegistrationDO);
 }

@@ -1,4 +1,4 @@
-package com.cmpay.lemon.monitor.controller.reportform;
+package com.cmpay.lemon.monitor.controller.reportForm;
 
 
 import com.cmpay.framework.data.response.GenericRspDTO;
