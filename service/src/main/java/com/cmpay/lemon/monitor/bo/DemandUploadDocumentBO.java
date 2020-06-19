@@ -37,7 +37,7 @@ public class DemandUploadDocumentBO {
     private String frontEng;
     @Excel(name = "测试人员")
     private String testEng;
-    @Excel(name = "需求当前阶段")
+    @Excel(name = "当前阶段未上传文档数")
     private String noUpload;
 
     public String getFirstLevelOrganization() {
