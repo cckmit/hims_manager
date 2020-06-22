@@ -627,10 +627,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             demanddo.setReqNo(pro_number_list[j]);
             List<DemandDO> demandBOList = demandDao.find(demanddo);
             if(!demandBOList.isEmpty()){
-                for(int i=0;i<demandBOList.size();i++){
+//                for(int i=0;i<demandBOList.size();i++){
                     // 投产月份  = 需求实施月份时 ，改变需求状态
-                    if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
-                        DemandDO demand = demandBOList.get(i);
+//                    if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
+                        DemandDO demand = demandBOList.get(0);
                         if (!JudgeUtils.isNull(demand)) {
                             //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
@@ -695,13 +695,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 demandDao.updateOperation(demand);
                             }
                         }
-                    }
-                    // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
-                    if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
-                        DemandDO demand = demandBOList.get(i);
-                        demandDao.delete(demand.getReqInnerSeq());
-                    }
-                }
+//                    }
+//                    // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
+//                    if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
+//                        DemandDO demand = demandBOList.get(i);
+//                        demandDao.delete(demand.getReqInnerSeq());
+//                    }
+//                }
             }
             if (!(isSend)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
