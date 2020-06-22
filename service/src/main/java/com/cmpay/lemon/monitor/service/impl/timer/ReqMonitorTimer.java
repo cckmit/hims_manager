@@ -1,4 +1,3 @@
-/*
 package com.cmpay.lemon.monitor.service.impl.timer;
 
 
@@ -55,11 +54,9 @@ public class ReqMonitorTimer {
 //	@Autowired
 //	private ProductTimeServiceMgr productTimeServiceMgr;
 
-    */
-/**
+    /**
      * 月底未完成的需求自动改为存量需求
-     *//*
-
+     */
 //	public void insertStockReq() {
 //		Calendar c = Calendar.getInstance();
 //		c.add(Calendar.MONTH, -1);
@@ -75,11 +72,9 @@ public class ReqMonitorTimer {
         }
         jiraDataCollationService.getIssueModifiedWithinOneDay();
     }
-    */
-/**
+    /**
      * 每周一更新投产时间
-     *//*
-
+     */
     @Scheduled(cron = "0 0 1 ? * 1")
     public void updateProductTime() {
         Calendar c = Calendar.getInstance();
@@ -102,14 +97,12 @@ public class ReqMonitorTimer {
         // boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
     }
 
-    */
-/*
+    /*
      *搜索1天之前状态为“投产待部署”的投产记录与状态为“审批通过待部署”的系统操作记录
      *提醒运维同事确认这些投产/系统操作是否已经部署完成，如果部署已完成，请及时更新状态，如果是回退，也请更新到对应的状态。
      *如果确实既没部署，也没有回退，则不用更新状态。
      *邮件发送给 it.version@hisuntech.com
-     **//*
-
+     **/
 
     @Scheduled(cron = "10 0 12 * * ?")
     public void listOfUntimelyStatusChanges() {
@@ -181,18 +174,16 @@ public class ReqMonitorTimer {
 
     }
 
-    */
-/*
+    /*
      *投产不及时验证清单发送企业微信
      *每天中午12点10秒执行，避免和别的微信推送内容冲突
-     * *//*
-
+     * */
     @Scheduled(cron = "10 0 12 * * ?")
     public void productionVerificationIsNotTimely() throws ParseException {
         //测试环境不发通知
-		if(LemonUtils.getEnv().equals(Env.DEV)) {
+        if(LemonUtils.getEnv().equals(Env.DEV)) {
             return;
-		}
+        }
         //项目启动日期开始当天计算
         String date = "2019-12-13";
         //获得投产验证不及时清单
@@ -401,11 +392,9 @@ public class ReqMonitorTimer {
         file.delete();
     }
 
-*/
 /**
  * 需求月底反馈 每月1号 系统统计月底实际完成阶段未达到月初预计完成阶段的需求，并邮件通知产品经理对需求目标未完成情况进行原因反馈，
- *//*
-
+ */
 //	public void monthFeedBack() {
 //		logger.error("需初反馈。。。。。。。。");
 //		Calendar c = Calendar.getInstance();
@@ -429,11 +418,9 @@ public class ReqMonitorTimer {
 //		//reqTaskService.sendMail(Constant.PM_DEPT_MAIL, null, content.toString(), subject, attachFiles);
 //	}
 
-    */
-/**
+    /**
      * 每月四号 反馈周期为三天，预期未反馈的需求，系统自动将数据记录QA问题。
-     *//*
-
+     */
 //	public void addQAQuestion() {
 //		Calendar c = Calendar.getInstance();
 //		c.add(Calendar.MONTH, -1);
@@ -451,11 +438,9 @@ public class ReqMonitorTimer {
 //		}
 //
 //	}
-    */
-/*
+    /*
      * 每日需求进度异常监控 日终，系统判断需求实际实施完成阶段与计划完成阶段是否存在异常，对于存在异常的需求，每天中午十二点发送进度异常邮件通知
-     *//*
-
+     */
     @Scheduled(cron = "0 0 12 * * ?")
     public void dailyAbnormalMonitor() {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
@@ -740,8 +725,4 @@ public class ReqMonitorTimer {
         content.append("如有问题请及时向您的主管领导或主导部门寻求帮助，感谢您的辛苦付出！");
         return content.toString();
     }
-
-
-
 }
-*/
