@@ -126,9 +126,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
             jiraBasicInfoDO.setDepartment("产品测试团队");
-            jiraBasicInfoDO.setDescription("问题描述");
         } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
-
+            jiraBasicInfoDO.setDepartment("产品测试团队");
         } else if (jiraTaskBodyBO.getJiraType().equals("开发子任务")) {
             jiraBasicInfoDO.setDepartment(systemUserService.getDepartmentByUser(jiraTaskBodyBO.getAssignee()));
         } else {
@@ -159,9 +158,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
             jiraBasicInfoDO.setDepartment("产品测试团队");
-            jiraBasicInfoDO.setDescription("问题描述");
         } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
-
+            jiraBasicInfoDO.setDepartment("产品测试团队");
         } else if (jiraTaskBodyBO.getJiraType().equals("开发子任务")) {
             jiraBasicInfoDO.setDepartment(department);
         } else {
