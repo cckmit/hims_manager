@@ -93,8 +93,14 @@ public class JiraUtil {
 
         //日志流水
         String worklogs = object.getJSONObject("fields").getJSONObject("worklog").getString("worklogs");
+
+        String total = object.getJSONObject("fields").getJSONObject("worklog").getString("total");
+        if(Integer.parseInt(total)>20){
+             worklogs = getAllWorklogs(jiraTaskBodyBO.getJiraKey());
+        }
         jiraTaskBodyBO.setWorklogs(worklogs);
         //附属子任务
+
         String subtasks = object.getJSONObject("fields").getString("subtasks");
         jiraTaskBodyBO.setSubtasks(subtasks);
         return jiraTaskBodyBO;
@@ -125,7 +131,20 @@ public class JiraUtil {
         return null;
 
     }
-
+    
+    public static  String getAllWorklogs(String jirakey) {
+        Response response = given()
+                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                .get(CREATEISSUEURL + "/" + jirakey+"/worklog");
+        ResponseBody body = response.getBody();
+        String json = body.print();
+        body.prettyPrint();
+        JSONObject object = JSONObject.parseObject(json);
+        String worklogs = object.getString("worklogs");
+        String worklogs1 = object.getString("total");
+        return worklogs;
+    }
     //获得工作流水
     public static  List<JiraWorklogBO> getWorklogs(JiraTaskBodyBO jiraTaskBodyBO) {
         JSONArray worklogsJsonArray = JSONArray.parseArray(jiraTaskBodyBO.getWorklogs());
@@ -201,7 +220,7 @@ public class JiraUtil {
      *获取主任务，并解析相关信息
      */
     public static void main(String[] args) {
-        JiraUtil.batchQueryIssuesModifiedWithinOneDay(1000);
+        JiraUtil.GetIssue("CMPAY-979");
 
     }
 
