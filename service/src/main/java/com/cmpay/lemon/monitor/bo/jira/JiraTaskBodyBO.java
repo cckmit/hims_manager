@@ -7,6 +7,15 @@ public class JiraTaskBodyBO {
      * jira任务编号  jiraKey
      */
     private String jiraKey;
+
+    /**
+     * jira任务编号  parentTaskKey
+     */
+    private String parentTaskKey;
+    /**
+     * jira任务编号  EpicKey
+     */
+    private String epicKey;
     /**
      * jira任务归属部门  department
      */
@@ -56,6 +65,22 @@ public class JiraTaskBodyBO {
      *计划完成时间
      */
     String planEndTime;
+
+    public String getParentTaskKey() {
+        return parentTaskKey;
+    }
+
+    public void setParentTaskKey(String parentTaskKey) {
+        this.parentTaskKey = parentTaskKey;
+    }
+
+    public String getEpicKey() {
+        return epicKey;
+    }
+
+    public void setEpicKey(String epicKey) {
+        this.epicKey = epicKey;
+    }
 
     public String getAggregatetimespent() {
         return aggregatetimespent;
@@ -181,5 +206,25 @@ public class JiraTaskBodyBO {
                     "\"customfield_10253\":\""+  this.getPlanEndTime()+"\"\n";
         }
         return "";
+    }
+
+    @Override
+    public String toString() {
+        return "JiraTaskBodyBO{" +
+                "jiraKey='" + jiraKey + '\'' +
+                ", parentTaskKey='" + parentTaskKey + '\'' +
+                ", epicKey='" + epicKey + '\'' +
+                ", department='" + department + '\'' +
+                ", jiraType='" + jiraType + '\'' +
+                ", issueName='" + issueName + '\'' +
+                ", aggregatetimespent='" + aggregatetimespent + '\'' +
+                ", timespent='" + timespent + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", assignee='" + assignee + '\'' +
+                ", worklogs='" + worklogs + '\'' +
+                ", subtasks='" + subtasks + '\'' +
+                ", planStartTime='" + planStartTime + '\'' +
+                ", planEndTime='" + planEndTime + '\'' +
+                '}';
     }
 }

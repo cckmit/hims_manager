@@ -42,7 +42,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     IJiraWorklogDao jiraWorklogDao;
 
     @Autowired
-    private IWorkingHoursDao iWorkingHoursDao;
+    private IWorkingHoursExtDao iWorkingHoursDao;
     @Autowired
     SystemUserService systemUserService;
 
@@ -62,13 +62,13 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         }
         if(JudgeUtils.isNotEmpty(jiraTaskBodyBOList)){
             jiraTaskBodyBOList.forEach(m->{
-                try {
-                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                    this.registerJiraBasicInfo(jiraTaskBodyBO);
-                    this.registerWorklogs(jiraTaskBodyBO);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+                    try {
+                        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                        this.registerJiraBasicInfo(jiraTaskBodyBO);
+                        this.registerWorklogs(jiraTaskBodyBO);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             });
         }
 
@@ -124,6 +124,15 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setAssignee(jiraTaskBodyBO.getAssignee());
         jiraBasicInfoDO.setJiratype(jiraTaskBodyBO.getJiraType());
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
+        jiraBasicInfoDO.setEpickey(jiraTaskBodyBO.getEpicKey());
+        jiraBasicInfoDO.setParenttaskkey(jiraTaskBodyBO.getParentTaskKey());
+        if(JudgeUtils.isBlank(jiraTaskBodyBO.getEpicKey())){
+            JiraBasicInfoDO jiraBasicInfoDO1 = new JiraBasicInfoDO();
+            jiraBasicInfoDO1.setJirakey(jiraTaskBodyBO.getParentTaskKey());
+            List<JiraBasicInfoDO> jiraBasicInfoDOS = jiraBasicInfoDao.find(jiraBasicInfoDO1);
+            jiraBasicInfoDO.setEpickey(jiraBasicInfoDOS.get(0).getEpickey());
+            jiraTaskBodyBO.setEpicKey(jiraBasicInfoDOS.get(0).getEpickey());
+        }
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
             jiraBasicInfoDO.setDepartment("产品测试团队");
         } else if (jiraTaskBodyBO.getJiraType().equals("测试子任务")) {
@@ -236,6 +245,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 workingHoursDO.setCreatedtime(jiraWorklogDO.getCreatedtime());
                 workingHoursDO.setStartedtime(jiraWorklogDO.getStartedtime());
                 workingHoursDO.setUpdatedtime(jiraWorklogDO.getUpdatedtime());
+                workingHoursDO.setEpickey(jiraTaskBodyBO.getEpicKey());
                 workingHoursDO.setAssignmentDepartment(systemUserService.getDepartmentByUser(jiraWorklogDO.getName()));
                 WorkingHoursDO workingHoursDO1 = iWorkingHoursDao.get(workingHoursDO.getJiraworklogkey());
                 if (JudgeUtils.isNotNull(workingHoursDO1)) {

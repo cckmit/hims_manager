@@ -1,8 +1,8 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2020-04-30 15:59:10
+ * @Date 2020-06-28 16:55:33
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -73,6 +73,7 @@ public class WorkingHoursDO extends BaseDO {
     private String selectTime;
     // 总部门人数
     private String sumDept;
+    private String epickey;
 
     public String getJiraworklogkey() {
         return jiraworklogkey;
@@ -186,24 +187,11 @@ public class WorkingHoursDO extends BaseDO {
         this.sumDept = sumDept;
     }
 
-    @Override
-    public String toString() {
-        return "WorkingHoursDO{" +
-                "jiraworklogkey='" + jiraworklogkey + '\'' +
-                ", issuekey='" + issuekey + '\'' +
-                ", timespnet='" + timespnet + '\'' +
-                ", subtaskname='" + subtaskname + '\'' +
-                ", assignmentDepartment='" + assignmentDepartment + '\'' +
-                ", name='" + name + '\'' +
-                ", displayname='" + displayname + '\'' +
-                ", devpLeadDept='" + devpLeadDept + '\'' +
-                ", comment='" + comment + '\'' +
-                ", createdtime='" + createdtime + '\'' +
-                ", startedtime='" + startedtime + '\'' +
-                ", updatedtime='" + updatedtime + '\'' +
-                ", sumTime='" + sumTime + '\'' +
-                ", selectTime='" + selectTime + '\'' +
-                ", sumDept='" + sumDept + '\'' +
-                '}';
+    public String getEpickey() {
+        return epickey;
+    }
+
+    public void setEpickey(String epickey) {
+        this.epickey = epickey;
     }
 }

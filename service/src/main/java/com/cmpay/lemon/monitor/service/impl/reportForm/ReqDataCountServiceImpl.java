@@ -10,7 +10,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.IDemandExtDao;
 import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
-import com.cmpay.lemon.monitor.dao.IWorkingHoursDao;
+import com.cmpay.lemon.monitor.dao.IWorkingHoursExtDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -80,7 +80,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	@Autowired
 	private IReqDataCountDao reqDataCountDao;
 	@Autowired
-	private IWorkingHoursDao iWorkingHoursDao;
+	private IWorkingHoursExtDao iWorkingHoursDao;
 
 	@Autowired
 	private ReqPlanService reqPlanService;

@@ -2,7 +2,7 @@
  * @ClassName JiraBasicInfoDO
  * @Description 
  * @version 1.0
- * @Date 2020-04-30 09:00:18
+ * @Date 2020-06-28 09:56:29
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -19,6 +19,14 @@ public class JiraBasicInfoDO extends BaseDO {
      * @Fields jiratype jira类型
      */
     private String jiratype;
+    /**
+     * @Fields epickey 关联epic
+     */
+    private String epickey;
+    /**
+     * @Fields parenttaskkey 关联父任务
+     */
+    private String parenttaskkey;
     /**
      * @Fields description 任务描述
      */
@@ -62,6 +70,22 @@ public class JiraBasicInfoDO extends BaseDO {
 
     public void setJiratype(String jiratype) {
         this.jiratype = jiratype;
+    }
+
+    public String getEpickey() {
+        return epickey;
+    }
+
+    public void setEpickey(String epickey) {
+        this.epickey = epickey;
+    }
+
+    public String getParenttaskkey() {
+        return parenttaskkey;
+    }
+
+    public void setParenttaskkey(String parenttaskkey) {
+        this.parenttaskkey = parenttaskkey;
     }
 
     public String getDescription() {

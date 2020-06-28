@@ -5,6 +5,8 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.JiraBasicInfoDO" >
         <id column="jiraKey" property="jirakey" jdbcType="VARCHAR" />
         <result column="jiraType" property="jiratype" jdbcType="VARCHAR" />
+        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="parentTaskKey" property="parenttaskkey" jdbcType="VARCHAR" />
         <result column="description" property="description" jdbcType="VARCHAR" />
         <result column="department" property="department" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
@@ -15,8 +17,8 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jiraKey, jiraType, description, department, assignee, timespent, aggregatetimespent, 
-        planStartTime, planEndTime
+        jiraKey, jiraType, epicKey, parentTaskKey, description, department, assignee, timespent, 
+        aggregatetimespent, planStartTime, planEndTime
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -39,6 +41,12 @@
             </if>
             <if test="jiratype != null" >
                 jiraType,
+            </if>
+            <if test="epickey != null" >
+                epicKey,
+            </if>
+            <if test="parenttaskkey != null" >
+                parentTaskKey,
             </if>
             <if test="description != null" >
                 description,
@@ -69,6 +77,12 @@
             <if test="jiratype != null" >
                 #{jiratype,jdbcType=VARCHAR},
             </if>
+            <if test="epickey != null" >
+                #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="parenttaskkey != null" >
+                #{parenttaskkey,jdbcType=VARCHAR},
+            </if>
             <if test="description != null" >
                 #{description,jdbcType=VARCHAR},
             </if>
@@ -98,6 +112,12 @@
         <set >
             <if test="jiratype != null" >
                 jiraType = #{jiratype,jdbcType=VARCHAR},
+            </if>
+            <if test="epickey != null" >
+                epicKey = #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="parenttaskkey != null" >
+                parentTaskKey = #{parenttaskkey,jdbcType=VARCHAR},
             </if>
             <if test="description != null" >
                 description = #{description,jdbcType=VARCHAR},
@@ -134,6 +154,12 @@
             </if>
             <if test="jiratype != null" >
                 and jiraType = #{jiratype,jdbcType=VARCHAR}
+            </if>
+            <if test="epickey != null" >
+                and epicKey = #{epickey,jdbcType=VARCHAR}
+            </if>
+            <if test="parenttaskkey != null" >
+                and parentTaskKey = #{parenttaskkey,jdbcType=VARCHAR}
             </if>
             <if test="description != null" >
                 and description = #{description,jdbcType=VARCHAR}

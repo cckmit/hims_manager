@@ -1511,15 +1511,20 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandStateHistoryRspBO.setPageInfo(pageInfo);
             return demandStateHistoryRspBO;
         }else if(demandChangeDetailsBO.getReqInnerSeq().isEmpty()&&!demandChangeDetailsBO.getReqNo().isEmpty()){
-            DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
-            demandChangeDetailsDO.setReqNo(demandChangeDetailsBO.getReqNo());
-            List<DemandChangeDetailsDO> demandChangeDetailsDOS=null;
-            demandChangeDetailsDOS = demandChangeDetailsDao.find(demandChangeDetailsDO);
-            if(JudgeUtils.isEmpty(demandChangeDetailsDOS)){
+            DemandStateHistoryDO demandStateHistoryDO1 = new DemandStateHistoryDO();
+            demandStateHistoryDO1.setReqNo(demandChangeDetailsBO.getReqNo());
+            List<DemandStateHistoryDO> demandStateHistoryDOS = demandStateHistoryDao.find(demandStateHistoryDO1);
+            if(JudgeUtils.isEmpty(demandStateHistoryDOS)){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("未查询到数据，请检查输入后，重新查询(初始化导入数据无法通过该查询)");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            String identification = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demandChangeDetailsDOS.get(0).getReqInnerSeq());
+            DemandStateHistoryDO demandStateHistoryDO2 = new DemandStateHistoryDO();
+            demandStateHistoryDO2.setReqInnerSeq(demandStateHistoryDOS.get(0).getReqInnerSeq());
+            List<DemandStateHistoryDO> list = demandStateHistoryDao.find(demandStateHistoryDO2);
+            String identification = list.get(0).getIdentification();
+            if(JudgeUtils.isBlank(identification)){
+                identification=demandStateHistoryDOS.get(0).getReqInnerSeq();
+            }
             DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
             demandStateHistoryDO.setIdentification(identification);
             PageInfo<DemandStateHistoryBO> pageInfo = PageUtils.pageQueryWithCount(demandChangeDetailsBO.getPageNum(), demandChangeDetailsBO.getPageSize(),

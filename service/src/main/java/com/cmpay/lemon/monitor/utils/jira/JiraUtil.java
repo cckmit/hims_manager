@@ -66,7 +66,19 @@ public class JiraUtil {
         jiraTaskBodyBO.setJiraKey(object.getString("key"));
         //获取获取jira任务类型
         String jiraType = object.getJSONObject("fields").getJSONObject("issuetype").getString("name");
+        JSONObject parent = object.getJSONObject("fields").getJSONObject("parent");
 
+        String epicKey = object.getJSONObject("fields").getString("customfield_10102");
+        String parentTaskKey = null;
+        if(parent!=null){
+            parentTaskKey=parent.getString("key");
+        }
+        if(jiraType.equals("Epic")){
+            epicKey=jiraTaskBodyBO.getJiraKey();
+        }
+
+        jiraTaskBodyBO.setEpicKey(epicKey);
+        jiraTaskBodyBO.setParentTaskKey(parentTaskKey);
         //获取获取jira任务名
         String issueName = object.getJSONObject("fields").getString("summary");
         jiraTaskBodyBO.setIssueName(issueName);
@@ -76,6 +88,7 @@ public class JiraUtil {
         jiraTaskBodyBO.setTimespent(timespent);
 
         String aggregatetimespent = object.getJSONObject("fields").getString("aggregatetimespent");
+        jiraTaskBodyBO.setAggregatetimespent(aggregatetimespent);
         if(object.getJSONObject("fields").getString("customfield_10225")!=null) {
             String department = object.getJSONObject("fields").getJSONObject("customfield_10225").getString("value");
             jiraTaskBodyBO.setDepartment(department);
@@ -142,7 +155,6 @@ public class JiraUtil {
         body.prettyPrint();
         JSONObject object = JSONObject.parseObject(json);
         String worklogs = object.getString("worklogs");
-        String worklogs1 = object.getString("total");
         return worklogs;
     }
     //获得工作流水
@@ -196,7 +208,7 @@ public class JiraUtil {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created&startAt="+page+"&maxResults=50");
+                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
