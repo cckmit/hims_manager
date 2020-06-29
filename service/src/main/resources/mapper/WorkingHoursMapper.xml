@@ -19,11 +19,12 @@
         <result column="selectTime" property="selectTime" jdbcType="VARCHAR" />
         <result column="sumDept" property="sumDept" jdbcType="VARCHAR" />
         <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="registerFlag" property="registerflag" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
-        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, registerFlag
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -80,6 +81,9 @@
             <if test="epickey != null" >
                 epicKey,
             </if>
+            <if test="registerflag != null" >
+                registerFlag,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jiraworklogkey != null" >
@@ -120,6 +124,9 @@
             </if>
             <if test="epickey != null" >
                 #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="registerflag != null" >
+                #{registerflag,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -162,6 +169,9 @@
             </if>
             <if test="epickey != null" >
                 epicKey = #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="registerflag != null" >
+                registerFlag = #{registerflag,jdbcType=VARCHAR},
             </if>
         </set>
         where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
@@ -210,6 +220,9 @@
             </if>
             <if test="epickey != null" >
                 and epicKey = #{epickey,jdbcType=VARCHAR}
+            </if>
+            <if test="registerflag != null" >
+                and registerFlag = #{registerflag,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

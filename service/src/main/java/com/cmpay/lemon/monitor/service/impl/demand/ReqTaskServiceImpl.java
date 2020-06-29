@@ -114,6 +114,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
     @Autowired
     ISmokeTestFailedCountDao smokeTestFailedCountDao;
+    @Autowired
+    IWorkingHoursExtDao workingHoursDao;
+    @Autowired
+    IDemandResourceInvestedDao demandResourceInvestedDao;
 
 
     /**
@@ -1970,6 +1974,41 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             smokeTestFailedCountDOS.get(0).setCount(smokeTestFailedCountDOS.get(0).getCount()+1);
             smokeTestFailedCountDao.update(smokeTestFailedCountDOS.get(0));
         }
+    }
+
+    @Override
+    public void demandInputResourceStatistics() {
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setRegisterflag("N");
+        List<WorkingHoursDO> workingHoursDOS = workingHoursDao.find(workingHoursDO);
+        workingHoursDOS.forEach(m->{
+           if(JudgeUtils.isBlank(m.getEpickey())){
+               m.setRegisterflag("Y");
+               workingHoursDao.update(m);
+               return;
+           }else{
+               DemandResourceInvestedDO demandResourceInvestedDO = new DemandResourceInvestedDO();
+               demandResourceInvestedDO.setValueType("工时");
+               demandResourceInvestedDO.setEpicKey(m.getEpickey());
+               demandResourceInvestedDO.setDepartment(m.getDevpLeadDept());
+               List<DemandResourceInvestedDO> demandResourceInvestedDOS = demandResourceInvestedDao.find(demandResourceInvestedDO);
+               if(JudgeUtils.isNotEmpty(demandResourceInvestedDOS)){
+                   String value1 = demandResourceInvestedDOS.get(0).getValue();
+                   String value2 = m.getTimespnet();
+                   int parseInt = Integer.parseInt(value1)+Integer.parseInt(value2);
+                   String value = String.valueOf(parseInt);
+                   demandResourceInvestedDOS.get(0).setValue(value);
+                   demandResourceInvestedDao.update(demandResourceInvestedDOS.get(0));
+               }else{
+                   demandResourceInvestedDO.setValue(m.getTimespnet());
+                   demandResourceInvestedDao.insert(demandResourceInvestedDO);
+               }
+               m.setRegisterflag("Y");
+               workingHoursDao.update(m);
+           }
+
+        });
+
     }
 
     private PageInfo<DemandNameChangeBO> getDemandnNameChange(DemandNameChangeBO demandNameChangeBO) {

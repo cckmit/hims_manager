@@ -45,14 +45,14 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     private IWorkingHoursExtDao iWorkingHoursDao;
     @Autowired
     SystemUserService systemUserService;
-
+    @Autowired
+    IUserExtDao userExtDao;
     @Async
     @Override
     public void getIssueModifiedWithinOneDay() {
         List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
         int i=0;
         while (true){
-            System.err.println(i);
             List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay(i);
             if(JudgeUtils.isEmpty(jiraTaskBodyBOS)){
                 break;
@@ -239,16 +239,21 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 if (StringUtils.isNotBlank(jiraTaskBodyBO.getDepartment())) {
                     workingHoursDO.setDevpLeadDept(jiraTaskBodyBO.getDepartment());
                 } else {
-                    workingHoursDO.setDevpLeadDept("产品测试团队");
+                    UserDO userDO = userExtDao.getUserByUserFullName(jiraWorklogDO.getDisplayname());
+                    workingHoursDO.setDevpLeadDept(userDO.getDepartment());
                 }
                 workingHoursDO.setComment(jiraWorklogDO.getComment());
                 workingHoursDO.setCreatedtime(jiraWorklogDO.getCreatedtime());
                 workingHoursDO.setStartedtime(jiraWorklogDO.getStartedtime());
                 workingHoursDO.setUpdatedtime(jiraWorklogDO.getUpdatedtime());
                 workingHoursDO.setEpickey(jiraTaskBodyBO.getEpicKey());
+                workingHoursDO.setRegisterflag("N");
                 workingHoursDO.setAssignmentDepartment(systemUserService.getDepartmentByUser(jiraWorklogDO.getName()));
                 WorkingHoursDO workingHoursDO1 = iWorkingHoursDao.get(workingHoursDO.getJiraworklogkey());
                 if (JudgeUtils.isNotNull(workingHoursDO1)) {
+                    if(JudgeUtils.isNotBlank(workingHoursDO1.getRegisterflag())&&workingHoursDO1.getRegisterflag().equals("Y")){
+                        //  todo 如果已经登记则需要修改差值
+                    }
                     iWorkingHoursDao.update(workingHoursDO);
                 } else {
                     iWorkingHoursDao.insert(workingHoursDO);

@@ -2,7 +2,7 @@
  * @ClassName WorkingHoursDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-28 16:55:33
+ * @Date 2020-06-29 11:37:59
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -73,7 +73,14 @@ public class WorkingHoursDO extends BaseDO {
     private String selectTime;
     // 总部门人数
     private String sumDept;
+    /**
+     * @Fields epickey 关联epickey
+     */
     private String epickey;
+    /**
+     * @Fields registerflag 是否已经登记标识
+     */
+    private String registerflag;
 
     public String getJiraworklogkey() {
         return jiraworklogkey;
@@ -193,5 +200,13 @@ public class WorkingHoursDO extends BaseDO {
 
     public void setEpickey(String epickey) {
         this.epickey = epickey;
+    }
+
+    public String getRegisterflag() {
+        return registerflag;
+    }
+
+    public void setRegisterflag(String registerflag) {
+        this.registerflag = registerflag;
     }
 }

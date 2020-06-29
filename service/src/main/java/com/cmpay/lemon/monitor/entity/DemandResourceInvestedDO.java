@@ -2,7 +2,7 @@
  * @ClassName DemandResourceInvestedDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-29 09:58:17
+ * @Date 2020-06-29 16:18:05
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -31,6 +31,10 @@ public class DemandResourceInvestedDO extends BaseDO {
      * @Fields valueType 数值类型
      */
     private String valueType;
+    /**
+     * @Fields department 部门
+     */
+    private String department;
 
     public Integer getId() {
         return id;
@@ -70,5 +74,13 @@ public class DemandResourceInvestedDO extends BaseDO {
 
     public void setValueType(String valueType) {
         this.valueType = valueType;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
     }
 }

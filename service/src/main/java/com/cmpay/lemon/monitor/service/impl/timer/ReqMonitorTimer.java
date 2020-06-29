@@ -72,6 +72,15 @@ public class ReqMonitorTimer {
         }
         jiraDataCollationService.getIssueModifiedWithinOneDay();
     }
+
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void demandInputResourceStatistics() {
+        //如果是dev环境则不处理
+        if (LemonUtils.getEnv().equals(Env.DEV)) {
+            return;
+        }
+        reqTaskService.demandInputResourceStatistics();
+    }
     /**
      * 每周一更新投产时间
      */

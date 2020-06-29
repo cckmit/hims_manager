@@ -8,10 +8,11 @@
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
         <result column="value" property="value" jdbcType="VARCHAR" />
         <result column="value_type" property="valueType" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, epic_key, req_no, value, value_type
+        id, epic_key, req_no, value, value_type, department
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -44,6 +45,9 @@
             <if test="valueType != null" >
                 value_type,
             </if>
+            <if test="department != null" >
+                department,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -60,6 +64,9 @@
             </if>
             <if test="valueType != null" >
                 #{valueType,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                #{department,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -78,6 +85,9 @@
             </if>
             <if test="valueType != null" >
                 value_type = #{valueType,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                department = #{department,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -102,6 +112,9 @@
             </if>
             <if test="valueType != null" >
                 and value_type = #{valueType,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

@@ -158,4 +158,6 @@ public interface ReqTaskService {
     void productionDefectIntroduction(MultipartFile file);
 
     void smokeTestRegistration(SmokeTestRegistrationBO smokeTestRegistrationBO);
+
+    void demandInputResourceStatistics();
 }
