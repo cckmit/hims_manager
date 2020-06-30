@@ -122,6 +122,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setAggregatetimespent(jiraTaskBodyBO.getAggregatetimespent());
         jiraBasicInfoDO.setTimespent(jiraTaskBodyBO.getTimespent());
         jiraBasicInfoDO.setAssignee(jiraTaskBodyBO.getAssignee());
+        jiraBasicInfoDO.setCreator(jiraTaskBodyBO.getCreator());
         jiraBasicInfoDO.setJiratype(jiraTaskBodyBO.getJiraType());
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         jiraBasicInfoDO.setEpickey(jiraTaskBodyBO.getEpicKey());
@@ -132,6 +133,12 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             List<JiraBasicInfoDO> jiraBasicInfoDOS = jiraBasicInfoDao.find(jiraBasicInfoDO1);
             jiraBasicInfoDO.setEpickey(jiraBasicInfoDOS.get(0).getEpickey());
             jiraTaskBodyBO.setEpicKey(jiraBasicInfoDOS.get(0).getEpickey());
+        }
+        if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getEpicKey())){
+            JiraBasicInfoDO jiraBasicInfoDO1 = new JiraBasicInfoDO();
+            jiraBasicInfoDO1.setJirakey(jiraTaskBodyBO.getEpicKey());
+            List<JiraBasicInfoDO> jiraBasicInfoDOS = jiraBasicInfoDao.find(jiraBasicInfoDO1);
+            jiraTaskBodyBO.setEpicCreator(jiraBasicInfoDOS.get(0).getCreator());
         }
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
             jiraBasicInfoDO.setDepartment("产品测试团队");
@@ -247,6 +254,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 workingHoursDO.setStartedtime(jiraWorklogDO.getStartedtime());
                 workingHoursDO.setUpdatedtime(jiraWorklogDO.getUpdatedtime());
                 workingHoursDO.setEpickey(jiraTaskBodyBO.getEpicKey());
+                workingHoursDO.setEpiccreator(jiraTaskBodyBO.getEpicCreator());
                 workingHoursDO.setRegisterflag("N");
                 workingHoursDO.setAssignmentDepartment(systemUserService.getDepartmentByUser(jiraWorklogDO.getName()));
                 WorkingHoursDO workingHoursDO1 = iWorkingHoursDao.get(workingHoursDO.getJiraworklogkey());

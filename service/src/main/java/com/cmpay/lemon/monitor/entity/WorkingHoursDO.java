@@ -2,7 +2,7 @@
  * @ClassName WorkingHoursDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-29 11:37:59
+ * @Date 2020-06-30 14:28:57
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -77,6 +77,10 @@ public class WorkingHoursDO extends BaseDO {
      * @Fields epickey 关联epickey
      */
     private String epickey;
+    /**
+     * @Fields epiccreator epic创建者
+     */
+    private String epiccreator;
     /**
      * @Fields registerflag 是否已经登记标识
      */
@@ -200,6 +204,14 @@ public class WorkingHoursDO extends BaseDO {
 
     public void setEpickey(String epickey) {
         this.epickey = epickey;
+    }
+
+    public String getEpiccreator() {
+        return epiccreator;
+    }
+
+    public void setEpiccreator(String epiccreator) {
+        this.epiccreator = epiccreator;
     }
 
     public String getRegisterflag() {

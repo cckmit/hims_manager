@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IIssueDetailsDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        <id column="jire_key" property="jireKey" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="epic_key" property="epicKey" jdbcType="VARCHAR" />
+        <result column="issue_type" property="issueType" jdbcType="VARCHAR" />
+        <result column="issue_status" property="issueStatus" jdbcType="VARCHAR" />
+        <result column="issue_registrant" property="issueRegistrant" jdbcType="VARCHAR" />
+        <result column="issue_department" property="issueDepartment" jdbcType="VARCHAR" />
+        <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
+        <result column="issue_details" property="issueDetails" jdbcType="VARCHAR" />
+        <result column="assignee" property="assignee" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        jire_key, req_no, epic_key, issue_type, issue_status, issue_registrant, issue_department, 
+        registration_date, issue_details, assignee
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_issue_details
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_issue_details
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        insert into t_issue_details
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="jireKey != null" >
+                jire_key,
+            </if>
+            <if test="reqNo != null" >
+                req_no,
+            </if>
+            <if test="epicKey != null" >
+                epic_key,
+            </if>
+            <if test="issueType != null" >
+                issue_type,
+            </if>
+            <if test="issueStatus != null" >
+                issue_status,
+            </if>
+            <if test="issueRegistrant != null" >
+                issue_registrant,
+            </if>
+            <if test="issueDepartment != null" >
+                issue_department,
+            </if>
+            <if test="registrationDate != null" >
+                registration_date,
+            </if>
+            <if test="issueDetails != null" >
+                issue_details,
+            </if>
+            <if test="assignee != null" >
+                assignee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="jireKey != null" >
+                #{jireKey,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="epicKey != null" >
+                #{epicKey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueType != null" >
+                #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="issueStatus != null" >
+                #{issueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="issueRegistrant != null" >
+                #{issueRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="issueDepartment != null" >
+                #{issueDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="issueDetails != null" >
+                #{issueDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                #{assignee,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        update t_issue_details
+        <set >
+            <if test="reqNo != null" >
+                req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="epicKey != null" >
+                epic_key = #{epicKey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueType != null" >
+                issue_type = #{issueType,jdbcType=VARCHAR},
+            </if>
+            <if test="issueStatus != null" >
+                issue_status = #{issueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="issueRegistrant != null" >
+                issue_registrant = #{issueRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="issueDepartment != null" >
+                issue_department = #{issueDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                registration_date = #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="issueDetails != null" >
+                issue_details = #{issueDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                assignee = #{assignee,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_issue_details
+        <where >
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueType != null" >
+                and issue_type = #{issueType,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null" >
+                and issue_status = #{issueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="issueRegistrant != null" >
+                and issue_registrant = #{issueRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="issueDepartment != null" >
+                and issue_department = #{issueDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date = #{registrationDate,jdbcType=VARCHAR}
+            </if>
+            <if test="issueDetails != null" >
+                and issue_details = #{issueDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

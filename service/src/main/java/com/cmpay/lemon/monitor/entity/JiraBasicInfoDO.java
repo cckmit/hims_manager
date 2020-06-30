@@ -2,7 +2,7 @@
  * @ClassName JiraBasicInfoDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-28 09:56:29
+ * @Date 2020-06-30 14:26:53
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -35,6 +35,10 @@ public class JiraBasicInfoDO extends BaseDO {
      * @Fields department 部门
      */
     private String department;
+    /**
+     * @Fields creator 创建人
+     */
+    private String creator;
     /**
      * @Fields assignee 经办人
      */
@@ -102,6 +106,14 @@ public class JiraBasicInfoDO extends BaseDO {
 
     public void setDepartment(String department) {
         this.department = department;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getAssignee() {
