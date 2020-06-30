@@ -207,4 +207,14 @@
         on b.fullname=a.displayName
         group by b.department ) c
     </select>
+    <select id="findEpicKeyHours" resultMap="BaseResultMap" parameterType="java.lang.String"  >
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department  devp_lead_dept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+		where epicKey = #{epicKey}
+        group by a.fullname
+    </select>
+
 </mapper>

@@ -95,6 +95,16 @@ public class DemandBO {
     private String isApprovalProcess;
     private String site;
 
+    private String remarks;
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
     public String getSite() {
         return site;
     }
@@ -851,6 +861,7 @@ public class DemandBO {
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", site='" + site + '\'' +
+                ", remarks='" + remarks + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +

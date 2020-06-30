@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-29 11:37:59
  */
@@ -208,5 +208,28 @@ public class WorkingHoursDO extends BaseDO {
 
     public void setRegisterflag(String registerflag) {
         this.registerflag = registerflag;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkingHoursDO{" +
+                "jiraworklogkey='" + jiraworklogkey + '\'' +
+                ", issuekey='" + issuekey + '\'' +
+                ", timespnet='" + timespnet + '\'' +
+                ", subtaskname='" + subtaskname + '\'' +
+                ", assignmentDepartment='" + assignmentDepartment + '\'' +
+                ", name='" + name + '\'' +
+                ", displayname='" + displayname + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", comment='" + comment + '\'' +
+                ", createdtime='" + createdtime + '\'' +
+                ", startedtime='" + startedtime + '\'' +
+                ", updatedtime='" + updatedtime + '\'' +
+                ", sumTime='" + sumTime + '\'' +
+                ", selectTime='" + selectTime + '\'' +
+                ", sumDept='" + sumDept + '\'' +
+                ", epickey='" + epickey + '\'' +
+                ", registerflag='" + registerflag + '\'' +
+                '}';
     }
 }

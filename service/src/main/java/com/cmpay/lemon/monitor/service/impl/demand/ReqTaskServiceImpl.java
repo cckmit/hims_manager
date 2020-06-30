@@ -529,9 +529,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 // 操作时间
                 demandNameChangeDO.setOperationTime(time);
                 // 登记表，先查询有无历史记录
-                DemandNameChangeDO nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
+                List<DemandNameChangeDO> nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
                 // 如果nameChangeDO为空
-                if (JudgeUtils.isNull(nameChangeDO)) {
+                if (nameChangeDO == null || nameChangeDO.size() == 0) {
                     // 新内部编号
                     demandNameChangeDO.setNewReqInnerSeq(demandBO.getReqInnerSeq());
                     // 新名称
@@ -554,13 +554,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     // 新编号
                     demandNameChangeDO.setNewReqNo(demandBO.getReqNo());
                     // 老内部编号
-                    demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.getNewReqInnerSeq());
+                    demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.get(nameChangeDO.size()-1).getNewReqInnerSeq());
                     // 老名称
-                    demandNameChangeDO.setOldReqNm(nameChangeDO.getNewReqNm());
+                    demandNameChangeDO.setOldReqNm(nameChangeDO.get(nameChangeDO.size()-1).getNewReqNm());
                     // 老编号
-                    demandNameChangeDO.setOldReqNo(nameChangeDO.getNewReqNo());
+                    demandNameChangeDO.setOldReqNo(nameChangeDO.get(nameChangeDO.size()-1).getNewReqNo());
                     // 唯一标识
-                    demandNameChangeDO.setUuid(nameChangeDO.getUuid());
+                    demandNameChangeDO.setUuid(nameChangeDO.get(nameChangeDO.size()-1).getUuid());
                 }
                 // 插入
                 iDemandNameChangeExtDao.insert(demandNameChangeDO);
@@ -1057,7 +1057,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     // 操作时间
                     demandNameChangeDO.setOperationTime(time);
                     // 登记表，先查询有无历史记录
-                    DemandNameChangeDO nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
+                    List<DemandNameChangeDO> nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
                     // 如果nameChangeDO为空
                     if (JudgeUtils.isNull(nameChangeDO)) {
                         // 新内部编号
@@ -1082,13 +1082,13 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                         // 新编号
                         demandNameChangeDO.setNewReqNo(m.getReqNo());
                         // 老内部编号
-                        demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.getNewReqInnerSeq());
+                        demandNameChangeDO.setOldReqInnerSeq(nameChangeDO.get(nameChangeDO.size()-1).getNewReqInnerSeq());
                         // 老名称
-                        demandNameChangeDO.setOldReqNm(nameChangeDO.getNewReqNm());
+                        demandNameChangeDO.setOldReqNm(nameChangeDO.get(nameChangeDO.size()-1).getNewReqNm());
                         // 老编号
-                        demandNameChangeDO.setOldReqNo(nameChangeDO.getNewReqNo());
+                        demandNameChangeDO.setOldReqNo(nameChangeDO.get(nameChangeDO.size()-1).getNewReqNo());
                         // 唯一标识
-                        demandNameChangeDO.setUuid(nameChangeDO.getUuid());
+                        demandNameChangeDO.setUuid(nameChangeDO.get(nameChangeDO.size()-1).getUuid());
                     }
                     // 插入
                     iDemandNameChangeExtDao.insert(demandNameChangeDO);

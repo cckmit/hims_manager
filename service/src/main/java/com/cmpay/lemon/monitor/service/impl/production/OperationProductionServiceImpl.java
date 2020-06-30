@@ -87,6 +87,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private SystemRoleService systemRoleService;
     @Autowired
     private SystemUserService systemUserService;
+    // 180 完成产品发布
+    private static final String FINISHPRD = "180";
 
     public  static  final  long configurationAdministratorRoleID=5003;
     @Override
@@ -255,14 +257,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                                 DemandDO demand = demandBOList.get(j);
                                 if (!JudgeUtils.isNull(demand)) {
                                     //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
-                                    demand.setPreCurPeriod("160");
-                                    DemandBO demandBO = new DemandBO();
-                                    BeanConvertUtils.convert(demandBO, demand);
-                                    //登记需求阶段记录表
-                                    String remarks="预投产验证完成自动修改";
-                                    reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
-                                    demand.setReqSts("20");
-                                    demandDao.updateOperation(demand);
+                                    if(!FINISHPRD.equals(demand.getPreCurPeriod())){
+                                        demand.setPreCurPeriod("160");
+                                        DemandBO demandBO = new DemandBO();
+                                        BeanConvertUtils.convert(demandBO, demand);
+                                        //登记需求阶段记录表
+                                        String remarks="预投产验证完成自动修改";
+                                        reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+                                        demand.setReqSts("20");
+                                        demandDao.updateOperation(demand);
+                                    }
+
                                 }
                             }
                             // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
