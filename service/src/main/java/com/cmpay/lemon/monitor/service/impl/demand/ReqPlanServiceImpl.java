@@ -226,6 +226,30 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         return demandRspBO;
     }
 
+    @Override
+    public DemandRspBO findMonth(DemandBO demandBO) {
+        String time = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        PageInfo<DemandBO> pageInfo = getPageInfo(demandBO);
+        List<DemandBO> demandBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandBO.class);
+        for (int i = 0; i < demandBOList.size(); i++) {
+            DemandChangeDetailsBO demandChangeDetailsBO = new DemandChangeDetailsBO();
+            //  获取需求状态变更的最后一个值
+            demandChangeDetailsBO.setReqInnerSeq(demandBOList.get(i).getReqInnerSeq());
+            demandChangeDetailsBO.setReqNo("");
+            DemandStateHistoryRspBO demandStateHistoryRspBO =reqTaskService.findDemandChangeDetails(demandChangeDetailsBO);
+            List<DemandStateHistoryBO> demandStateHistoryBOList =demandStateHistoryRspBO.getDemandStateHistoryBOList();
+            if(demandStateHistoryBOList != null){
+                System.err.println(demandStateHistoryBOList);
+                DemandStateHistoryBO demandStateHistoryBO = demandStateHistoryBOList.get(demandStateHistoryBOList.size()-1);
+                demandBOList.get(i).setRemarks(demandStateHistoryBO.getRemarks());
+            }
+        }
+        DemandRspBO demandRspBO = new DemandRspBO();
+        demandRspBO.setDemandBOList(demandBOList);
+        demandRspBO.setPageInfo(pageInfo);
+        return demandRspBO;
+    }
+
     private PageInfo<DemandBO> getPageInfo(DemandBO demandBO) {
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);

@@ -8,9 +8,7 @@ import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
-import com.cmpay.lemon.monitor.dao.IDemandExtDao;
-import com.cmpay.lemon.monitor.dao.IReqDataCountDao;
-import com.cmpay.lemon.monitor.dao.IWorkingHoursExtDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -81,7 +79,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private IReqDataCountDao reqDataCountDao;
 	@Autowired
 	private IWorkingHoursExtDao iWorkingHoursDao;
-
+	@Autowired
+	private IDemandQualityExtDao iDemandQualityDao;
 	@Autowired
 	private ReqPlanService reqPlanService;
 
@@ -497,6 +496,28 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		);
 		return workingHoursBOS;
 	};
+	@Override
+	public List<WorkingHoursBO> findEpicKeyHours(String epic){
+		List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
+		System.err.println(epic);
+		List<WorkingHoursDO> impl = iWorkingHoursDao.findEpicKeyHours(epic);
+		System.err.println(impl);
+		impl.forEach(m->
+				workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+		);
+		System.err.println(workingHoursBOS);
+		return workingHoursBOS;
+	}
+	@Override
+	public DemandQualityBO findDemandQuality(String epic){
+		DemandQualityBO demandQualityBO = new DemandQualityBO();
+		System.err.println(epic);
+		DemandQualityDO demandQualityDO = iDemandQualityDao.get(epic);
+        System.err.println(demandQualityDO);
+		BeanUtils.copyPropertiesReturnDest(demandQualityBO, demandQualityDO);
+		System.err.println(demandQualityBO);
+		return demandQualityBO;
+	}
 	@Override
 	public List<WorkingHoursBO> findList(String displayName,String date,String date1,String date2){
 		System.err.println(displayName+"++++++"+date+"++++++"+date1+"++++++"+date2);

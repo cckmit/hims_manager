@@ -133,4 +133,20 @@ public class DemandStateHistoryBO extends BaseDO {
     public void setOldReqSts(String oldReqSts) {
         this.oldReqSts = oldReqSts;
     }
+
+    @Override
+    public String toString() {
+        return "DemandStateHistoryBO{" +
+                "id=" + id +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", oldReqSts='" + oldReqSts + '\'' +
+                ", reqSts='" + reqSts + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", identification='" + identification + '\'' +
+                ", creatUser='" + creatUser + '\'' +
+                ", creatTime=" + creatTime +
+                '}';
+    }
 }

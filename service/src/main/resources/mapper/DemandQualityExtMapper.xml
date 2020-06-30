@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandQualityExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandQualityDO" >
+        <id column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="smoke_pass_number" property="smokePassNumber" jdbcType="INTEGER" />
+        <result column="build_failures_number" property="buildFailuresNumber" jdbcType="INTEGER" />
+        <result column="production_number" property="productionNumber" jdbcType="INTEGER" />
+        <result column="production_problems_number" property="productionProblemsNumber" jdbcType="INTEGER" />
+        <result column="defects_number" property="defectsNumber" jdbcType="INTEGER" />
+        <result column="review_problem_number" property="reviewProblemNumber" jdbcType="INTEGER" />
+        <result column="production_no_defects_number" property="productionNoDefectsNumber" jdbcType="INTEGER" />
+        <result column="production_no_review_number" property="productionNoReviewNumber" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        epicKey, smoke_pass_number, build_failures_number, production_number, production_problems_number,
+        defects_number, review_problem_number, production_no_defects_number, production_no_review_number
+    </sql>
+
+</mapper>

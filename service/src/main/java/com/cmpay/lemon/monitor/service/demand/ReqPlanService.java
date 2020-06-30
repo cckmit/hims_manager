@@ -32,6 +32,14 @@ public interface ReqPlanService {
     DemandRspBO findDemand(DemandBO demandBO);
 
     /**
+     * 月底查询
+     *
+     * @param demandBO
+     * @return
+     */
+    DemandRspBO findMonth(DemandBO demandBO);
+
+    /**
      * 新增
      *
      * @param demandBO

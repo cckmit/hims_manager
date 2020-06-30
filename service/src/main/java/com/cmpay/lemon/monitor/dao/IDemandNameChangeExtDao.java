@@ -21,6 +21,6 @@ public interface IDemandNameChangeExtDao extends IDemandNameChangeDao {
      * @param entity
      * @return
      */
-    DemandNameChangeDO findOne(DemandNameChangeDO entity);
+    List<DemandNameChangeDO> findOne(DemandNameChangeDO entity);
 
 }

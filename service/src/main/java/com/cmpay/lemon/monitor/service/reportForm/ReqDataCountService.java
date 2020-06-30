@@ -67,6 +67,10 @@ public interface ReqDataCountService {
     List<WorkingHoursBO> getReportForm7B(String devpLeadDept,String date,String date1,String date2);
     // 部门工时报表
     List<String> getReportForm8(String date);
+    List<WorkingHoursBO> findEpicKeyHours(String epic);
+    DemandQualityBO findDemandQuality(String epic);
+
+
     // 部门员工工时报表
     List<WorkingHoursBO> findList(String displayName ,String date,String date1,String date2);
 
