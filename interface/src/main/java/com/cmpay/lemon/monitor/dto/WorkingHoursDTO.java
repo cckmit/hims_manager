@@ -62,6 +62,10 @@ public class WorkingHoursDTO extends GenericDTO {
     // 总部门人数
     private String sumDept;
     /**
+     * 关联epic
+     */
+    private String epickey;
+    /**
      * 页数
      */
     private int pageNum;
@@ -70,6 +74,14 @@ public class WorkingHoursDTO extends GenericDTO {
      */
     private int pageSize;
     private String selectTime;
+
+    public String getEpickey() {
+        return epickey;
+    }
+
+    public void setEpickey(String epickey) {
+        this.epickey = epickey;
+    }
 
     public String getSumDept() {
         return sumDept;
@@ -223,6 +235,7 @@ public class WorkingHoursDTO extends GenericDTO {
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
+                ", epickey='" + epickey + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +

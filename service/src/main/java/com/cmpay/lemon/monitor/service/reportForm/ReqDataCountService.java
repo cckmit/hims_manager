@@ -70,6 +70,15 @@ public interface ReqDataCountService {
     List<WorkingHoursBO> findEpicKeyHours(String epic);
     DemandQualityBO findDemandQuality(String epic);
 
+    /**
+     * 获取需求花费工时
+     * @param epic
+     * @return
+     */
+    DemandHoursRspBO getDemandHours(String epic);
+
+    DemandHoursRspBO getWorkLoad(String epic);
+
 
     // 部门员工工时报表
     List<WorkingHoursBO> findList(String displayName ,String date,String date1,String date2);

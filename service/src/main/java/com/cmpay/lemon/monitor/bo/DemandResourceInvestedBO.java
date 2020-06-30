@@ -4,13 +4,12 @@
  * @version 1.0
  * @Date 2020-06-29 16:18:05
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.bo;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
-public class DemandResourceInvestedDO extends BaseDO {
+public class DemandResourceInvestedBO{
     /**
      * @Fields id
      */
@@ -94,12 +93,5 @@ public class DemandResourceInvestedDO extends BaseDO {
                 ", valueType='" + valueType + '\'' +
                 ", department='" + department + '\'' +
                 '}';
-    }
-    public String getWorkHoursToString() {
-        return "{'value': '"+getWorkHours(value)+"', 'name': '"+department+"'}";
-    }
-    public Double getWorkHours(String value){
-        int time = Integer.parseInt(value);
-        return (double) (Math.round(time* 100 /  28800)/ 100.0);
     }
 }

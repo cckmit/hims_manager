@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.context.SaveContextOnUpdateOrErrorResponseWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,6 +84,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private IDemandQualityExtDao iDemandQualityDao;
 	@Autowired
 	private ReqPlanService reqPlanService;
+    @Autowired
+    private IDemandResourceInvestedDao iDemandResourceInvestedDao;
 
 	@Autowired
 	private OperationProductionService operationProductionService;
@@ -514,10 +517,138 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		System.err.println(epic);
 		DemandQualityDO demandQualityDO = iDemandQualityDao.get(epic);
         System.err.println(demandQualityDO);
-		BeanUtils.copyPropertiesReturnDest(demandQualityBO, demandQualityDO);
+        BeanUtils.copyPropertiesReturnDest(demandQualityBO, demandQualityDO);
 		System.err.println(demandQualityBO);
 		return demandQualityBO;
 	}
+    @Override
+    public DemandHoursRspBO getDemandHours(String epic){
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        List<String> workingHoursBOS = new LinkedList<>();
+        DemandResourceInvestedDO demandResourceInvestedDO = new DemandResourceInvestedDO();
+        demandResourceInvestedDO.setEpicKey(epic);
+        List<DemandResourceInvestedDO> impl = iDemandResourceInvestedDao.find(demandResourceInvestedDO);
+        impl.forEach(m->
+                workingHoursBOS.add(m.getWorkHoursToString())
+        );
+        List<String> listSumBos = new LinkedList<>();
+        impl.forEach(m->
+                listSumBos.add(m.getDepartment())
+        );
+        String sum = "";
+        List<String> SumBos = new LinkedList<>();
+        impl.forEach(m->
+                SumBos.add(m.getValue())
+        );
+        int sum1 = 0;
+        if(SumBos !=null || SumBos.size()!=0){
+            for (int i=0;i<SumBos.size();i++){
+                int sumx = Integer.parseInt(SumBos.get(i));
+                sum1+=sumx;
+            }
+            System.err.println(sum1);
+            double s = getWorkHours(sum1);
+            sum = String.valueOf(s);
+            System.err.println(sum);
+        }
+        demandHoursRspBO.setListSum(listSumBos);
+        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        System.err.println(demandHoursRspBO);
+        return demandHoursRspBO;
+    }
+
+    @Override
+    public DemandHoursRspBO getWorkLoad(String epic){
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        System.err.println(epic+"功能点=========================");
+        DemandDO demand = demandDao.get(epic);
+        String str =  getWorkLoad(demand);
+        if(str== null || "".equals(str)){
+            System.err.println("未录入功能点");
+            return demandHoursRspBO;
+        }
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        String[] pro_number_list=str.split(";");
+        System.err.println(pro_number_list);
+        double sumx = 0;
+        for(int i =0;i<pro_number_list.length;i++){
+            System.err.println(pro_number_list[i]);
+            String[] dept_list=pro_number_list[i].split(":");
+            System.err.println(dept_list[0]);
+            System.err.println(dept_list[1]);
+            SumBos.add(dept_list[0]);
+            String dept = "{'value': '"+dept_list[1]+"', 'name': '"+dept_list[0]+"'}";
+            workingHoursBOS.add(dept);
+            sumx+=Double.valueOf(dept_list[1]);
+        }
+        sum = String.valueOf(sumx);
+        System.err.println(sum);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        System.err.println(demandHoursRspBO);
+        return demandHoursRspBO;
+    }
+
+    public Double getWorkHours(int time){
+        return (double) (Math.round(time* 100 /  28800)/ 100.0);
+    }
+
+    /**
+     * 获取工作量
+     * @param demand
+     * @return
+     */
+    public  String getWorkLoad(DemandDO demand) {
+        if (com.cmpay.lemon.common.utils.StringUtils.isNotEmpty(demand.getDevpLeadDept()) && com.cmpay.lemon.common.utils.StringUtils.isEmpty(demand.getDevpCoorDept())) {
+            demand.setLeadDeptPro(demand.getDevpLeadDept()+":100%;");
+            if (demand.getTotalWorkload() == 0){
+                demand.setLeadDeptWorkload(demand.getDevpLeadDept()+":0.00;");
+            }else {
+                demand.setLeadDeptWorkload(demand.getDevpLeadDept()+":"+String.format("%.2f",Double.valueOf(demand.getTotalWorkload()))+";");
+            }
+            //updateReqWorkLoad(demand);
+        }
+        //本月工作量
+        int monInputWorkload = demand.getMonInputWorkload();
+        //主导部门本月工作量
+        String LeadDeptCurMonWorkLoad = "";
+        String lead = demand.getLeadDeptPro();
+        String req_sts = demand.getReqSts();
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if(com.cmpay.lemon.common.utils.StringUtils.isNotBlank(lead) && monInputWorkload != 0  ){
+            String[] leadSplit = lead.replaceAll("%", "").split(":");
+            leadSplit[1] = leadSplit[1].replaceAll(";","");
+            LeadDeptCurMonWorkLoad = leadSplit[0]+":"+String.format("%.2f",(Double.valueOf(leadSplit[1])/100)*monInputWorkload)+";";
+        }
+
+        //配合部门本月工作量
+        String CoorDevpCurMonWorkLoad = "";
+        //配合工作量百分比
+        String CoorDevpPer = "";
+        String[] coorList = new String[20];
+        String coor = demand.getCoorDeptPro();
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if (com.cmpay.lemon.common.utils.StringUtils.isNotBlank(coor) && monInputWorkload != 0 ){
+            coorList = demand.getCoorDeptPro().split(";");
+            for (int i = 0; i < coorList.length;i++){
+                if (com.cmpay.lemon.common.utils.StringUtils.isNotBlank(coorList[i])){
+                    String[] CoorDevpCurMonWorkLoadSplit = coorList[i].split(":");
+                    if (com.cmpay.lemon.common.utils.StringUtils.isNotBlank(CoorDevpCurMonWorkLoadSplit[0]) && com.cmpay.lemon.common.utils.StringUtils.isNotBlank(CoorDevpCurMonWorkLoadSplit[1])){
+                        CoorDevpPer = String.format("%.2f",((Double.valueOf(CoorDevpCurMonWorkLoadSplit[1].replaceAll("%", "")))/100)*monInputWorkload);
+                        CoorDevpCurMonWorkLoad += CoorDevpCurMonWorkLoadSplit[0]+":"+CoorDevpPer+";";
+                    }
+                }
+            }
+        }
+        DemandHoursRspBO demand1 = new DemandHoursRspBO();
+        String str ="";
+        str = LeadDeptCurMonWorkLoad+CoorDevpCurMonWorkLoad;
+        return  str;
+    }
 	@Override
 	public List<WorkingHoursBO> findList(String displayName,String date,String date1,String date2){
 		System.err.println(displayName+"++++++"+date+"++++++"+date1+"++++++"+date2);

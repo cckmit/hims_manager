@@ -3,6 +3,8 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -188,6 +190,68 @@ import java.util.List;
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
+    /**
+     * 根据epic获取需求员工的工时
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/findEpicKeyHours")
+    public GenericRspDTO<WorkingHoursRspDTO> findEpicKeyHours(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        List<WorkingHoursBO> reportLista = new ArrayList<>();
+        reportLista = reqDataCountService.findEpicKeyHours(workingHoursDTO.getEpickey());
+        WorkingHoursRspDTO reqDataCountRspDTO = new WorkingHoursRspDTO();
+        List<WorkingHoursDTO> reqDataCountDTOListA = new LinkedList<>();
+
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
+        );
+        System.err.println(reqDataCountDTOListA);
+        reqDataCountRspDTO.setVpnInfoDTOS(reqDataCountDTOListA);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+
+    /**
+     * 根据epic获取需求质量情况
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/findDemandQuality")
+    public GenericRspDTO<DemandQualityDTO> findDemandQuality(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        String epic = workingHoursDTO.getEpickey();
+        DemandQualityBO demandQualityBO = new DemandQualityBO();
+        demandQualityBO = reqDataCountService.findDemandQuality(epic);
+        DemandQualityDTO demandQualityDTO = new DemandQualityDTO();
+        BeanUtils.copyPropertiesReturnDest(demandQualityDTO, demandQualityBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandQualityDTO);
+    }
+
+    /**
+     * 查询需求所消耗工时
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getDemandHours")
+    public GenericRspDTO<DemandHoursRspDTO> getDemandHours(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getDemandHours(workingHoursDTO.getEpickey());
+        DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+
+    /**
+     * 查询需求功能点
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getWorkLoad")
+    public GenericRspDTO<DemandHoursRspDTO> getWorkLoad(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getWorkLoad(workingHoursDTO.getEpickey());
+        DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
     // 查询某人某天的具体工时
     @RequestMapping("/findList")
     public GenericRspDTO<WorkingHoursRspDTO> findList(@RequestBody WorkingHoursReqDTO workingHoursDTO) {

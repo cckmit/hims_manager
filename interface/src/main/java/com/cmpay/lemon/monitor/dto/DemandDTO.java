@@ -118,7 +118,15 @@ public class DemandDTO extends GenericDTO {
      */
     private int pageSize;
     private String preCurPeriod2;
+    private String remarks;
 
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
     public String getPreCurPeriod2() {
         return preCurPeriod2;
     }
@@ -868,6 +876,7 @@ public class DemandDTO extends GenericDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +
+                ", remarks='" + remarks + '\'' +
                 ", noUpload=" + noUpload +
                 '}';
     }

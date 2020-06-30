@@ -41,7 +41,7 @@ public class ReqMonthController {
     public GenericRspDTO<DemandRspDTO> getUserInfoPage(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
         demandBO.setIsMonthSer("是");
-        DemandRspBO demandRspBO = reqPlanService.findDemand(demandBO);
+        DemandRspBO demandRspBO = reqPlanService.findMonth(demandBO);
         DemandRspDTO rspDTO = new DemandRspDTO();
         rspDTO.setDemandDTOList(BeanConvertUtils.convertList(demandRspBO.getDemandBOList(), DemandDTO.class));
         rspDTO.setPageNum(demandRspBO.getPageInfo().getPageNum());

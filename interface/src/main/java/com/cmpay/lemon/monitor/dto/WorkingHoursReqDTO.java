@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-04-29 16:02:39
  */
@@ -59,7 +59,7 @@ public class WorkingHoursReqDTO extends GenericDTO {
     private String updatedtime;
     // 总公时
     private String sumTime;
-
+    private String epickey;
     private String selectTime;
     private String selectTime1;
     private String selectTime2;
@@ -71,6 +71,14 @@ public class WorkingHoursReqDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+
+    public String getEpickey() {
+        return epickey;
+    }
+
+    public void setEpickey(String epickey) {
+        this.epickey = epickey;
+    }
 
     public String getSelectTime1() {
         return selectTime1;
@@ -231,6 +239,7 @@ public class WorkingHoursReqDTO extends GenericDTO {
                 ", startedtime='" + startedtime + '\'' +
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
+                ", epickey='" + epickey + '\'' +
                 ", selectTime='" + selectTime + '\'' +
                 ", selectTime1='" + selectTime1 + '\'' +
                 ", selectTime2='" + selectTime2 + '\'' +
