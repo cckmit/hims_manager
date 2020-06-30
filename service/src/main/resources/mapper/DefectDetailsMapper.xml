@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDefectDetailsDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        <id column="jire_key" property="jireKey" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="epic_key" property="epicKey" jdbcType="VARCHAR" />
+        <result column="defect_type" property="defectType" jdbcType="VARCHAR" />
+        <result column="defect_status" property="defectStatus" jdbcType="VARCHAR" />
+        <result column="defect_registrant" property="defectRegistrant" jdbcType="VARCHAR" />
+        <result column="defects_department" property="defectsDepartment" jdbcType="VARCHAR" />
+        <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
+        <result column="defect_details" property="defectDetails" jdbcType="VARCHAR" />
+        <result column="assignee" property="assignee" jdbcType="VARCHAR" />
+        <result column="test_number" property="testNumber" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        jire_key, req_no, epic_key, defect_type, defect_status, defect_registrant, defects_department, 
+        registration_date, defect_details, assignee, test_number
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_defect_details
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_defect_details
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        insert into t_defect_details
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="jireKey != null" >
+                jire_key,
+            </if>
+            <if test="reqNo != null" >
+                req_no,
+            </if>
+            <if test="epicKey != null" >
+                epic_key,
+            </if>
+            <if test="defectType != null" >
+                defect_type,
+            </if>
+            <if test="defectStatus != null" >
+                defect_status,
+            </if>
+            <if test="defectRegistrant != null" >
+                defect_registrant,
+            </if>
+            <if test="defectsDepartment != null" >
+                defects_department,
+            </if>
+            <if test="registrationDate != null" >
+                registration_date,
+            </if>
+            <if test="defectDetails != null" >
+                defect_details,
+            </if>
+            <if test="assignee != null" >
+                assignee,
+            </if>
+            <if test="testNumber != null" >
+                test_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="jireKey != null" >
+                #{jireKey,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="epicKey != null" >
+                #{epicKey,jdbcType=VARCHAR},
+            </if>
+            <if test="defectType != null" >
+                #{defectType,jdbcType=VARCHAR},
+            </if>
+            <if test="defectStatus != null" >
+                #{defectStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="defectRegistrant != null" >
+                #{defectRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="defectsDepartment != null" >
+                #{defectsDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="defectDetails != null" >
+                #{defectDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                #{assignee,jdbcType=VARCHAR},
+            </if>
+            <if test="testNumber != null" >
+                #{testNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        update t_defect_details
+        <set >
+            <if test="reqNo != null" >
+                req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="epicKey != null" >
+                epic_key = #{epicKey,jdbcType=VARCHAR},
+            </if>
+            <if test="defectType != null" >
+                defect_type = #{defectType,jdbcType=VARCHAR},
+            </if>
+            <if test="defectStatus != null" >
+                defect_status = #{defectStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="defectRegistrant != null" >
+                defect_registrant = #{defectRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="defectsDepartment != null" >
+                defects_department = #{defectsDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                registration_date = #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="defectDetails != null" >
+                defect_details = #{defectDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                assignee = #{assignee,jdbcType=VARCHAR},
+            </if>
+            <if test="testNumber != null" >
+                test_number = #{testNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where jire_key = #{jireKey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_defect_details
+        <where >
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="defectType != null" >
+                and defect_type = #{defectType,jdbcType=VARCHAR}
+            </if>
+            <if test="defectStatus != null" >
+                and defect_status = #{defectStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="defectRegistrant != null" >
+                and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null" >
+                and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date = #{registrationDate,jdbcType=VARCHAR}
+            </if>
+            <if test="defectDetails != null" >
+                and defect_details = #{defectDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+            <if test="testNumber != null" >
+                and test_number = #{testNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

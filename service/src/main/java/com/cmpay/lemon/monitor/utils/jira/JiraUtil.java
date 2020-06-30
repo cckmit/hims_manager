@@ -3,10 +3,7 @@ package com.cmpay.lemon.monitor.utils.jira;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cmpay.lemon.common.utils.StringUtils;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
-import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
-import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
-import com.cmpay.lemon.monitor.bo.jira.JiraWorklogBO;
+import com.cmpay.lemon.monitor.bo.jira.*;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
@@ -37,12 +34,6 @@ public class JiraUtil {
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
                 .body(createIssueRequest.toString())
                 .post(CREATEISSUEURL);
-        //返回状态码
-        //  int statusCode = response.getStatusCode();
-        //返回jira项目信息
-        /*if(response.getStatusCode()==201) {
-            CreateIssueResponseBO as = response.getBody().as(CreateIssueResponseBO.class);
-        }*/
         return response;
     }
 
@@ -54,6 +45,7 @@ public class JiraUtil {
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
                 .get(CREATEISSUEURL + "/" + jirakey);
         ResponseBody body = response.getBody();
+        body.prettyPrint();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
         JiraTaskBodyBO jiraTaskBodyBO = getJiraTaskBodyBO(object);
@@ -83,6 +75,7 @@ public class JiraUtil {
         String issueName = object.getJSONObject("fields").getString("summary");
         jiraTaskBodyBO.setIssueName(issueName);
         jiraTaskBodyBO.setJiraType(jiraType);
+
         //获取获取总共已用时
         String timespent = object.getJSONObject("fields").getString("timespent");
         jiraTaskBodyBO.setTimespent(timespent);
@@ -96,7 +89,9 @@ public class JiraUtil {
         //获取经办人
         String assignee = object.getJSONObject("fields").getJSONObject("assignee").getString("displayName");
         jiraTaskBodyBO.setAssignee(assignee);
-
+        //获取任务创建人
+        String creator = object.getJSONObject("fields").getJSONObject("creator").getString("name");
+        jiraTaskBodyBO.setCreator(creator);
         //获取起始时间
         String planStartTime = object.getJSONObject("fields").getString("customfield_10252");
         jiraTaskBodyBO.setPlanStartTime(planStartTime);
@@ -116,6 +111,7 @@ public class JiraUtil {
 
         String subtasks = object.getJSONObject("fields").getString("subtasks");
         jiraTaskBodyBO.setSubtasks(subtasks);
+        System.err.println(jiraTaskBodyBO.getCreator());
         return jiraTaskBodyBO;
     }
 
@@ -232,10 +228,15 @@ public class JiraUtil {
      *获取主任务，并解析相关信息
      */
     public static void main(String[] args) {
-        JiraUtil.GetIssue("CMPAY-979");
+        JiraUtil.GetIssue("CMPAY-2066");
 
     }
 
 
 }
+
+
+
+
+
 

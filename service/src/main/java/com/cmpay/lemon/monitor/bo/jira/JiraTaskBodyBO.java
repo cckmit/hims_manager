@@ -9,6 +9,15 @@ public class JiraTaskBodyBO {
     private String jiraKey;
 
     /**
+     * 创建者  creator
+     */
+    String creator;
+
+    /**
+     * 关联创建者  epicCreator
+     */
+    String epicCreator;
+    /**
      * jira任务编号  parentTaskKey
      */
     private String parentTaskKey;
@@ -56,7 +65,6 @@ public class JiraTaskBodyBO {
      */
     String subtasks;
 
-
     /*
      *计划开始时间
      */
@@ -65,6 +73,14 @@ public class JiraTaskBodyBO {
      *计划完成时间
      */
     String planEndTime;
+
+    public String getEpicCreator() {
+        return epicCreator;
+    }
+
+    public void setEpicCreator(String epicCreator) {
+        this.epicCreator = epicCreator;
+    }
 
     public String getParentTaskKey() {
         return parentTaskKey;
@@ -177,6 +193,14 @@ public class JiraTaskBodyBO {
 
     public void setIssueName(String issueName) {
         this.issueName = issueName;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String  getEditTestMainTaskBody(){

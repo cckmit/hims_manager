@@ -9,6 +9,7 @@
         <result column="parentTaskKey" property="parenttaskkey" jdbcType="VARCHAR" />
         <result column="description" property="description" jdbcType="VARCHAR" />
         <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="creator" property="creator" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
         <result column="timespent" property="timespent" jdbcType="VARCHAR" />
         <result column="aggregatetimespent" property="aggregatetimespent" jdbcType="VARCHAR" />
@@ -17,8 +18,8 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jiraKey, jiraType, epicKey, parentTaskKey, description, department, assignee, timespent, 
-        aggregatetimespent, planStartTime, planEndTime
+        jiraKey, jiraType, epicKey, parentTaskKey, description, department, creator, assignee, 
+        timespent, aggregatetimespent, planStartTime, planEndTime
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -53,6 +54,9 @@
             </if>
             <if test="department != null" >
                 department,
+            </if>
+            <if test="creator != null" >
+                creator,
             </if>
             <if test="assignee != null" >
                 assignee,
@@ -89,6 +93,9 @@
             <if test="department != null" >
                 #{department,jdbcType=VARCHAR},
             </if>
+            <if test="creator != null" >
+                #{creator,jdbcType=VARCHAR},
+            </if>
             <if test="assignee != null" >
                 #{assignee,jdbcType=VARCHAR},
             </if>
@@ -124,6 +131,9 @@
             </if>
             <if test="department != null" >
                 department = #{department,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null" >
+                creator = #{creator,jdbcType=VARCHAR},
             </if>
             <if test="assignee != null" >
                 assignee = #{assignee,jdbcType=VARCHAR},
@@ -166,6 +176,9 @@
             </if>
             <if test="department != null" >
                 and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="creator != null" >
+                and creator = #{creator,jdbcType=VARCHAR}
             </if>
             <if test="assignee != null" >
                 and assignee = #{assignee,jdbcType=VARCHAR}

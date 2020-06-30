@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProblemStatisticDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProblemStatisticDO" >
+        <id column="epic_key" property="epicKey" jdbcType="VARCHAR" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="requirements_review_number" property="requirementsReviewNumber" jdbcType="VARCHAR" />
+        <result column="code_review_number" property="codeReviewNumber" jdbcType="VARCHAR" />
+        <result column="test_review_number" property="testReviewNumber" jdbcType="VARCHAR" />
+        <result column="production_review_number" property="productionReviewNumber" jdbcType="VARCHAR" />
+        <result column="technical_review_number" property="technicalReviewNumber" jdbcType="VARCHAR" />
+        <result column="other_reviews_number" property="otherReviewsNumber" jdbcType="VARCHAR" />
+        <result column="external_defects_number" property="externalDefectsNumber" jdbcType="VARCHAR" />
+        <result column="version_defects_number" property="versionDefectsNumber" jdbcType="VARCHAR" />
+        <result column="parameter_defects_number" property="parameterDefectsNumber" jdbcType="VARCHAR" />
+        <result column="function_defects_number" property="functionDefectsNumber" jdbcType="VARCHAR" />
+        <result column="process_defects_number" property="processDefectsNumber" jdbcType="VARCHAR" />
+        <result column="prompt_defects_number" property="promptDefectsNumber" jdbcType="VARCHAR" />
+        <result column="page_defects_number" property="pageDefectsNumber" jdbcType="VARCHAR" />
+        <result column="background_defects_number" property="backgroundDefectsNumber" jdbcType="VARCHAR" />
+        <result column="modify_defects_number" property="modifyDefectsNumber" jdbcType="VARCHAR" />
+        <result column="design_defects_number" property="designDefectsNumber" jdbcType="VARCHAR" />
+        <result column="invalid_defects_number" property="invalidDefectsNumber" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        epic_key, req_no, requirements_review_number, code_review_number, test_review_number, 
+        production_review_number, technical_review_number, other_reviews_number, external_defects_number, 
+        version_defects_number, parameter_defects_number, function_defects_number, process_defects_number, 
+        prompt_defects_number, page_defects_number, background_defects_number, modify_defects_number, 
+        design_defects_number, invalid_defects_number
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_problem_statistic
+        where epic_key = #{epicKey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_problem_statistic
+        where epic_key = #{epicKey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProblemStatisticDO" >
+        insert into t_problem_statistic
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="epicKey != null" >
+                epic_key,
+            </if>
+            <if test="reqNo != null" >
+                req_no,
+            </if>
+            <if test="requirementsReviewNumber != null" >
+                requirements_review_number,
+            </if>
+            <if test="codeReviewNumber != null" >
+                code_review_number,
+            </if>
+            <if test="testReviewNumber != null" >
+                test_review_number,
+            </if>
+            <if test="productionReviewNumber != null" >
+                production_review_number,
+            </if>
+            <if test="technicalReviewNumber != null" >
+                technical_review_number,
+            </if>
+            <if test="otherReviewsNumber != null" >
+                other_reviews_number,
+            </if>
+            <if test="externalDefectsNumber != null" >
+                external_defects_number,
+            </if>
+            <if test="versionDefectsNumber != null" >
+                version_defects_number,
+            </if>
+            <if test="parameterDefectsNumber != null" >
+                parameter_defects_number,
+            </if>
+            <if test="functionDefectsNumber != null" >
+                function_defects_number,
+            </if>
+            <if test="processDefectsNumber != null" >
+                process_defects_number,
+            </if>
+            <if test="promptDefectsNumber != null" >
+                prompt_defects_number,
+            </if>
+            <if test="pageDefectsNumber != null" >
+                page_defects_number,
+            </if>
+            <if test="backgroundDefectsNumber != null" >
+                background_defects_number,
+            </if>
+            <if test="modifyDefectsNumber != null" >
+                modify_defects_number,
+            </if>
+            <if test="designDefectsNumber != null" >
+                design_defects_number,
+            </if>
+            <if test="invalidDefectsNumber != null" >
+                invalid_defects_number,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="epicKey != null" >
+                #{epicKey,jdbcType=VARCHAR},
+            </if>
+            <if test="reqNo != null" >
+                #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="requirementsReviewNumber != null" >
+                #{requirementsReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="codeReviewNumber != null" >
+                #{codeReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="testReviewNumber != null" >
+                #{testReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="productionReviewNumber != null" >
+                #{productionReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalReviewNumber != null" >
+                #{technicalReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="otherReviewsNumber != null" >
+                #{otherReviewsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="externalDefectsNumber != null" >
+                #{externalDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="versionDefectsNumber != null" >
+                #{versionDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="parameterDefectsNumber != null" >
+                #{parameterDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="functionDefectsNumber != null" >
+                #{functionDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processDefectsNumber != null" >
+                #{processDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="promptDefectsNumber != null" >
+                #{promptDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="pageDefectsNumber != null" >
+                #{pageDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="backgroundDefectsNumber != null" >
+                #{backgroundDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="modifyDefectsNumber != null" >
+                #{modifyDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="designDefectsNumber != null" >
+                #{designDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="invalidDefectsNumber != null" >
+                #{invalidDefectsNumber,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProblemStatisticDO" >
+        update t_problem_statistic
+        <set >
+            <if test="reqNo != null" >
+                req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="requirementsReviewNumber != null" >
+                requirements_review_number = #{requirementsReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="codeReviewNumber != null" >
+                code_review_number = #{codeReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="testReviewNumber != null" >
+                test_review_number = #{testReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="productionReviewNumber != null" >
+                production_review_number = #{productionReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalReviewNumber != null" >
+                technical_review_number = #{technicalReviewNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="otherReviewsNumber != null" >
+                other_reviews_number = #{otherReviewsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="externalDefectsNumber != null" >
+                external_defects_number = #{externalDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="versionDefectsNumber != null" >
+                version_defects_number = #{versionDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="parameterDefectsNumber != null" >
+                parameter_defects_number = #{parameterDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="functionDefectsNumber != null" >
+                function_defects_number = #{functionDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processDefectsNumber != null" >
+                process_defects_number = #{processDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="promptDefectsNumber != null" >
+                prompt_defects_number = #{promptDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="pageDefectsNumber != null" >
+                page_defects_number = #{pageDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="backgroundDefectsNumber != null" >
+                background_defects_number = #{backgroundDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="modifyDefectsNumber != null" >
+                modify_defects_number = #{modifyDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="designDefectsNumber != null" >
+                design_defects_number = #{designDefectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="invalidDefectsNumber != null" >
+                invalid_defects_number = #{invalidDefectsNumber,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where epic_key = #{epicKey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProblemStatisticDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_problem_statistic
+        <where >
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="requirementsReviewNumber != null" >
+                and requirements_review_number = #{requirementsReviewNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="codeReviewNumber != null" >
+                and code_review_number = #{codeReviewNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="testReviewNumber != null" >
+                and test_review_number = #{testReviewNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="productionReviewNumber != null" >
+                and production_review_number = #{productionReviewNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="technicalReviewNumber != null" >
+                and technical_review_number = #{technicalReviewNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="otherReviewsNumber != null" >
+                and other_reviews_number = #{otherReviewsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="externalDefectsNumber != null" >
+                and external_defects_number = #{externalDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="versionDefectsNumber != null" >
+                and version_defects_number = #{versionDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="parameterDefectsNumber != null" >
+                and parameter_defects_number = #{parameterDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="functionDefectsNumber != null" >
+                and function_defects_number = #{functionDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processDefectsNumber != null" >
+                and process_defects_number = #{processDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="promptDefectsNumber != null" >
+                and prompt_defects_number = #{promptDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="pageDefectsNumber != null" >
+                and page_defects_number = #{pageDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="backgroundDefectsNumber != null" >
+                and background_defects_number = #{backgroundDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="modifyDefectsNumber != null" >
+                and modify_defects_number = #{modifyDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="designDefectsNumber != null" >
+                and design_defects_number = #{designDefectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="invalidDefectsNumber != null" >
+                and invalid_defects_number = #{invalidDefectsNumber,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -15,16 +15,18 @@
         <result column="createdTime" property="createdtime" jdbcType="VARCHAR" />
         <result column="startedTime" property="startedtime" jdbcType="VARCHAR" />
         <result column="updatedTime" property="updatedtime" jdbcType="VARCHAR" />
+        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
         <result column="sumTime" property="sumTime" jdbcType="VARCHAR" />
         <result column="selectTime" property="selectTime" jdbcType="VARCHAR" />
         <result column="sumDept" property="sumDept" jdbcType="VARCHAR" />
-        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="epicCreator" property="epiccreator" jdbcType="VARCHAR" />
         <result column="registerFlag" property="registerflag" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
-        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, registerFlag
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, epicCreator, 
+        registerFlag
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -81,6 +83,9 @@
             <if test="epickey != null" >
                 epicKey,
             </if>
+            <if test="epiccreator != null" >
+                epicCreator,
+            </if>
             <if test="registerflag != null" >
                 registerFlag,
             </if>
@@ -124,6 +129,9 @@
             </if>
             <if test="epickey != null" >
                 #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="epiccreator != null" >
+                #{epiccreator,jdbcType=VARCHAR},
             </if>
             <if test="registerflag != null" >
                 #{registerflag,jdbcType=VARCHAR},
@@ -169,6 +177,9 @@
             </if>
             <if test="epickey != null" >
                 epicKey = #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="epiccreator != null" >
+                epicCreator = #{epiccreator,jdbcType=VARCHAR},
             </if>
             <if test="registerflag != null" >
                 registerFlag = #{registerflag,jdbcType=VARCHAR},
@@ -220,6 +231,9 @@
             </if>
             <if test="epickey != null" >
                 and epicKey = #{epickey,jdbcType=VARCHAR}
+            </if>
+            <if test="epiccreator != null" >
+                and epicCreator = #{epiccreator,jdbcType=VARCHAR}
             </if>
             <if test="registerflag != null" >
                 and registerFlag = #{registerflag,jdbcType=VARCHAR}
