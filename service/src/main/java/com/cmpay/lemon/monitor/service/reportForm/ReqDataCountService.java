@@ -79,6 +79,19 @@ public interface ReqDataCountService {
 
     DemandHoursRspBO getWorkLoad(String epic);
 
+    /**
+     * 根据epic获取缺陷类型数
+     * @param epic
+     * @return
+     */
+    DemandHoursRspBO getFlawNumber(String epic);
+
+    /**
+     * 根据epic获取评审问题类型数
+     * @param epic
+     * @return
+     */
+    DemandHoursRspBO getReviewNumber(String epic);
 
     // 部门员工工时报表
     List<WorkingHoursBO> findList(String displayName ,String date,String date1,String date2);

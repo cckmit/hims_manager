@@ -252,6 +252,35 @@ import java.util.List;
         BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
+
+    /**
+     * 根据epic获取缺陷类型数
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getFlawNumber")
+    public GenericRspDTO<DemandHoursRspDTO> getFlawNumber(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getFlawNumber(workingHoursDTO.getEpickey());
+        DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+    /**
+     * 根据epic获取评审问题类型数
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getReviewNumber")
+    public GenericRspDTO<DemandHoursRspDTO> getReviewNumber(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getReviewNumber(workingHoursDTO.getEpickey());
+        DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+
+
     // 查询某人某天的具体工时
     @RequestMapping("/findList")
     public GenericRspDTO<WorkingHoursRspDTO> findList(@RequestBody WorkingHoursReqDTO workingHoursDTO) {

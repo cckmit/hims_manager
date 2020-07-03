@@ -1,6 +1,6 @@
 /*
  * @ClassName ProblemStatisticDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-30 16:04:29
  */
@@ -9,6 +9,9 @@ package com.cmpay.lemon.monitor.entity;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
+/**
+ * @author wlr
+ */
 @DataObject
 public class ProblemStatisticDO extends BaseDO {
     /**
@@ -238,5 +241,30 @@ public class ProblemStatisticDO extends BaseDO {
 
     public void setInvalidDefectsNumber(String invalidDefectsNumber) {
         this.invalidDefectsNumber = invalidDefectsNumber;
+    }
+
+    @Override
+    public String toString() {
+        return "ProblemStatisticDO{" +
+                "epicKey='" + epicKey + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", requirementsReviewNumber='" + requirementsReviewNumber + '\'' +
+                ", codeReviewNumber='" + codeReviewNumber + '\'' +
+                ", testReviewNumber='" + testReviewNumber + '\'' +
+                ", productionReviewNumber='" + productionReviewNumber + '\'' +
+                ", technicalReviewNumber='" + technicalReviewNumber + '\'' +
+                ", otherReviewsNumber='" + otherReviewsNumber + '\'' +
+                ", externalDefectsNumber='" + externalDefectsNumber + '\'' +
+                ", versionDefectsNumber='" + versionDefectsNumber + '\'' +
+                ", parameterDefectsNumber='" + parameterDefectsNumber + '\'' +
+                ", functionDefectsNumber='" + functionDefectsNumber + '\'' +
+                ", processDefectsNumber='" + processDefectsNumber + '\'' +
+                ", promptDefectsNumber='" + promptDefectsNumber + '\'' +
+                ", pageDefectsNumber='" + pageDefectsNumber + '\'' +
+                ", backgroundDefectsNumber='" + backgroundDefectsNumber + '\'' +
+                ", modifyDefectsNumber='" + modifyDefectsNumber + '\'' +
+                ", designDefectsNumber='" + designDefectsNumber + '\'' +
+                ", invalidDefectsNumber='" + invalidDefectsNumber + '\'' +
+                '}';
     }
 }

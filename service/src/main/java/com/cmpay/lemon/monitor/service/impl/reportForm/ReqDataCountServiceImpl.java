@@ -89,6 +89,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
 	@Autowired
 	private OperationProductionService operationProductionService;
+    @Autowired
+    private IProblemStatisticDao problemStatisticDao;
+
 
 	/**
 	 * 本月需求完成情况：进行中、已投产需求数
@@ -593,6 +596,178 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         return demandHoursRspBO;
     }
 
+	/**
+	 * 根据epic获取缺陷类型数
+	 * @param epic
+	 * @return
+	 */
+	@Override
+	public DemandHoursRspBO getFlawNumber(String epic){
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        ProblemStatisticDO problemStatisticDO = problemStatisticDao.get(epic);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        int sumx=0;
+        /**
+         * @Fields externalDefectsNumber 外围平台缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getExternalDefectsNumber())){
+            SumBos.add("外围平台缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getExternalDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getExternalDefectsNumber());
+        }
+        /**
+         * @Fields versionDefectsNumber 版本更新缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getVersionDefectsNumber())){
+            SumBos.add("版本更新缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getVersionDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getVersionDefectsNumber());
+        }
+        /**
+         * @Fields parameterDefectsNumber 参数配置缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getParameterDefectsNumber())){
+            SumBos.add("参数配置缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getParameterDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getParameterDefectsNumber());
+        }
+        /**
+         * @Fields functionDefectsNumber 功能设计缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getFunctionDefectsNumber())){
+            SumBos.add("功能设计缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getFunctionDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getFunctionDefectsNumber());
+        }
+        /**
+         * @Fields processDefectsNumber 流程优化缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getProcessDefectsNumber())){
+            SumBos.add("流程优化缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getProcessDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getProcessDefectsNumber());
+        }
+        /**
+         * @Fields promptDefectsNumber 提示语优化缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getPromptDefectsNumber())){
+            SumBos.add("提示语优化缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getPromptDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getPromptDefectsNumber());
+        }
+        /**
+         * @Fields pageDefectsNumber 页面设计缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getPageDefectsNumber())){
+            SumBos.add("页面设计缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getPageDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getPageDefectsNumber());
+        }
+        /**
+         * @Fields backgroundDefectsNumber 后台应用缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getBackgroundDefectsNumber())){
+            SumBos.add("后台应用缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getBackgroundDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getBackgroundDefectsNumber());
+        }
+        /**
+         * @Fields modifyDefectsNumber 修改引入问题缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getModifyDefectsNumber())){
+            SumBos.add("修改引入问题缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getModifyDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getModifyDefectsNumber());
+        }
+        /**
+         * @Fields designDefectsNumber 技术设计缺陷数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getDesignDefectsNumber())){
+            SumBos.add("技术设计缺陷数");
+            workingHoursBOS.add(problemStatisticDO.getDesignDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getDesignDefectsNumber());
+        }
+        /**
+         * @Fields invalidDefectsNumber 无效问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getInvalidDefectsNumber())){
+            SumBos.add("无效问题数");
+            workingHoursBOS.add(problemStatisticDO.getInvalidDefectsNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getInvalidDefectsNumber());
+        }
+        sum =String.valueOf(sumx);
+        System.err.println(sum);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        System.err.println(demandHoursRspBO);
+		return demandHoursRspBO;
+	}
+
+	/**
+	 * 根据epic获取评审问题类型数
+	 * @param epic
+	 * @return
+	 */
+	@Override
+	public DemandHoursRspBO getReviewNumber(String epic){
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        ProblemStatisticDO problemStatisticDO = problemStatisticDao.get(epic);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        int sumx=0;
+        /**
+         * @Fields requirementsReviewNumber 需求评审问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getRequirementsReviewNumber())){
+            SumBos.add("需求评审问题数");
+            workingHoursBOS.add(problemStatisticDO.getRequirementsReviewNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getRequirementsReviewNumber());
+        }
+        /**
+         * @Fields codeReviewNumber 代码评审问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getCodeReviewNumber())){
+            SumBos.add("代码评审问题数");
+            workingHoursBOS.add(problemStatisticDO.getCodeReviewNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getCodeReviewNumber());
+        }
+        /**
+         * @Fields testReviewNumber 测试案例评审问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getTestReviewNumber())){
+            SumBos.add("测试案例评审问题数");
+            workingHoursBOS.add(problemStatisticDO.getTestReviewNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getTestReviewNumber());
+        }
+        /**
+         * @Fields productionReviewNumber 投产方案评审问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getProductionReviewNumber())){
+            SumBos.add("投产方案评审问题数");
+            workingHoursBOS.add(problemStatisticDO.getProductionReviewNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getProductionReviewNumber());
+        }
+        /**
+         * @Fields technicalReviewNumber 技术方案评审问题数
+         */
+        if(JudgeUtils.isNotEmpty(problemStatisticDO.getTechnicalReviewNumber())){
+            SumBos.add("技术方案评审问题数");
+            workingHoursBOS.add(problemStatisticDO.getTechnicalReviewNumber());
+            sumx = sumx + Integer.parseInt(problemStatisticDO.getTechnicalReviewNumber());
+        }
+        sum =String.valueOf(sumx);
+        System.err.println(sum);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        System.err.println(demandHoursRspBO);
+        return demandHoursRspBO;
+	}
+
     public Double getWorkHours(int time){
         return (double) (Math.round(time* 100 /  28800)/ 100.0);
     }
@@ -613,7 +788,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             //updateReqWorkLoad(demand);
         }
         //本月工作量
-        int monInputWorkload = demand.getMonInputWorkload();
+        int monInputWorkload = demand.getMonInputWorkload()+demand.getInputWorkload();
         //主导部门本月工作量
         String LeadDeptCurMonWorkLoad = "";
         String lead = demand.getLeadDeptPro();
