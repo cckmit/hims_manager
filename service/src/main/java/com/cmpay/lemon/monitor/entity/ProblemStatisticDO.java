@@ -2,16 +2,13 @@
  * @ClassName ProblemStatisticDO
  * @Description
  * @version 1.0
- * @Date 2020-06-30 16:04:29
+ * @Date 2020-07-02 17:05:01
  */
 package com.cmpay.lemon.monitor.entity;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
-/**
- * @author wlr
- */
 @DataObject
 public class ProblemStatisticDO extends BaseDO {
     /**
@@ -25,71 +22,75 @@ public class ProblemStatisticDO extends BaseDO {
     /**
      * @Fields requirementsReviewNumber 需求评审问题数
      */
-    private String requirementsReviewNumber;
+    private int requirementsReviewNumber;
     /**
      * @Fields codeReviewNumber 代码评审问题数
      */
-    private String codeReviewNumber;
+    private int codeReviewNumber;
     /**
      * @Fields testReviewNumber 测试案例评审问题数
      */
-    private String testReviewNumber;
+    private int testReviewNumber;
     /**
      * @Fields productionReviewNumber 投产方案评审问题数
      */
-    private String productionReviewNumber;
+    private int productionReviewNumber;
     /**
      * @Fields technicalReviewNumber 技术方案评审问题数
      */
-    private String technicalReviewNumber;
+    private int technicalReviewNumber;
     /**
      * @Fields otherReviewsNumber 其他评审问题数
      */
-    private String otherReviewsNumber;
+    private int otherReviewsNumber;
     /**
      * @Fields externalDefectsNumber 外围平台缺陷数
      */
-    private String externalDefectsNumber;
+    private int externalDefectsNumber;
     /**
      * @Fields versionDefectsNumber 版本更新缺陷数
      */
-    private String versionDefectsNumber;
+    private int versionDefectsNumber;
     /**
      * @Fields parameterDefectsNumber 参数配置缺陷数
      */
-    private String parameterDefectsNumber;
+    private int parameterDefectsNumber;
     /**
      * @Fields functionDefectsNumber 功能设计缺陷数
      */
-    private String functionDefectsNumber;
+    private int functionDefectsNumber;
     /**
      * @Fields processDefectsNumber 流程优化缺陷数
      */
-    private String processDefectsNumber;
+    private int processDefectsNumber;
     /**
      * @Fields promptDefectsNumber 提示语优化缺陷数
      */
-    private String promptDefectsNumber;
+    private int promptDefectsNumber;
     /**
      * @Fields pageDefectsNumber 页面设计缺陷数
      */
-    private String pageDefectsNumber;
+    private int pageDefectsNumber;
     /**
      * @Fields backgroundDefectsNumber 后台应用缺陷数
      */
-    private String backgroundDefectsNumber;
+    private int backgroundDefectsNumber;
     /**
      * @Fields modifyDefectsNumber 修改引入问题缺陷数
      */
-    private String modifyDefectsNumber;
+    private int modifyDefectsNumber;
     /**
      * @Fields designDefectsNumber 技术设计缺陷数
      */
-    private String designDefectsNumber;
+    private int designDefectsNumber;
     /**
      * @Fields invalidDefectsNumber 无效问题数
      */
-    private String invalidDefectsNumber;
+    private int invalidDefectsNumber;
+    /**
+     * @Fields frontDefectsNumber 前端缺陷数
+     */
+    private int frontDefectsNumber;
 
     public String getEpicKey() {
         return epicKey;
@@ -107,164 +108,147 @@ public class ProblemStatisticDO extends BaseDO {
         this.reqNo = reqNo;
     }
 
-    public String getRequirementsReviewNumber() {
+    public Integer getRequirementsReviewNumber() {
         return requirementsReviewNumber;
     }
 
-    public void setRequirementsReviewNumber(String requirementsReviewNumber) {
+    public void setRequirementsReviewNumber(Integer requirementsReviewNumber) {
         this.requirementsReviewNumber = requirementsReviewNumber;
     }
 
-    public String getCodeReviewNumber() {
+    public Integer getCodeReviewNumber() {
         return codeReviewNumber;
     }
 
-    public void setCodeReviewNumber(String codeReviewNumber) {
+    public void setCodeReviewNumber(Integer codeReviewNumber) {
         this.codeReviewNumber = codeReviewNumber;
     }
 
-    public String getTestReviewNumber() {
+    public Integer getTestReviewNumber() {
         return testReviewNumber;
     }
 
-    public void setTestReviewNumber(String testReviewNumber) {
+    public void setTestReviewNumber(Integer testReviewNumber) {
         this.testReviewNumber = testReviewNumber;
     }
 
-    public String getProductionReviewNumber() {
+    public Integer getProductionReviewNumber() {
         return productionReviewNumber;
     }
 
-    public void setProductionReviewNumber(String productionReviewNumber) {
+    public void setProductionReviewNumber(Integer productionReviewNumber) {
         this.productionReviewNumber = productionReviewNumber;
     }
 
-    public String getTechnicalReviewNumber() {
+    public Integer getTechnicalReviewNumber() {
         return technicalReviewNumber;
     }
 
-    public void setTechnicalReviewNumber(String technicalReviewNumber) {
+    public void setTechnicalReviewNumber(Integer technicalReviewNumber) {
         this.technicalReviewNumber = technicalReviewNumber;
     }
 
-    public String getOtherReviewsNumber() {
+    public Integer getOtherReviewsNumber() {
         return otherReviewsNumber;
     }
 
-    public void setOtherReviewsNumber(String otherReviewsNumber) {
+    public void setOtherReviewsNumber(Integer otherReviewsNumber) {
         this.otherReviewsNumber = otherReviewsNumber;
     }
 
-    public String getExternalDefectsNumber() {
+    public Integer getExternalDefectsNumber() {
         return externalDefectsNumber;
     }
 
-    public void setExternalDefectsNumber(String externalDefectsNumber) {
+    public void setExternalDefectsNumber(Integer externalDefectsNumber) {
         this.externalDefectsNumber = externalDefectsNumber;
     }
 
-    public String getVersionDefectsNumber() {
+    public Integer getVersionDefectsNumber() {
         return versionDefectsNumber;
     }
 
-    public void setVersionDefectsNumber(String versionDefectsNumber) {
+    public void setVersionDefectsNumber(Integer versionDefectsNumber) {
         this.versionDefectsNumber = versionDefectsNumber;
     }
 
-    public String getParameterDefectsNumber() {
+    public Integer getParameterDefectsNumber() {
         return parameterDefectsNumber;
     }
 
-    public void setParameterDefectsNumber(String parameterDefectsNumber) {
+    public void setParameterDefectsNumber(Integer parameterDefectsNumber) {
         this.parameterDefectsNumber = parameterDefectsNumber;
     }
 
-    public String getFunctionDefectsNumber() {
+    public Integer getFunctionDefectsNumber() {
         return functionDefectsNumber;
     }
 
-    public void setFunctionDefectsNumber(String functionDefectsNumber) {
+    public void setFunctionDefectsNumber(Integer functionDefectsNumber) {
         this.functionDefectsNumber = functionDefectsNumber;
     }
 
-    public String getProcessDefectsNumber() {
+    public Integer getProcessDefectsNumber() {
         return processDefectsNumber;
     }
 
-    public void setProcessDefectsNumber(String processDefectsNumber) {
+    public void setProcessDefectsNumber(Integer processDefectsNumber) {
         this.processDefectsNumber = processDefectsNumber;
     }
 
-    public String getPromptDefectsNumber() {
+    public Integer getPromptDefectsNumber() {
         return promptDefectsNumber;
     }
 
-    public void setPromptDefectsNumber(String promptDefectsNumber) {
+    public void setPromptDefectsNumber(Integer promptDefectsNumber) {
         this.promptDefectsNumber = promptDefectsNumber;
     }
 
-    public String getPageDefectsNumber() {
+    public Integer getPageDefectsNumber() {
         return pageDefectsNumber;
     }
 
-    public void setPageDefectsNumber(String pageDefectsNumber) {
+    public void setPageDefectsNumber(Integer pageDefectsNumber) {
         this.pageDefectsNumber = pageDefectsNumber;
     }
 
-    public String getBackgroundDefectsNumber() {
+    public Integer getBackgroundDefectsNumber() {
         return backgroundDefectsNumber;
     }
 
-    public void setBackgroundDefectsNumber(String backgroundDefectsNumber) {
+    public void setBackgroundDefectsNumber(Integer backgroundDefectsNumber) {
         this.backgroundDefectsNumber = backgroundDefectsNumber;
     }
 
-    public String getModifyDefectsNumber() {
+    public Integer getModifyDefectsNumber() {
         return modifyDefectsNumber;
     }
 
-    public void setModifyDefectsNumber(String modifyDefectsNumber) {
+    public void setModifyDefectsNumber(Integer modifyDefectsNumber) {
         this.modifyDefectsNumber = modifyDefectsNumber;
     }
 
-    public String getDesignDefectsNumber() {
+    public Integer getDesignDefectsNumber() {
         return designDefectsNumber;
     }
 
-    public void setDesignDefectsNumber(String designDefectsNumber) {
+    public void setDesignDefectsNumber(Integer designDefectsNumber) {
         this.designDefectsNumber = designDefectsNumber;
     }
 
-    public String getInvalidDefectsNumber() {
+    public Integer getInvalidDefectsNumber() {
         return invalidDefectsNumber;
     }
 
-    public void setInvalidDefectsNumber(String invalidDefectsNumber) {
+    public void setInvalidDefectsNumber(Integer invalidDefectsNumber) {
         this.invalidDefectsNumber = invalidDefectsNumber;
     }
 
-    @Override
-    public String toString() {
-        return "ProblemStatisticDO{" +
-                "epicKey='" + epicKey + '\'' +
-                ", reqNo='" + reqNo + '\'' +
-                ", requirementsReviewNumber='" + requirementsReviewNumber + '\'' +
-                ", codeReviewNumber='" + codeReviewNumber + '\'' +
-                ", testReviewNumber='" + testReviewNumber + '\'' +
-                ", productionReviewNumber='" + productionReviewNumber + '\'' +
-                ", technicalReviewNumber='" + technicalReviewNumber + '\'' +
-                ", otherReviewsNumber='" + otherReviewsNumber + '\'' +
-                ", externalDefectsNumber='" + externalDefectsNumber + '\'' +
-                ", versionDefectsNumber='" + versionDefectsNumber + '\'' +
-                ", parameterDefectsNumber='" + parameterDefectsNumber + '\'' +
-                ", functionDefectsNumber='" + functionDefectsNumber + '\'' +
-                ", processDefectsNumber='" + processDefectsNumber + '\'' +
-                ", promptDefectsNumber='" + promptDefectsNumber + '\'' +
-                ", pageDefectsNumber='" + pageDefectsNumber + '\'' +
-                ", backgroundDefectsNumber='" + backgroundDefectsNumber + '\'' +
-                ", modifyDefectsNumber='" + modifyDefectsNumber + '\'' +
-                ", designDefectsNumber='" + designDefectsNumber + '\'' +
-                ", invalidDefectsNumber='" + invalidDefectsNumber + '\'' +
-                '}';
+    public Integer getFrontDefectsNumber() {
+        return frontDefectsNumber;
+    }
+
+    public void setFrontDefectsNumber(Integer frontDefectsNumber) {
+        this.frontDefectsNumber = frontDefectsNumber;
     }
 }

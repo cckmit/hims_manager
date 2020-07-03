@@ -3,7 +3,10 @@ package com.cmpay.lemon.monitor.utils.jira;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cmpay.lemon.common.utils.StringUtils;
-import com.cmpay.lemon.monitor.bo.jira.*;
+import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
+import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
+import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
+import com.cmpay.lemon.monitor.bo.jira.JiraWorklogBO;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
@@ -45,7 +48,6 @@ public class JiraUtil {
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
                 .get(CREATEISSUEURL + "/" + jirakey);
         ResponseBody body = response.getBody();
-        body.prettyPrint();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
         JiraTaskBodyBO jiraTaskBodyBO = getJiraTaskBodyBO(object);
@@ -58,8 +60,47 @@ public class JiraUtil {
         jiraTaskBodyBO.setJiraKey(object.getString("key"));
         //获取获取jira任务类型
         String jiraType = object.getJSONObject("fields").getJSONObject("issuetype").getString("name");
-        JSONObject parent = object.getJSONObject("fields").getJSONObject("parent");
 
+        String subtasks = object.getJSONObject("fields").getString("subtasks");
+        jiraTaskBodyBO.setSubtasks(subtasks);
+        //缺陷重测次数
+        if(object.getJSONObject("fields").getInteger("customfield_10217")!=null){
+            int retestTimes = object.getJSONObject("fields").getInteger("customfield_10217");
+            jiraTaskBodyBO.setRetestTimes(retestTimes);
+        }
+
+        if(object.getJSONObject("fields").getString("customfield_10221")!=null) {
+            String problemType = object.getJSONObject("fields").getJSONObject("customfield_10221").getString("value");
+            jiraTaskBodyBO.setProblemType(problemType);
+        }
+        //问题处理人
+        if(object.getJSONObject("fields").getString("customfield_10222")!=null) {
+            JSONArray jsonArray = JSONArray.parseArray(object.getJSONObject("fields").getString("customfield_10222"));
+            JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(jsonArray.size()-1).toString());
+            jiraTaskBodyBO.setProblemHandler(jsonObject1.getString("displayName"));
+        }
+        //问题归属部门
+        if(object.getJSONObject("fields").getString("customfield_10208")!=null) {
+            JSONArray jsonArray = JSONArray.parseArray(object.getJSONObject("fields").getString("customfield_10208"));
+            JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(jsonArray.size()-1).toString());
+            String value = jsonObject1.getString("value");
+            jiraTaskBodyBO.setDefectsDepartment(value);
+        }
+        String defectName = object.getJSONObject("fields").getString("customfield_10203");
+        jiraTaskBodyBO.setDefectName(defectName);
+        //缺陷详情
+        String defectDetails = object.getJSONObject("fields").getString("customfield_10201");
+        jiraTaskBodyBO.setDefectDetails(defectDetails);
+        //评审问题类型
+        if(object.getJSONObject("fields").getString("customfield_10257")!=null) {
+            String reviewQuestionType = object.getJSONObject("fields").getJSONObject("customfield_10257").getString("value");
+            jiraTaskBodyBO.setReviewQuestionType(reviewQuestionType);
+        }
+
+        //需求状态
+        String status = object.getJSONObject("fields").getJSONObject("status").getJSONObject("statusCategory").getString("name");
+        jiraTaskBodyBO.setStatus(status);
+        JSONObject parent = object.getJSONObject("fields").getJSONObject("parent");
         String epicKey = object.getJSONObject("fields").getString("customfield_10102");
         String parentTaskKey = null;
         if(parent!=null){
@@ -87,10 +128,12 @@ public class JiraUtil {
             jiraTaskBodyBO.setDepartment(department);
         }
         //获取经办人
-        String assignee = object.getJSONObject("fields").getJSONObject("assignee").getString("displayName");
-        jiraTaskBodyBO.setAssignee(assignee);
+        if(object.getJSONObject("fields").getString("assignee")!=null) {
+            String assignee = object.getJSONObject("fields").getJSONObject("assignee").getString("displayName");
+            jiraTaskBodyBO.setAssignee(assignee);
+        }
         //获取任务创建人
-        String creator = object.getJSONObject("fields").getJSONObject("creator").getString("name");
+        String creator = object.getJSONObject("fields").getJSONObject("creator").getString("displayName");
         jiraTaskBodyBO.setCreator(creator);
         //获取起始时间
         String planStartTime = object.getJSONObject("fields").getString("customfield_10252");
@@ -108,10 +151,9 @@ public class JiraUtil {
         }
         jiraTaskBodyBO.setWorklogs(worklogs);
         //附属子任务
+        String createTime = DateUtil.addDateMinut(DateUtil.dealDateFormat(object.getJSONObject("fields").getString("created")), 8);
+        jiraTaskBodyBO.setCreateTime(createTime);
 
-        String subtasks = object.getJSONObject("fields").getString("subtasks");
-        jiraTaskBodyBO.setSubtasks(subtasks);
-        System.err.println(jiraTaskBodyBO.getCreator());
         return jiraTaskBodyBO;
     }
 
@@ -204,12 +246,10 @@ public class JiraUtil {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created ASC&startAt="+page+"&maxResults=50");
+                .get(GETSEARCH + "?" + "jql= updated >= -2d order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
-        String maxResults = object.getString("maxResults");
-        String total = object.getString("total");
         JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
         List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
         if (issueJsonArray != null) {
@@ -229,7 +269,6 @@ public class JiraUtil {
      */
     public static void main(String[] args) {
         JiraUtil.GetIssue("CMPAY-2066");
-
     }
 
 

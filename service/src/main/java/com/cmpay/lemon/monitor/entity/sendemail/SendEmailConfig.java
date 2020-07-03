@@ -13,7 +13,7 @@ import java.util.Properties;
  */
 public class SendEmailConfig {
 	private String env;
-
+	private  static final String DEV="dev";
 	//todo 先改成发给自己
 	private String devMail="wu_lr@hisuntech.com";
 	//private String devMail="wu_lr@hisuntech.com";
@@ -42,7 +42,7 @@ public class SendEmailConfig {
 		if(LemonUtils.getEnv().equals(Env.SIT)) {
 			this.env= "PRO";
 		} else if(LemonUtils.getEnv().equals(Env.DEV)) {
-			this.env= "DEV";
+			this.env= DEV;
 		}else {
 			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
 			MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
@@ -68,11 +68,12 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getNormalMailTo(boolean isPre){
-		if(env.equals("DEV")) {
+		if(env.equals(DEV)) {
 			return devMail;
 		}else if(env.equals("PRO")){
-			if(isPre)
+			if(isPre) {
 				return "version_it@hisuntech.com;huang_jh@hisuntech.com";
+			}
 			else {
 				String paramValue = "version_it@hisuntech.com;huang_jh@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;dong_jm@hisuntech.com";
 				return paramValue;//预投产不做验证
@@ -111,11 +112,11 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getAbnormalMailTo(boolean isPre){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
-			if(isPre) return "version_it@hisuntech.com;huang_jh@hisuntech.com";
-			else return "version_it@hisuntech.com;huang_jh@hisuntech.com;dong_jm@hisuntech.com";
+			if(isPre) {return "version_it@hisuntech.com;huang_jh@hisuntech.com";}
+			else {return "version_it@hisuntech.com;huang_jh@hisuntech.com;dong_jm@hisuntech.com";}
 		}
 		return "";
 	}
@@ -129,7 +130,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getAbnormalMailCopy(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "PR_GMO@hisuntech.com;deng_shj@hisuntech.com;li_zhj@hisuntech.com;li_xn@hisuntech.com;version_it@hisuntech.com;PE_PLAT@hisuntech.com";
@@ -147,7 +148,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getFireMailTo(boolean isPre){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			if(isPre) {
@@ -170,7 +171,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getFireMailCopy(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "PR_GMO@hisuntech.com;deng_shj@hisuntech.com;li_zhj@hisuntech.com;li_xn@hisuntech.com;version_it@hisuntech.com;PE_PLAT@hisuntech.com";
@@ -187,7 +188,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getExcuteMailTo(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "version_it@hisuntech.com;huang_jh@hisuntech.com;deng_shj@hisuntech.com";
@@ -204,7 +205,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getExcuteMailCopy(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "PR_GMO@hisuntech.com;li_zhj@hisuntech.com;li_xn@hisuntech.com;version_it@hisuntech.com;PE_PLAT@hisuntech.com";
@@ -221,7 +222,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getDbaMailTo(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "xiong_hl@hisuntech.com;liuxiangquan@hisuntech.com";
@@ -238,7 +239,7 @@ public class SendEmailConfig {
 	 * @return
 	 */
 	public String getSqlMailTo(){
-		if(env.equals("DEV")){
+		if(env.equals(DEV)){
 			return devMail;
 		}else if(env.equals("PRO")){
 			return "deng_shj@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com";
@@ -249,7 +250,7 @@ public class SendEmailConfig {
 
     public String[] getErroCodeMailTo()
     {
-        if(env.equals("DEV")){
+        if(env.equals(DEV)){
 			return (new String[] {
 					devMail
 			});

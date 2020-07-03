@@ -14,6 +14,11 @@ public class JiraTaskBodyBO {
     String creator;
 
     /**
+     * 创建时间  createTime
+     */
+    String createTime;
+
+    /**
      * 关联创建者  epicCreator
      */
     String epicCreator;
@@ -34,6 +39,11 @@ public class JiraTaskBodyBO {
      * jira任务类型  jiraType
      */
     private String jiraType;
+    /**
+     * jira任务状态  status
+     */
+    private String status;
+
     /**
      * jira任务名  issueName
      */
@@ -73,6 +83,59 @@ public class JiraTaskBodyBO {
      *计划完成时间
      */
     String planEndTime;
+    /*
+     *问题处理人
+     */
+    String problemHandler;
+    /*
+     *重测次数
+     */
+    int retestTimes;
+    /*
+     *问题定位
+     */
+    String problemType;
+    /*
+     *缺陷归属部门
+     */
+    String defectsDepartment;
+    /*
+     *缺陷名称
+     */
+    String defectName;
+    /*
+     *缺陷详情
+     */
+    String defectDetails;
+
+    /*
+     *评审问题类型
+     */
+    String reviewQuestionType;
+
+    public String getReviewQuestionType() {
+        return reviewQuestionType;
+    }
+
+    public void setReviewQuestionType(String reviewQuestionType) {
+        this.reviewQuestionType = reviewQuestionType;
+    }
+
+    public String getDefectDetails() {
+        return defectDetails;
+    }
+
+    public void setDefectDetails(String defectDetails) {
+        this.defectDetails = defectDetails;
+    }
+
+    public String getDefectName() {
+        return defectName;
+    }
+
+    public void setDefectName(String defectName) {
+        this.defectName = defectName;
+    }
 
     public String getEpicCreator() {
         return epicCreator;
@@ -203,6 +266,38 @@ public class JiraTaskBodyBO {
         this.creator = creator;
     }
 
+    public String getProblemHandler() {
+        return problemHandler;
+    }
+
+    public void setProblemHandler(String problemHandler) {
+        this.problemHandler = problemHandler;
+    }
+
+    public int getRetestTimes() {
+        return retestTimes;
+    }
+
+    public void setRetestTimes(int retestTimes) {
+        this.retestTimes = retestTimes;
+    }
+
+    public String getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(String problemType) {
+        this.problemType = problemType;
+    }
+
+    public String getDefectsDepartment() {
+        return defectsDepartment;
+    }
+
+    public void setDefectsDepartment(String defectsDepartment) {
+        this.defectsDepartment = defectsDepartment;
+    }
+
     public String  getEditTestMainTaskBody(){
 
         return
@@ -230,6 +325,22 @@ public class JiraTaskBodyBO {
                     "\"customfield_10253\":\""+  this.getPlanEndTime()+"\"\n";
         }
         return "";
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override

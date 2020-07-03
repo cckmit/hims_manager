@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
         <id column="jire_key" property="jireKey" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="defect_name" property="defectName" jdbcType="VARCHAR" />
         <result column="epic_key" property="epicKey" jdbcType="VARCHAR" />
         <result column="defect_type" property="defectType" jdbcType="VARCHAR" />
         <result column="defect_status" property="defectStatus" jdbcType="VARCHAR" />
@@ -13,12 +14,12 @@
         <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
         <result column="defect_details" property="defectDetails" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
-        <result column="test_number" property="testNumber" jdbcType="VARCHAR" />
+        <result column="test_number" property="testNumber" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jire_key, req_no, epic_key, defect_type, defect_status, defect_registrant, defects_department, 
-        registration_date, defect_details, assignee, test_number
+        jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant, 
+        defects_department, registration_date, defect_details, assignee, test_number
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -41,6 +42,9 @@
             </if>
             <if test="reqNo != null" >
                 req_no,
+            </if>
+            <if test="defectName != null" >
+                defect_name,
             </if>
             <if test="epicKey != null" >
                 epic_key,
@@ -77,6 +81,9 @@
             <if test="reqNo != null" >
                 #{reqNo,jdbcType=VARCHAR},
             </if>
+            <if test="defectName != null" >
+                #{defectName,jdbcType=VARCHAR},
+            </if>
             <if test="epicKey != null" >
                 #{epicKey,jdbcType=VARCHAR},
             </if>
@@ -102,7 +109,7 @@
                 #{assignee,jdbcType=VARCHAR},
             </if>
             <if test="testNumber != null" >
-                #{testNumber,jdbcType=VARCHAR},
+                #{testNumber,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -112,6 +119,9 @@
         <set >
             <if test="reqNo != null" >
                 req_no = #{reqNo,jdbcType=VARCHAR},
+            </if>
+            <if test="defectName != null" >
+                defect_name = #{defectName,jdbcType=VARCHAR},
             </if>
             <if test="epicKey != null" >
                 epic_key = #{epicKey,jdbcType=VARCHAR},
@@ -138,7 +148,7 @@
                 assignee = #{assignee,jdbcType=VARCHAR},
             </if>
             <if test="testNumber != null" >
-                test_number = #{testNumber,jdbcType=VARCHAR},
+                test_number = #{testNumber,jdbcType=INTEGER},
             </if>
         </set>
         where jire_key = #{jireKey,jdbcType=VARCHAR}
@@ -154,6 +164,9 @@
             </if>
             <if test="reqNo != null" >
                 and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="defectName != null" >
+                and defect_name = #{defectName,jdbcType=VARCHAR}
             </if>
             <if test="epicKey != null" >
                 and epic_key = #{epicKey,jdbcType=VARCHAR}
@@ -180,7 +193,7 @@
                 and assignee = #{assignee,jdbcType=VARCHAR}
             </if>
             <if test="testNumber != null" >
-                and test_number = #{testNumber,jdbcType=VARCHAR}
+                and test_number = #{testNumber,jdbcType=INTEGER}
             </if>
         </where>
     </select>
