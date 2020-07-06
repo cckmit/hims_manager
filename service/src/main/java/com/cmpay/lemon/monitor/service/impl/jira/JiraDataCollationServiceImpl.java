@@ -2,14 +2,17 @@ package com.cmpay.lemon.monitor.service.impl.jira;
 
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraWorklogBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
+import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,10 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class JiraDataCollationServiceImpl implements JiraDataCollationService {
@@ -46,13 +52,20 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     @Autowired
     IUserExtDao userExtDao;
     @Autowired
-    IDefectDetailsDao defectDetailsDao;
+    IDefectDetailsExtDao defectDetailsDao;
 
     @Autowired
-    IIssueDetailsDao issueDetailsDao;
+    IIssueDetailsExtDao issueDetailsDao;
     @Autowired
     IProblemStatisticDao problemStatisticDao;
+    @Autowired
+    SystemRoleService systemRoleService;
 
+    @Autowired
+    private IUserRoleExtDao userRoleExtDao;
+
+    @Autowired
+    private IProUnhandledIssuesDao proUnhandledIssuesDao;
     @Async
     @Override
     public void getIssueModifiedWithinOneDay() {
@@ -69,14 +82,14 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
-                    try {
-                        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                        this.registerJiraBasicInfo(jiraTaskBodyBO);
-                        //    this.registerWorklogs(jiraTaskBodyBO);
-                        epicList.add(jiraTaskBodyBO.getEpicKey());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                    this.registerJiraBasicInfo(jiraTaskBodyBO);
+                    this.registerWorklogs(jiraTaskBodyBO);
+                    epicList.add(jiraTaskBodyBO.getEpicKey());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             });
             epicList.forEach(m -> {
                 if (m == null) {
@@ -84,7 +97,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 }
                 ProblemStatisticDO problemStatisticDO = new ProblemStatisticDO();
                 problemStatisticDO.setEpicKey(m);
-
                 DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
                 defectDetailsDO.setEpicKey(m);
                 List<DefectDetailsDO> defectDetailsDOList = defectDetailsDao.find(defectDetailsDO);
@@ -119,10 +131,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                             problemStatisticDO.setInvalidDefectsNumber(problemStatisticDO.getInvalidDefectsNumber() + 1);
                         }
                     }
-
                 }
-
-
                 IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
                 issueDetailsDO.setEpicKey(m);
                 List<IssueDetailsDO> issueDetailsDOList = issueDetailsDao.find(issueDetailsDO);
@@ -155,7 +164,72 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
 
             });
+        }
 
+        //获得投产需求 未完成的问题，//需要在统计完缺陷后执行
+        getproductedsRemainingQuestions();
+
+    }
+
+    private void getproductedsRemainingQuestions() {
+        ProUnhandledIssuesDO proUnhandledIssuesDO = new ProUnhandledIssuesDO();
+        proUnhandledIssuesDO.setCalculateFlag("N");
+        List<ProUnhandledIssuesDO> proUnhandledIssuesDOS = proUnhandledIssuesDao.find(proUnhandledIssuesDO);
+        proUnhandledIssuesDOS.forEach(m->{
+            DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+            defectDetailsDO.setEpicKey(m.getJirakey());
+
+            List<DefectDetailsDO> list = defectDetailsDao.findNotCompleted(defectDetailsDO);
+
+            if(JudgeUtils.isNotEmpty(list)){
+                m.setDefectsNumber(list.size());
+            }else{
+                m.setDefectsNumber(0);
+            }
+            IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
+            issueDetailsDO.setEpicKey(m.getJirakey());
+
+            List<IssueDetailsDO> list1 = issueDetailsDao.findNotCompleted(issueDetailsDO);
+            if(JudgeUtils.isNotEmpty(list1)){
+                m.setProblemNumber(list1.size());
+            }else{
+                m.setProblemNumber(0);
+            }
+            System.err.println(list1.size());
+            m.setCalculateFlag("Y");
+            proUnhandledIssuesDao.update(m);
+        });
+    }
+
+    @Override
+    @Async
+    public void inquiriesAboutRemainingProblems(String reqNo) {
+        DemandDO demandDO = new DemandDO();
+        demandDO.setReqNo(reqNo);
+        List<DemandDO> demandDOS = demandDao.find(demandDO);
+        if(JudgeUtils.isEmpty(demandDOS)){
+            return;
+        }
+        DemandJiraDO demandJiraDO = demandJiraDao.get(demandDOS.get(0).getReqInnerSeq());
+
+        if(JudgeUtils.isNull(demandJiraDO)){
+            return;
+        }
+        ProUnhandledIssuesDO proUnhandledIssuesDO = new ProUnhandledIssuesDO();
+        proUnhandledIssuesDO.setReqNo(reqNo);
+        proUnhandledIssuesDO.setJirakey(demandJiraDO.getJiraKey());
+        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        proUnhandledIssuesDO.setProductionDate(selectTime);
+        proUnhandledIssuesDO.setDepartment( demandDOS.get(0).getDevpLeadDept());
+        proUnhandledIssuesDO.setCalculateFlag("N");
+
+        ProUnhandledIssuesDO proUnhandledIssuesDO1 = proUnhandledIssuesDao.get(reqNo);
+        if(JudgeUtils.isNull(proUnhandledIssuesDO1)){
+            proUnhandledIssuesDO.setProblemNumber(0);
+            proUnhandledIssuesDO.setDefectsNumber(0);
+            proUnhandledIssuesDao.insert(proUnhandledIssuesDO);
+        }else{
+            proUnhandledIssuesDao.update(proUnhandledIssuesDO);
         }
 
     }
@@ -387,8 +461,26 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 workingHoursDO.setEpickey(jiraTaskBodyBO.getEpicKey());
                 workingHoursDO.setEpiccreator(jiraTaskBodyBO.getEpicCreator());
                 workingHoursDO.setRegisterflag("N");
-                workingHoursDO.setAssignmentDepartment(systemUserService.getDepartmentByUser(jiraWorklogDO.getName()));
+                UserInfoBO userbyLoginName = systemUserService.getUserbyLoginName(jiraWorklogDO.getName());
+                workingHoursDO.setAssignmentDepartment(userbyLoginName.getDepartment());
                 WorkingHoursDO workingHoursDO1 = iWorkingHoursDao.get(workingHoursDO.getJiraworklogkey());
+                UserRoleDO userRoleDO = new UserRoleDO();
+                userRoleDO.setUserNo(userbyLoginName.getUserNo());
+                //测试
+                userRoleDO.setRoleId((long) 41001);
+                List<UserRoleDO> userRoleDOS = userRoleExtDao.find(userRoleDO);
+                if (JudgeUtils.isNotEmpty(userRoleDOS)) {
+                    workingHoursDO.setRoletype("测试人员");
+                } else {
+                    userRoleDO.setRoleId((long) 5002);
+                    userRoleDOS = userRoleExtDao.find(userRoleDO);
+
+                    if (JudgeUtils.isNotEmpty(userRoleDOS)) {
+                        workingHoursDO.setRoletype("产品经理");
+                    } else {
+                        workingHoursDO.setRoletype("开发人员");
+                    }
+                }
                 if (JudgeUtils.isNotNull(workingHoursDO1)) {
                     if (JudgeUtils.isNotBlank(workingHoursDO1.getRegisterflag()) && workingHoursDO1.getRegisterflag().equals("Y")) {
                         //  todo 如果已经登记则需要修改差值

@@ -1,8 +1,8 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2020-06-30 14:28:57
+ * @Date 2020-07-03 15:25:50
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -85,6 +85,10 @@ public class WorkingHoursDO extends BaseDO {
      * @Fields registerflag 是否已经登记标识
      */
     private String registerflag;
+    /**
+     * @Fields roletype 角色类型
+     */
+    private String roletype;
 
     public String getJiraworklogkey() {
         return jiraworklogkey;
@@ -222,6 +226,14 @@ public class WorkingHoursDO extends BaseDO {
         this.registerflag = registerflag;
     }
 
+    public String getRoletype() {
+        return roletype;
+    }
+
+    public void setRoletype(String roletype) {
+        this.roletype = roletype;
+    }
+
     @Override
     public String toString() {
         return "WorkingHoursDO{" +
@@ -241,7 +253,9 @@ public class WorkingHoursDO extends BaseDO {
                 ", selectTime='" + selectTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
                 ", epickey='" + epickey + '\'' +
+                ", epiccreator='" + epiccreator + '\'' +
                 ", registerflag='" + registerflag + '\'' +
+                ", roletype='" + roletype + '\'' +
                 '}';
     }
 }

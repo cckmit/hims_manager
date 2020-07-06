@@ -403,7 +403,6 @@ public class SystemUserServiceImpl implements SystemUserService {
 
     @Override
     public String getDepartmentByUser(String loginname) {
-        UserDO userDO = new UserDO();
         UserDO userByUserName = iUserDao.getUserByUserName(loginname);
         if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getDepartment())){
              userByUserName = iUserDao.getUserByUserFullName(loginname);
@@ -417,13 +416,24 @@ public class SystemUserServiceImpl implements SystemUserService {
 
     @Override
     public String getFullname(String loginname) {
-        UserDO userDO = new UserDO();
         UserDO userByUserName = iUserDao.getUserByUserName(loginname);
         if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getFullname())){
             MsgEnum.ERROR_CUSTOM.setMsgInfo(loginname+"操作员信息有误，请及时联系管理员");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         return  userByUserName.getFullname();
+    }
+
+
+    @Override
+    public UserInfoBO getUserbyLoginName(String loginname) {
+        UserDO userByUserName = iUserDao.getUserByUserName(loginname);
+        if(userByUserName==null|| StringUtils.isEmpty( userByUserName.getFullname())){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo(loginname+"操作员信息有误，请及时联系管理员");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        UserInfoBO userInfoBO = BeanUtils.copyPropertiesReturnDest(new UserInfoBO(), userByUserName);
+        return  userInfoBO;
     }
 
     //同步老表人员数据信息到新表
@@ -495,7 +505,6 @@ public class SystemUserServiceImpl implements SystemUserService {
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void updateMobile(String fullName,String mobile) {
-        System.err.println(222);
         UserDO userDO = new UserDO();
         userDO.setFullname(fullName);
         List<UserDO> userDOS = iUserDao.find(userDO);
