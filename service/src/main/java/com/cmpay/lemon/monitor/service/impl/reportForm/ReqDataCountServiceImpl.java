@@ -85,7 +85,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private ReqPlanService reqPlanService;
     @Autowired
     private IDemandResourceInvestedDao iDemandResourceInvestedDao;
-
+	@Autowired
+	IDemandJiraDao demandJiraDao;
 	@Autowired
 	private OperationProductionService operationProductionService;
     @Autowired
@@ -523,6 +524,149 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		System.err.println(demandQualityBO);
 		return demandQualityBO;
 	}
+	@Override
+	public WorkingHoursBO getReportForm11(String displayname,String date1,String date2){
+		WorkingHoursBO workingHoursBO = new WorkingHoursBO();
+		List<WorkingHoursDO> impl = null;
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDisplayname(displayname);
+		System.err.println(date1+"====="+date2);
+		if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		// 查询周
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findWeekView(workingHoursDO);
+			System.err.println(impl);
+		}
+		// 查询月
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findMonthView(workingHoursDO);
+			System.err.println(impl);
+		}
+		if(impl!=null &&impl.size()!=0){
+			BeanUtils.copyPropertiesReturnDest(workingHoursBO, impl.get(0));
+		}
+		System.err.println(impl);
+		return workingHoursBO;
+	}
+
+	@Override
+	public List<WorkingHoursBO> getDemandStaffView(String displayname,String date1,String date2){
+		List<WorkingHoursBO> workingHoursBos = new LinkedList<>();
+		List<WorkingHoursDO> impl = null;
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDisplayname(displayname);
+		System.err.println(date1+"====="+date2);
+		if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		// 查询周
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findListWeekView(workingHoursDO);
+			System.err.println(impl);
+		}
+		// 查询月
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findListMonthView(workingHoursDO);
+			System.err.println(impl);
+		}
+		impl.forEach(m->
+				workingHoursBos.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+		);
+		if(impl!=null && impl.size()!=0){
+			for (int i=0;i<impl.size();i++){
+				DemandJiraDO demandJiraDO = new DemandJiraDO();
+				if (impl.get(i).getEpickey() ==null || impl.get(i).getEpickey()==""){
+					continue;
+				}
+				demandJiraDO.setJiraKey(impl.get(i).getEpickey());
+				// 根据jiraKey获取内部编号
+				List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
+				// 根据内部编号获取 需求名及需求编号
+				if(demandJiraDos!=null && demandJiraDos.size()!=0){
+					DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+					workingHoursBos.get(i).setReqNo(demandDO.getReqNo());
+					workingHoursBos.get(i).setReqNm(demandDO.getReqNm());
+				}
+			}
+		}
+		System.err.println(workingHoursBos);
+		return workingHoursBos;
+	}
+
+	/**
+	 * 需求任务与其它任务工时间饼图
+	 * @param displayname
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	@Override
+	public DemandHoursRspBO getDemandStaffTask(String displayname,String date1,String date2){
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		List<WorkingHoursDO> impl = null;
+		List<String> workingHoursBOS = new LinkedList<>();
+		List<String> SumBos = new LinkedList<>();
+		String sum = "";
+		double sumx=0;
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDisplayname(displayname);
+		System.err.println(date1+"====="+date2);
+		if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		// 查询周
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findListWeekView(workingHoursDO);
+			System.err.println(impl);
+		}
+		// 查询月
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findListMonthView(workingHoursDO);
+			System.err.println(impl);
+		}
+		int sumDemand = 0;
+		for(int i=0;i<impl.size();i++){
+			String sumTime = "";
+			// 获取其它任务的工时间
+			if(impl.get(i).getEpickey()==null||impl.get(i).getEpickey()==""){
+				String sumTime1 = impl.get(i).getTimespnet();
+				sumx = sumx + getWorkHours(Integer.parseInt(sumTime1));
+				// {value: 5, name: '需求任务'}
+                String qtDemand =  "{'value': '"+getWorkHours(Integer.parseInt(sumTime1))+"', 'name': '其它任务'}";
+
+				workingHoursBOS.add(String.valueOf(qtDemand));
+				SumBos.add("其它任务");
+			}
+			//需求任务的工时间
+			sumTime = impl.get(i).getTimespnet();
+			sumDemand = sumDemand + Integer.parseInt(sumTime);
+		}
+        sumx = sumx + getWorkHours(sumDemand);
+        String Demand =  "{'value': '"+getWorkHours(sumDemand)+"', 'name': '需求任务'}";
+		workingHoursBOS.add(Demand);
+		SumBos.add("需求任务");
+		sum =String.valueOf(sumx);
+		System.err.println(sum);
+		demandHoursRspBO.setListSum(SumBos);
+		demandHoursRspBO.setSum(sum);
+		demandHoursRspBO.setStringList(workingHoursBOS);
+		System.err.println(demandHoursRspBO);
+		return demandHoursRspBO;
+	}
     @Override
     public DemandHoursRspBO getDemandHours(String epic){
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -767,6 +911,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         return demandHoursRspBO;
 	}
 
+	/**
+	 * 毫秒转人天
+	 * @param time
+	 * @return
+	 */
     public Double getWorkHours(int time){
         return (double) (Math.round(time* 100 /  28800)/ 100.0);
     }

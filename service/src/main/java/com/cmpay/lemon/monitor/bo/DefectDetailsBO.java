@@ -2,15 +2,16 @@
  * @ClassName DefectDetailsDO
  * @Description
  * @version 1.0
- * @Date 2020-07-02 10:43:29
+ * @Date 2020-06-30 16:04:29
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.bo;
 
 import com.cmpay.framework.data.BaseDO;
-import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
-public class DefectDetailsDO extends BaseDO {
+/**
+ * @author wlr
+ */
+public class DefectDetailsBO {
     /**
      * @Fields jireKey 缺陷jira编号
      */
@@ -19,10 +20,6 @@ public class DefectDetailsDO extends BaseDO {
      * @Fields reqNo 缺陷归属需求编号
      */
     private String reqNo;
-    /**
-     * @Fields defectName 缺陷名称
-     */
-    private String defectName;
     /**
      * @Fields epicKey 对应epic编号
      */
@@ -58,7 +55,7 @@ public class DefectDetailsDO extends BaseDO {
     /**
      * @Fields testNumber 缺陷重测次数
      */
-    private Integer testNumber;
+    private String testNumber;
 
     public String getJireKey() {
         return jireKey;
@@ -74,14 +71,6 @@ public class DefectDetailsDO extends BaseDO {
 
     public void setReqNo(String reqNo) {
         this.reqNo = reqNo;
-    }
-
-    public String getDefectName() {
-        return defectName;
-    }
-
-    public void setDefectName(String defectName) {
-        this.defectName = defectName;
     }
 
     public String getEpicKey() {
@@ -148,11 +137,11 @@ public class DefectDetailsDO extends BaseDO {
         this.assignee = assignee;
     }
 
-    public Integer getTestNumber() {
+    public String getTestNumber() {
         return testNumber;
     }
 
-    public void setTestNumber(Integer testNumber) {
+    public void setTestNumber(String testNumber) {
         this.testNumber = testNumber;
     }
 

@@ -71,6 +71,24 @@ public interface ReqDataCountService {
     DemandQualityBO findDemandQuality(String epic);
 
     /**
+     * 查询个人视图基本信息
+     * @param displayname
+     * @param date1
+     * @param date2
+     * @return
+     */
+    WorkingHoursBO getReportForm11(String displayname,String date1,String date2);
+
+    /**
+     * 个人视图，需求任务与其它任务工时饼图
+     * @param displayname
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDemandStaffTask(String displayname,String date1,String date2);
+    List<WorkingHoursBO> getDemandStaffView(String displayname,String date1,String date2);
+    /**
      * 获取需求花费工时
      * @param epic
      * @return
