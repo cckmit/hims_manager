@@ -15,9 +15,12 @@
         <result column="createdTime" property="createdtime" jdbcType="VARCHAR" />
         <result column="startedTime" property="startedtime" jdbcType="VARCHAR" />
         <result column="updatedTime" property="updatedtime" jdbcType="VARCHAR" />
+        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
         <result column="sumTime" property="sumTime" jdbcType="VARCHAR" />
         <result column="selectTime" property="selectTime" jdbcType="VARCHAR" />
         <result column="sumDept" property="sumDept" jdbcType="VARCHAR" />
+        <result column="epicCreator" property="epiccreator" jdbcType="VARCHAR" />
+        <result column="registerFlag" property="registerflag" jdbcType="VARCHAR" />
     </resultMap>
 
     <resultMap id="sm" type="com.cmpay.lemon.monitor.entity.DepartmentWorkDO">
@@ -30,12 +33,14 @@
 
     <sql id="Base_Column_List" >
         jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName,
-        devp_lead_dept, comment, createdTime, startedTime, updatedTime
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, epicCreator,
+        registerFlag
     </sql>
 
     <sql id="Base_Column_ListB" >
-        jiraWorklogKey, issuekey, subtaskName, assignment_department, name, displayName,
-        devp_lead_dept, comment, createdTime, startedTime, updatedTime
+        jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName,
+        devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, epicCreator,
+        registerFlag
     </sql>
 
     <select id="findSum" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
@@ -216,5 +221,60 @@
 		where epicKey = #{epicKey}
         group by a.fullname
     </select>
+
+    <select id="findWeekView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department  devp_lead_dept,
+        ((select count(1) FROM (select DISTINCT  epicKey from  t_working_hours where displayName = #{displayname,jdbcType=VARCHAR} and ISNULL(epicKey)=0 and LENGTH(trim(epicKey))>0 and YEARWEEK(date_format(startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})) a) ) sumDept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+        and YEARWEEK(date_format(b.startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+         where a.fullname = #{displayname,jdbcType=VARCHAR}
+        group by a.fullname
+    </select>
+    <select id="findMonthView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select a.fullname displayName,
+        IFNULL(sum(b.timeSpnet),0) AS sumTime,
+        department  devp_lead_dept,
+        ((select count(1) FROM (select DISTINCT  epicKey from  t_working_hours
+        where displayName = #{displayname,jdbcType=VARCHAR} and ISNULL(epicKey)=0 and LENGTH(trim(epicKey))>0  and LEFT(startedTime,10) like CONCAT('%',#{selectTime},'%')
+        ) a) ) sumDept
+        from sys_user a left join t_working_hours b
+        on a.fullname=b.displayName
+        and LEFT(b.startedTime,10) like CONCAT('%',#{selectTime},'%')
+        where a.fullname = #{displayname,jdbcType=VARCHAR}
+        group by a.fullname
+    </select>
+
+    <select id="findListWeekView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(timeSpnet) timeSpnet ,
+        <include refid="Base_Column_ListB" />
+        from
+        (
+        select
+        <include refid="Base_Column_List" />
+        from t_working_hours
+        where
+        displayName = #{displayname,jdbcType=VARCHAR}
+        and YEARWEEK(date_format(startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+        )c GROUP BY c.epickey
+    </select>
+    <select id="findListMonthView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(timeSpnet) timeSpnet ,
+        <include refid="Base_Column_ListB" />
+        from
+        (
+        select
+        <include refid="Base_Column_List" />
+        from t_working_hours
+        where
+          displayName = #{displayname,jdbcType=VARCHAR}
+          and LEFT(startedTime,10)  like CONCAT('%',#{selectTime},'%')
+        )c GROUP BY c.epickey
+    </select>
+
 
 </mapper>

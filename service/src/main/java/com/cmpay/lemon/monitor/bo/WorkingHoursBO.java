@@ -73,6 +73,24 @@ public class WorkingHoursBO extends BaseDO {
     private String selectTime;
 
     private String epickey;
+    private String reqNo;
+    private String reqNm;
+
+    public String getReqNo() {
+        return reqNo;
+    }
+
+    public void setReqNo(String reqNo) {
+        this.reqNo = reqNo;
+    }
+
+    public String getReqNm() {
+        return reqNm;
+    }
+
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
+    }
 
     public String getEpickey() {
         return epickey;
@@ -237,6 +255,8 @@ public class WorkingHoursBO extends BaseDO {
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +
                 ", epickey='" + epickey + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
                 '}';
     }
 }

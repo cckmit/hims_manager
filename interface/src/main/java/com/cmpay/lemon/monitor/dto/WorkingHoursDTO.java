@@ -74,7 +74,8 @@ public class WorkingHoursDTO extends GenericDTO {
      */
     private int pageSize;
     private String selectTime;
-
+    private String reqNo;
+    private String reqNm;
     public String getEpickey() {
         return epickey;
     }
@@ -218,6 +219,22 @@ public class WorkingHoursDTO extends GenericDTO {
         this.pageSize = pageSize;
     }
 
+    public String getReqNo() {
+        return reqNo;
+    }
+
+    public void setReqNo(String reqNo) {
+        this.reqNo = reqNo;
+    }
+
+    public String getReqNm() {
+        return reqNm;
+    }
+
+    public void setReqNm(String reqNm) {
+        this.reqNm = reqNm;
+    }
+
     @Override
     public String toString() {
         return "WorkingHoursDTO{" +
@@ -239,6 +256,8 @@ public class WorkingHoursDTO extends GenericDTO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqNm='" + reqNm + '\'' +
                 '}';
     }
 }

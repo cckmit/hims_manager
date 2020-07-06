@@ -83,4 +83,19 @@ public interface IWorkingHoursExtDao extends IWorkingHoursDao{
      * @return
      */
     List<WorkingHoursDO> findEpicKeyHours(String epicKey);
+
+    List<WorkingHoursDO> findWeekView(WorkingHoursDO workingHoursDO);
+    List<WorkingHoursDO> findMonthView(WorkingHoursDO workingHoursDO);
+    /**
+     * 周部门员工详情需求工时
+     * @param workingHoursDO
+     * @return
+     */
+    List<WorkingHoursDO> findListWeekView(WorkingHoursDO workingHoursDO);
+    /**
+     * 月部门员工详情需求工时
+     * @param workingHoursDO
+     * @return
+     */
+    List<WorkingHoursDO> findListMonthView(WorkingHoursDO workingHoursDO);
 }

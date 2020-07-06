@@ -4,13 +4,12 @@
  * @version 1.0
  * @Date 2020-06-30 16:04:29
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.dto;
 
-import com.cmpay.framework.data.BaseDO;
-import com.cmpay.lemon.framework.annotation.DataObject;
-
-@DataObject
-public class DefectDetailsDO extends BaseDO {
+/**
+ * @author wlr
+ */
+public class DefectDetailsDTO {
     /**
      * @Fields jireKey 缺陷jira编号
      */

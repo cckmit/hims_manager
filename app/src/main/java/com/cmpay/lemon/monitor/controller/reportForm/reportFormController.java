@@ -295,6 +295,71 @@ import java.util.List;
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
 
+    /**
+     * 查询个人体检视图
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/reportform11")
+    public GenericRspDTO<WorkingHoursDTO> getReportForm11(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        WorkingHoursBO reportLista = new WorkingHoursBO();
+        System.err.println(workingHoursDTO.getDisplayname());
+        reportLista = reqDataCountService.getReportForm11(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        WorkingHoursDTO reqDataCountRspDTO = new WorkingHoursDTO();
+        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+        System.err.println(reqDataCountRspDTO);
+        // 统计部门
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+
+    /**
+     * 查询个人体检视图
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getDemandStaffView")
+    public GenericRspDTO<WorkingHoursRspDTO> getDemandStaffView(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        List<WorkingHoursBO> reportLista = new ArrayList<>();
+        reportLista = reqDataCountService.getDemandStaffView(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        WorkingHoursRspDTO reqDataCountRspDTO = new WorkingHoursRspDTO();
+        List<WorkingHoursDTO> reqDataCountDTOListA = new LinkedList<>();
+        reportLista.forEach(m->
+                reqDataCountDTOListA.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursDTO(), m))
+        );
+        reqDataCountRspDTO.setVpnInfoDTOS(reqDataCountDTOListA);
+        // 统计部门
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+    }
+
+    /**
+     * 个人视图，需求任务与其它任务工时饼图
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getDemandStaffTask")
+    public GenericRspDTO<DemandHoursRspDTO> getDemandStaffTask(@RequestBody WorkingHoursReqDTO workingHoursDTO)  {
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getDemandStaffTask(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, reportLista);
+        System.err.println("demandHoursRspDTO=="+demandHoursRspDTO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
+
+    /**
+     * 获取个人体检视图的缺陷情况
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/getDemandDefectDetails")
+    public GenericRspDTO<DefectDetailsRspDTO> getDemandDefectDetails(@RequestBody WorkingHoursReqDTO workingHoursDTO)  {
+        DefectDetailsRspDTO demandHoursRspDTO = new DefectDetailsRspDTO();
+        DemandHoursRspBO reportLista = new DemandHoursRspBO();
+        reportLista = reqDataCountService.getDemandStaffTask(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, reportLista);
+        System.err.println("demandHoursRspDTO=="+demandHoursRspDTO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 
     @RequestMapping("/downloadreportform1")
     public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {
