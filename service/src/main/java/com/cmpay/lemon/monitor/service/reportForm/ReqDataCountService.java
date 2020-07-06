@@ -87,6 +87,9 @@ public interface ReqDataCountService {
      * @return
      */
     DemandHoursRspBO getDemandStaffTask(String displayname,String date1,String date2);
+
+    DefectDetailsRspBO getDemandDefectDetails(String displayname,String date1,String date2);
+
     List<WorkingHoursBO> getDemandStaffView(String displayname,String date1,String date2);
     /**
      * 获取需求花费工时

@@ -92,6 +92,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private OperationProductionService operationProductionService;
     @Autowired
     private IProblemStatisticDao problemStatisticDao;
+    @Autowired
+    private IDefectDetailsExtDao defectDetailsExtDao;
 
 
 	/**
@@ -668,6 +670,37 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		System.err.println(demandHoursRspBO);
 		return demandHoursRspBO;
 	}
+	@Override
+    public DefectDetailsRspBO getDemandDefectDetails(String displayname,String date1,String date2){
+        System.err.println("缺陷问题");
+        List<DefectDetailsDO> impl = null;
+        List<DefectDetailsBO> defectDetailsBOList = null;
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        defectDetailsDO.setAssignee(displayname);
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            defectDetailsDO.setRegistrationDate(date1);
+            impl = defectDetailsExtDao.findWeekList(defectDetailsDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            defectDetailsDO.setRegistrationDate(date2);
+            impl = defectDetailsExtDao.findList(defectDetailsDO);
+            System.err.println(impl);
+        }
+        DefectDetailsRspBO defectDetailsRspBO = new DefectDetailsRspBO();
+        defectDetailsBOList =BeanConvertUtils.convertList(impl, DefectDetailsBO.class);
+        defectDetailsRspBO.setDefectDetailsBos(defectDetailsBOList);
+	    return  defectDetailsRspBO;
+    }
+
     @Override
     public DemandHoursRspBO getDemandHours(String epic){
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();

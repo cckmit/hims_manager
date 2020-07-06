@@ -11,6 +11,7 @@ import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
+import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -354,9 +355,9 @@ import java.util.List;
     @RequestMapping("/getDemandDefectDetails")
     public GenericRspDTO<DefectDetailsRspDTO> getDemandDefectDetails(@RequestBody WorkingHoursReqDTO workingHoursDTO)  {
         DefectDetailsRspDTO demandHoursRspDTO = new DefectDetailsRspDTO();
-        DemandHoursRspBO reportLista = new DemandHoursRspBO();
-        reportLista = reqDataCountService.getDemandStaffTask(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
-        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, reportLista);
+        DefectDetailsRspBO reportLista = new DefectDetailsRspBO();
+        reportLista = reqDataCountService.getDemandDefectDetails(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(),workingHoursDTO.getSelectTime2());
+        demandHoursRspDTO.setDefectDetailsDTOArrayList(BeanConvertUtils.convertList(reportLista.getDefectDetailsBos(), DefectDetailsDTO.class));
         System.err.println("demandHoursRspDTO=="+demandHoursRspDTO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
     }
