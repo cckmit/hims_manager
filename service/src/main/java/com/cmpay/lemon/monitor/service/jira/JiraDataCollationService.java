@@ -6,4 +6,6 @@ public interface JiraDataCollationService {
 
     void  getEpicRelatedTasks(DemandBO demandBO);
     void getIssueModifiedWithinOneDay();
+
+    void inquiriesAboutRemainingProblems(String reqNo);
 }

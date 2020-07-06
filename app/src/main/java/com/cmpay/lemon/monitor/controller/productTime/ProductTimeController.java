@@ -10,6 +10,7 @@ import com.cmpay.lemon.monitor.dto.ProductionTimeDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeReqDTO;
 import com.cmpay.lemon.monitor.dto.ProductionTimeRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.impl.timer.ReqMonitorTimer;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,8 @@ public class ProductTimeController {
 
     @Autowired
     private ProductTimeService productTimeService;
+    @Autowired
+    private ReqMonitorTimer reqMonitorTimer;
     @RequestMapping("/list")
     public GenericRspDTO<ProductionTimeRspDTO> list(GenericDTO<NoBody> req) {
         ProductionTimeRspDTO productionTimeRspDTO = new ProductionTimeRspDTO();

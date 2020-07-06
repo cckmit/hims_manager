@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
         <id column="jire_key" property="jireKey" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="defect_name" property="defectName" jdbcType="VARCHAR" />
         <result column="epic_key" property="epicKey" jdbcType="VARCHAR" />
         <result column="defect_type" property="defectType" jdbcType="VARCHAR" />
         <result column="defect_status" property="defectStatus" jdbcType="VARCHAR" />
@@ -13,15 +14,55 @@
         <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
         <result column="defect_details" property="defectDetails" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
-        <result column="test_number" property="testNumber" jdbcType="VARCHAR" />
+        <result column="test_number" property="testNumber" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jire_key, req_no, epic_key, defect_type, defect_status, defect_registrant, defects_department,
-        registration_date, defect_details, assignee, test_number
+        jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
+        defects_department, registration_date, defect_details, assignee, test_number
     </sql>
 
-
+    <select id="findNotCompleted" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_defect_details
+        <where >
+            defect_status not in ('完成')
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="defectName != null" >
+                and defect_name = #{defectName,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="defectType != null" >
+                and defect_type = #{defectType,jdbcType=VARCHAR}
+            </if>
+            <if test="defectRegistrant != null" >
+                and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null" >
+                and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date = #{registrationDate,jdbcType=VARCHAR}
+            </if>
+            <if test="defectDetails != null" >
+                and defect_details = #{defectDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+            <if test="testNumber != null" >
+                and test_number = #{testNumber,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
         select
         <include refid="Base_Column_List" />

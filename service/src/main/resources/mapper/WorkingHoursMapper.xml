@@ -21,12 +21,13 @@
         <result column="sumDept" property="sumDept" jdbcType="VARCHAR" />
         <result column="epicCreator" property="epiccreator" jdbcType="VARCHAR" />
         <result column="registerFlag" property="registerflag" jdbcType="VARCHAR" />
+        <result column="roleType" property="roletype" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
         devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, epicCreator, 
-        registerFlag
+        registerFlag, roleType
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -89,6 +90,9 @@
             <if test="registerflag != null" >
                 registerFlag,
             </if>
+            <if test="roletype != null" >
+                roleType,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jiraworklogkey != null" >
@@ -135,6 +139,9 @@
             </if>
             <if test="registerflag != null" >
                 #{registerflag,jdbcType=VARCHAR},
+            </if>
+            <if test="roletype != null" >
+                #{roletype,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -183,6 +190,9 @@
             </if>
             <if test="registerflag != null" >
                 registerFlag = #{registerflag,jdbcType=VARCHAR},
+            </if>
+            <if test="roletype != null" >
+                roleType = #{roletype,jdbcType=VARCHAR},
             </if>
         </set>
         where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}
@@ -237,6 +247,9 @@
             </if>
             <if test="registerflag != null" >
                 and registerFlag = #{registerflag,jdbcType=VARCHAR}
+            </if>
+            <if test="roletype != null" >
+                and roleType = #{roletype,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

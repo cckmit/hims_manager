@@ -5,23 +5,24 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProblemStatisticDO" >
         <id column="epic_key" property="epicKey" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
-        <result column="requirements_review_number" property="requirementsReviewNumber" jdbcType="VARCHAR" />
-        <result column="code_review_number" property="codeReviewNumber" jdbcType="VARCHAR" />
-        <result column="test_review_number" property="testReviewNumber" jdbcType="VARCHAR" />
-        <result column="production_review_number" property="productionReviewNumber" jdbcType="VARCHAR" />
-        <result column="technical_review_number" property="technicalReviewNumber" jdbcType="VARCHAR" />
-        <result column="other_reviews_number" property="otherReviewsNumber" jdbcType="VARCHAR" />
-        <result column="external_defects_number" property="externalDefectsNumber" jdbcType="VARCHAR" />
-        <result column="version_defects_number" property="versionDefectsNumber" jdbcType="VARCHAR" />
-        <result column="parameter_defects_number" property="parameterDefectsNumber" jdbcType="VARCHAR" />
-        <result column="function_defects_number" property="functionDefectsNumber" jdbcType="VARCHAR" />
-        <result column="process_defects_number" property="processDefectsNumber" jdbcType="VARCHAR" />
-        <result column="prompt_defects_number" property="promptDefectsNumber" jdbcType="VARCHAR" />
-        <result column="page_defects_number" property="pageDefectsNumber" jdbcType="VARCHAR" />
-        <result column="background_defects_number" property="backgroundDefectsNumber" jdbcType="VARCHAR" />
-        <result column="modify_defects_number" property="modifyDefectsNumber" jdbcType="VARCHAR" />
-        <result column="design_defects_number" property="designDefectsNumber" jdbcType="VARCHAR" />
-        <result column="invalid_defects_number" property="invalidDefectsNumber" jdbcType="VARCHAR" />
+        <result column="requirements_review_number" property="requirementsReviewNumber" jdbcType="INTEGER" />
+        <result column="code_review_number" property="codeReviewNumber" jdbcType="INTEGER" />
+        <result column="test_review_number" property="testReviewNumber" jdbcType="INTEGER" />
+        <result column="production_review_number" property="productionReviewNumber" jdbcType="INTEGER" />
+        <result column="technical_review_number" property="technicalReviewNumber" jdbcType="INTEGER" />
+        <result column="other_reviews_number" property="otherReviewsNumber" jdbcType="INTEGER" />
+        <result column="external_defects_number" property="externalDefectsNumber" jdbcType="INTEGER" />
+        <result column="version_defects_number" property="versionDefectsNumber" jdbcType="INTEGER" />
+        <result column="parameter_defects_number" property="parameterDefectsNumber" jdbcType="INTEGER" />
+        <result column="function_defects_number" property="functionDefectsNumber" jdbcType="INTEGER" />
+        <result column="process_defects_number" property="processDefectsNumber" jdbcType="INTEGER" />
+        <result column="prompt_defects_number" property="promptDefectsNumber" jdbcType="INTEGER" />
+        <result column="page_defects_number" property="pageDefectsNumber" jdbcType="INTEGER" />
+        <result column="background_defects_number" property="backgroundDefectsNumber" jdbcType="INTEGER" />
+        <result column="modify_defects_number" property="modifyDefectsNumber" jdbcType="INTEGER" />
+        <result column="design_defects_number" property="designDefectsNumber" jdbcType="INTEGER" />
+        <result column="invalid_defects_number" property="invalidDefectsNumber" jdbcType="INTEGER" />
+        <result column="front_defects_number" property="frontDefectsNumber" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -29,7 +30,7 @@
         production_review_number, technical_review_number, other_reviews_number, external_defects_number, 
         version_defects_number, parameter_defects_number, function_defects_number, process_defects_number, 
         prompt_defects_number, page_defects_number, background_defects_number, modify_defects_number, 
-        design_defects_number, invalid_defects_number
+        design_defects_number, invalid_defects_number, front_defects_number
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -104,6 +105,9 @@
             <if test="invalidDefectsNumber != null" >
                 invalid_defects_number,
             </if>
+            <if test="frontDefectsNumber != null" >
+                front_defects_number,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="epicKey != null" >
@@ -113,55 +117,58 @@
                 #{reqNo,jdbcType=VARCHAR},
             </if>
             <if test="requirementsReviewNumber != null" >
-                #{requirementsReviewNumber,jdbcType=VARCHAR},
+                #{requirementsReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="codeReviewNumber != null" >
-                #{codeReviewNumber,jdbcType=VARCHAR},
+                #{codeReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="testReviewNumber != null" >
-                #{testReviewNumber,jdbcType=VARCHAR},
+                #{testReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="productionReviewNumber != null" >
-                #{productionReviewNumber,jdbcType=VARCHAR},
+                #{productionReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="technicalReviewNumber != null" >
-                #{technicalReviewNumber,jdbcType=VARCHAR},
+                #{technicalReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="otherReviewsNumber != null" >
-                #{otherReviewsNumber,jdbcType=VARCHAR},
+                #{otherReviewsNumber,jdbcType=INTEGER},
             </if>
             <if test="externalDefectsNumber != null" >
-                #{externalDefectsNumber,jdbcType=VARCHAR},
+                #{externalDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="versionDefectsNumber != null" >
-                #{versionDefectsNumber,jdbcType=VARCHAR},
+                #{versionDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="parameterDefectsNumber != null" >
-                #{parameterDefectsNumber,jdbcType=VARCHAR},
+                #{parameterDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="functionDefectsNumber != null" >
-                #{functionDefectsNumber,jdbcType=VARCHAR},
+                #{functionDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="processDefectsNumber != null" >
-                #{processDefectsNumber,jdbcType=VARCHAR},
+                #{processDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="promptDefectsNumber != null" >
-                #{promptDefectsNumber,jdbcType=VARCHAR},
+                #{promptDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="pageDefectsNumber != null" >
-                #{pageDefectsNumber,jdbcType=VARCHAR},
+                #{pageDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="backgroundDefectsNumber != null" >
-                #{backgroundDefectsNumber,jdbcType=VARCHAR},
+                #{backgroundDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="modifyDefectsNumber != null" >
-                #{modifyDefectsNumber,jdbcType=VARCHAR},
+                #{modifyDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="designDefectsNumber != null" >
-                #{designDefectsNumber,jdbcType=VARCHAR},
+                #{designDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="invalidDefectsNumber != null" >
-                #{invalidDefectsNumber,jdbcType=VARCHAR},
+                #{invalidDefectsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="frontDefectsNumber != null" >
+                #{frontDefectsNumber,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -173,55 +180,58 @@
                 req_no = #{reqNo,jdbcType=VARCHAR},
             </if>
             <if test="requirementsReviewNumber != null" >
-                requirements_review_number = #{requirementsReviewNumber,jdbcType=VARCHAR},
+                requirements_review_number = #{requirementsReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="codeReviewNumber != null" >
-                code_review_number = #{codeReviewNumber,jdbcType=VARCHAR},
+                code_review_number = #{codeReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="testReviewNumber != null" >
-                test_review_number = #{testReviewNumber,jdbcType=VARCHAR},
+                test_review_number = #{testReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="productionReviewNumber != null" >
-                production_review_number = #{productionReviewNumber,jdbcType=VARCHAR},
+                production_review_number = #{productionReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="technicalReviewNumber != null" >
-                technical_review_number = #{technicalReviewNumber,jdbcType=VARCHAR},
+                technical_review_number = #{technicalReviewNumber,jdbcType=INTEGER},
             </if>
             <if test="otherReviewsNumber != null" >
-                other_reviews_number = #{otherReviewsNumber,jdbcType=VARCHAR},
+                other_reviews_number = #{otherReviewsNumber,jdbcType=INTEGER},
             </if>
             <if test="externalDefectsNumber != null" >
-                external_defects_number = #{externalDefectsNumber,jdbcType=VARCHAR},
+                external_defects_number = #{externalDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="versionDefectsNumber != null" >
-                version_defects_number = #{versionDefectsNumber,jdbcType=VARCHAR},
+                version_defects_number = #{versionDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="parameterDefectsNumber != null" >
-                parameter_defects_number = #{parameterDefectsNumber,jdbcType=VARCHAR},
+                parameter_defects_number = #{parameterDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="functionDefectsNumber != null" >
-                function_defects_number = #{functionDefectsNumber,jdbcType=VARCHAR},
+                function_defects_number = #{functionDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="processDefectsNumber != null" >
-                process_defects_number = #{processDefectsNumber,jdbcType=VARCHAR},
+                process_defects_number = #{processDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="promptDefectsNumber != null" >
-                prompt_defects_number = #{promptDefectsNumber,jdbcType=VARCHAR},
+                prompt_defects_number = #{promptDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="pageDefectsNumber != null" >
-                page_defects_number = #{pageDefectsNumber,jdbcType=VARCHAR},
+                page_defects_number = #{pageDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="backgroundDefectsNumber != null" >
-                background_defects_number = #{backgroundDefectsNumber,jdbcType=VARCHAR},
+                background_defects_number = #{backgroundDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="modifyDefectsNumber != null" >
-                modify_defects_number = #{modifyDefectsNumber,jdbcType=VARCHAR},
+                modify_defects_number = #{modifyDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="designDefectsNumber != null" >
-                design_defects_number = #{designDefectsNumber,jdbcType=VARCHAR},
+                design_defects_number = #{designDefectsNumber,jdbcType=INTEGER},
             </if>
             <if test="invalidDefectsNumber != null" >
-                invalid_defects_number = #{invalidDefectsNumber,jdbcType=VARCHAR},
+                invalid_defects_number = #{invalidDefectsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="frontDefectsNumber != null" >
+                front_defects_number = #{frontDefectsNumber,jdbcType=INTEGER},
             </if>
         </set>
         where epic_key = #{epicKey,jdbcType=VARCHAR}
@@ -239,55 +249,58 @@
                 and req_no = #{reqNo,jdbcType=VARCHAR}
             </if>
             <if test="requirementsReviewNumber != null" >
-                and requirements_review_number = #{requirementsReviewNumber,jdbcType=VARCHAR}
+                and requirements_review_number = #{requirementsReviewNumber,jdbcType=INTEGER}
             </if>
             <if test="codeReviewNumber != null" >
-                and code_review_number = #{codeReviewNumber,jdbcType=VARCHAR}
+                and code_review_number = #{codeReviewNumber,jdbcType=INTEGER}
             </if>
             <if test="testReviewNumber != null" >
-                and test_review_number = #{testReviewNumber,jdbcType=VARCHAR}
+                and test_review_number = #{testReviewNumber,jdbcType=INTEGER}
             </if>
             <if test="productionReviewNumber != null" >
-                and production_review_number = #{productionReviewNumber,jdbcType=VARCHAR}
+                and production_review_number = #{productionReviewNumber,jdbcType=INTEGER}
             </if>
             <if test="technicalReviewNumber != null" >
-                and technical_review_number = #{technicalReviewNumber,jdbcType=VARCHAR}
+                and technical_review_number = #{technicalReviewNumber,jdbcType=INTEGER}
             </if>
             <if test="otherReviewsNumber != null" >
-                and other_reviews_number = #{otherReviewsNumber,jdbcType=VARCHAR}
+                and other_reviews_number = #{otherReviewsNumber,jdbcType=INTEGER}
             </if>
             <if test="externalDefectsNumber != null" >
-                and external_defects_number = #{externalDefectsNumber,jdbcType=VARCHAR}
+                and external_defects_number = #{externalDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="versionDefectsNumber != null" >
-                and version_defects_number = #{versionDefectsNumber,jdbcType=VARCHAR}
+                and version_defects_number = #{versionDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="parameterDefectsNumber != null" >
-                and parameter_defects_number = #{parameterDefectsNumber,jdbcType=VARCHAR}
+                and parameter_defects_number = #{parameterDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="functionDefectsNumber != null" >
-                and function_defects_number = #{functionDefectsNumber,jdbcType=VARCHAR}
+                and function_defects_number = #{functionDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="processDefectsNumber != null" >
-                and process_defects_number = #{processDefectsNumber,jdbcType=VARCHAR}
+                and process_defects_number = #{processDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="promptDefectsNumber != null" >
-                and prompt_defects_number = #{promptDefectsNumber,jdbcType=VARCHAR}
+                and prompt_defects_number = #{promptDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="pageDefectsNumber != null" >
-                and page_defects_number = #{pageDefectsNumber,jdbcType=VARCHAR}
+                and page_defects_number = #{pageDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="backgroundDefectsNumber != null" >
-                and background_defects_number = #{backgroundDefectsNumber,jdbcType=VARCHAR}
+                and background_defects_number = #{backgroundDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="modifyDefectsNumber != null" >
-                and modify_defects_number = #{modifyDefectsNumber,jdbcType=VARCHAR}
+                and modify_defects_number = #{modifyDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="designDefectsNumber != null" >
-                and design_defects_number = #{designDefectsNumber,jdbcType=VARCHAR}
+                and design_defects_number = #{designDefectsNumber,jdbcType=INTEGER}
             </if>
             <if test="invalidDefectsNumber != null" >
-                and invalid_defects_number = #{invalidDefectsNumber,jdbcType=VARCHAR}
+                and invalid_defects_number = #{invalidDefectsNumber,jdbcType=INTEGER}
+            </if>
+            <if test="frontDefectsNumber != null" >
+                and front_defects_number = #{frontDefectsNumber,jdbcType=INTEGER}
             </if>
         </where>
     </select>

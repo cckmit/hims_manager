@@ -2,7 +2,7 @@
  * @ClassName DefectDetailsDO
  * @Description
  * @version 1.0
- * @Date 2020-06-30 16:04:29
+ * @Date 2020-07-02 10:43:29
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -19,6 +19,10 @@ public class DefectDetailsDO extends BaseDO {
      * @Fields reqNo 缺陷归属需求编号
      */
     private String reqNo;
+    /**
+     * @Fields defectName 缺陷名称
+     */
+    private String defectName;
     /**
      * @Fields epicKey 对应epic编号
      */
@@ -54,7 +58,7 @@ public class DefectDetailsDO extends BaseDO {
     /**
      * @Fields testNumber 缺陷重测次数
      */
-    private String testNumber;
+    private Integer testNumber;
 
     public String getJireKey() {
         return jireKey;
@@ -70,6 +74,14 @@ public class DefectDetailsDO extends BaseDO {
 
     public void setReqNo(String reqNo) {
         this.reqNo = reqNo;
+    }
+
+    public String getDefectName() {
+        return defectName;
+    }
+
+    public void setDefectName(String defectName) {
+        this.defectName = defectName;
     }
 
     public String getEpicKey() {
@@ -136,11 +148,11 @@ public class DefectDetailsDO extends BaseDO {
         this.assignee = assignee;
     }
 
-    public String getTestNumber() {
+    public Integer getTestNumber() {
         return testNumber;
     }
 
-    public void setTestNumber(String testNumber) {
+    public void setTestNumber(Integer testNumber) {
         this.testNumber = testNumber;
     }
 

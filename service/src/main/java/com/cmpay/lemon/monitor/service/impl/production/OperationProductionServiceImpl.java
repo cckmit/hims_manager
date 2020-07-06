@@ -21,13 +21,13 @@ import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.*;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +69,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     private ReqTaskService reqTaskService;
     @Autowired
+    JiraDataCollationService jiraDataCollationService;
+    @Autowired
     IPermiUserDao permiUserDao;
     @Autowired
     ITPermiDeptDao permiDeptDao;
@@ -87,10 +89,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private SystemRoleService systemRoleService;
     @Autowired
     private SystemUserService systemUserService;
+
+
     // 180 完成产品发布
     private static final String FINISHPRD = "180";
 
-    public  static  final  long configurationAdministratorRoleID=5003;
+    public static final long configurationAdministratorRoleID = 5003;
+
     @Override
     public ProductionRspBO find(ProductionBO productionBO) {
         PageInfo<ProductionBO> pageInfo = getPageInfo(productionBO);
@@ -100,27 +105,28 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
     }
+
     @Override
-    public ScheduleRspBO find1(ScheduleBO scheduleBO){
+    public ScheduleRspBO find1(ScheduleBO scheduleBO) {
         PageInfo<ScheduleBO> pageInfo = getPageInfo1(scheduleBO);
         List<ScheduleBO> scheduleBOList = BeanConvertUtils.convertList(pageInfo.getList(), ScheduleBO.class);
-        for (int i=0;i<scheduleBOList.size();i++) {
-            if(scheduleBOList.get(i).getProNumber().startsWith("REQ") || scheduleBOList.get(i).getProNumber().startsWith("P") || scheduleBOList.get(i).getProNumber().startsWith("FIRE")){
+        for (int i = 0; i < scheduleBOList.size(); i++) {
+            if (scheduleBOList.get(i).getProNumber().startsWith("REQ") || scheduleBOList.get(i).getProNumber().startsWith("P") || scheduleBOList.get(i).getProNumber().startsWith("FIRE")) {
 
-                ProductionDO bean=operationProductionDao.findProductionBean(scheduleBOList.get(i).getProNumber());
-                if(bean!=null){
+                ProductionDO bean = operationProductionDao.findProductionBean(scheduleBOList.get(i).getProNumber());
+                if (bean != null) {
                     scheduleBOList.get(i).setProType(bean.getProType());
                     scheduleBOList.get(i).setIsOperationProduction(bean.getIsOperationProduction());
-                }else{
+                } else {
                     scheduleBOList.get(i).setProType("查无此信息");
                     scheduleBOList.get(i).setIsOperationProduction("");
                 }
             }
-            if(scheduleBOList.get(i).getProNumber().startsWith("SYS-OPR")){
-                OperationApplicationDO bean=operationApplicationDao.findBaseOperationalApplicationInfo(scheduleBOList.get(i).getProNumber());
-                if(bean!=null){
+            if (scheduleBOList.get(i).getProNumber().startsWith("SYS-OPR")) {
+                OperationApplicationDO bean = operationApplicationDao.findBaseOperationalApplicationInfo(scheduleBOList.get(i).getProNumber());
+                if (bean != null) {
                     scheduleBOList.get(i).setProType(bean.getSysOperType());
-                }else{
+                } else {
                     scheduleBOList.get(i).setProType("查无此信息");
                 }
             }
@@ -130,6 +136,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         productionRspBO.setPageInfo(pageInfo);
         return productionRspBO;
     }
+
     private PageInfo<ProductionBO> getPageInfo(ProductionBO productionBO) {
         ProductionDO productionDO = new ProductionDO();
         BeanConvertUtils.convert(productionDO, productionBO);
@@ -137,6 +144,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 () -> BeanConvertUtils.convertList(operationProductionDao.findPageBreakByCondition(productionDO), ProductionBO.class));
         return pageInfo;
     }
+
     private PageInfo<ScheduleBO> getPageInfo1(ScheduleBO scheduleBO) {
         ScheduleDO productionDO = new ScheduleDO();
         BeanConvertUtils.convert(productionDO, scheduleBO);
@@ -144,8 +152,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 () -> BeanConvertUtils.convertList(operationProductionDao.findPageBreakBySchedule(productionDO), ScheduleBO.class));
         return pageInfo;
     }
+
     @Override
-    public void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO){
+    public void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO) {
         ProductionDO productionDO = new ProductionDO();
         BeanConvertUtils.convert(productionDO, productionBO);
         List<ProductionDO> list = operationProductionDao.findExportExcelListByDate(productionDO);
@@ -158,7 +167,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
             // 设置excel的文件名称
             String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
-                       response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             workbook.write(bufferedOutPut);
             bufferedOutPut.flush();
@@ -166,14 +175,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }
+
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+    public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr) {
+
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
-        ScheduleDO scheduleBean =new ScheduleDO(currentUser);
-        String[] pro_number_list=taskIdStr.split("~");
+        ScheduleDO scheduleBean = new ScheduleDO(currentUser);
+        String[] pro_number_list = taskIdStr.split("~");
+
         if(pro_number_list[0].equals("1")){
             //return ajaxDoneError("请填写进行此操作原因");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -714,7 +726,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        return ;//ajaxDoneSuccess("批量操作成功");
+
+        
+        if (pro_number_list[0].equals("dtc")) {
+            jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[2]);
+        }
+
+
+        return;//ajaxDoneSuccess("批量操作成功");
     }
 
     @Override
@@ -729,16 +748,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public File exportUnusualExcel(
-                                   List<ProductionBO> list)  {
+            List<ProductionBO> list) {
         String fileName = "正常投产(非投产日)申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/import/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/import/";
-        }else {
+        File file = null;
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/import/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/import/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -746,38 +764,38 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             ExcelUnusualListUtil util = new ExcelUnusualListUtil();
-            util.createExcel(filePath, list,null);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
 
     @Override
-    public File exportUrgentExcel(List<ProductionBO> list){
+    public File exportUrgentExcel(List<ProductionBO> list) {
         String fileName = "救火更新申请表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
+        File file = null;
         try {
-            String path="";
-            if(LemonUtils.getEnv().equals(Env.SIT)) {
-                path= "/home/devms/temp/import/";
-            } else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                path= "/home/devadm/temp/import/";
-            }else {
+            String path = "";
+            if (LemonUtils.getEnv().equals(Env.SIT)) {
+                path = "/home/devms/temp/import/";
+            } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+                path = "/home/devadm/temp/import/";
+            } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             String filePath = path + fileName;
             ExcelUrgentListUtil util = new ExcelUrgentListUtil();
-            util.createExcel(filePath, list,null);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
@@ -786,10 +804,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     public ProductionBO searchProdutionDetail(String proNumber) {
-        ProductionBO productionBO=null;
+        ProductionBO productionBO = null;
         ProductionDO productionBean = operationProductionDao.findProductionBean(proNumber);
-        if(productionBean!=null) {
-            productionBO= BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
+        if (productionBean != null) {
+            productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
         }
         return productionBO;
     }
@@ -828,12 +846,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date1 = sdf.parse(date);
             operationApplicationDO.setProposeDate(new java.sql.Date(date1.getTime()));
-        }catch ( Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //获取系统录入状态变更不及时清单
         return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList(operationApplicationDO);
     }
+
     @Override
     public List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date) {
         OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
@@ -842,7 +861,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date1 = sdf.parse(date);
             operationApplicationDO.setProposeDate(new java.sql.Date(date1.getTime()));
-        }catch ( Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //获取审批通过待部署清单
@@ -852,17 +871,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     /**
      * @param date 日期
-     *  计算日期之后投产验证不及时清单
+     *             计算日期之后投产验证不及时清单
      */
     @Override
     public List<ProductionDO> getProductionVerificationIsNotTimely(String date) {
         ProductionDO productionDO = new ProductionDO();
         try {
-        productionDO.setProStatus("部署完成待验证");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date date1 = sdf.parse(date);
-        productionDO.setProDate(new java.sql.Date(date1.getTime()));
-        }catch ( Exception e){
+            productionDO.setProStatus("部署完成待验证");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            productionDO.setProDate(new java.sql.Date(date1.getTime()));
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //获取状态变更不及时清单
@@ -871,7 +890,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     /**
      * @param date 日期
-     *  计算日期之后投产验证不及时清单
+     *             计算日期之后投产验证不及时清单
      */
     @Override
     public List<ProductionDO> getTheListOfProductionToBeDeployed(String date) {
@@ -881,7 +900,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date date1 = sdf.parse(date);
             productionDO.setProDate(new java.sql.Date(date1.getTime()));
-        }catch ( Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         //获取状态变更不及时清单
@@ -892,22 +911,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
         //未投产,req前缀投产编号则查询该编号对应的需求计划
         DemandDO demandDO = new DemandDO();
-        if(proNumber.startsWith("REQ")) {
+        if (proNumber.startsWith("REQ")) {
             //查询该是编号是否已经投产
             ProductionBO productionBO = this.searchProdutionDetail(proNumber);
-            if(productionBO!=null && !productionBO.getProStatus().equals("投产取消")&& !productionBO.getProStatus().equals("投产打回")&& !productionBO.getProStatus().equals("投产回退")){
+            if (productionBO != null && !productionBO.getProStatus().equals("投产取消") && !productionBO.getProStatus().equals("投产打回") && !productionBO.getProStatus().equals("投产回退")) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber+"，该投产编号已经投产!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber + "，该投产编号已经投产!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             demandDO.setReqNo(proNumber);
             demandDO.setReqSts("20");
             List<DemandDO> demandDOList = demandDao.find(demandDO);
-            if(demandDOList.isEmpty()){
+            if (demandDOList.isEmpty()) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber+"，该投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(proNumber + "，该投产编号未在需求计划中存在，或需求状态不为进行中，请确认后重新填写!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }else {
+            } else {
                 demandDO = demandDOList.get(0);
             }
         }
@@ -930,16 +949,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
 
-    public File sendExportExcel_Result(List<ProductionDO> list){
+    public File sendExportExcel_Result(List<ProductionDO> list) {
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        File file = null;
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -947,11 +965,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationResultProductionUtil util = new SendExcelOperationResultProductionUtil();
-            util.createExcel(filePath, list,null);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
@@ -959,19 +977,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     /**
      * IT中心每周投产日情况通报附件1：投产清单
+     *
      * @param list 投产需求集合
      * @return
      */
-    public File sendITExportExcel_Result(List<ProductionDO> list){
+    public File sendITExportExcel_Result(List<ProductionDO> list) {
         String fileName = "附件1：投产清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        File file = null;
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -979,26 +997,25 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationITResultProductionUtil util = new SendExcelOperationITResultProductionUtil();
-            util.createExcel(filePath, list,null);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
 
-    public File sendExportExcel_out(List<ProductionDO> list){
+    public File sendExportExcel_out(List<ProductionDO> list) {
         String fileName = "投产记录通报清单" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        File file = null;
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1006,18 +1023,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationProductionUtil util = new SendExcelOperationProductionUtil();
-            util.createExcel(filePath, list,null);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
+
     //根据日期获取礼拜
     public static String testDate(String newtime) {
-        String dayNames[] = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+        String dayNames[] = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         Calendar c = Calendar.getInstance();// 获得一个日历的实例
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         try {
@@ -1025,32 +1043,33 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return dayNames[c.get(Calendar.DAY_OF_WEEK)-1];
+        return dayNames[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
+
     //投产清单通报
     @Override
-    public void sendGoExport(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        String[] pro_number_list=taskIdStr.split("~");
-        if(pro_number_list[0].equals("1")){
+    public void sendGoExport(HttpServletRequest request, HttpServletResponse response, String taskIdStr) {
+        String[] pro_number_list = taskIdStr.split("~");
+        if (pro_number_list[0].equals("1")) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写必填信息!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        if(pro_number_list.length==2){
+        if (pro_number_list.length == 2) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        List<ProductionDO> list=new ArrayList<ProductionDO>();
+        List<ProductionDO> list = new ArrayList<ProductionDO>();
         StringBuffer sbfStr = new StringBuffer();
-        for(int i=2;i<pro_number_list.length;i++){
-            ProductionDO bean=operationProductionDao.findExportExcelList(pro_number_list[i]);
-            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+        for (int i = 2; i < pro_number_list.length; i++) {
+            ProductionDO bean = operationProductionDao.findExportExcelList(pro_number_list[i]);
+            if (!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            if(!bean.getProStatus().equals("投产待部署") && !bean.getProStatus().equals("投产提出")){
+            if (!bean.getProStatus().equals("投产待部署") && !bean.getProStatus().equals("投产提出")) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产提出或者待部署状态投产发送!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1059,16 +1078,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setUpdateOperator(pro_number_list[0]);
             operationProductionDao.updateAllProduction(bean);
             list.add(bean);
-            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
-                if(sbfStr.length()<1){
+            if (bean.getMailLeader() != null && !bean.getMailLeader().equals("")) {
+                if (sbfStr.length() < 1) {
                     sbfStr.append(bean.getMailLeader());
-                }else{
-                    sbfStr.append(";"+bean.getMailLeader());
+                } else {
+                    sbfStr.append(";" + bean.getMailLeader());
                 }
             }
         }
-        File file=sendExportExcel_out(list);
-        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("1");
+        File file = sendExportExcel_out(list);
+        MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("1");
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
@@ -1080,31 +1099,31 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         /**
          * 附件
          */
-        Vector<File> files = new Vector<File>() ;
-        files.add(file) ;
-        mailInfo.setFile(files) ;
+        Vector<File> files = new Vector<File>();
+        files.add(file);
+        mailInfo.setFile(files);
         /**
          * 收件人邮箱
          */
         String[] mailToAddressDemo = null;
-        if(sbfStr !=null && sbfStr.length()>0){
-            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;"+sbfStr.toString()+";"+mp.getMailUser()).split(";");
-        }else{
-            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;"+mp.getMailUser()).split(";");
+        if (sbfStr != null && sbfStr.length() > 0) {
+            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;" + sbfStr.toString() + ";" + mp.getMailUser()).split(";");
+        } else {
+            mailToAddressDemo = ("wang_lu@hisuntech.com;hu_yi@hisuntech.com;fu_yz@hisuntech.com;" + mp.getMailUser()).split(";");
         }
 
         //收件人去重复
         List<String> result = new ArrayList<String>();
         boolean flag;
-        for(int i=0;i<mailToAddressDemo.length;i++){
+        for (int i = 0; i < mailToAddressDemo.length; i++) {
             flag = false;
-            for(int j=0;j<result.size();j++){
-                if(mailToAddressDemo[i].equals(result.get(j))){
+            for (int j = 0; j < result.size(); j++) {
+                if (mailToAddressDemo[i].equals(result.get(j))) {
                     flag = true;
                     break;
                 }
             }
-            if(!flag){
+            if (!flag) {
                 result.add(mailToAddressDemo[i]);
             }
         }
@@ -1112,9 +1131,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         mailInfo.setReceivers(mailToAddress);
         mailInfo.setSubject("【投产清单通报】");
         //记录邮箱信息
-        MailFlowDO bn=new MailFlowDO("投产清单通报",Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, "" ,"");
+        MailFlowDO bn = new MailFlowDO("投产清单通报", Constant.P_EMAIL_NAME, mp.getMailUser() + ";" + sbfStr, "", "");
         //组织发送内容
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         sb.append("<table border ='1' style='width:3000px;border-collapse: collapse;background-color: white;'>");
         sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th>");
         sb.append("<th>申请部门</th><th>投产申请人</th><th>申请人联系方式</th><th>产品所属模块</th><th>业务需求提出人</th>");
@@ -1122,52 +1141,52 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("<th>投产后是否需要运维监控</th><th>是否涉及证书</th><th>是否预投产验证</th><th>不能预投产验证原因</th><th>预投产验证结果</th>");
         sb.append("<th>验证人</th><th>验证人联系方式</th><th>验证复核人</th><th>验证复核人联系方式</th><th>生产验证方式</th>");
         sb.append("<th>开发负责人</th><th>审批人</th><th>版本更新操作人</th><th>备注 (影响范围,其它补充说明)</th></tr>");
-        for(int i=2;i<pro_number_list.length;i++){
+        for (int i = 2; i < pro_number_list.length; i++) {
 
-            ProductionDO bean=operationProductionDao.findExportExcelList(pro_number_list[i]);
+            ProductionDO bean = operationProductionDao.findExportExcelList(pro_number_list[i]);
             String proNumber = bean.getProNumber();
-            if(bean.getProNumber().startsWith("REQ")){
-                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
+            if (bean.getProNumber().startsWith("REQ")) {
+                proNumber = bean.getProNumber().substring(4, bean.getProNumber().length()).toString();
             }
-            sb.append("<tr><td>"+proNumber+"</td>");//投产编号
-            sb.append("<td >"+bean.getProNeed()+"</td>");//需求名称及内容简述
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProType()+"</td>");//投产类型
+            sb.append("<tr><td>" + proNumber + "</td>");//投产编号
+            sb.append("<td >" + bean.getProNeed() + "</td>");//需求名称及内容简述
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProType() + "</td>");//投产类型
             // 日期转换
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if(bean.getProDate()!=null)
-                sb.append("<td style='white-space: nowrap;'>"+sdf.format(bean.getProDate())+"</td>");//计划投产日期
-            sb.append("<td style='white-space: nowrap;'>"+bean.getApplicationDept()+"</td>");//申请部门
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProApplicant()+"</td>");//投产申请人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getApplicantTel()+"</td>");//申请人联系方式
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProModule()+"</td>");//产品所属模块
-            sb.append("<td style='white-space: nowrap;'>"+bean.getBusinessPrincipal()+"</td>");//业务需求提出人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getBasePrincipal()+"</td>");//基地负责人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProManager()+"</td>");//产品经理
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProStatus()+"</td>");//投产状态
-            sb.append("<td >"+bean.getIsUpDatabase()+"</td>");//是否更新数据库数据
-            sb.append("<td >"+bean.getIsUpStructure()+"</td>");//是否更新数据库(表)结构
-            sb.append("<td >"+bean.getProOperation()+"</td>");//投产后是否需要运维监控
-            sb.append("<td >"+bean.getIsRefCerificate()+"</td>");//是否涉及证书
-            sb.append("<td >"+bean.getIsAdvanceProduction()+"</td>");//是否预投产验证
-            if(bean.getNotAdvanceReason()!=null && !bean.getNotAdvanceReason().equals("")){
-                sb.append("<td >"+bean.getNotAdvanceReason()+"</td>");//不能预投产验证原因
-            }else{
+            if (bean.getProDate() != null)
+                sb.append("<td style='white-space: nowrap;'>" + sdf.format(bean.getProDate()) + "</td>");//计划投产日期
+            sb.append("<td style='white-space: nowrap;'>" + bean.getApplicationDept() + "</td>");//申请部门
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProApplicant() + "</td>");//投产申请人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getApplicantTel() + "</td>");//申请人联系方式
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProModule() + "</td>");//产品所属模块
+            sb.append("<td style='white-space: nowrap;'>" + bean.getBusinessPrincipal() + "</td>");//业务需求提出人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getBasePrincipal() + "</td>");//基地负责人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProManager() + "</td>");//产品经理
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProStatus() + "</td>");//投产状态
+            sb.append("<td >" + bean.getIsUpDatabase() + "</td>");//是否更新数据库数据
+            sb.append("<td >" + bean.getIsUpStructure() + "</td>");//是否更新数据库(表)结构
+            sb.append("<td >" + bean.getProOperation() + "</td>");//投产后是否需要运维监控
+            sb.append("<td >" + bean.getIsRefCerificate() + "</td>");//是否涉及证书
+            sb.append("<td >" + bean.getIsAdvanceProduction() + "</td>");//是否预投产验证
+            if (bean.getNotAdvanceReason() != null && !bean.getNotAdvanceReason().equals("")) {
+                sb.append("<td >" + bean.getNotAdvanceReason() + "</td>");//不能预投产验证原因
+            } else {
                 sb.append("<td ></td>");//预投产验证结果
             }
-            if(bean.getProAdvanceResult()!=null && !bean.getProAdvanceResult().equals("")){
-                sb.append("<td >"+bean.getProAdvanceResult()+"</td>");//预投产验证结果
-            }else{
+            if (bean.getProAdvanceResult() != null && !bean.getProAdvanceResult().equals("")) {
+                sb.append("<td >" + bean.getProAdvanceResult() + "</td>");//预投产验证结果
+            } else {
                 sb.append("<td ></td>");//预投产验证结果
             }
-            sb.append("<td style='white-space: nowrap;'>"+bean.getIdentifier()+"</td>");//验证人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getIdentifierTel()+"</td>");//验证人联系方式
-            sb.append("<td style='white-space: nowrap;'>"+bean.getProChecker()+"</td>");//验证复核人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getCheckerTel()+"</td>");//验证复核人联系方式
-            sb.append("<td style='white-space: nowrap;'>"+bean.getValidation()+"</td>");//生产验证方式
-            sb.append("<td style='white-space: nowrap;'>"+bean.getDevelopmentLeader()+"</td>");//开发负责人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getApprover()+"</td>");//审批人
-            sb.append("<td style='white-space: nowrap;'>"+bean.getUpdateOperator()+"</td>");
-            sb.append("<td style='width:100px;'>"+bean.getRemark()+"</td></tr>");//备注(更新原因及影响范围详细说明)
+            sb.append("<td style='white-space: nowrap;'>" + bean.getIdentifier() + "</td>");//验证人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getIdentifierTel() + "</td>");//验证人联系方式
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProChecker() + "</td>");//验证复核人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getCheckerTel() + "</td>");//验证复核人联系方式
+            sb.append("<td style='white-space: nowrap;'>" + bean.getValidation() + "</td>");//生产验证方式
+            sb.append("<td style='white-space: nowrap;'>" + bean.getDevelopmentLeader() + "</td>");//开发负责人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getApprover() + "</td>");//审批人
+            sb.append("<td style='white-space: nowrap;'>" + bean.getUpdateOperator() + "</td>");
+            sb.append("<td style='width:100px;'>" + bean.getRemark() + "</td></tr>");//备注(更新原因及影响范围详细说明)
         }
         sb.append("</table>");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1175,39 +1194,40 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String change = "计划";
         // 获取本周投产日
         String config_time = productTimeService.findProductTimeByID(3);
-        int res=format.compareTo(config_time);
-        if(res>=0){
+        int res = format.compareTo(config_time);
+        if (res >= 0) {
             change = "最终";
         }
-        mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是"+change+"本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +
-                "本周产品投产更新牵头负责人是"+pro_number_list[1]+",请各生产验证负责人将验证结果反馈给"+pro_number_list[1]+"。无特殊原因，投产后验证工作需在投产当晚完成，请知晓。<br/>如有任何问题请及时反馈与沟通。<br/>"+sb.toString());
+        mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是" + change + "本周投产清单,烦请需求负责人提前做好投产前的风险评估与评审准备工作。" +
+                "本周产品投产更新牵头负责人是" + pro_number_list[1] + ",请各生产验证负责人将验证结果反馈给" + pro_number_list[1] + "。无特殊原因，投产后验证工作需在投产当晚完成，请知晓。<br/>如有任何问题请及时反馈与沟通。<br/>" + sb.toString());
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        if(isSend){
+        if (isSend) {
             operationProductionDao.addMailFlow(bn);
-            if(file.isFile() && file.exists()){
+            if (file.isFile() && file.exists()) {
                 file.delete();
             }
-        }else{
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        return ;//ajaxDoneSuccess("邮件发送成功！");
+        return;//ajaxDoneSuccess("邮件发送成功！");
     }
+
     //IT中心投产日投产情况通报
     @Override
-    public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, ITProductionBO itProductionBO){
+    public void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, ITProductionBO itProductionBO) {
 
-        String[] pro_number_list=itProductionBO.getTaskIdStr().split("~");
-        List<ProductionDO> list=new ArrayList<ProductionDO>();
-        for(int i=0;i<pro_number_list.length;i++){
-            ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
-            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+        String[] pro_number_list = itProductionBO.getTaskIdStr().split("~");
+        List<ProductionDO> list = new ArrayList<ProductionDO>();
+        for (int i = 0; i < pro_number_list.length; i++) {
+            ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[i]);
+            if (!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            if(!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")){
+            if (!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择部署完成待验证或者投产验证完成的投产状态发送!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1215,15 +1235,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             list.add(bean);
         }
 //        File file=sendITExportExcel_Result(list);
-        List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
-        for(int i=0;i<list.size();i++){
+        List<List<ProblemDO>> pblist = new ArrayList<List<ProblemDO>>();
+        for (int i = 0; i < list.size(); i++) {
             pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
         }
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
-        File file2=exportExcelIT_Nei(list, itProductionBO, currentUser);
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        File file2 = exportExcelIT_Nei(list, itProductionBO, currentUser);
 
-        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("5");
-        MailGroupDO mp2=operationProductionDao.findMailGroupBeanDetail("6");
+        MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("5");
+        MailGroupDO mp2 = operationProductionDao.findMailGroupBeanDetail("6");
 
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -1236,10 +1256,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         /**
          * 附件
          */
-        Vector<File> files = new Vector<File>() ;
-        files.add(file2) ;
+        Vector<File> files = new Vector<File>();
+        files.add(file2);
 //        files.add(file) ;
-        mailInfo.setFile(files) ;
+        mailInfo.setFile(files);
         /**
          * 收件人邮箱
          */
@@ -1249,63 +1269,64 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //收件人去重复
         List<String> result = new ArrayList<String>();
         boolean flag;
-        for(int i=0;i<mailToAddressDemo.length;i++){
+        for (int i = 0; i < mailToAddressDemo.length; i++) {
             flag = false;
-            for(int j=0;j<result.size();j++){
-                if(mailToAddressDemo[i].equals(result.get(j))){
+            for (int j = 0; j < result.size(); j++) {
+                if (mailToAddressDemo[i].equals(result.get(j))) {
                     flag = true;
                     break;
                 }
             }
-            if(!flag){
+            if (!flag) {
                 result.add(mailToAddressDemo[i]);
             }
         }
         mailInfo.setReceivers(mailToAddressDemo);
         mailInfo.setCcs(mp2.getMailUser().split(";"));
         //记录邮箱信息
-        MailFlowDO bn=new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file2.getName() ,"");
+        MailFlowDO bn = new MailFlowDO("IT中心每周投产日情况通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file2.getName(), "");
         //添加发送内容
-        mailInfo.setSubject("【IT中心每周投产日情况通报"+sdf.format(new Date())+"】");
+        mailInfo.setSubject("【IT中心每周投产日情况通报" + sdf.format(new Date()) + "】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本次投产正常,详情请参见附件<br/><br/>");
         // 这个类主要来发送邮件
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionDao.addMailFlow(bn);
-        if(isSend){
-            if(file2.isFile() && file2.exists()){
+        if (isSend) {
+            if (file2.isFile() && file2.exists()) {
                 file2.delete();
             }
         }
     }
+
     // 投产结果通报
     @Override
-    public void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        String[] pro_number_list=taskIdStr.split("~");
-        List<ProductionDO> list=new ArrayList<ProductionDO>();
+    public void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String taskIdStr) {
+        String[] pro_number_list = taskIdStr.split("~");
+        List<ProductionDO> list = new ArrayList<ProductionDO>();
         StringBuffer sbfStr = new StringBuffer();
-        for(int i=0;i<pro_number_list.length;i++){
-            ProductionDO bean=operationProductionDao.findProductionBean(pro_number_list[i]);
-            if(!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))){
+        for (int i = 0; i < pro_number_list.length; i++) {
+            ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[i]);
+            if (!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是"))) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产日正常投产类型发送");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            if(!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")){
+            if (!bean.getProStatus().equals("部署完成待验证") && !bean.getProStatus().equals("投产验证完成")) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择部署完成待验证或者投产验证完成的投产状态发送!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             list.add(bean);
-            if(bean.getMailLeader() !=null && !bean.getMailLeader().equals("")){
-                if(sbfStr.length()<1){
+            if (bean.getMailLeader() != null && !bean.getMailLeader().equals("")) {
+                if (sbfStr.length() < 1) {
                     sbfStr.append(bean.getMailLeader());
-                }else{
-                    sbfStr.append(";"+bean.getMailLeader());
+                } else {
+                    sbfStr.append(";" + bean.getMailLeader());
                 }
             }
         }
-        File file=sendExportExcel_Result(list);
-        MailGroupDO mp=operationProductionDao.findMailGroupBeanDetail("2");
+        File file = sendExportExcel_Result(list);
+        MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("2");
 
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
@@ -1318,41 +1339,41 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         /**
          * 附件
          */
-        Vector<File> files = new Vector<File>() ;
-        files.add(file) ;
-        mailInfo.setFile(files) ;
+        Vector<File> files = new Vector<File>();
+        files.add(file);
+        mailInfo.setFile(files);
         /**
          * 收件人邮箱
          */
         String[] mailToAddressDemo = null;
-        if(sbfStr !=null && sbfStr.length()>0){
-            mailToAddressDemo = (sbfStr.toString()+";"+mp.getMailUser()).split(";");
-        }else{
+        if (sbfStr != null && sbfStr.length() > 0) {
+            mailToAddressDemo = (sbfStr.toString() + ";" + mp.getMailUser()).split(";");
+        } else {
             mailToAddressDemo = mp.getMailUser().split(";");
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        mailInfo.setSubject("【投产结果通报】"+sdf.format(new Date())+"产品需求投产验证结果");
+        mailInfo.setSubject("【投产结果通报】" + sdf.format(new Date()) + "产品需求投产验证结果");
         //收件人去重复
         List<String> result = new ArrayList<String>();
         boolean flag;
-        for(int i=0;i<mailToAddressDemo.length;i++){
+        for (int i = 0; i < mailToAddressDemo.length; i++) {
             flag = false;
-            for(int j=0;j<result.size();j++){
-                if(mailToAddressDemo[i].equals(result.get(j))){
+            for (int j = 0; j < result.size(); j++) {
+                if (mailToAddressDemo[i].equals(result.get(j))) {
                     flag = true;
                     break;
                 }
             }
-            if(!flag){
+            if (!flag) {
                 result.add(mailToAddressDemo[i]);
             }
         }
         String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
         mailInfo.setReceivers(mailToAddress);
         //记录邮箱信息
-        MailFlowDO bn=new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser()+";"+sbfStr, file.getName() ,"");
+        MailFlowDO bn = new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser() + ";" + sbfStr, file.getName(), "");
         //添加发送内容
-        StringBuffer sb=new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
         sb.append("<tr><th>投产编号</th><th>产品名称</th><th>需求名称及内容简述</th><th>基地负责人</th>");
         sb.append("<th>产品经理</th><th>生产验证方式</th><th>验证结果</th></tr>");
@@ -1362,77 +1383,77 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 //            if(bean.getProNumber().startsWith("REQ")){
 //                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
 //            }
-            sb.append("<td >"+proNumber+"</td>");//投产编号
-            sb.append("<td >"+bean.getProModule()+"</td>");//产品名称
-            sb.append("<td >"+bean.getProNeed()+"</td>");//需求名称及内容简述
-            sb.append("<td >"+bean.getBasePrincipal()+"</td>");//基地负责人
-            sb.append("<td >"+bean.getProManager()+"</td>");//产品经理
-            sb.append("<td >"+bean.getValidation()+"</td>");//生产验证方式
+            sb.append("<td >" + proNumber + "</td>");//投产编号
+            sb.append("<td >" + bean.getProModule() + "</td>");//产品名称
+            sb.append("<td >" + bean.getProNeed() + "</td>");//需求名称及内容简述
+            sb.append("<td >" + bean.getBasePrincipal() + "</td>");//基地负责人
+            sb.append("<td >" + bean.getProManager() + "</td>");//产品经理
+            sb.append("<td >" + bean.getValidation() + "</td>");//生产验证方式
             //验证结果
-            if(bean.getProStatus().equals("投产验证完成")){
+            if (bean.getProStatus().equals("投产验证完成")) {
                 sb.append("<td >验证通过</td></tr>");//验证结果
-            }else{
+            } else {
                 sb.append("<td >验证未完成</td></tr>");//验证结果
             }
 
         }
         sb.append("</table>");
-        mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！"+sb.toString());
+        mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！" + sb.toString());
         // 这个类主要来发送邮件
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
         operationProductionDao.addMailFlow(bn);
-        if(isSend){
-            if(file.isFile() && file.exists()){
+        if (isSend) {
+            if (file.isFile() && file.exists()) {
                 file.delete();
             }
         }
 
 
-        MailGroupDO mpb=operationProductionDao.findMailGroupBeanDetail("3");
+        MailGroupDO mpb = operationProductionDao.findMailGroupBeanDetail("3");
         mp.setMailUser(mpb.getMailUser());
-        List<List<ProblemDO>> pblist=new ArrayList<List<ProblemDO>>();
-        for(int i=0;i<list.size();i++){
+        List<List<ProblemDO>> pblist = new ArrayList<List<ProblemDO>>();
+        for (int i = 0; i < list.size(); i++) {
             pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
         }
         //获取登录用户名
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
-        File file2=exportExcel_Nei(list, pblist, currentUser);
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        File file2 = exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
-        MailFlowDO bfn=new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName() ,"");
+        MailFlowDO bfn = new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName(), "");
         String[] mailToAddresss = mp.getMailUser().split(";");
         mailInfo.setReceivers(mailToAddresss);
         /**
          * 附件
          */
-        Vector<File> file1 = new Vector<File>() ;
-        file1.add(file2) ;
-        mailInfo.setFile(file1) ;
-        mailInfo.setSubject("【每周投产通报"+sdf.format(new Date())+"】");
+        Vector<File> file1 = new Vector<File>();
+        file1.add(file2);
+        mailInfo.setFile(file1);
+        mailInfo.setSubject("【每周投产通报" + sdf.format(new Date()) + "】");
         mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情请参见附件<br/><br/>");
         boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        if(isSends){
+        if (isSends) {
             operationProductionDao.addMailFlow(bfn);
-            if(file2.isFile() && file2.exists()){
+            if (file2.isFile() && file2.exists()) {
                 file2.delete();
             }
-        }else{
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        return ;//ajaxDoneSuccess("邮件发送成功!");
+        return;//ajaxDoneSuccess("邮件发送成功!");
     }
-    public File exportExcel_Nei(List<ProductionDO> list,List<List<ProblemDO>> proBeanList,String userName){
+
+    public File exportExcel_Nei(List<ProductionDO> list, List<List<ProblemDO>> proBeanList, String userName) {
         String fileName = "每周投产通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
+        File file = null;
         //依据环境配置路径
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1440,26 +1461,26 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationResultProblemUtil util = new SendExcelOperationResultProblemUtil();
-            util.createExcel(filePath, list,null,proBeanList,userName);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null, proBeanList, userName);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
-    public File exportExcelIT_Nei(List<ProductionDO> list,ITProductionBO itProductionBO,String userName){
+
+    public File exportExcelIT_Nei(List<ProductionDO> list, ITProductionBO itProductionBO, String userName) {
         String fileName = "IT中心每周投产日情况通报" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
-        File file=null;
+        File file = null;
         //依据环境配置路径
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1467,102 +1488,102 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         try {
             String filePath = path + fileName;
             SendExcelOperationITResultProblemUtil util = new SendExcelOperationITResultProblemUtil();
-            util.createExcel(filePath, list,null,itProductionBO,userName);
-            file=new File(filePath);
+            util.createExcel(filePath, list, null, itProductionBO, userName);
+            file = new File(filePath);
         } catch (IOException e) {
             e.printStackTrace();
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return file;
     }
+
     // 投产包检查
     @Override
-    public String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
-        if(taskIdStr==null||taskIdStr=="") {
+    public String proPkgCheck(HttpServletRequest request, HttpServletResponse response, String taskIdStr) {
+        if (taskIdStr == null || taskIdStr == "") {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择需要检查的投产记录!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         String[] pro_list = taskIdStr.split("~");
-        String result="";
+        String result = "";
         String s1 = "";
         String s2 = "";
         try {
-            StringBuffer command=new StringBuffer();
+            StringBuffer command = new StringBuffer();
             ProductionDO bean = null;
-            if (pro_list.length>0) {
+            if (pro_list.length > 0) {
                 command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
-                for(String s:pro_list){
+                for (String s : pro_list) {
                     bean = operationProductionDao.findProductionBean(s);
                     if (bean.getProPkgStatus().equals("待上传"))
-                        s1+=s+",";
+                        s1 += s + ",";
                     else {
                         //依据环境配置路径
-                        String path="";
-                        if(LemonUtils.getEnv().equals(Env.SIT)) {
-                            path= "/home/devms/temp/propkg/";
-                        }
-                        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                            path= "/home/devadm/temp/propkg/";
-                        }else {
+                        String path = "";
+                        if (LemonUtils.getEnv().equals(Env.SIT)) {
+                            path = "/home/devms/temp/propkg/";
+                        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+                            path = "/home/devadm/temp/propkg/";
+                        } else {
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                         }
-                        command.append("cp ~"+path + s + "/" + bean.getProPkgName()
+                        command.append("cp ~" + path + s + "/" + bean.getProPkgName()
                                 + " ~/tomcat/webapps/hims/hckeck/ver/\n");
                     }
                 }
-                if(!s1.equals("")){
-                    s1 = s1.substring(0, s1.length()-1);
-                    s1 = s1 +"投产包未上传";
+                if (!s1.equals("")) {
+                    s1 = s1.substring(0, s1.length() - 1);
+                    s1 = s1 + "投产包未上传";
                 }
                 command.append("sh c_cross.sh");
                 //s2 = execCommand(command.toString());
 
-                Map<String,String> map = execCommand(command.toString());
-                String succFlag=map.get("succFlag");
+                Map<String, String> map = execCommand(command.toString());
+                String succFlag = map.get("succFlag");
 
                 if ("1".equals(succFlag))
-                    s2="检查通过";
+                    s2 = "检查通过";
                 else
-                    s2=map.get("result");
+                    s2 = map.get("result");
 
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (s1.equals("")) {
             result = s2;
         }
-        if (!s1.equals("")&&s2.equals("检查通过")) {
+        if (!s1.equals("") && s2.equals("检查通过")) {
             result = s1;
         }
-        if (!s1.equals("")&&!s2.equals("检查通过")){
-            result = s1+"</br>"+s2;
+        if (!s1.equals("") && !s2.equals("检查通过")) {
+            result = s1 + "</br>" + s2;
         }
         return result;
     }
-    public Map execCommand(String command){
 
-        Map<String,String> map=new HashMap<String, String>();
+    public Map execCommand(String command) {
+
+        Map<String, String> map = new HashMap<String, String>();
         JSch jsch = new JSch();
         Session session = null;
         Channel channel = null;
 
-        String succFlag="0";
-        String result="检查失败";
+        String succFlag = "0";
+        String result = "检查失败";
 
-        try{
-            if(LemonUtils.getEnv().equals(Env.SIT)) {
+        try {
+            if (LemonUtils.getEnv().equals(Env.SIT)) {
                 session = jsch.getSession("devms", "10.9.10.116", 22);
                 session.setPassword("dev1234");
-            }
-            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            } else if (LemonUtils.getEnv().equals(Env.DEV)) {
                 session = jsch.getSession("devadm", "10.9.10.116", 22);
                 session.setPassword("devadm@hisun");
-            }else {
+            } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1587,22 +1608,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
              提醒信息输出2行：第一行为：2  ，第二行为提醒信息（系统默认检查通过，仅是提醒）
              *
              */
-            String temp=reader.readLine();
+            String temp = reader.readLine();
 
-            if ("0".equals(temp)){  //成功
-                succFlag="1";
-                result="检查通过";
-            }else{
-                if("1".equals(temp)){ 	//成功，但有警告
-                    succFlag="1";
-                    result="检查通过,但有警告:";
+            if ("0".equals(temp)) {  //成功
+                succFlag = "1";
+                result = "检查通过";
+            } else {
+                if ("1".equals(temp)) {    //成功，但有警告
+                    succFlag = "1";
+                    result = "检查通过,但有警告:";
                 }
-                if("2".equals(temp)){	//失败
-                    succFlag="0";
-                    result="检查失败";
+                if ("2".equals(temp)) {    //失败
+                    succFlag = "0";
+                    result = "检查失败";
                 }
 
-                while((temp=reader.readLine())!=null){
+                while ((temp = reader.readLine()) != null) {
                     result += temp + "</br>";
                 }
 
@@ -1620,37 +1641,38 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         map.put("result", result);
         return map;
     }
+
     @Override
-    public  void doProductionDetailDownload(HttpServletRequest request, HttpServletResponse response, String taskIdStr)throws Exception{
-        String[] pro_number_list=taskIdStr.split("~");
-        if(pro_number_list.length == 0){
+    public void doProductionDetailDownload(HttpServletRequest request, HttpServletResponse response, String taskIdStr) throws Exception {
+        String[] pro_number_list = taskIdStr.split("~");
+        if (pro_number_list.length == 0) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请先查出需要导出的投产变更明细记录!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         int[] pro_number_li = new int[pro_number_list.length];
-        for(int i=0;i<pro_number_list.length;i++){
-            pro_number_li[i]=Integer.parseInt(pro_number_list[i]);
+        for (int i = 0; i < pro_number_list.length; i++) {
+            pro_number_li[i] = Integer.parseInt(pro_number_list[i]);
         }
-        List<ScheduleDO> list=new ArrayList<ScheduleDO>();
-        for(int i=0;i<pro_number_li.length;i++){
+        List<ScheduleDO> list = new ArrayList<ScheduleDO>();
+        for (int i = 0; i < pro_number_li.length; i++) {
             list.add(operationProductionDao.findOperationExcelList(pro_number_li[i]));
         }
-        exportOperationExcel(response,request, list);
+        exportOperationExcel(response, request, list);
     }
-    public void exportOperationExcel(HttpServletResponse response,HttpServletRequest request,
+
+    public void exportOperationExcel(HttpServletResponse response, HttpServletRequest request,
                                      List<ScheduleDO> list) throws Exception {
         String fileName = "投产操作明细表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         OutputStream os = null;
         response.reset();
         //依据环境配置路径
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/propkg/";
-        }else {
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1660,7 +1682,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //String path = "/home/devadm/temp/propkg/";
             String filePath = path + fileName;
             ExcelOperationDetailUtil util = new ExcelOperationDetailUtil();
-            String createFile = util.createExcel(filePath, list,null);
+            String createFile = util.createExcel(filePath, list, null);
             //告诉浏览器允许所有的域访问
             //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
             //resp.addHeader("Access-Control-Allow-Origin", "*");
@@ -1714,15 +1736,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
-    public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean){
+    public Vector<File> setVectorFile(MultipartFile file, Vector<File> files, ProductionBO bean) {
         //依据环境配置路径
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/import/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/import/";
-        }else {
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/import/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/import/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1740,7 +1761,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             e.printStackTrace();
         }
         files.add(tmp_file);
-        return  files;
+        return files;
     }
 
     //投产录入
@@ -1759,123 +1780,123 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getProType().equals("救火更新")) {
-            if (bean.getOperatingTime() == null || bean.getOperatingTime().equals("")|| bean.getOperatingTime().equals("undefined")) {
+            if (bean.getOperatingTime() == null || bean.getOperatingTime().equals("") || bean.getOperatingTime().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 更新预计操作时长不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
-        if (bean.getProNeed() == null || bean.getProNeed().equals("")|| bean.getProNeed().equals("undefined")) {
+        if (bean.getProNeed() == null || bean.getProNeed().equals("") || bean.getProNeed().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 需求名不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProType() == null || bean.getProType().equals("")|| bean.getProType().equals("undefined")) {
+        if (bean.getProType() == null || bean.getProType().equals("") || bean.getProType().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 投产类型不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProDate() == null || bean.getProDate().equals("")|| bean.getProDate().equals("undefined")) {
+        if (bean.getProDate() == null || bean.getProDate().equals("") || bean.getProDate().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 投产日期不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApplicationDept() == null || bean.getApplicationDept().equals("")|| bean.getApplicationDept().equals("undefined")) {
+        if (bean.getApplicationDept() == null || bean.getApplicationDept().equals("") || bean.getApplicationDept().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请部门不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProApplicant() == null || bean.getProApplicant().equals("")|| bean.getProApplicant().equals("undefined")) {
+        if (bean.getProApplicant() == null || bean.getProApplicant().equals("") || bean.getProApplicant().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApplicantTel() == null || bean.getApplicantTel().equals("")|| bean.getApplicantTel().equals("undefined")) {
+        if (bean.getApplicantTel() == null || bean.getApplicantTel().equals("") || bean.getApplicantTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 申请人联系方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProModule() == null || bean.getProModule().equals("")|| bean.getProModule().equals("undefined")) {
+        if (bean.getProModule() == null || bean.getProModule().equals("") || bean.getProModule().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 产品模块不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getBusinessPrincipal() == null || bean.getBusinessPrincipal().equals("")|| bean.getBusinessPrincipal().equals("undefined")) {
+        if (bean.getBusinessPrincipal() == null || bean.getBusinessPrincipal().equals("") || bean.getBusinessPrincipal().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 基地业务负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getBasePrincipal() == null || bean.getBasePrincipal().equals("")|| bean.getBasePrincipal().equals("undefined")) {
+        if (bean.getBasePrincipal() == null || bean.getBasePrincipal().equals("") || bean.getBasePrincipal().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 基地技术负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProManager() == null || bean.getProManager().equals("")|| bean.getProManager().equals("undefined")) {
+        if (bean.getProManager() == null || bean.getProManager().equals("") || bean.getProManager().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 产品经理不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsUpDatabase() == null || bean.getIsUpDatabase().equals("")|| bean.getIsUpDatabase().equals("undefined")) {
+        if (bean.getIsUpDatabase() == null || bean.getIsUpDatabase().equals("") || bean.getIsUpDatabase().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("")|| bean.getIsUpStructure().equals("undefined")) {
+        if (bean.getIsUpStructure() == null || bean.getIsUpStructure().equals("") || bean.getIsUpStructure().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否更新数据库表不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProOperation() == null || bean.getProOperation().equals("")|| bean.getProOperation().equals("undefined")) {
+        if (bean.getProOperation() == null || bean.getProOperation().equals("") || bean.getProOperation().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否需要运维监控不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("")|| bean.getIsRefCerificate().equals("undefined")) {
+        if (bean.getIsRefCerificate() == null || bean.getIsRefCerificate().equals("") || bean.getIsRefCerificate().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否涉及证书不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIsAdvanceProduction() == null || bean.getIsAdvanceProduction().equals("")|| bean.getIsAdvanceProduction().equals("undefined")) {
+        if (bean.getIsAdvanceProduction() == null || bean.getIsAdvanceProduction().equals("") || bean.getIsAdvanceProduction().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否预投产验证不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getIsAdvanceProduction().equals("否")) {
-            if (bean.getNotAdvanceReason() == null || bean.getNotAdvanceReason().equals("")|| bean.getNotAdvanceReason().equals("undefined")) {
+            if (bean.getNotAdvanceReason() == null || bean.getNotAdvanceReason().equals("") || bean.getNotAdvanceReason().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 不做预投产验证原因不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
         if (bean.getIsAdvanceProduction().equals("是")) {
-            if (bean.getProAdvanceResult() == null || bean.getProAdvanceResult().equals("")|| bean.getProAdvanceResult().equals("undefined")) {
+            if (bean.getProAdvanceResult() == null || bean.getProAdvanceResult().equals("") || bean.getProAdvanceResult().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 预投产验证结果不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }
-        if (bean.getIdentifier() == null || bean.getIdentifier().equals("")|| bean.getIdentifier().equals("undefined")) {
+        if (bean.getIdentifier() == null || bean.getIdentifier().equals("") || bean.getIdentifier().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getIdentifierTel() == null || bean.getIdentifierTel().equals("")|| bean.getIdentifierTel().equals("undefined")) {
+        if (bean.getIdentifierTel() == null || bean.getIdentifierTel().equals("") || bean.getIdentifierTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证人联系方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getProChecker() == null || bean.getProChecker().equals("")|| bean.getProChecker().equals("undefined")) {
+        if (bean.getProChecker() == null || bean.getProChecker().equals("") || bean.getProChecker().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getCheckerTel() == null || bean.getCheckerTel().equals("")|| bean.getCheckerTel().equals("undefined")) {
+        if (bean.getCheckerTel() == null || bean.getCheckerTel().equals("") || bean.getCheckerTel().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 复核人手机号码不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getValidation() == null || bean.getValidation().equals("")|| bean.getValidation().equals("undefined")) {
+        if (bean.getValidation() == null || bean.getValidation().equals("") || bean.getValidation().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 生成验证方式不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getDevelopmentLeader() == null || bean.getDevelopmentLeader().equals("")|| bean.getDevelopmentLeader().equals("undefined")) {
+        if (bean.getDevelopmentLeader() == null || bean.getDevelopmentLeader().equals("") || bean.getDevelopmentLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getApprover() == null || bean.getApprover().equals("")|| bean.getApprover().equals("undefined")) {
+        if (bean.getApprover() == null || bean.getApprover().equals("") || bean.getApprover().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 审批人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getRemark() == null || bean.getRemark().equals("")|| bean.getRemark().equals("undefined")) {
+        if (bean.getRemark() == null || bean.getRemark().equals("") || bean.getRemark().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 备注不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
 
-        if (bean.getMailLeader() == null || bean.getMailLeader().equals("")|| bean.getMailLeader().equals("undefined")) {
+        if (bean.getMailLeader() == null || bean.getMailLeader().equals("") || bean.getMailLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         //登记验证人电话号码
-        systemUserService.updateMobile(bean.getIdentifier(),bean.getIdentifierTel());
-        systemUserService.updateMobile(bean.getProChecker(),bean.getCheckerTel());
+        systemUserService.updateMobile(bean.getIdentifier(), bean.getIdentifierTel());
+        systemUserService.updateMobile(bean.getProChecker(), bean.getCheckerTel());
         //发邮件通知
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
@@ -1895,14 +1916,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             receiver_users.add(bean.getProApplicant());
             receiver_users.add(bean.getDevelopmentLeader());
             // 获取申请人邮箱地址
-            MailFlowConditionDO vo=new MailFlowConditionDO();
+            MailFlowConditionDO vo = new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
-            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            MailFlowDO mflow = operationProductionDao.searchUserEmail(vo);
 
-            String receiver_mail = bean.getMailLeader()+";"+this.findManagerMailByUserName(receiver_users) + ";"+ mflow.getEmployeeEmail()+";" + config.getNormalMailTo(false)
-               //     +";wu_lr@hisuntech.com";
-            //todo 固定收件人需要添加两人必选先注释 先用自己的邮件代替
-            +";wujinyan@hisuntech.com;xiao_hua@hisuntech.com;tian_qun@hisuntech.com;huang_jh@hisuntech.com";
+            String receiver_mail = bean.getMailLeader() + ";" + this.findManagerMailByUserName(receiver_users) + ";" + mflow.getEmployeeEmail() + ";" + config.getNormalMailTo(false)
+                    //     +";wu_lr@hisuntech.com";
+                    //todo 固定收件人需要添加两人必选先注释 先用自己的邮件代替
+                    + ";wujinyan@hisuntech.com;xiao_hua@hisuntech.com;tian_qun@hisuntech.com;huang_jh@hisuntech.com";
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //记录邮箱信息
@@ -1930,11 +1951,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             //添加开发负责人部门经理邮箱地址
             receiver_users.add(bean.getDevelopmentLeader());
             // 获取申请人邮箱地址
-            MailFlowConditionDO vo=new MailFlowConditionDO();
+            MailFlowConditionDO vo = new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
-            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            MailFlowDO mflow = operationProductionDao.searchUserEmail(vo);
 
-            String receiver_mail = this.findManagerMailByUserName(receiver_users) +";"+bean.getMailLeader() + ";"+ mflow.getEmployeeEmail()+";" + config.getNormalMailTo(false);
+            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";" + bean.getMailLeader() + ";" + mflow.getEmployeeEmail() + ";" + config.getNormalMailTo(false);
             // 邮件去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
             //投产信息记录邮箱
@@ -1951,12 +1972,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         if (bean.getIsOperationProduction() != null && bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("否")) {
             List<ProductionBO> unusuaList = new ArrayList<ProductionBO>();
             unusuaList.add(bean);
-            File unusualFile = this.exportUnusualExcel( unusuaList);
+            File unusualFile = this.exportUnusualExcel(unusuaList);
             // 附件
             Vector<File> filesv = new Vector<File>();
             // 添加附件信息
             if (!file.isEmpty()) {
-                filesv = this.setVectorFile(file,filesv,bean);
+                filesv = this.setVectorFile(file, filesv, bean);
             }
             filesv.add(unusualFile);
             mailInfo.setFile(filesv);
@@ -1977,12 +1998,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 receiver_users.add(bean.getDevelopmentLeader());
             }
             // 获取申请人邮箱地址
-            MailFlowConditionDO vo=new MailFlowConditionDO();
+            MailFlowConditionDO vo = new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
-            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            MailFlowDO mflow = operationProductionDao.searchUserEmail(vo);
 
             //相关人员邮件
-            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";"+ mflow.getEmployeeEmail()+";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
+            String receiver_mail = this.findManagerMailByUserName(receiver_users) + ";" + mflow.getEmployeeEmail() + ";" + config.getAbnormalMailTo(is_advance_production) + ";" + bean.getMailRecipient();
             //系统配置邮件、救火更新收件人邮件
             //收件人去重
             receiver_mail = BaseUtil.distinctStr(receiver_mail, ";");
@@ -1990,9 +2011,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getAbnormalMailCopy();
             //todo  添加配置管理员 权限编号5003  挨个添加到抄送人邮箱列表
             List<UserDO> permissionGroupMembers = systemRoleService.getPermissionGroupMembers(configurationAdministratorRoleID);
-                for (int i=0;i<permissionGroupMembers.size();i++){
-                    copy_mail=copy_mail+";"+ permissionGroupMembers.get(i).getEmail();
-                }
+            for (int i = 0; i < permissionGroupMembers.size(); i++) {
+                copy_mail = copy_mail + ";" + permissionGroupMembers.get(i).getEmail();
+            }
             if (bean.getMailCopyPerson() != null && !bean.getMailCopyPerson().equals("")) {
                 copy_mail += ";" + bean.getMailCopyPerson();
             }
@@ -2017,9 +2038,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String crMore = bean.getCrMore();
         boolean crflag = false;
         String[] crMore_list = null;
-        if(!("".equals(crMore)||crMore==null)){
+        if (!("".equals(crMore) || crMore == null)) {
             crflag = true;
-            crMore_list =crMore.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";").split(";");
+            crMore_list = crMore.replaceAll("；", ";").replaceAll(",", ";").replaceAll("，", ";").split(";");
         }
         //救火更新
         if (bean.getProType().equals("救火更新") && crflag) {
@@ -2029,8 +2050,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             String beanNeed = bean.getProNeed();
             String beanNumbers = bean.getProNumber();
             String beanNeeds = bean.getProNeed();
-            for(int i=0;i<crMore_list.length;i++){
-                DemandBO demandBO =  verifyAndQueryTheProductionNumber(crMore_list[i]);
+            for (int i = 0; i < crMore_list.length; i++) {
+                DemandBO demandBO = verifyAndQueryTheProductionNumber(crMore_list[i]);
                 ProductionBO productionBO = new ProductionBO();
                 BeanUtils.copyPropertiesReturnDest(productionBO, bean);
                 // 设置投产编号
@@ -2044,8 +2065,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 // 设置基地业务负责人
                 productionBO.setBusinessPrincipal(demandBO.getReqProposer());
 
-                beanNumbers += ";"+demandBO.getReqNo();
-                beanNeeds += "-"+demandBO.getReqNm();
+                beanNumbers += ";" + demandBO.getReqNo();
+                beanNeeds += "-" + demandBO.getReqNm();
                 //插入
                 this.addProduction(productionBO);
             }
@@ -2063,7 +2084,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             Vector<File> files = new Vector<File>();
             // 添加救火附件
             if (!file.isEmpty()) {
-                files = this.setVectorFile(file,files,bean);
+                files = this.setVectorFile(file, files, bean);
             }
             // 设置邮件中投产编号
             bean.setProNumber(beanNumbers);
@@ -2079,14 +2100,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             } else {
                 receiver_users.add(bean.getProManager());
                 receiver_users.add(bean.getDevelopmentLeader());
-                base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
+                base_receiver_mail += bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
             //救火更新抄送人添加自己
-            MailFlowConditionDO vo=new MailFlowConditionDO();
+            MailFlowConditionDO vo = new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
-            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            MailFlowDO mflow = operationProductionDao.searchUserEmail(vo);
             //去重
-            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users)+";"+mflow.getEmployeeEmail();
+            base_receiver_mail = base_receiver_mail + ";" + this.findManagerMailByUserName(receiver_users) + ";" + mflow.getEmployeeEmail();
             String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
             // 抄送人邮箱
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
@@ -2105,7 +2126,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 //	          bean.setMail_copy_person(mailCopySum);
             mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             boolean flag = true;
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean,flag));
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
@@ -2119,7 +2140,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 设置邮件中投产名称
             bean.setProNeed(beanNeed);
         }
-        if (bean.getProType().equals("救火更新")&& !crflag) {
+        if (bean.getProType().equals("救火更新") && !crflag) {
             bean.setIsOperationProduction("");
             bean.setProStatus("投产待部署");
             List<ProductionBO> list = new ArrayList<ProductionBO>();
@@ -2138,7 +2159,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             File file_fire = this.exportUrgentExcel(list);
             // 添加救火附件
             if (!file.isEmpty()) {
-                files = this.setVectorFile(file,files,bean);
+                files = this.setVectorFile(file, files, bean);
             }
             files.add(file_fire);
             mailInfo.setFile(files);
@@ -2149,14 +2170,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             } else {
                 receiver_users.add(bean.getProManager());
                 receiver_users.add(bean.getDevelopmentLeader());
-                base_receiver_mail +=   bean.getMailLeader() + ";" + config.getFireMailTo(false);
+                base_receiver_mail += bean.getMailLeader() + ";" + config.getFireMailTo(false);
             }
             //救火更新抄送人添加自己
-            MailFlowConditionDO vo=new MailFlowConditionDO();
+            MailFlowConditionDO vo = new MailFlowConditionDO();
             vo.setEmployeeName(bean.getProApplicant());
-            MailFlowDO mflow=operationProductionDao.searchUserEmail(vo);
+            MailFlowDO mflow = operationProductionDao.searchUserEmail(vo);
             //去重
-            base_receiver_mail=base_receiver_mail +";"+ this.findManagerMailByUserName(receiver_users)+";"+mflow.getEmployeeEmail();
+            base_receiver_mail = base_receiver_mail + ";" + this.findManagerMailByUserName(receiver_users) + ";" + mflow.getEmployeeEmail();
             String receiver_mail = BaseUtil.distinctStr(base_receiver_mail, ";");
             // 抄送人邮箱
             String copy_mail = this.findManagerMailByUserName(copy_users) + ";" + config.getFireMailCopy();
@@ -2175,7 +2196,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 //	          bean.setMail_copy_person(mailCopySum);
             mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             boolean flag = false;
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean,flag));
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
@@ -2208,15 +2229,15 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             }
             if (!isSend) {
                 MsgEnum.CUSTOMSUCCESS.setMsgInfo(" 投产已录入,但您有邮件没有发送成功,请及时联系系统维护人员!");
-                return   MsgEnum.CUSTOMSUCCESS;
+                return MsgEnum.CUSTOMSUCCESS;
             }
             MsgEnum.CUSTOMSUCCESS.setMsgInfo("投产已重新提交");
-            return   MsgEnum.CUSTOMSUCCESS;
+            return MsgEnum.CUSTOMSUCCESS;
         }
 
         this.addProduction(bean);
         //生成流水记录
-        ScheduleDO scheduleBean= new ScheduleDO(bean.getProNumber(),  userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
+        ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
         this.addScheduleBean(scheduleBean);
         //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
         if (bean.getIsAdvanceProduction().equals("否")) {
@@ -2232,61 +2253,63 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         if (!isSend) {
             //自定义类型成功
             MsgEnum.CUSTOMSUCCESS.setMsgInfo(" 投产已录入,但您有邮件没有发送成功,请及时联系系统维护人员!");
-            return   MsgEnum.CUSTOMSUCCESS;
+            return MsgEnum.CUSTOMSUCCESS;
         }
         return MsgEnum.SUCCESS;
     }
 
     /**
      * 投产包上传
+     *
      * @param file
      */
     @Override
-    public void doBatchImport(MultipartFile file,String reqNumber) {
+    public void doBatchImport(MultipartFile file, String reqNumber) {
         if (file.isEmpty()) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择上传文件!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = null;
         bean = operationProductionDao.findProductionBean(reqNumber);
-        if(!currentUser.equals(bean.getProApplicant())&&!currentUser.equals(bean.getDevelopmentLeader())){
+        if (!currentUser.equals(bean.getProApplicant()) && !currentUser.equals(bean.getDevelopmentLeader())) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        if(bean.getProType().equals("正常投产")){
+        if (bean.getProType().equals("正常投产")) {
 
-            if(bean.getIsOperationProduction()!=null && !bean.getIsOperationProduction().equals("")){
-                if(bean.getProDate()!=null && !bean.getProDate().equals("")){
+            if (bean.getIsOperationProduction() != null && !bean.getIsOperationProduction().equals("")) {
+                if (bean.getProDate() != null && !bean.getProDate().equals("")) {
                     SimpleDateFormat smf = new SimpleDateFormat("yyyyMMdd");
                     SimpleDateFormat smft = new SimpleDateFormat("yyyyMMddHHmmss");
-                    String nowStr = smft.format(new Date());;
-                    if(bean.getIsOperationProduction().equals("是")){
+                    String nowStr = smft.format(new Date());
+                    ;
+                    if (bean.getIsOperationProduction().equals("是")) {
                         String config_time = productTimeService.findProductTimeByID(1);
                         String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";//
 //							 String pro_date = smf.format(bean.getPro_date())+"230000";
-                        if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                        if (Long.parseLong(nowStr) >= Long.parseLong(pro_date)) {
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产日投产必须在计划投产日" + config_time + "之前上传投产包");
                             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                         }
-                    }else{
+                    } else {
                         String config_time = productTimeService.findProductTimeByID(2);
                         String pro_date = smf.format(bean.getProDate()) + config_time.replace(":", "") + "00";
-                        if(Long.parseLong(nowStr) >= Long.parseLong(pro_date)){
+                        if (Long.parseLong(nowStr) >= Long.parseLong(pro_date)) {
                             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产非投产日投产必须在计划投产日"+config_time+"之前上传投产包");
+                            MsgEnum.ERROR_CUSTOM.setMsgInfo("正常投产非投产日投产必须在计划投产日" + config_time + "之前上传投产包");
                             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                         }
                     }
-                }else{
+                } else {
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("计划投产日字段不能为空");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
-            }else{
+            } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("是否正常投产日投产字段不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -2294,23 +2317,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         //File fileDir = new File("C:\\home\\devadm\\temp\\propkg\\" + reqNumber);
         //依据环境配置路径
-        String path="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/upload/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/upload/propkg/";
-        }else {
+        String path = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path = "/home/devms/temp/upload/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path = "/home/devadm/temp/upload/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         File fileDir = new File(path + reqNumber);
-        File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
-        if(fileDir.exists()){
+        File filePath = new File(fileDir.getPath() + "/" + file.getOriginalFilename());
+        if (fileDir.exists()) {
             File[] oldFile = fileDir.listFiles();
-            for(File o:oldFile) o.delete();
-        }else{
+            for (File o : oldFile) o.delete();
+        } else {
             fileDir.mkdir();
         }
         try {
@@ -2333,29 +2355,27 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         command.append("cd ~/tomcat/webapps/hims/hckeck/\n");
 
         //依据环境配置路径
-        String path1="";
-        if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path1= "/home/devms/temp/upload/propkg/";
-        }
-        else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path1= "/home/devadm/temp/upload/propkg/";
-        }else {
+        String path1 = "";
+        if (LemonUtils.getEnv().equals(Env.SIT)) {
+            path1 = "/home/devms/temp/upload/propkg/";
+        } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+            path1 = "/home/devadm/temp/upload/propkg/";
+        } else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
 
-        command.append("cp ~"+ path1+ reqNumber + "/" + bean.getProPkgName()
+        command.append("cp ~" + path1 + reqNumber + "/" + bean.getProPkgName()
                 + " ~/tomcat/webapps/hims/hckeck/ver/\n");
         command.append("sh zck.sh " + bean.getProPkgName() + "\n");
-        Map<String,String> map = execCommand(command.toString());
-        String succFlag=map.get("succFlag");
-        String result=map.get("result");
-        if ("1".equals(succFlag)){
+        Map<String, String> map = execCommand(command.toString());
+        String succFlag = map.get("succFlag");
+        String result = map.get("result");
+        if ("1".equals(succFlag)) {
             bean.setProPkgStatus("检查通过");
-        }
-        else{
+        } else {
             bean.setProPkgStatus("待上传");
         }
         operationProductionDao.updateProduction(bean);
@@ -2364,12 +2384,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public List<ProblemBO> findProblemInfo(String proNumber) {
         List<ProblemBO> problemBOS = new LinkedList<>();
-        List<ProblemDO> problemDOS=operationProductionDao.findProblemInfo(proNumber);
-        problemDOS.forEach(m->
+        List<ProblemDO> problemDOS = operationProductionDao.findProblemInfo(proNumber);
+        problemDOS.forEach(m ->
                 problemBOS.add(BeanUtils.copyPropertiesReturnDest(new ProblemBO(), m))
         );
         //确保listc长度为5
-        while (problemBOS.size()<5){
+        while (problemBOS.size() < 5) {
             problemBOS.add(new ProblemBO());
         }
         return problemBOS;
@@ -2402,109 +2422,104 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public void questionInput(QuestionInputReqBO questionInputReqBO) {
         //问题一
-        if(questionInputReqBO.getProNumber1()!=null && !questionInputReqBO.getProNumber1().equals("")){
-            if( questionInputReqBO.getQuestionOne() !=null && ! questionInputReqBO.getQuestionOne().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+        if (questionInputReqBO.getProNumber1() != null && !questionInputReqBO.getProNumber1().equals("")) {
+            if (questionInputReqBO.getQuestionOne() != null && !questionInputReqBO.getQuestionOne().equals("")) {
+                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
                 this.updateProblem(proBean);
-            }
-            else{
+            } else {
                 this.deleteProblemInfo(questionInputReqBO.getProNumber1());
             }
-        }else{
-            if(questionInputReqBO.getQuestionOne()!=null && !questionInputReqBO.getQuestionOne().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
+        } else {
+            if (questionInputReqBO.getQuestionOne() != null && !questionInputReqBO.getQuestionOne().equals("")) {
+                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
                 this.insertProblemInfo(proBean);
             }
         }
         //问题二
-        if(questionInputReqBO.getProNumber2()!=null && !questionInputReqBO.getProNumber2().equals("")){
-            if( questionInputReqBO.getQuestionTwo() !=null && ! questionInputReqBO.getQuestionTwo().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber2()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
+        if (questionInputReqBO.getProNumber2() != null && !questionInputReqBO.getProNumber2().equals("")) {
+            if (questionInputReqBO.getQuestionTwo() != null && !questionInputReqBO.getQuestionTwo().equals("")) {
+                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber2()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
                 this.updateProblem(proBean);
-            }
-            else{
+            } else {
                 this.deleteProblemInfo(questionInputReqBO.getProNumber2());
             }
-        }else{
-            if(questionInputReqBO.getQuestionTwo()!=null && !questionInputReqBO.getQuestionTwo().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
+        } else {
+            if (questionInputReqBO.getQuestionTwo() != null && !questionInputReqBO.getQuestionTwo().equals("")) {
+                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
                 this.insertProblemInfo(proBean);
             }
         }
         //问题三
-        if(questionInputReqBO.getProNumber3()!=null && !questionInputReqBO.getProNumber3().equals("")){
-            if( questionInputReqBO.getQuestionThree() !=null && ! questionInputReqBO.getQuestionThree().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber3()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
+        if (questionInputReqBO.getProNumber3() != null && !questionInputReqBO.getProNumber3().equals("")) {
+            if (questionInputReqBO.getQuestionThree() != null && !questionInputReqBO.getQuestionThree().equals("")) {
+                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber3()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
                 this.updateProblem(proBean);
-            }
-            else{
+            } else {
                 this.deleteProblemInfo(questionInputReqBO.getProNumber3());
             }
-        }else{
-            if(questionInputReqBO.getQuestionThree()!=null && !questionInputReqBO.getQuestionThree().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
+        } else {
+            if (questionInputReqBO.getQuestionThree() != null && !questionInputReqBO.getQuestionThree().equals("")) {
+                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
                 this.insertProblemInfo(proBean);
             }
         }
         //问题四
-        if(questionInputReqBO.getProNumber4()!=null && !questionInputReqBO.getProNumber4().equals("")){
-            if( questionInputReqBO.getQuestionFour() !=null && ! questionInputReqBO.getQuestionFour().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber4()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
+        if (questionInputReqBO.getProNumber4() != null && !questionInputReqBO.getProNumber4().equals("")) {
+            if (questionInputReqBO.getQuestionFour() != null && !questionInputReqBO.getQuestionFour().equals("")) {
+                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber4()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
                 this.updateProblem(proBean);
-            }
-            else{
+            } else {
                 this.deleteProblemInfo(questionInputReqBO.getProNumber4());
             }
-        }else{
-            if(questionInputReqBO.getQuestionFour()!=null && !questionInputReqBO.getQuestionFour().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
+        } else {
+            if (questionInputReqBO.getQuestionFour() != null && !questionInputReqBO.getQuestionFour().equals("")) {
+                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
                 this.insertProblemInfo(proBean);
             }
         }
         //问题五
-        if(questionInputReqBO.getProNumber5()!=null && !questionInputReqBO.getProNumber5().equals("")){
-            if( questionInputReqBO.getQuestionFive() !=null && ! questionInputReqBO.getQuestionFive().equals("")){
-                ProblemBO proBean=new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber5()),questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
+        if (questionInputReqBO.getProNumber5() != null && !questionInputReqBO.getProNumber5().equals("")) {
+            if (questionInputReqBO.getQuestionFive() != null && !questionInputReqBO.getQuestionFive().equals("")) {
+                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber5()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
                 this.updateProblem(proBean);
-            }
-            else{
+            } else {
                 this.deleteProblemInfo(questionInputReqBO.getProNumber5());
             }
-        }else{
-            if(questionInputReqBO.getQuestionFive()!=null && !questionInputReqBO.getQuestionFive().equals("")){
-                ProblemBO proBean=new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
+        } else {
+            if (questionInputReqBO.getQuestionFive() != null && !questionInputReqBO.getQuestionFive().equals("")) {
+                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
                 this.insertProblemInfo(proBean);
             }
         }
     }
+
     //投产包下载
     @Override
-    public void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber){
+    public void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber) {
         response.reset();
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
-           // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
+            // File fileDir=new File(request.getSession().getServletContext().getRealPath("/") + RELATIVE_PATH +proNumber);
 
             //依据环境配置路径
-            String path="";
-            if(LemonUtils.getEnv().equals(Env.SIT)) {
-                path= "/home/devms/temp/upload/propkg/";
-            }
-            else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                path= "/home/devadm/temp/upload/propkg/";
-            }else {
+            String path = "";
+            if (LemonUtils.getEnv().equals(Env.SIT)) {
+                path = "/home/devms/temp/upload/propkg/";
+            } else if (LemonUtils.getEnv().equals(Env.DEV)) {
+                path = "/home/devadm/temp/upload/propkg/";
+            } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
 
             File fileDir = new File(path + proNumber);
-            File[] pkgFile=fileDir.listFiles();
-            File fileSend=null;
-            if(pkgFile!=null&&pkgFile.length>0){
+            File[] pkgFile = fileDir.listFiles();
+            File fileSend = null;
+            if (pkgFile != null && pkgFile.length > 0) {
                 fileSend = pkgFile[0];
             }
-            response.setHeader("Content-Disposition", "attachment; filename="  + new String(fileSend.getName().getBytes(Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
+            response.setHeader("Content-Disposition", "attachment; filename=" + new String(fileSend.getName().getBytes(Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             //告诉浏览器允许所有的域访问
             //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
@@ -2547,27 +2562,27 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
 
-
     //投产审批
     @Override
-    public void approval(String proNumber){
+    public void approval(String proNumber) {
         //获取登录用户名
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         ProductionDO bean = operationProductionDao.findProductionBean(proNumber);
         String proStatus = bean.getProStatus();
         bean.setProStatus("投产提出");
         operationProductionDao.updateProduction(bean);
-        ScheduleDO sBean=new ScheduleDO();
+        ScheduleDO sBean = new ScheduleDO();
         sBean.setPreOperation(bean.getProStatus());
         //生成流水记录
-        ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "投产审批", proStatus, bean.getProStatus(), "投产信息更新");
+        ScheduleDO schedule = new ScheduleDO(bean.getProNumber(), currentUser, "投产审批", proStatus, bean.getProStatus(), "投产信息更新");
         operationProductionDao.insertSchedule(schedule);
     }
+
     // 投产详情修改
     @Override
-    public void updateProductionBean(ProductionBO productionBO){
+    public void updateProductionBean(ProductionBO productionBO) {
         //获取登录用户名
-        String currentUser =  userService.getFullname(SecurityUtils.getLoginName());
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         if (!(productionBO.getProStatus().equals("投产提出") || (productionBO.getProStatus().equals("投产待部署") && productionBO.getProType().equals("救火更新")))) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产状态的投产信息不可修改!");
@@ -2580,10 +2595,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         ProductionDO bean = BeanUtils.copyPropertiesReturnDest(new ProductionDO(), productionBO);
         operationProductionDao.updateAllProduction(bean);
-        ScheduleDO sBean=new ScheduleDO();
+        ScheduleDO sBean = new ScheduleDO();
         sBean.setPreOperation(bean.getProStatus());
         //生成流水记录
-        ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "修改", bean.getProStatus(), bean.getProStatus(), "投产信息更新");
+        ScheduleDO schedule = new ScheduleDO(bean.getProNumber(), currentUser, "修改", bean.getProStatus(), bean.getProStatus(), "投产信息更新");
         operationProductionDao.insertSchedule(schedule);
     }
 
@@ -2595,7 +2610,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String loginName = SecurityUtils.getLoginName();
         permiUserDO.setUserId(loginName);
         List<PermiUserDO> permiUserDOS = permiUserDao.find(permiUserDO);
-        if(permiUserDOS.isEmpty()){
+        if (permiUserDOS.isEmpty()) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("操作人信息未同步，请联系管理员");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
@@ -2603,14 +2618,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         ProductionDO productionDO = operationProductionDao.findProductionBean(bean.getProNumber());
         //判断操作人是否是该投产申请人，若不是则判断是不是部门经理
-        if(!userName.equals(productionDO.getProApplicant())){
+        if (!userName.equals(productionDO.getProApplicant())) {
 
             TPermiDeptDO permiDeptDO = new TPermiDeptDO();
             permiDeptDO.setDeptName(productionDO.getApplicationDept());
             //获得开发主导部门查询该部门部门经理
             List<TPermiDeptDO> tPermiDeptDOS = permiDeptDao.find(permiDeptDO);
             String deptManagerName = tPermiDeptDOS.get(0).getDeptManagerName();
-            if(!deptManagerName.equals(productionDO.getProApplicant())){
+            if (!deptManagerName.equals(productionDO.getProApplicant())) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("只有申请人本人和申请部门部门经理才有权操作");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
@@ -2618,7 +2633,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDO);
         productionBO.setMailRecipient(bean.getMailRecipient());
         productionBO.setMailCopyPerson(bean.getMailCopyPerson());
-        this.productionInput( file,false,  productionBO);
+        this.productionInput(file, false, productionBO);
     }
 
 
