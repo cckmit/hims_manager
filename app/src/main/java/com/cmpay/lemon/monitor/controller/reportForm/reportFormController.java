@@ -3,8 +3,6 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
-import com.cmpay.lemon.common.utils.JudgeUtils;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -263,7 +261,7 @@ import java.util.List;
         DemandHoursRspBO reportLista = new DemandHoursRspBO();
         reportLista = reqDataCountService.getFlawNumber(workingHoursDTO.getEpickey());
         DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
-        BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+       // BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
     }
     /**
