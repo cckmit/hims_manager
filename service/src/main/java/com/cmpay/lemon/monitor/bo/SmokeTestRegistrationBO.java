@@ -45,6 +45,18 @@ public class SmokeTestRegistrationBO {
      * 页面大小
      */
     private int pageSize;
+    /**
+     * @Fields department
+     */
+    private String department;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     public String getReqNm() {
         return reqNm;

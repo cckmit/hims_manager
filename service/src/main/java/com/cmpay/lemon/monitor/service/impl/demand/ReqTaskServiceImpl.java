@@ -1977,6 +1977,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             smokeTestFailedCountDO.setJiraKey(smokeTestRegistrationBO.getJiraKey());
             smokeTestFailedCountDO.setCount(1);
             smokeTestFailedCountDO.setReqNo(smokeTestRegistrationBO.getReqNo());
+            smokeTestFailedCountDO.setDepartment(smokeTestRegistrationBO.getDepartment());
             smokeTestFailedCountDao.insert(smokeTestFailedCountDO);
         } else {
             smokeTestFailedCountDOS.get(0).setCount(smokeTestFailedCountDOS.get(0).getCount() + 1);

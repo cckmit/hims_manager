@@ -72,6 +72,8 @@ public class DemandDO extends BaseDO {
     private String reqType;
     @Excel(name = "需求状态")
     private String reqSts;
+    @Excel(name = "月底反馈")
+    private String endMonRemark;
     private String actPrdFinshTm;
     private String devpResMng;
     private String projectMng;
@@ -84,8 +86,7 @@ public class DemandDO extends BaseDO {
     private String preTm;
     private String testFinshTm;
     private String actTestFinshTm;
-    @Excel(name = "月底反馈")
-    private String endMonRemark;
+
     private String endFeedbackTm;
     private int totalWorkload;
     //已录入总工作量

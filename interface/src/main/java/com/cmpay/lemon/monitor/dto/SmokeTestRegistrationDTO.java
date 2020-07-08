@@ -35,6 +35,18 @@ public class SmokeTestRegistrationDTO {
      * @Fields testDate
      */
     private String testDate;
+    /**
+     * @Fields department
+     */
+    private String department;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     public String getReqNm() {
         return reqNm;
