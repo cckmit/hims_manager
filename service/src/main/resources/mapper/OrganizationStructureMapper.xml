@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IOrganizationStructureDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
+        <id column="organizationId" property="organizationid" jdbcType="INTEGER" />
+        <result column="firstLevelOrganization" property="firstlevelorganization" jdbcType="VARCHAR" />
+        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        organizationId, firstLevelOrganization, secondLevelOrganization
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_organization_structure
+        where organizationId = #{organizationid,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Integer" >
+        delete from t_organization_structure
+        where organizationId = #{organizationid,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
+        insert into t_organization_structure
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="organizationid != null" >
+                organizationId,
+            </if>
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization,
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="organizationid != null" >
+                #{organizationid,jdbcType=INTEGER},
+            </if>
+            <if test="firstlevelorganization != null" >
+                #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
+        update t_organization_structure
+        <set >
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where organizationId = #{organizationid,jdbcType=INTEGER}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_organization_structure
+        <where >
+            <if test="organizationid != null" >
+                and organizationId = #{organizationid,jdbcType=INTEGER}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null" >
+                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
