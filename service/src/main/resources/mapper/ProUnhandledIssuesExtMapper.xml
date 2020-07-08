@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProUnhandledIssuesExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProUnhandledIssuesDO" >
+        <id column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="jiraKey" property="jirakey" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="problem_number" property="problemNumber" jdbcType="INTEGER" />
+        <result column="defects_number" property="defectsNumber" jdbcType="INTEGER" />
+        <result column="production_date" property="productionDate" jdbcType="VARCHAR" />
+        <result column="calculate_flag" property="calculateFlag" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        req_no, jiraKey, department, problem_number, defects_number, production_date, calculate_flag
+    </sql>
+
+    <select id="findWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProUnhandledIssuesDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_producted_unhandled_issues
+        <where >
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="jirakey != null" >
+                and jiraKey = #{jirakey,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="problemNumber != null" >
+                and problem_number = #{problemNumber,jdbcType=INTEGER}
+            </if>
+            <if test="defectsNumber != null" >
+                and defects_number = #{defectsNumber,jdbcType=INTEGER}
+            </if>
+            <if test="productionDate != null" >
+                and YEARWEEK(production_date) = YEARWEEK(#{productionDate,jdbcType=VARCHAR})
+            </if>
+            <if test="calculateFlag != null" >
+                and calculate_flag = #{calculateFlag,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProUnhandledIssuesDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_producted_unhandled_issues
+        <where >
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="jirakey != null" >
+                and jiraKey = #{jirakey,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="problemNumber != null" >
+                and problem_number = #{problemNumber,jdbcType=INTEGER}
+            </if>
+            <if test="defectsNumber != null" >
+                and defects_number = #{defectsNumber,jdbcType=INTEGER}
+            </if>
+            <if test="productionDate != null" >
+                and production_date like CONCAT('%',#{productionDate,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="calculateFlag != null" >
+                and calculate_flag = #{calculateFlag,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
