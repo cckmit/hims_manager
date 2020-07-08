@@ -530,11 +530,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	@Override
 	public DemandQualityBO findDemandQuality(String epic){
 		DemandQualityBO demandQualityBO = new DemandQualityBO();
-		System.err.println(epic);
 		DemandQualityDO demandQualityDO = iDemandQualityDao.get(epic);
-        System.err.println(demandQualityDO);
         BeanUtils.copyPropertiesReturnDest(demandQualityBO, demandQualityDO);
-		System.err.println(demandQualityBO);
 		return demandQualityBO;
 	}
 	@Override

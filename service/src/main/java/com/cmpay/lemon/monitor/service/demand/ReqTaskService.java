@@ -160,4 +160,6 @@ public interface ReqTaskService {
     void smokeTestRegistration(SmokeTestRegistrationBO smokeTestRegistrationBO);
 
     void demandInputResourceStatistics();
+
+    TimeAxisDataBO getTimeAxisData(String reqInnerSeq);
 }

@@ -63,9 +63,22 @@ public class ReqTaskController {
      * @return
      */
     @RequestMapping("/info")
-    public GenericRspDTO<DemandDTO> getInfoById(@RequestBody DemandReqDTO reqDTO) {
+    public GenericRspDTO<DemandDTO> getTimeAxisData(@RequestBody DemandReqDTO reqDTO) {
         DemandBO demandBO = reqTaskService.findById(reqDTO.getReqInnerSeq());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new DemandDTO(), demandBO));
+    }
+
+    /**
+     * 查询需求信息
+     *
+     * @return
+     */
+    @RequestMapping("/getTimeAxisData")
+    public GenericRspDTO<TimeAxisDataDTO> getInfoById(@RequestBody DemandReqDTO reqDTO) {
+        System.err.println("aabc");
+        TimeAxisDataBO timeAxisData = reqTaskService.getTimeAxisData(reqDTO.getReqInnerSeq());
+
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, BeanUtils.copyPropertiesReturnDest(new TimeAxisDataDTO(), timeAxisData));
     }
 
     /**
