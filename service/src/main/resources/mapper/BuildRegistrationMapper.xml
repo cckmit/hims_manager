@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.cmpay.lemon.monitor.dao.ISmokeTestRegistrationDao" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IBuildRegistrationDao" >
 
-    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.BuildRegistrationDO" >
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="req_nm" property="reqNm" jdbcType="VARCHAR" />
         <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
@@ -22,17 +22,17 @@
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
         select 
         <include refid="Base_Column_List" />
-        from t_smoke_test_registration
+        from t_build_registration
         where id = #{id,jdbcType=INTEGER}
     </select>
 
     <delete id="delete" parameterType="java.lang.Integer" >
-        delete from t_smoke_test_registration
+        delete from t_build_registration
         where id = #{id,jdbcType=INTEGER}
     </delete>
 
-    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
-        insert into t_smoke_test_registration
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.BuildRegistrationDO" >
+        insert into t_build_registration
         <trim prefix="(" suffix=")" suffixOverrides="," >
             <if test="id != null" >
                 id,
@@ -93,8 +93,8 @@
         </trim>
     </insert>
 
-    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
-        update t_smoke_test_registration
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.BuildRegistrationDO" >
+        update t_build_registration
         <set >
             <if test="reqNm != null" >
                 req_nm = #{reqNm,jdbcType=VARCHAR},
@@ -124,10 +124,10 @@
         where id = #{id,jdbcType=INTEGER}
     </update>
 
-    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.BuildRegistrationDO" >
         select 
         <include refid="Base_Column_List" />
-        from t_smoke_test_registration
+        from t_build_registration
         <where >
             <if test="id != null" >
                 and id = #{id,jdbcType=INTEGER}

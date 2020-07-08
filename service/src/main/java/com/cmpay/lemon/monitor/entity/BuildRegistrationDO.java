@@ -1,5 +1,5 @@
 /*
- * @ClassName SmokeTestRegistrationDO
+ * @ClassName BuildRegistrationDO
  * @Description 
  * @version 1.0
  * @Date 2020-07-08 11:33:25
@@ -10,7 +10,7 @@ import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
 @DataObject
-public class SmokeTestRegistrationDO extends BaseDO {
+public class BuildRegistrationDO extends BaseDO {
     /**
      * @Fields id 主键
      */
