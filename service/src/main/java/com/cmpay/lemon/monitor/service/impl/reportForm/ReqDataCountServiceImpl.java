@@ -13,6 +13,7 @@ import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
+import com.cmpay.lemon.monitor.service.impl.workload.ReqWorkLoadServiceImpl;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -72,6 +74,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     // 180 完成产品发布
     private static final String FINISHPRD1= "180";
 
+    private static final String XINGQISAN= "星期三";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ReqPlanServiceImpl.class);
 	@Autowired
 	private IDemandExtDao demandDao;
@@ -91,6 +95,15 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	private OperationProductionService operationProductionService;
     @Autowired
     private IProblemStatisticDao problemStatisticDao;
+    @Autowired
+    private IDefectDetailsExtDao defectDetailsExtDao;
+    @Autowired
+    private IIssueDetailsExtDao issueDetailsExtDao;
+    @Autowired
+    private IProductionDefectsExtDao productionDefectsExtDao;
+    @Autowired
+	private ReqWorkLoadServiceImpl reqWorkLoadService;
+
 
 
 	/**
@@ -522,6 +535,309 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		return demandQualityBO;
 	}
 	@Override
+    public WorkingHoursBO getReportForm10(String devpLeadDept,String date1,String date2){
+	    WorkingHoursBO workingHoursBO = new WorkingHoursBO();
+        List<WorkingHoursDO> impl = null;
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        impl = iWorkingHoursDao.findDeptView(workingHoursDO);
+        System.err.println(impl);
+        if(impl!=null &&impl.size()!=0){
+            BeanUtils.copyPropertiesReturnDest(workingHoursBO, impl.get(0));
+        }
+	    return  workingHoursBO;
+    }
+
+    /**
+     * 团队视图 柱状图
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptWorkHours(String devpLeadDept,String date1,String date2){
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        List<WorkingHoursDO> impl = null;
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            workingHoursDO.setSelectTime(date1);
+            impl = iWorkingHoursDao.findWeekSum(workingHoursDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            workingHoursDO.setSelectTime(date2);
+            impl = iWorkingHoursDao.findMonthSum(workingHoursDO);
+            System.err.println(impl);
+        }
+        System.err.println(impl);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        double sumx = 0;
+        if(impl!=null &&impl.size()!=0){
+            for(int i=0;i<impl.size();i++){
+                SumBos.add(impl.get(i).getDisplayname());
+                sumx = sumx + getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()));
+                workingHoursBOS.add(String.valueOf(getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()))));
+            }
+            sum = String.valueOf(sumx);
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        System.err.println(demandHoursRspBO);
+        return  demandHoursRspBO;
+    }
+
+	@Override
+	public DemandHoursRspBO getDeptWorkHoursAndPoint(String devpLeadDept,String date1,String date2){
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDevpLeadDept(devpLeadDept);
+		List<WorkingHoursDO> impl = null;
+		System.err.println(date1+"====="+date2);
+		DemandBO demandBO = new DemandBO();
+		demandBO.setDevpLeadDept(devpLeadDept);
+		if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		// 查询周
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
+			demandBO.setReqImplMon(date1.substring(0,6));
+			System.err.println(impl);
+		}
+		// 查询月
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
+			demandBO.setReqImplMon(date2);
+			System.err.println(impl);
+		}
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        if(impl!=null &&impl.size()!=0){
+            workingHoursBOS.add("工时");
+            SumBos.add(Double.toString(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+        }
+		// 获取当月的功能点
+		System.err.println(demandBO);
+		List<Double> dept =reqWorkLoadService.getExportCountForDevp(demandBO);
+       if(dept.get(0) != null){
+           workingHoursBOS.add("功能点");
+           SumBos.add(Double.toString(dept.get(0)));
+       }
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+		return  demandHoursRspBO;
+	}
+
+    @Override
+    public DemandHoursRspBO getDeptProduction(String devpLeadDept,String date1,String date2){
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        List<ProductionDO> impl = null;
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            workingHoursDO.setSelectTime(date1);
+            impl = iWorkingHoursDao.findListDeptWeek(workingHoursDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            workingHoursDO.setSelectTime(date2);
+            impl = iWorkingHoursDao.findListDeptMonth(workingHoursDO);
+            System.err.println(impl);
+        }
+        System.err.println(impl);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        int a =0;
+        int b =0;
+        int c =0;
+        if(impl!=null &&impl.size()!=0){
+            System.err.println(impl.size());
+           sum = impl.size()+"";
+           for(int i=0;i<impl.size();i++){
+               if(impl.get(i).getProType().equals("正常投产")&&XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                   a =a+1;
+               }
+               if(impl.get(i).getProType().equals("正常投产")&&!XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                    b=b+1;
+               }
+               if(impl.get(i).getProType().equals("救火更新")){
+                   c =c+1;
+               }
+           }
+           if (a >0){
+               String a1 =  "{'value': '"+a+"', 'name': '正常投产'}";
+               workingHoursBOS.add(a1);
+               SumBos.add("正常投产");
+           }
+            if (b >0){
+                String b1 =  "{'value': '"+b+"', 'name': '非投产日正常投产'}";
+                workingHoursBOS.add(b1);
+                SumBos.add("非投产日正常投产");
+            }
+            if (c >0){
+                String c1 =  "{'value': '"+c+"', 'name': '救火更新'}";
+                workingHoursBOS.add(c1);
+                SumBos.add("救火更新");
+            }
+        }else{
+            sum ="0";
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(sum);
+        return  demandHoursRspBO;
+    }
+    public static String testDate(String newtime) {
+        String dayNames[] = {"星期日","星期一","星期二","星期三","星期四","星期五","星期六"};
+        Calendar c = Calendar.getInstance();// 获得一个日历的zhi实例
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            c.setTime(sdf.parse(newtime));
+        } catch (ParseException e) {
+        // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return dayNames[c.get(Calendar.DAY_OF_WEEK)-1];
+    }
+
+    /**
+     * 团队需求异常情况
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDemandDispose(String devpLeadDept,String date1,String date2){
+        List<DemandDO> impl = null;
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        workingHoursDO.setSelectTime(date2);
+        impl = demandDao.findListDeptDemand(workingHoursDO);
+        System.err.println(impl);
+
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        String sum = "";
+        int a =0;
+        int b =0;
+        int c =0;
+        if(impl!=null &&impl.size()!=0){
+            System.err.println(impl.size());
+            sum = impl.size()+"";
+            for(int i=0;i<impl.size();i++){
+                if(!impl.get(i).getReqSts().equals("30")&&!impl.get(i).getReqSts().equals("40")){
+                    a =a+1;
+                }
+                if(impl.get(i).getReqSts().equals("30")){
+                    b=b+1;
+                }
+                if(impl.get(i).getReqSts().equals("40")){
+                    c =c+1;
+                }
+            }
+            if (a >0){
+                String a1 =  "{'value': '"+a+"', 'name': '正常需求'}";
+                workingHoursBOS.add(a1);
+                SumBos.add("正常需求");
+            }
+            if (b >0){
+                String b1 =  "{'value': '"+b+"', 'name': '取消需求'}";
+                workingHoursBOS.add(b1);
+                SumBos.add("取消需求");
+            }
+            if (c >0){
+                String c1 =  "{'value': '"+c+"', 'name': '暂停需求'}";
+                workingHoursBOS.add(c1);
+                SumBos.add("暂停需求");
+            }
+        }else{
+            sum ="0";
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(sum);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 团队需求主导需求
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDemandCoordinate(String devpLeadDept,String date1,String date2){
+        List<DemandDO> impl = null;
+        List<DemandDO> impl2 = null;
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        workingHoursDO.setSelectTime(date2);
+        impl = demandDao.findListDeptDemand(workingHoursDO);
+        impl2 = demandDao.findListDevpCoorDeptDemand(workingHoursDO);
+        System.err.println(impl);
+        System.err.println(impl2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        int sum = 0;
+        if(impl!=null &&impl.size()!=0){
+            workingHoursBOS.add(impl.size()+"");
+            SumBos.add("主导需求");
+            sum = sum + impl.size();
+        }else {
+            workingHoursBOS.add("0");
+            SumBos.add("主导需求");
+        }
+        if(impl2!=null &&impl2.size()!=0){
+            workingHoursBOS.add(impl2.size()+"");
+            SumBos.add("配合需求");
+            sum = sum + impl2.size();
+        }else {
+            workingHoursBOS.add("0");
+            SumBos.add("配合需求");
+        }
+        String simx = sum+"";
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setSum(simx);
+        return demandHoursRspBO;
+    }
+	@Override
 	public WorkingHoursBO getReportForm11(String displayname,String date1,String date2){
 		WorkingHoursBO workingHoursBO = new WorkingHoursBO();
 		List<WorkingHoursDO> impl = null;
@@ -600,6 +916,60 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		return workingHoursBos;
 	}
 
+    /**
+     * 团队需求情况
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public List<WorkingHoursBO> getDeptStaffView(String devpLeadDept,String date1,String date2){
+        List<WorkingHoursBO> workingHoursBos = new LinkedList<>();
+        List<WorkingHoursDO> impl = null;
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            workingHoursDO.setSelectTime(date1);
+            impl = iWorkingHoursDao.findListWeekViewDept(workingHoursDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            workingHoursDO.setSelectTime(date2);
+            impl = iWorkingHoursDao.findListMonthViewDept(workingHoursDO);
+            System.err.println(impl);
+        }
+        impl.forEach(m->
+                workingHoursBos.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
+        );
+        if(impl!=null && impl.size()!=0){
+            for (int i=0;i<impl.size();i++){
+                DemandJiraDO demandJiraDO = new DemandJiraDO();
+                if (impl.get(i).getEpickey() ==null || impl.get(i).getEpickey()==""){
+                    continue;
+                }
+                demandJiraDO.setJiraKey(impl.get(i).getEpickey());
+                // 根据jiraKey获取内部编号
+                List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
+                // 根据内部编号获取 需求名及需求编号
+                if(demandJiraDos!=null && demandJiraDos.size()!=0){
+                    DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+                    workingHoursBos.get(i).setReqNo(demandDO.getReqNo());
+                    workingHoursBos.get(i).setReqNm(demandDO.getReqNm());
+                }
+            }
+        }
+        System.err.println("112222222231132132"+workingHoursBos);
+        return workingHoursBos;
+    }
 	/**
 	 * 需求任务与其它任务工时间饼图
 	 * @param displayname
@@ -664,6 +1034,100 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 		System.err.println(demandHoursRspBO);
 		return demandHoursRspBO;
 	}
+	@Override
+    public DefectDetailsRspBO getDemandDefectDetails(String displayname,String date1,String date2){
+        System.err.println("缺陷问题");
+        List<DefectDetailsDO> impl = null;
+        List<DefectDetailsBO> defectDetailsBOList = null;
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        defectDetailsDO.setAssignee(displayname);
+        System.err.println(date1+"====="+date2);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            defectDetailsDO.setRegistrationDate(date1);
+            impl = defectDetailsExtDao.findWeekList(defectDetailsDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            defectDetailsDO.setRegistrationDate(date2);
+            impl = defectDetailsExtDao.findList(defectDetailsDO);
+            System.err.println(impl);
+        }
+        DefectDetailsRspBO defectDetailsRspBO = new DefectDetailsRspBO();
+        defectDetailsBOList =BeanConvertUtils.convertList(impl, DefectDetailsBO.class);
+        defectDetailsRspBO.setDefectDetailsBos(defectDetailsBOList);
+	    return  defectDetailsRspBO;
+    }
+
+    /**
+     * 个人视图评审问题
+     * @param displayname
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public IssueDetailsRspBO getDemandIssueDetails(String displayname,String date1,String date2){
+	    IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
+        List<IssueDetailsDO> impl = null;
+        List<IssueDetailsBO> issueDetailsBOList = null;
+	    issueDetailsDO.setAssignee(displayname);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            issueDetailsDO.setRegistrationDate(date1);
+            impl = issueDetailsExtDao.findWeekList(issueDetailsDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            issueDetailsDO.setRegistrationDate(date2);
+            impl = issueDetailsExtDao.findList(issueDetailsDO);
+            System.err.println(impl);
+        }
+        IssueDetailsRspBO issueDetailsRspBO = new IssueDetailsRspBO();
+        issueDetailsBOList =BeanConvertUtils.convertList(impl, IssueDetailsBO.class);
+        issueDetailsRspBO.setIssueDetailsBOList(issueDetailsBOList);
+        return issueDetailsRspBO;
+    }
+    @Override
+    public ProductionDefectsRspBO getDemandProductionDetails(String displayname,String date1,String date2){
+        ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
+        List<ProductionDefectsDO> impl = null;
+        List<ProductionDefectsBO> productionDefectsBOList = null;
+        productionDefectsDO.setPersonincharge(displayname);
+        if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+            productionDefectsDO.setProcessstartdate(date1);
+            impl = productionDefectsExtDao.findWeekList(productionDefectsDO);
+            System.err.println(impl);
+        }
+        // 查询月
+        if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            productionDefectsDO.setProcessstartdate(date2);
+            impl = productionDefectsExtDao.findMonthList(productionDefectsDO);
+            System.err.println(impl);
+        }
+        ProductionDefectsRspBO productionDefectsRspBO = new ProductionDefectsRspBO();
+        productionDefectsBOList =BeanConvertUtils.convertList(impl, ProductionDefectsBO.class);
+        productionDefectsRspBO.setProductionDefectsBOList(productionDefectsBOList);
+        return productionDefectsRspBO;
+    }
     @Override
     public DemandHoursRspBO getDemandHours(String epic){
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -743,107 +1207,107 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	 */
 	@Override
 	public DemandHoursRspBO getFlawNumber(String epic){
-	/*	DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         ProblemStatisticDO problemStatisticDO = problemStatisticDao.get(epic);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         String sum = "";
         int sumx=0;
-        *//**
+        /**
          * @Fields externalDefectsNumber 外围平台缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getExternalDefectsNumber())){
+         */
+        if(problemStatisticDO.getExternalDefectsNumber()!= 0){
             SumBos.add("外围平台缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getExternalDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getExternalDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getExternalDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getExternalDefectsNumber();
         }
-        *//**
+        /**
          * @Fields versionDefectsNumber 版本更新缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getVersionDefectsNumber())){
+         */
+        if(problemStatisticDO.getVersionDefectsNumber()!= 0){
             SumBos.add("版本更新缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getVersionDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getVersionDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getVersionDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getVersionDefectsNumber();
         }
-        *//**
+        /**
          * @Fields parameterDefectsNumber 参数配置缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getParameterDefectsNumber())){
+         */
+        if(problemStatisticDO.getParameterDefectsNumber()!= 0){
             SumBos.add("参数配置缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getParameterDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getParameterDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getParameterDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getParameterDefectsNumber();
         }
-        *//**
+        /**
          * @Fields functionDefectsNumber 功能设计缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getFunctionDefectsNumber())){
+         */
+        if(problemStatisticDO.getFunctionDefectsNumber()!= 0){
             SumBos.add("功能设计缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getFunctionDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getFunctionDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getFunctionDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getFunctionDefectsNumber();
         }
-        *//**
+        /**
          * @Fields processDefectsNumber 流程优化缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getProcessDefectsNumber())){
+         */
+        if(problemStatisticDO.getProcessDefectsNumber()!= 0){
             SumBos.add("流程优化缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getProcessDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getProcessDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getProcessDefectsNumber()+"");
+            sumx = sumx +problemStatisticDO.getProcessDefectsNumber();
         }
-        *//**
+        /**
          * @Fields promptDefectsNumber 提示语优化缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getPromptDefectsNumber())){
+         */
+        if(problemStatisticDO.getPromptDefectsNumber()!= 0){
             SumBos.add("提示语优化缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getPromptDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getPromptDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getPromptDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getPromptDefectsNumber();
         }
-        *//**
+        /**
          * @Fields pageDefectsNumber 页面设计缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getPageDefectsNumber())){
+         */
+        if(problemStatisticDO.getPageDefectsNumber()!= 0){
             SumBos.add("页面设计缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getPageDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getPageDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getPageDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getPageDefectsNumber();
         }
-        *//**
+        /**
          * @Fields backgroundDefectsNumber 后台应用缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getBackgroundDefectsNumber())){
+         */
+        if(problemStatisticDO.getBackgroundDefectsNumber()!= 0){
             SumBos.add("后台应用缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getBackgroundDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getBackgroundDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getBackgroundDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getBackgroundDefectsNumber();
         }
-        *//**
+        /**
          * @Fields modifyDefectsNumber 修改引入问题缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getModifyDefectsNumber())){
+         */
+        if(problemStatisticDO.getModifyDefectsNumber() != 0){
             SumBos.add("修改引入问题缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getModifyDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getModifyDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getModifyDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getModifyDefectsNumber();
         }
-        *//**
+        /**
          * @Fields designDefectsNumber 技术设计缺陷数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getDesignDefectsNumber())){
+         */
+        if(problemStatisticDO.getDesignDefectsNumber()!= 0){
             SumBos.add("技术设计缺陷数");
-            workingHoursBOS.add(problemStatisticDO.getDesignDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getDesignDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getDesignDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getDesignDefectsNumber();
         }
-        *//**
+        /**
          * @Fields invalidDefectsNumber 无效问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getInvalidDefectsNumber())){
+         */
+        if(problemStatisticDO.getInvalidDefectsNumber() != 0){
             SumBos.add("无效问题数");
-            workingHoursBOS.add(problemStatisticDO.getInvalidDefectsNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getInvalidDefectsNumber());
+            workingHoursBOS.add(problemStatisticDO.getInvalidDefectsNumber()+"");
+            sumx = sumx + problemStatisticDO.getInvalidDefectsNumber();
         }
         sum =String.valueOf(sumx);
         System.err.println(sum);
         demandHoursRspBO.setListSum(SumBos);
         demandHoursRspBO.setSum(sum);
         demandHoursRspBO.setStringList(workingHoursBOS);
-        System.err.println(demandHoursRspBO);*/
-		return null;
+        System.err.println(demandHoursRspBO);
+		return demandHoursRspBO;
 	}
 
 	/**
@@ -854,57 +1318,57 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	@Override
 	public DemandHoursRspBO getReviewNumber(String epic){
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
-   /*     ProblemStatisticDO problemStatisticDO = problemStatisticDao.get(epic);
+        ProblemStatisticDO problemStatisticDO = problemStatisticDao.get(epic);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         String sum = "";
         int sumx=0;
-        *//**
+        /**
          * @Fields requirementsReviewNumber 需求评审问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getRequirementsReviewNumber())){
+         */
+        if(problemStatisticDO.getRequirementsReviewNumber()!= 0){
             SumBos.add("需求评审问题数");
-            workingHoursBOS.add(problemStatisticDO.getRequirementsReviewNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getRequirementsReviewNumber());
+            workingHoursBOS.add(problemStatisticDO.getRequirementsReviewNumber()+"");
+            sumx = sumx + problemStatisticDO.getRequirementsReviewNumber();
         }
-        *//**
+        /**
          * @Fields codeReviewNumber 代码评审问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getCodeReviewNumber())){
+         */
+        if(problemStatisticDO.getCodeReviewNumber()!= 0){
             SumBos.add("代码评审问题数");
-            workingHoursBOS.add(problemStatisticDO.getCodeReviewNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getCodeReviewNumber());
+            workingHoursBOS.add(problemStatisticDO.getCodeReviewNumber()+"");
+            sumx = sumx + problemStatisticDO.getCodeReviewNumber();
         }
-        *//**
+        /**
          * @Fields testReviewNumber 测试案例评审问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getTestReviewNumber())){
+         */
+        if(problemStatisticDO.getTestReviewNumber()!= 0){
             SumBos.add("测试案例评审问题数");
-            workingHoursBOS.add(problemStatisticDO.getTestReviewNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getTestReviewNumber());
+            workingHoursBOS.add(problemStatisticDO.getTestReviewNumber()+"");
+            sumx = sumx + problemStatisticDO.getTestReviewNumber();
         }
-        *//**
+        /**
          * @Fields productionReviewNumber 投产方案评审问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getProductionReviewNumber())){
+         */
+        if(problemStatisticDO.getProductionReviewNumber()!= 0){
             SumBos.add("投产方案评审问题数");
-            workingHoursBOS.add(problemStatisticDO.getProductionReviewNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getProductionReviewNumber());
+            workingHoursBOS.add(problemStatisticDO.getProductionReviewNumber()+"");
+            sumx = sumx + problemStatisticDO.getProductionReviewNumber();
         }
-        *//**
+        /**
          * @Fields technicalReviewNumber 技术方案评审问题数
-         *//*
-        if(JudgeUtils.isNotEmpty(problemStatisticDO.getTechnicalReviewNumber())){
+         */
+        if(problemStatisticDO.getTechnicalReviewNumber()!= 0){
             SumBos.add("技术方案评审问题数");
-            workingHoursBOS.add(problemStatisticDO.getTechnicalReviewNumber());
-            sumx = sumx + Integer.parseInt(problemStatisticDO.getTechnicalReviewNumber());
+            workingHoursBOS.add(problemStatisticDO.getTechnicalReviewNumber()+"");
+            sumx = sumx + problemStatisticDO.getTechnicalReviewNumber();
         }
         sum =String.valueOf(sumx);
         System.err.println(sum);
         demandHoursRspBO.setListSum(SumBos);
         demandHoursRspBO.setSum(sum);
         demandHoursRspBO.setStringList(workingHoursBOS);
-        System.err.println(demandHoursRspBO);*/
+        System.err.println(demandHoursRspBO);
         return demandHoursRspBO;
 	}
 
@@ -915,6 +1379,15 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	 */
     public Double getWorkHours(int time){
         return (double) (Math.round(time* 100 /  28800)/ 100.0);
+    }
+
+    /**
+     * 毫秒转小时
+     * @param time
+     * @return
+     */
+    public Double getWorkHoursTime(int time){
+        return (double) (Math.round(time* 100 /  3600)/ 100.0);
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
  * @ClassName IProductionDefectsDao
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-16 15:15:52
  */
@@ -15,4 +15,6 @@ import java.util.List;
 public interface IProductionDefectsExtDao extends IProductionDefectsDao {
 
     List<ProductionDefectsDO> findList(ProductionDefectsDO productionDefectsDO);
+    List<ProductionDefectsDO> findWeekList(ProductionDefectsDO productionDefectsDO);
+    List<ProductionDefectsDO> findMonthList(ProductionDefectsDO productionDefectsDO);
 }

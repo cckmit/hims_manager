@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author: zhou_xiong
+ * @author: wlr
  */
 public class ProductionDefectsRspDTO extends PageableRspDTO {
-    private List<ProductionDefectsDTO> productionDefectsDTOList = new ArrayList<>();
+    private List<ProductionDefectsDTO> productionDefectsDTOList ;
 
     public List<ProductionDefectsDTO> getProductionDefectsDTOList() {
         return productionDefectsDTOList;

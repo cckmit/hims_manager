@@ -1,6 +1,6 @@
 /*
  * @ClassName IDefectDetailsDao
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-07-02 10:43:29
  */
@@ -15,4 +15,7 @@ import java.util.List;
 public interface IDefectDetailsExtDao extends IDefectDetailsDao {
 
    List<DefectDetailsDO> findNotCompleted(DefectDetailsDO defectDetailsDO);
+    List<DefectDetailsDO> findList(DefectDetailsDO entity);
+    List<DefectDetailsDO> findWeekList(DefectDetailsDO entity);
+
 }

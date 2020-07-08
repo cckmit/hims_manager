@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.dao;
 
 import com.cmpay.lemon.monitor.entity.DemandDO;
+import com.cmpay.lemon.monitor.entity.WorkingHoursDO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -78,4 +79,8 @@ public interface IDemandExtDao extends IDemandDao {
 
     void WeedAndMonthFeedback(DemandDO demandDO);
     void updateOperation(DemandDO demandDO);
+
+
+    List<DemandDO> findListDeptDemand(WorkingHoursDO workingHoursDO);
+    List<DemandDO> findListDevpCoorDeptDemand(WorkingHoursDO workingHoursDO);
 }

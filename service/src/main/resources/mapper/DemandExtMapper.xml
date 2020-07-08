@@ -1522,4 +1522,28 @@
         </if>
         where req_inner_seq =#{reqInnerSeq }
     </update>
+
+    <select id="findListDeptDemand" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            req_sts not in ('60')
+            AND a.req_impl_mon = #{selectTime,jdbcType=VARCHAR}
+            AND a.devp_lead_dept  = #{devpLeadDept,jdbcType=VARCHAR}
+        </where>
+        ORDER BY a.req_inner_seq desc
+    </select>
+    <select id="findListDevpCoorDeptDemand" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM t_demand_info a
+        <where>
+            req_sts not in ('60')
+            AND a.req_impl_mon = #{selectTime,jdbcType=VARCHAR}
+            AND a.devp_coor_dept   like CONCAT('%',#{devpLeadDept,jdbcType=VARCHAR},'%')
+        </where>
+        ORDER BY a.req_inner_seq desc
+    </select>
+
 </mapper>

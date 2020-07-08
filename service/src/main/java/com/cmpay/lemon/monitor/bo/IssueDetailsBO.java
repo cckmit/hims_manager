@@ -4,13 +4,14 @@
  * @version 1.0
  * @Date 2020-06-30 16:04:29
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.bo;
 
 import com.cmpay.framework.data.BaseDO;
-import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
-public class IssueDetailsDO extends BaseDO {
+/**
+ * @author wlr
+ */
+public class IssueDetailsBO {
     /**
      * @Fields jireKey 问题jira编号
      */
@@ -134,7 +135,7 @@ public class IssueDetailsDO extends BaseDO {
 
     @Override
     public String toString() {
-        return "IssueDetailsDO{" +
+        return "IssueDetailsBO{" +
                 "jireKey='" + jireKey + '\'' +
                 ", reqNo='" + reqNo + '\'' +
                 ", epicKey='" + epicKey + '\'' +

@@ -24,15 +24,15 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, serialNumber, documentNumber, processStatus, processStartDate, currentSession, 
-        currentExecutor, problemRaiser, questionTitle, questionNumber, questionDetails, solution, 
-        problemAttributionDept, personInCharge, questionType, identifyTheProblem, developmentLeader, 
+        id, serialNumber, documentNumber, processStatus, processStartDate, currentSession,
+        currentExecutor, problemRaiser, questionTitle, questionNumber, questionDetails, solution,
+        problemAttributionDept, personInCharge, questionType, identifyTheProblem, developmentLeader,
         updateType
     </sql>
 
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_production_defects
         <where >
@@ -93,4 +93,131 @@
         </where>
         order by processStartDate desc
     </select>
+
+    <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="serialnumber != null and serialnumber != ''"  >
+                and serialNumber = #{serialnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="documentnumber != null and documentnumber != ''" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstatus != null and processstatus != ''" >
+                and processStatus = #{processstatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null and processstartdate != ''" >
+                and YEARWEEK(date_format(processStartDate,'%Y-%m-%d')) = YEARWEEK(#{processstartdate,jdbcType=VARCHAR})
+            </if>
+            <if test="currentsession != null and currentsession != ''" >
+                and currentSession = #{currentsession,jdbcType=VARCHAR}
+            </if>
+            <if test="currentexecutor != null and currentexecutor != ''" >
+                and currentExecutor = #{currentexecutor,jdbcType=VARCHAR}
+            </if>
+            <if test="problemraiser != null and problemraiser != ''" >
+                and problemRaiser = #{problemraiser,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontitle != null and questiontitle != ''" >
+                AND questionTitle LIKE CONCAT('%',#{questiontitle},'%')
+            </if>
+            <if test="questionnumber != null and questionnumber != ''" >
+                and questionNumber = #{questionnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="questiondetails != null and questiondetails != ''" >
+                and questionDetails = #{questiondetails,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="problemattributiondept != null and problemattributiondept != ''" >
+                and problemAttributionDept = #{problemattributiondept,jdbcType=VARCHAR}
+            </if>
+            <if test="personincharge != null and personincharge != ''" >
+                and personInCharge = #{personincharge,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontype != null and questiontype != ''" >
+                and questionType = #{questiontype,jdbcType=VARCHAR}
+            </if>
+            <if test="identifytheproblem != null and identifytheproblem != ''" >
+                and identifyTheProblem = #{identifytheproblem,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentleader != null and developmentleader != ''" >
+                and developmentLeader = #{developmentleader,jdbcType=VARCHAR}
+            </if>
+            <if test="updatetype != null and updatetype != ''" >
+                and updateType = #{updatetype,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by processStartDate desc
+    </select>
+
+    <select id="findMonthList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionDefectsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="serialnumber != null and serialnumber != ''"  >
+                and serialNumber = #{serialnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="documentnumber != null and documentnumber != ''" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstatus != null and processstatus != ''" >
+                and processStatus = #{processstatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null and processstartdate != ''" >
+                and processStartDate LIKE CONCAT('%',#{processstartdate},'%')
+            </if>
+            <if test="currentsession != null and currentsession != ''" >
+                and currentSession = #{currentsession,jdbcType=VARCHAR}
+            </if>
+            <if test="currentexecutor != null and currentexecutor != ''" >
+                and currentExecutor = #{currentexecutor,jdbcType=VARCHAR}
+            </if>
+            <if test="problemraiser != null and problemraiser != ''" >
+                and problemRaiser = #{problemraiser,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontitle != null and questiontitle != ''" >
+                AND questionTitle LIKE CONCAT('%',#{questiontitle},'%')
+            </if>
+            <if test="questionnumber != null and questionnumber != ''" >
+                and questionNumber = #{questionnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="questiondetails != null and questiondetails != ''" >
+                and questionDetails = #{questiondetails,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="problemattributiondept != null and problemattributiondept != ''" >
+                and problemAttributionDept = #{problemattributiondept,jdbcType=VARCHAR}
+            </if>
+            <if test="personincharge != null and personincharge != ''" >
+                and personInCharge = #{personincharge,jdbcType=VARCHAR}
+            </if>
+            <if test="questiontype != null and questiontype != ''" >
+                and questionType = #{questiontype,jdbcType=VARCHAR}
+            </if>
+            <if test="identifytheproblem != null and identifytheproblem != ''" >
+                and identifyTheProblem = #{identifytheproblem,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentleader != null and developmentleader != ''" >
+                and developmentLeader = #{developmentleader,jdbcType=VARCHAR}
+            </if>
+            <if test="updatetype != null and updatetype != ''" >
+                and updateType = #{updatetype,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by processStartDate desc
+    </select>
+
 </mapper>
