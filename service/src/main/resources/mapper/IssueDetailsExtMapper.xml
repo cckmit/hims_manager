@@ -16,7 +16,7 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jire_key, req_no, epic_key, issue_type, issue_status, issue_registrant, issue_department, 
+        jire_key, req_no, epic_key, issue_type, issue_status, issue_registrant, issue_department,
         registration_date, issue_details, assignee
     </sql>
 
@@ -46,6 +46,80 @@
             </if>
             <if test="registrationDate != null" >
                 and registration_date = #{registrationDate,jdbcType=VARCHAR}
+            </if>
+            <if test="issueDetails != null" >
+                and issue_details = #{issueDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_issue_details
+        <where >
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueType != null" >
+                and issue_type = #{issueType,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null" >
+                and issue_status = #{issueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="issueRegistrant != null" >
+                and issue_registrant = #{issueRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="issueDepartment != null" >
+                and issue_department = #{issueDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date LIKE CONCAT('%',#{registrationDate},'%')
+            </if>
+            <if test="issueDetails != null" >
+                and issue_details = #{issueDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.IssueDetailsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_issue_details
+        <where >
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueType != null" >
+                and issue_type = #{issueType,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null" >
+                and issue_status = #{issueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="issueRegistrant != null" >
+                and issue_registrant = #{issueRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="issueDepartment != null" >
+                and issue_department = #{issueDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and YEARWEEK(date_format(registration_date,'%Y-%m-%d')) = YEARWEEK(#{registrationDate,jdbcType=VARCHAR})
             </if>
             <if test="issueDetails != null" >
                 and issue_details = #{issueDetails,jdbcType=VARCHAR}

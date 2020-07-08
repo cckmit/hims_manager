@@ -21,6 +21,10 @@ public class DefectDetailsBO {
      */
     private String reqNo;
     /**
+     * @Fields defectName 缺陷名称
+     */
+    private String defectName;
+    /**
      * @Fields epicKey 对应epic编号
      */
     private String epicKey;
@@ -55,7 +59,7 @@ public class DefectDetailsBO {
     /**
      * @Fields testNumber 缺陷重测次数
      */
-    private String testNumber;
+    private Integer testNumber;
 
     public String getJireKey() {
         return jireKey;
@@ -71,6 +75,14 @@ public class DefectDetailsBO {
 
     public void setReqNo(String reqNo) {
         this.reqNo = reqNo;
+    }
+
+    public String getDefectName() {
+        return defectName;
+    }
+
+    public void setDefectName(String defectName) {
+        this.defectName = defectName;
     }
 
     public String getEpicKey() {
@@ -137,11 +149,11 @@ public class DefectDetailsBO {
         this.assignee = assignee;
     }
 
-    public String getTestNumber() {
+    public Integer getTestNumber() {
         return testNumber;
     }
 
-    public void setTestNumber(String testNumber) {
+    public void setTestNumber(Integer testNumber) {
         this.testNumber = testNumber;
     }
 

@@ -80,6 +80,59 @@ public interface ReqDataCountService {
     WorkingHoursBO getReportForm11(String displayname,String date1,String date2);
 
     /**
+     * 查询团队视图基本信息
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    WorkingHoursBO getReportForm10(String devpLeadDept,String date1,String date2);
+
+    /**
+     * 团队视图，获取部门员工工时柱状图
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDeptWorkHours(String devpLeadDept,String date1,String date2);
+
+    /**
+     * 获取团队功能点和工时
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDeptWorkHoursAndPoint(String devpLeadDept,String date1,String date2);
+
+    /**
+     * 获取团队的投产情况
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDeptProduction(String devpLeadDept,String date1,String date2);
+
+    /**
+     * 团队需求异常
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDemandDispose(String devpLeadDept,String date1,String date2);
+
+    /**
+     * 团队主导配合情况
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    DemandHoursRspBO getDemandCoordinate(String devpLeadDept,String date1,String date2);
+    /**
      * 个人视图，需求任务与其它任务工时饼图
      * @param displayname
      * @param date1
@@ -88,9 +141,29 @@ public interface ReqDataCountService {
      */
     DemandHoursRspBO getDemandStaffTask(String displayname,String date1,String date2);
 
-    DefectDetailsRspBO getDemandDefectDetails(String displayname,String date1,String date2);
 
+    DefectDetailsRspBO getDemandDefectDetails(String displayname,String date1,String date2);
+    IssueDetailsRspBO getDemandIssueDetails(String displayname,String date1,String date2);
+    ProductionDefectsRspBO getDemandProductionDetails(String displayname,String date1,String date2);
+
+    /**
+     * 个人视图，参与需求
+     * @param displayname
+     * @param date1
+     * @param date2
+     * @return
+     */
     List<WorkingHoursBO> getDemandStaffView(String displayname,String date1,String date2);
+
+    /**
+     * 团队视图，需求情况
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    List<WorkingHoursBO> getDeptStaffView(String devpLeadDept,String date1,String date2);
+
     /**
      * 获取需求花费工时
      * @param epic

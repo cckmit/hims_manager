@@ -635,6 +635,26 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
     }
+    public List<Double> getExportCountForDevp(DemandBO demandBO){
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        System.err.println(demandDO);
+        List list = null;
+        String[] headerNames =null;
+        List<DemandDO>  mon_input_workload_list = workLoadDao.goExportCountForDevp(demandDO);
+        System.err.println(mon_input_workload_list);
+        List<DemandBO> DevpWorkLoadList = new ArrayList<>();
+        for (int i = 0; i < mon_input_workload_list.size(); i++){
+            DemandDO demand = mon_input_workload_list.get(i);
+            DemandBO demandBO1 = new DemandBO();
+            BeanConvertUtils.convert(demandBO1, demand);
+            DemandBO devpDemand = getWorkLoad(demandBO1);
+            devpDemand.setCoorDeptWorkload(devpDemand.getLeadDeptWorkload()+devpDemand.getCoorDeptWorkload());
+            DevpWorkLoadList.add(devpDemand);
+        }
+        list = dealDevpWorkload2(DevpWorkLoadList,demandBO.getDevpLeadDept());// 各部门工作量月统计汇总报表导出  goExportCountForDevp
+        return list;
+    }
     @Override
     public void goExportCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type){
         DemandDO demandDO = new DemandDO();
@@ -878,6 +898,28 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
 
+        return list;
+    }
+    private List<Double> dealDevpWorkload2(List<DemandBO> rowList,String dept){
+        List<Double> list = Arrays.asList(new Double[20]);
+        for (int i = 0; i < rowList.size(); i++) {
+            //配合部门工作量
+            String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
+            if (StringUtils.isNotBlank(coorList[0])){
+                for (int j = 0; j < coorList.length; j++) {
+                    list = addWorkload2(list,coorList[j],dept);
+                }
+            }
+        }
+
+        return list;
+    }
+    private List<Double> addWorkload2(List<Double> list,String str,String dept){
+        String devp = str.split(":")[0];
+        Double workload = Double.valueOf(str.split(":")[1]);
+        if(dept.equals(devp)){
+            list.set(0, workload + (list.get(0) == null ? 0:list.get(0)) );
+        }
         return list;
     }
     private List<Double> addWorkload2(List<Double> list,String str){

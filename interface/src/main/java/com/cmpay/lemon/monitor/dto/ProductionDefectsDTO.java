@@ -1,14 +1,14 @@
 /*
  * @ClassName ProductionDefectsDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-16 15:15:52
  */
 package com.cmpay.lemon.monitor.dto;
 
-import com.cmpay.lemon.framework.annotation.DataObject;
-
-@DataObject
+/**
+ * @author: wlr
+ */
 public class ProductionDefectsDTO {
     /**
      * @Fields id 主键

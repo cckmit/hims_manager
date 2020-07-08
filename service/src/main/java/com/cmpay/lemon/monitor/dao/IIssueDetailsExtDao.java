@@ -1,6 +1,6 @@
 /*
  * @ClassName IIssueDetailsDao
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-30 16:04:29
  */
@@ -15,4 +15,6 @@ import java.util.List;
 public interface IIssueDetailsExtDao extends IIssueDetailsDao {
 
     List<IssueDetailsDO> findNotCompleted(IssueDetailsDO issueDetailsDO);
+    List<IssueDetailsDO> findList(IssueDetailsDO entity);
+    List<IssueDetailsDO> findWeekList(IssueDetailsDO entity);
 }

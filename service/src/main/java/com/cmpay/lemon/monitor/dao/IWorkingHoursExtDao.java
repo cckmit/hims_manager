@@ -6,8 +6,7 @@
  */
 package com.cmpay.lemon.monitor.dao;
 
-import com.cmpay.lemon.monitor.entity.DepartmentWorkDO;
-import com.cmpay.lemon.monitor.entity.WorkingHoursDO;
+import com.cmpay.lemon.monitor.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -98,4 +97,23 @@ public interface IWorkingHoursExtDao extends IWorkingHoursDao{
      * @return
      */
     List<WorkingHoursDO> findListMonthView(WorkingHoursDO workingHoursDO);
+
+    List<WorkingHoursDO> findDeptView(WorkingHoursDO workingHoursDO);
+    /**
+     * 周部门员工详情需求工时
+     * @param workingHoursDO
+     * @return
+     */
+    List<WorkingHoursDO> findListWeekViewDept(WorkingHoursDO workingHoursDO);
+    /**
+     * 月部门员工详情需求工时
+     * @param workingHoursDO
+     * @return
+     */
+    List<WorkingHoursDO> findListMonthViewDept(WorkingHoursDO workingHoursDO);
+
+    List<ProductionDO> findListDeptWeek(WorkingHoursDO workingHoursDO);
+
+    List<ProductionDO> findListDeptMonth(WorkingHoursDO workingHoursDO);
+
 }

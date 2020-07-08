@@ -1,14 +1,12 @@
 /*
  * @ClassName ProductionDefectsDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-16 15:15:52
  */
 package com.cmpay.lemon.monitor.bo;
 
-import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
 public class ProductionDefectsBO{
     /**
      * @Fields id 主键
