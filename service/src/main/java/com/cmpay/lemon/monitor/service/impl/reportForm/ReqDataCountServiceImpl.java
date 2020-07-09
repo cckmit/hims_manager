@@ -1302,11 +1302,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             sumx = sumx + problemStatisticDO.getInvalidDefectsNumber();
         }
         sum =String.valueOf(sumx);
-        System.err.println(sum);
         demandHoursRspBO.setListSum(SumBos);
         demandHoursRspBO.setSum(sum);
         demandHoursRspBO.setStringList(workingHoursBOS);
-        System.err.println(demandHoursRspBO);
 		return demandHoursRspBO;
 	}
 
@@ -1364,11 +1362,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             sumx = sumx + problemStatisticDO.getTechnicalReviewNumber();
         }
         sum =String.valueOf(sumx);
-        System.err.println(sum);
         demandHoursRspBO.setListSum(SumBos);
         demandHoursRspBO.setSum(sum);
         demandHoursRspBO.setStringList(workingHoursBOS);
-        System.err.println(demandHoursRspBO);
         return demandHoursRspBO;
 	}
 

@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class JiraDataCollationServiceImpl implements JiraDataCollationService {
@@ -82,6 +79,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
+                if(m.getJiraKey().equals("CMPAY-3513")) {
                     try {
                         JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
                         this.registerJiraBasicInfo(jiraTaskBodyBO);
@@ -90,6 +88,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
             });
             epicList.forEach(m -> {
                 if (m == null) {
@@ -415,6 +414,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
             String week = DateUtil.testDate(selectTime);
+
             if(week.equals("星期一")){
                 int betweenDate = 0;
                 try {
@@ -425,7 +425,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     e.printStackTrace();
                 }
 
-                if (betweenDate > 3) {
+                if (betweenDate > 4) {
                     continue;
                 }
             }else{
@@ -437,14 +437,11 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
                 if (betweenDate > 1) {
                     continue;
                 }
             }
-
-
-
+            //是否是
             if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
                 String date1 = StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10);
                 String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
@@ -456,6 +453,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             }
             String date1 = StringUtils.substring(LocalDateTime.now().toString().trim(), 0, 10);
             String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
+
+            //是否是当天修改的
             if (date1.equals(date2)) {
                 WorkingHoursDO workingHoursDO = new WorkingHoursDO();
                 workingHoursDO.setJiraworklogkey(jiraWorklogDO.getJiraworklogkey());
