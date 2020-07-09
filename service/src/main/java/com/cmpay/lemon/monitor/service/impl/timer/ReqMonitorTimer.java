@@ -8,6 +8,7 @@ import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsDao;
+import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
@@ -46,7 +47,7 @@ public class ReqMonitorTimer {
     @Autowired
     JiraDataCollationService jiraDataCollationService;
     @Autowired
-    IProCheckTimeOutStatisticsDao proCheckTimeOutStatisticsDao;
+    IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsDao;
 
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
