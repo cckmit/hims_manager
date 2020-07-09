@@ -74,9 +74,14 @@ public class DemandDO extends BaseDO {
     private String reqSts;
     @Excel(name = "月底反馈")
     private String endMonRemark;
+    @Excel(name = "上次修改状态备注")
+    private String requirementStatusModificationNotes;
+    @Excel(name = "基地领导是否审批")
+    private String isApprovalProcess;
+    @Excel(name = "项目经理")
+    private String projectMng;
     private String actPrdFinshTm;
     private String devpResMng;
-    private String projectMng;
     private String qaMng;
     private String configMng;
     private String devpEng;
@@ -88,15 +93,19 @@ public class DemandDO extends BaseDO {
     private String actTestFinshTm;
 
     private String endFeedbackTm;
+    @Excel(name = "总工作量")
     private int totalWorkload;
     //已录入总工作量
+    @Excel(name = "已录入总工作量")
     private int inputWorkload;
     //上月录入
     private int lastInputWorkload;
-    //剩余录入工作量
-    private int remainWorkload;
     //本月录入工作量
+    @Excel(name = "本月计划录入工作量")
     private int monInputWorkload;
+    //剩余录入工作量
+    @Excel(name = "剩余工作量")
+    private int remainWorkload;
     //	主导部门工作量占比
     private String leadDeptPro;
     //	配合部门工作量占比
@@ -131,10 +140,7 @@ public class DemandDO extends BaseDO {
     private String assignee;
     private String planStartTime;
     private String planEndTime;
-    @Excel(name = "上次修改状态备注")
-    private String requirementStatusModificationNotes;
-    @Excel(name = "基地领导是否审批")
-    private String isApprovalProcess;
+
     private String preCurPeriod2;
 
     public String getPreCurPeriod2() {

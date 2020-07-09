@@ -18,6 +18,17 @@ public class TimeAxisDataBO {
     String expPrdReleaseTm;
     //当前状态
     String preCurPeriod;
+    //查询时间
+    String selectTime;
+
+    public String getSelectTime() {
+        return selectTime;
+    }
+
+    public void setSelectTime(String selectTime) {
+        this.selectTime = selectTime;
+    }
+
     public String getPrdFinshTm() {
         return prdFinshTm;
     }

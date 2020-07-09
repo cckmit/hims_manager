@@ -2046,7 +2046,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
 
 
-        String s = Arrays.toString(timeAxisData);
         TimeAxisDataBO timeAxisDataBO = new TimeAxisDataBO();
         timeAxisDataBO.setxAxisDate(timeAxisData);
         timeAxisDataBO.setPosition(position);
@@ -2061,8 +2060,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         timeAxisDataBO.setPreTm(demandBO.getPreTm());
         //投产时间
         timeAxisDataBO.setExpPrdReleaseTm(demandBO.getExpPrdReleaseTm());
+        //查询时间
+        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+
         String req_peroid = dictionaryService.findFieldValue("REQ_PEROID", demandBO.getPreCurPeriod());
         timeAxisDataBO.setPreCurPeriod(req_peroid);
+        timeAxisDataBO.setSelectTime(selectTime);
         return timeAxisDataBO;
     }
 
