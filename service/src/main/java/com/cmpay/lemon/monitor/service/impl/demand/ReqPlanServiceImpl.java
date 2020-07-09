@@ -472,7 +472,22 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //获取登录用户ID
             String update_user = SecurityUtils.getLoginUserId();
             for (int i = 0; i < list.size(); i++) {
+
                 DemandDO demand = list.get(i);
+                String devpLeadDept = list.get(i).getDevpLeadDept();
+                if(JudgeUtils.isBlank(devpLeadDept)){
+                    continue;
+                }
+                if(devpLeadDept.equals("团体组织交费项目组")){
+                    continue;
+                }else if(devpLeadDept.equals("资金归集项目组")){
+                    continue;
+                }else if(devpLeadDept.equals("客服中间层项目组")){
+                    continue;
+                }else if(devpLeadDept.equals("设计项目组")){
+                    continue;
+                }
+
                 String picReqinnerseq = list.get(i).getReqInnerSeq();
                 DemandDO demandDO1 = demandDao.get(picReqinnerseq);
                 // 需求类型变为存量
