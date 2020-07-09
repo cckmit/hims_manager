@@ -852,6 +852,31 @@
 	   <!--where pro_status in ("投产待部署","部署完成待验证","投产验证完成")-->
 	   <!--and  date_format(records_time,'%Y-%m-%d')=#{cur_date}-->
 	<!--</select>-->
-
+    <select id="findWeek" resultMap="rm" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  t_production_records t1
+        WHERE 1=1
+        <if test="startedtime != null||startedtime != ''" >
+            and YEARWEEK(pro_date) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
+        </if>
+        <if test="devpLeadDept != null and devpLeadDept != ''" >
+            and application_dept = #{devpLeadDept,jdbcType=VARCHAR}
+        </if>
+        order by pro_date desc
+    </select>
+    <select id="findMonth" resultMap="rm" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+    SELECT
+    <include refid="Base_Column_List"/>
+    from  t_production_records t1
+    WHERE 1=1
+     <if test="startedtime != null||startedtime != ''" >
+        and pro_date like CONCAT('%',#{selectTime,jdbcType=VARCHAR},'%')
+    </if>
+    <if test="devpLeadDept != null and devpLeadDept != ''" >
+        and application_dept = #{devpLeadDept,jdbcType=VARCHAR}
+    </if>
+    order by pro_date desc
+</select>
 
 </mapper>

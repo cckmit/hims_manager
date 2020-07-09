@@ -62,7 +62,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     private IUserRoleExtDao userRoleExtDao;
 
     @Autowired
-    private IProUnhandledIssuesDao proUnhandledIssuesDao;
+    private IProUnhandledIssuesExtDao proUnhandledIssuesDao;
     @Async
     @Override
     public void getIssueModifiedWithinOneDay() {
@@ -79,15 +79,13 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
-                if(m.getJiraKey().equals("CMPAY-3513")) {
-                    try {
-                        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                        this.registerJiraBasicInfo(jiraTaskBodyBO);
-                        this.registerWorklogs(jiraTaskBodyBO);
-                        epicList.add(jiraTaskBodyBO.getEpicKey());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                    this.registerJiraBasicInfo(jiraTaskBodyBO);
+                    this.registerWorklogs(jiraTaskBodyBO);
+                    epicList.add(jiraTaskBodyBO.getEpicKey());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
             epicList.forEach(m -> {
@@ -453,8 +451,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             }
             String date1 = StringUtils.substring(LocalDateTime.now().toString().trim(), 0, 10);
             String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
-
-            //是否是当天修改的
             if (date1.equals(date2)) {
                 WorkingHoursDO workingHoursDO = new WorkingHoursDO();
                 workingHoursDO.setJiraworklogkey(jiraWorklogDO.getJiraworklogkey());

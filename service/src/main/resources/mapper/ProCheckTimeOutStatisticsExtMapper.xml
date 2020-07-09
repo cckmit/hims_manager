@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProCheckTimeOutStatisticsDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="registrationDate" property="registrationdate" jdbcType="VARCHAR" />
+        <result column="count" property="count" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, department, registrationDate, count
+    </sql>
+
+
+    <select id="findWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProCheckTimeOutStatisticsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_check_timeout_statistics
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationdate != null" >
+                and YEARWEEK(registrationDate) = YEARWEEK(#{registrationdate,jdbcType=VARCHAR})
+            </if>
+            <if test="count != null" >
+                and count = #{count,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="findMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProCheckTimeOutStatisticsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_check_timeout_statistics
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationdate != null" >
+                and registrationDate like CONCAT('%',#{registrationdate,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="count != null" >
+                and count = #{count,jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+</mapper>

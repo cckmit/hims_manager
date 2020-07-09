@@ -103,6 +103,17 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IProductionDefectsExtDao productionDefectsExtDao;
     @Autowired
 	private ReqWorkLoadServiceImpl reqWorkLoadService;
+    @Autowired
+    private IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsExtDao;
+    @Autowired
+    private IProUnhandledIssuesExtDao proUnhandledIssuesExtDao;
+    @Autowired
+    private IOperationProductionDao iOperationProductionDao;
+    @Autowired
+    private IBuildFailedCountDao iBuildFailedCountDao;
+    @Autowired
+    private ISmokeTestFailedCountDao iSmokeTestFailedCountDao;
+
 
 
 
@@ -837,6 +848,487 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         demandHoursRspBO.setSum(simx);
         return demandHoursRspBO;
     }
+
+	/**
+	 * 按照月查询团队缺陷
+	 * @param devpLeadDept
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+    @Override
+    public DemandHoursRspBO getDeptFlawNumber(String devpLeadDept,String date1,String date2){
+        List<DefectDetailsDO> impl = null;
+		DefectDetailsDO workingHoursDO = new DefectDetailsDO();
+        workingHoursDO.setDefectsDepartment(devpLeadDept);
+		List<String> list = getSixMonth(date2);
+		List<String> workingHoursBOS = new LinkedList<>();
+		List<String> SumBos = new LinkedList<>();
+		for (int i=0;i<list.size();i++){
+			workingHoursDO.setRegistrationDate(list.get(i));
+			impl = defectDetailsExtDao.findList(workingHoursDO);
+			SumBos.add(list.get(i));
+			if (impl!=null &&impl.size()!=0){
+				workingHoursBOS.add(impl.size()+"");
+			}else {
+				workingHoursBOS.add("0");
+			}
+
+		}
+        System.err.println(impl);
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO.setStringList(workingHoursBOS);
+		demandHoursRspBO.setListSum(SumBos);
+		return demandHoursRspBO;
+    }
+
+    /**
+     *团队视图按月份查询评审问题
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptIssueNumber(String devpLeadDept,String date1,String date2){
+        List<IssueDetailsDO> impl = null;
+        IssueDetailsDO workingHoursDO = new IssueDetailsDO();
+        workingHoursDO.setIssueDepartment(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setRegistrationDate(list.get(i));
+            impl = issueDetailsExtDao.findList(workingHoursDO);
+            SumBos.add(list.get(i));
+            if (impl!=null &&impl.size()!=0){
+                workingHoursBOS.add(impl.size()+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 团队生产问题
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptProductionDefects(String devpLeadDept,String date1,String date2){
+        List<ProductionDefectsDO> impl = null;
+        ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        workingHoursDO.setProblemattributiondept(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setProcessstartdate(list.get(i));
+            impl = productionDefectsExtDao.findMonthList(workingHoursDO);
+            SumBos.add(list.get(i));
+            if (impl!=null &&impl.size()!=0){
+                workingHoursBOS.add(impl.size()+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 团队投产验证不及时
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptProCheckTimeOutStatistics(String devpLeadDept,String date1,String date2){
+        List<ProCheckTimeOutStatisticsDO> impl = null;
+        ProCheckTimeOutStatisticsDO workingHoursDO = new ProCheckTimeOutStatisticsDO();
+        workingHoursDO.setDepartment(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setRegistrationdate(list.get(i));
+            impl = proCheckTimeOutStatisticsExtDao.findMonth(workingHoursDO);
+            SumBos.add(list.get(i));
+            int sum = 0;
+            if (impl!=null &&impl.size()!=0){
+                for(int j=0;j<impl.size();j++){
+                    sum = sum + impl.get(j).getCount();
+                }
+                workingHoursBOS.add(sum+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 团队缺陷未解决
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptProUnhandledIssues1(String devpLeadDept,String date1,String date2){
+        List<ProUnhandledIssuesDO> impl = null;
+        ProUnhandledIssuesDO workingHoursDO = new ProUnhandledIssuesDO();
+        workingHoursDO.setDepartment(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setProductionDate(list.get(i));
+            impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
+            SumBos.add(list.get(i));
+            int sum = 0;
+            if (impl!=null &&impl.size()!=0){
+                for(int j=0;j<impl.size();j++){
+                    sum = sum + impl.get(j).getDefectsNumber();
+                }
+                workingHoursBOS.add(sum+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 团队问题未解决
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptProUnhandledIssues2(String devpLeadDept,String date1,String date2){
+        List<ProUnhandledIssuesDO> impl = null;
+        ProUnhandledIssuesDO workingHoursDO = new ProUnhandledIssuesDO();
+        workingHoursDO.setDepartment(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setProductionDate(list.get(i));
+            impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
+            SumBos.add(list.get(i));
+            int sum = 0;
+            if (impl!=null &&impl.size()!=0){
+                for(int j=0;j<impl.size();j++){
+                    sum = sum + impl.get(j).getProblemNumber();
+                }
+                workingHoursBOS.add(sum+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    public static java.sql.Date strToDate(String strDate) {
+        String str = strDate;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
+        java.util.Date d = null;
+        try {
+            d = format.parse(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        java.sql.Date date = new java.sql.Date(d.getTime());
+        return date;
+    }
+
+    /**
+     * 投产回退
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getDeptProductionBack(String devpLeadDept,String date1,String date2){
+        List<ProductionDO> impl = null;
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i=0;i<list.size();i++){
+            workingHoursDO.setSelectTime(list.get(i));
+            impl = iOperationProductionDao.findMonth(workingHoursDO);
+            SumBos.add(list.get(i));
+            int sum = 0;
+            if (impl!=null &&impl.size()!=0){
+                for(int j=0;j<impl.size();j++){
+                    if("投产回退".equals(impl.get(j).getProStatus())){
+                        sum = sum + 1;
+                    }
+                }
+                workingHoursBOS.add(sum+"");
+            }else {
+                workingHoursBOS.add("0");
+            }
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+	/**
+	 * 团队周期汇总
+	 * @param devpLeadDept
+	 * @param date1
+	 * @param date2
+	 * @return
+	 */
+	@Override
+	public DemandHoursRspBO getDeptSum(String devpLeadDept,String date1,String date2){
+		List<ProductionDO> impl = null;
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		workingHoursDO.setDevpLeadDept(devpLeadDept);
+		List<String> workingHoursBOS = new LinkedList<>();
+		List<String> SumBos = new LinkedList<>();
+		// 缺陷问题
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        defectDetailsDO.setDefectsDepartment(devpLeadDept);
+        defectDetailsDO.setRegistrationDate(date1);
+        List<DefectDetailsDO> impl1 = null;
+        impl1 = defectDetailsExtDao.findWeekList(defectDetailsDO);
+        SumBos.add("缺陷问题");
+        if (impl1!=null &&impl1.size()!=0){
+            workingHoursBOS.add(impl1.size()+"");
+        }else{
+            workingHoursBOS.add("0");
+        }
+        // 评审问题
+        IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
+        issueDetailsDO.setIssueDepartment(devpLeadDept);
+        issueDetailsDO.setRegistrationDate(date1);
+        List<IssueDetailsDO> impl2 = null;
+        impl2 = issueDetailsExtDao.findWeekList(issueDetailsDO);
+        SumBos.add("评审问题");
+        if (impl2!=null &&impl2.size()!=0){
+            workingHoursBOS.add(impl2.size()+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+        // 生产问题
+        List<ProductionDefectsDO> impl3 = null;
+        ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
+        productionDefectsDO.setProblemattributiondept(devpLeadDept);
+        productionDefectsDO.setProcessstartdate(date1);
+        impl3 = productionDefectsExtDao.findWeekList(productionDefectsDO);
+        SumBos.add("生产问题");
+        if (impl3!=null &&impl3.size()!=0){
+            workingHoursBOS.add(impl3.size()+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+        //投产未验证
+        List<ProCheckTimeOutStatisticsDO> impl4 = null;
+        ProCheckTimeOutStatisticsDO proCheckTimeOutStatisticsDO = new ProCheckTimeOutStatisticsDO();
+        proCheckTimeOutStatisticsDO.setDepartment(devpLeadDept);
+        proCheckTimeOutStatisticsDO.setRegistrationdate(date1);
+        impl4 = proCheckTimeOutStatisticsExtDao.findWeek(proCheckTimeOutStatisticsDO);
+        SumBos.add("投产验证不及时");
+        int sum = 0;
+        if (impl4!=null &&impl4.size()!=0){
+            for(int j=0;j<impl4.size();j++){
+                sum = sum + impl4.get(j).getCount();
+            }
+            workingHoursBOS.add(sum+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+
+        //缺陷未解决
+        List<ProUnhandledIssuesDO> impl5 = null;
+        ProUnhandledIssuesDO proUnhandledIssuesDO = new ProUnhandledIssuesDO();
+        proUnhandledIssuesDO.setDepartment(devpLeadDept);
+        proUnhandledIssuesDO.setProductionDate(date1);
+        impl5 = proUnhandledIssuesExtDao.findMonth(proUnhandledIssuesDO);
+        SumBos.add("投产缺陷未解决");
+        int sumx = 0;
+        if (impl5!=null &&impl5.size()!=0){
+            for(int j=0;j<impl5.size();j++){
+                sumx = sumx + impl5.get(j).getDefectsNumber();
+            }
+            workingHoursBOS.add(sumx+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+        //问题未解决
+        SumBos.add("投产问题未解决");
+        int sumt = 0;
+        if (impl5!=null &&impl5.size()!=0){
+            for(int j=0;j<impl5.size();j++){
+                sumt = sumt + impl5.get(j).getProblemNumber();
+            }
+            workingHoursBOS.add(sumt+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+        // 投产回退
+        workingHoursDO.setSelectTime(date1);
+        impl = iOperationProductionDao.findWeek(workingHoursDO);
+        SumBos.add("投产回退");
+        int suma = 0;
+        if (impl!=null &&impl.size()!=0){
+            for(int j=0;j<impl.size();j++){
+                if("投产回退".equals(impl.get(j).getProStatus())){
+                    suma = suma + 1;
+                }
+            }
+            workingHoursBOS.add(suma+"");
+        }else {
+            workingHoursBOS.add("0");
+        }
+		System.err.println(impl);
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO.setStringList(workingHoursBOS);
+		demandHoursRspBO.setListSum(SumBos);
+		return demandHoursRspBO;
+	}
+
+    @Override
+    public DemandHoursRspBO getBuildFailedCount(String devpLeadDept,String date1,String date2){
+        List<BuildFailedCountDO> impl = null;
+        BuildFailedCountDO buildFailedCountDO = new BuildFailedCountDO();
+        buildFailedCountDO.setDepartment(devpLeadDept);
+        impl = iBuildFailedCountDao.find(buildFailedCountDO);
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        if (impl!=null &&impl.size()!=0){
+            for(int i=0;i<impl.size();i++){
+                if(impl.get(i).getCount() == 1){
+                    a = a+1;
+                }
+                if(impl.get(i).getCount() == 2){
+                    b = b+1;
+                }
+                if(impl.get(i).getCount() >= 3){
+                    c = c+1;
+                }
+            }
+        }
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        SumBos.add("一次");
+        workingHoursBOS.add(a+"");
+        SumBos.add("二次");
+        workingHoursBOS.add(b+"");
+        SumBos.add("三次及以上");
+        workingHoursBOS.add(c+"");
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return  demandHoursRspBO;
+    }
+    @Override
+    public DemandHoursRspBO getSmokeTestFailedCount(String devpLeadDept,String date1,String date2){
+        List<SmokeTestFailedCountDO> impl = null;
+        SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
+        smokeTestFailedCountDO.setDepartment(devpLeadDept);
+        impl = iSmokeTestFailedCountDao.find(smokeTestFailedCountDO);
+        int a = 0;
+        int b = 0;
+        int c = 0;
+        if (impl!=null &&impl.size()!=0){
+            for(int i=0;i<impl.size();i++){
+                if(impl.get(i).getCount() == 1){
+                    a = a+1;
+                }
+                if(impl.get(i).getCount() == 2){
+                    b = b+1;
+                }
+                if(impl.get(i).getCount() >= 3){
+                    c = c+1;
+                }
+            }
+        }
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        SumBos.add("一次");
+        workingHoursBOS.add(a+"");
+        SumBos.add("二次");
+        workingHoursBOS.add(b+"");
+        SumBos.add("三次及以上");
+        workingHoursBOS.add(c+"");
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return  demandHoursRspBO;
+    }
+	/**
+	 * 获取指定月份的前六个月
+	 * @param date
+	 * @return
+	 */
+	public static List<String> getSixMonth(String date) {
+		//返回值
+		List<String> list = new ArrayList<String>();
+		int month = Integer.parseInt(date.substring(5, 7));
+		int year = Integer.parseInt(date.substring(0, 4));
+		for (int i = 5; i >= 0; i--) {
+			if (month > 6) {
+				if (month - i >= 10) {
+					list.add(year + "-" + String.valueOf(month - i));
+				} else {
+					list.add(year + "-0" + String.valueOf(month - i));
+				}
+			} else {
+				if (month - i <= 0) {
+					if (month - i + 12 >= 10) {
+						list.add(String.valueOf(year - 1) + "-" + String.valueOf(month - i + 12));
+					} else {
+						list.add(String.valueOf(year - 1) + "-0" + String.valueOf(month - i + 12));
+					}
+				} else {
+					if (month - i >= 10) {
+						list.add(String.valueOf(year) + "-" + String.valueOf(month - i));
+					} else {
+						list.add(String.valueOf(year) + "-0" + String.valueOf(month - i));
+					}
+				}
+			}
+		}
+		return list;
+
+	}
+
 	@Override
 	public WorkingHoursBO getReportForm11(String displayname,String date1,String date2){
 		WorkingHoursBO workingHoursBO = new WorkingHoursBO();
