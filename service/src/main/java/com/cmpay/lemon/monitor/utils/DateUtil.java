@@ -222,21 +222,6 @@ public class DateUtil {
         return dateFormat.format(new Date(System.currentTimeMillis()));
     }
 
-    public static void main(String[] args){
-            int sum=0;
-            for(int i=1;i<10;++i){
-                for(int j=1;j<10;++j){
-                    sum +=j;
-                    if(i+j>6){
-                        System.out.println(i+"+"+j);
-                        break;
-
-                    }
-                }
-            }
-        System.out.println(sum);
-
-    }
 
     public static String dealDateFormat(String oldDate) {
         Date date1 = null;
@@ -262,8 +247,9 @@ public class DateUtil {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        if (date == null)
+        if (date == null) {
             return "";
+        }
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         cal.add(Calendar.HOUR, hour);// 24小时制
@@ -272,5 +258,22 @@ public class DateUtil {
         return format.format(date);
 
     }
+    //根据日期获取礼拜
+    public static String testDate(String newtime) {
+        String dayNames[] = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+        Calendar c = Calendar.getInstance();// 获得一个日历的实例
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            c.setTime(sdf.parse(newtime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dayNames[c.get(Calendar.DAY_OF_WEEK) - 1];
+    }
 
+    public static void main(String[] args) {
+        String s = testDate("2020-07-10");
+        System.err.println(s);
+
+    }
 }

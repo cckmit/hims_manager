@@ -120,7 +120,7 @@ public class ReqMonitorTimer {
             return;
         }
         //该功能计算起始时间
-        String date = "2020-01-01";
+        String date = "2020-07-01";
         //获得投产待部署不及时清单
         List<ProductionDO> productionDOList = operationProductionService.getTheListOfProductionToBeDeployed(date);
         //获得审批通过待部署清单

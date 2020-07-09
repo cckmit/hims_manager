@@ -82,14 +82,14 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
-                try {
-                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                    this.registerJiraBasicInfo(jiraTaskBodyBO);
-                    this.registerWorklogs(jiraTaskBodyBO);
-                    epicList.add(jiraTaskBodyBO.getEpicKey());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                        this.registerJiraBasicInfo(jiraTaskBodyBO);
+                        this.registerWorklogs(jiraTaskBodyBO);
+                        epicList.add(jiraTaskBodyBO.getEpicKey());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
             });
             epicList.forEach(m -> {
                 if (m == null) {
@@ -195,7 +195,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             }else{
                 m.setProblemNumber(0);
             }
-            System.err.println(list1.size());
             m.setCalculateFlag("Y");
             proUnhandledIssuesDao.update(m);
         });
@@ -414,17 +413,37 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraWorklogDO.setTimespnet(worklogs.get(i).getTimespnet());
             JiraWorklogDO jiraWorklogDO1 = jiraWorklogDao.get(worklogs.get(i).getJiraWorklogKey());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            int betweenDate = 0;
-            try {
-                Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
-                Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
-                betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
-            } catch (ParseException e) {
-                e.printStackTrace();
+            String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+            String week = DateUtil.testDate(selectTime);
+            if(week.equals("星期一")){
+                int betweenDate = 0;
+                try {
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (3*60 * 60 * 24 * 1000);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if (betweenDate > 3) {
+                    continue;
+                }
+            }else{
+                int betweenDate = 0;
+                try {
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if (betweenDate > 1) {
+                    continue;
+                }
             }
-            if (betweenDate > 1) {
-                continue;
-            }
+
+
 
             if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
                 String date1 = StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10);
