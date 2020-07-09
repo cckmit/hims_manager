@@ -115,5 +115,5 @@ public interface IWorkingHoursExtDao extends IWorkingHoursDao{
     List<ProductionDO> findListDeptWeek(WorkingHoursDO workingHoursDO);
 
     List<ProductionDO> findListDeptMonth(WorkingHoursDO workingHoursDO);
-
+    List<WorkingHoursDO> findSumPer();
 }

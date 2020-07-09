@@ -635,6 +635,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
     }
+    @Override
     public List<Double> getExportCountForDevp(DemandBO demandBO){
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
@@ -648,11 +649,32 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             DemandDO demand = mon_input_workload_list.get(i);
             DemandBO demandBO1 = new DemandBO();
             BeanConvertUtils.convert(demandBO1, demand);
-            DemandBO devpDemand = getWorkLoad(demandBO1);
+            DemandBO devpDemand = getWorkLoad2(demandBO1);
             devpDemand.setCoorDeptWorkload(devpDemand.getLeadDeptWorkload()+devpDemand.getCoorDeptWorkload());
             DevpWorkLoadList.add(devpDemand);
         }
         list = dealDevpWorkload2(DevpWorkLoadList,demandBO.getDevpLeadDept());// 各部门工作量月统计汇总报表导出  goExportCountForDevp
+        return list;
+    }
+    @Override
+    public List<Double> getExportCountForDevp2(DemandBO demandBO){
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        System.err.println(demandDO);
+        List list = null;
+        String[] headerNames =null;
+        List<DemandDO>  mon_input_workload_list = workLoadDao.goExportCountForDevp(demandDO);
+        System.err.println(mon_input_workload_list);
+        List<DemandBO> DevpWorkLoadList = new ArrayList<>();
+        for (int i = 0; i < mon_input_workload_list.size(); i++){
+            DemandDO demand = mon_input_workload_list.get(i);
+            DemandBO demandBO1 = new DemandBO();
+            BeanConvertUtils.convert(demandBO1, demand);
+            DemandBO devpDemand = getWorkLoad2(demandBO1);
+            devpDemand.setCoorDeptWorkload(devpDemand.getLeadDeptWorkload()+devpDemand.getCoorDeptWorkload());
+            DevpWorkLoadList.add(devpDemand);
+        }
+        list = dealDevpWorkload3(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
         return list;
     }
     @Override
@@ -755,6 +777,53 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 demand.setLeadDeptWorkload(demand.getDevpLeadDept()+":"+String.format("%.2f",Double.valueOf(demand.getTotalWorkload()))+";");
             }
             updateReqWorkLoad(demand);
+        }
+        //本月工作量
+        int monInputWorkload = demand.getMonInputWorkload();
+        //主导部门本月工作量
+        String LeadDeptCurMonWorkLoad = "";
+        String lead = demand.getLeadDeptPro();
+        String req_sts = demand.getReqSts();
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if(StringUtils.isNotBlank(lead) && monInputWorkload != 0  ){
+            String[] leadSplit = lead.replaceAll("%", "").split(":");
+            leadSplit[1] = leadSplit[1].replaceAll(";","");
+            LeadDeptCurMonWorkLoad = leadSplit[0]+":"+String.format("%.2f",(Double.valueOf(leadSplit[1])/100)*monInputWorkload)+";";
+        }
+
+        //配合部门本月工作量
+        String CoorDevpCurMonWorkLoad = "";
+        //配合工作量百分比
+        String CoorDevpPer = "";
+        String[] coorList = new String[20];
+        String coor = demand.getCoorDeptPro();
+        // && !("30".equals(req_sts)) 去调判断状态为取消
+        if (StringUtils.isNotBlank(coor) && monInputWorkload != 0 ){
+            coorList = demand.getCoorDeptPro().split(";");
+            for (int i = 0; i < coorList.length;i++){
+                if (StringUtils.isNotBlank(coorList[i])){
+                    String[] CoorDevpCurMonWorkLoadSplit = coorList[i].split(":");
+                    if (StringUtils.isNotBlank(CoorDevpCurMonWorkLoadSplit[0]) && StringUtils.isNotBlank(CoorDevpCurMonWorkLoadSplit[1])){
+                        CoorDevpPer = String.format("%.2f",((Double.valueOf(CoorDevpCurMonWorkLoadSplit[1].replaceAll("%", "")))/100)*monInputWorkload);
+                        CoorDevpCurMonWorkLoad += CoorDevpCurMonWorkLoadSplit[0]+":"+CoorDevpPer+";";
+                    }
+                }
+            }
+        }
+        DemandBO demand1 = new DemandBO();
+        demand1.setLeadDeptWorkload(LeadDeptCurMonWorkLoad);
+        demand1.setCoorDeptWorkload(CoorDevpCurMonWorkLoad);
+        return  demand1;
+    }
+    public  DemandBO getWorkLoad2(DemandBO demand) {
+        if (StringUtils.isNotEmpty(demand.getDevpLeadDept()) && StringUtils.isEmpty(demand.getDevpCoorDept())) {
+            demand.setLeadDeptPro(demand.getDevpLeadDept()+":100%;");
+            if (demand.getTotalWorkload() == 0){
+                demand.setLeadDeptWorkload(demand.getDevpLeadDept()+":0.00;");
+            }else {
+                demand.setLeadDeptWorkload(demand.getDevpLeadDept()+":"+String.format("%.2f",Double.valueOf(demand.getTotalWorkload()))+";");
+            }
+            //updateReqWorkLoad(demand);
         }
         //本月工作量
         int monInputWorkload = demand.getMonInputWorkload();
@@ -898,6 +967,26 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
 
+        return list;
+    }
+    private List<Double> dealDevpWorkload3(List<DemandBO> rowList){
+        List<Double> list = Arrays.asList(new Double[20]);
+        for (int i = 0; i < rowList.size(); i++) {
+            //配合部门工作量
+            String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
+            if (StringUtils.isNotBlank(coorList[0])){
+                for (int j = 0; j < coorList.length; j++) {
+                    list = addWorkload3(list,coorList[j]);
+                }
+            }
+        }
+
+        return list;
+    }
+    private List<Double> addWorkload3(List<Double> list,String str){
+        String devp = str.split(":")[0];
+        Double workload = Double.valueOf(str.split(":")[1]);
+        list.set(0, workload + (list.get(0) == null ? 0:list.get(0)) );
         return list;
     }
     private List<Double> dealDevpWorkload2(List<DemandBO> rowList,String dept){

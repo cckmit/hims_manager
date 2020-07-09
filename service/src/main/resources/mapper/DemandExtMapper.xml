@@ -1530,7 +1530,9 @@
         <where>
             req_sts not in ('60')
             AND a.req_impl_mon = #{selectTime,jdbcType=VARCHAR}
-            AND a.devp_lead_dept  = #{devpLeadDept,jdbcType=VARCHAR}
+            <if test="devpLeadDept != null and devpLeadDept != ''" >
+                AND a.devp_lead_dept  = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
         </where>
         ORDER BY a.req_inner_seq desc
     </select>

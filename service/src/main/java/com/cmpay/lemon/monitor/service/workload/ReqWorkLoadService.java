@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +42,8 @@ public interface ReqWorkLoadService {
     Map<String,String> checkDeptRate(int totWork,String deptInfo,DemandBO demand);
     Map<String,String> checkDeptRate1(DemandBO demand);
 
+    List<Double> getExportCountForDevp(DemandBO demandBO);
+    List<Double> getExportCountForDevp2(DemandBO demandBO);
     /**
      * 工作量文档下载
      * @param response
