@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IMonthWorkdayDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
+        <id column="month" property="month" jdbcType="VARCHAR" />
+        <result column="workday" property="workday" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        month, workday
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_month_workday
+        where month = #{month,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_month_workday
+        where month = #{month,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
+        insert into t_month_workday
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="month != null" >
+                month,
+            </if>
+            <if test="workday != null" >
+                workday,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="month != null" >
+                #{month,jdbcType=VARCHAR},
+            </if>
+            <if test="workday != null" >
+                #{workday,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
+        update t_month_workday
+        <set >
+            <if test="workday != null" >
+                workday = #{workday,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where month = #{month,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_month_workday
+        <where >
+            <if test="month != null" >
+                and month = #{month,jdbcType=VARCHAR}
+            </if>
+            <if test="workday != null" >
+                and workday = #{workday,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

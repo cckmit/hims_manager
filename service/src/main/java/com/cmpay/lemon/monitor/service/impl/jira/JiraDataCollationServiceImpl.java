@@ -80,10 +80,10 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
                 try {
-                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                    this.registerJiraBasicInfo(jiraTaskBodyBO);
-                    this.registerWorklogs(jiraTaskBodyBO);
-                    epicList.add(jiraTaskBodyBO.getEpicKey());
+                        JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                        this.registerJiraBasicInfo(jiraTaskBodyBO);
+                        this.registerWorklogs(jiraTaskBodyBO);
+                        epicList.add(jiraTaskBodyBO.getEpicKey());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

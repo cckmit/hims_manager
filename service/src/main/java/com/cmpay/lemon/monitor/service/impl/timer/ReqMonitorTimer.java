@@ -7,7 +7,7 @@ import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
-import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsDao;
+import com.cmpay.lemon.monitor.dao.IMonthWorkdayDao;
 import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
@@ -48,6 +48,8 @@ public class ReqMonitorTimer {
     JiraDataCollationService jiraDataCollationService;
     @Autowired
     IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsDao;
+    @Autowired
+    IMonthWorkdayDao monthWorkdayDao;
 
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
@@ -105,6 +107,24 @@ public class ReqMonitorTimer {
         productionTimeBO.setTime(day);
         productTimeService.updateProductTime(productionTimeBO);
         // boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
+    }
+
+    @Scheduled(cron = "0 30 0 1 * ?")
+    public void getMonthWorkday() {
+        String month = DateUtil.date2String(new Date(), "yyyy-MM");
+        int weekday = DateUtil.getWeekday(month);
+        MonthWorkdayDO monthWorkdayDO = new MonthWorkdayDO();
+        MonthWorkdayDO monthWorkdayDO1 = monthWorkdayDao.get(month);
+        if (JudgeUtils.isNotNull(monthWorkdayDO1)) {
+            monthWorkdayDO.setWorkday(String.valueOf(weekday));
+            monthWorkdayDO.setMonth(month);
+            monthWorkdayDao.update(monthWorkdayDO1);
+        } else {
+            monthWorkdayDO.setWorkday(String.valueOf(weekday));
+            monthWorkdayDO.setMonth(month);
+            monthWorkdayDao.insert(monthWorkdayDO);
+        }
+
     }
 
     /*
@@ -191,11 +211,11 @@ public class ReqMonitorTimer {
     @Scheduled(cron = "10 0 12 * * ?")
     public void productionVerificationIsNotTimely() throws ParseException {
         //测试环境不发通知
-        if(LemonUtils.getEnv().equals(Env.DEV)) {
+        if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
         }
         //项目启动日期开始当天计算
-        String date = "2019-12-13";
+        String date = "2020-07-01";
         //获得投产验证不及时清单
         List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
         //获得系统录入验证不及时清单
@@ -247,7 +267,7 @@ public class ReqMonitorTimer {
         }
         StringBuffer sb = new StringBuffer();
         sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
-        sb.append("<tr><th>投产编号/系统操作编号</th><th>投产/操作内容简述</th><th>投产/操作类型</th><th>投产/操作日期</th>");
+        sb.append("<tr><th>投产编号/系统操作编号</th><th>投产/操作内容简述</th><th>投产/操作类型</th><th>验证类型</th><th>投产/操作日期</th>");
         sb.append("<th>申请部门</th><th>验证人</th><th>当前状态</th><th>已投产/操作天数</th></tr>");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String dept = "";
@@ -387,7 +407,7 @@ public class ReqMonitorTimer {
             String[] mailToAddress = result.split(";");
             mailInfo.setReceivers(mailToAddress);
             //抄送人
-            result="wang_yw@hisuntech.com";
+            result = "wang_yw@hisuntech.com";
             mailInfo.setCcs(result.split(";"));
             //添加附件
             Vector filesv = new Vector();
