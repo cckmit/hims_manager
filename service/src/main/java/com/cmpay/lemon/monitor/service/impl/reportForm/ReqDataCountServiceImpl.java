@@ -2592,6 +2592,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         workingHoursDO.setEpickey(epic);
 		List<WorkingHoursDO> impl = iWorkingHoursDao.getDemandHoursRole(workingHoursDO);
 		if(impl ==null || impl.size()==0){
+            demandHoursRspBO.setSum("0");
             return demandHoursRspBO;
         }
 		impl.forEach(m->
