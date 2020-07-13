@@ -9,10 +9,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -258,6 +255,25 @@ public class DateUtil {
         return format.format(date);
 
     }
+    //获得一个月有多少个工作日
+    public static int getWeekday(String newtime) {
+        String input = newtime;
+        int count = 0;
+        int month = Integer.parseInt(input.substring(5, 7));
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, Integer.parseInt(input.substring(0, 4)));
+        cal.set(Calendar.MONTH, month - 1);
+        cal.set(Calendar.DATE, 1);
+        while(cal.get(Calendar.MONTH) < month){
+            int day = cal.get(Calendar.DAY_OF_WEEK);
+            if(!(day == Calendar.SUNDAY || day == Calendar.SATURDAY)){
+                count++;
+            }
+            cal.add(Calendar.DATE, 1);
+        }
+        return count;
+    }
+
     //根据日期获取礼拜
     public static String testDate(String newtime) {
         String dayNames[] = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
@@ -271,9 +287,4 @@ public class DateUtil {
         return dayNames[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
 
-    public static void main(String[] args) {
-        String s = testDate("2020-07-10");
-        System.err.println(s);
-
-    }
 }
