@@ -27,16 +27,16 @@
 		<result property="isBackWay"   jdbcType="VARCHAR"      column="is_back_way"/>
 			<result property="mailLeader"   jdbcType="VARCHAR"      column="mail_leader"/>
     </resultMap>
-    
-    
+
+
     <sql id="Base_Column_List">
            oper_number,oper_request_content,propose_date,is_ref_sql,sys_oper_type,oper_status,application_sector,oper_applicant,
            applicant_tel,oper_type,identifier,identifier_tel,validation_type,validation_instruction,
            oper_application_reason,analysis,completion_update,remark,mail_recipient,mail_copy_person,development_leader,mail_leader
            ,svntab_name,stateId
     </sql>
-        
-    
+
+
      <insert id="insertOperationalApplication"  parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
     	insert into  t_operational_application_detail(<include refid="Base_Column_List"/>,is_back_way)
     	values(#{operNumber},
@@ -77,6 +77,23 @@
 			</if>
 			<if test="proposeDate != null" >
 				and propose_date > #{proposeDate,jdbcType=VARCHAR}
+			</if>
+			ORDER BY application_sector,oper_applicant,propose_date desc
+		</where>
+	</select>
+	<select id="getSystemEntryStatusChangeIsNotTimelyList2" resultMap="rm"  >
+		select
+		<include refid="Base_Column_List" />
+		from t_operational_application_detail
+		<where >
+			<if test="operStatus != null" >
+				and oper_status = #{operStatus,jdbcType=BIGINT}
+			</if>
+			<if test="proposeDate != null" >
+				and propose_date > #{proposeDate,jdbcType=VARCHAR}
+			</if>
+			<if test="applicationSector != null" >
+				and application_sector = #{applicationSector,jdbcType=VARCHAR}
 			</if>
 			ORDER BY application_sector,oper_applicant,propose_date desc
 		</where>
@@ -154,16 +171,16 @@
 		</set>
     	WHERE oper_number = #{operNumber}
     </update>
-    
-    
+
+
      <select id="findBaseOperationalApplicationInfo" resultMap="rm" parameterType="string">
-    	SELECT 
+    	SELECT
     		<include refid="Base_Column_List"/>,is_back_way
-    	from  t_operational_application_detail t1 
-    	WHERE 
+    	from  t_operational_application_detail t1
+    	WHERE
             oper_number =#{operNumber}
     </select>
-    
+
      <select id="findPageBreakByCondition" resultMap="rm" parameterType="map">
     	SELECT
     		<include refid="Base_Column_List"/>
@@ -227,5 +244,5 @@
     	</if>
     	WHERE oper_number = #{operNumber}
     </update>
-    
+
 </mapper>

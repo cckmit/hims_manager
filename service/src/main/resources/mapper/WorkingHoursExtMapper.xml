@@ -395,4 +395,13 @@
         select sum(1) sumTime FROM t_permi_user
     </select>
 
+    <select id="getDemandHoursRole" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.WorkingHoursDO" >
+        select
+        sum(timeSpnet) timeSpnet ,
+        roleType
+        from t_working_hours
+		where epicKey = #{epickey}
+        GROUP BY roleType
+    </select>
+
 </mapper>

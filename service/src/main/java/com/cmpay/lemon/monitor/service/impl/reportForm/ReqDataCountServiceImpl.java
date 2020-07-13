@@ -13,7 +13,6 @@ import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
-import com.cmpay.lemon.monitor.service.impl.workload.ReqWorkLoadServiceImpl;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.service.workload.ReqWorkLoadService;
@@ -380,9 +379,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				if(reqDataCountBOS.get(i).getActSitUploadTm()==null || reqDataCountBOS.get(i).getActSitUploadTm()==""){
 					sum=sum+1;
 				}
-				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
-					sum=sum+1;
-				}
+//				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
+//					sum=sum+1;
+//				}
 				if(reqDataCountBOS.get(i).getActPreUploadTm()==null || reqDataCountBOS.get(i).getActPreUploadTm()==""){
 					sum=sum+1;
 				}
@@ -402,9 +401,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				if(reqDataCountBOS.get(i).getActSitUploadTm()==null || reqDataCountBOS.get(i).getActSitUploadTm()==""){
                     sum=sum+1;
 				}
-				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
-                    sum=sum+1;
-				}
+//				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
+//                    sum=sum+1;
+//				}
 				if(reqDataCountBOS.get(i).getActPreUploadTm()==null || reqDataCountBOS.get(i).getActPreUploadTm()==""){
                     sum=sum+1;
 				}
@@ -421,9 +420,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				if(reqDataCountBOS.get(i).getActSitUploadTm()==null || reqDataCountBOS.get(i).getActSitUploadTm()==""){
                     sum=sum+1;
 				}
-				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
-                    sum=sum+1;
-				}
+//				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
+//                    sum=sum+1;
+//				}
                 System.err.println(3333+"===="+sum);
 			}
 			// sit
@@ -739,13 +738,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             System.err.println(impl.size());
            sum = impl.size()+"";
            for(int i=0;i<impl.size();i++){
-               if(impl.get(i).getProType().equals("正常投产")&&XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+               if("正常投产".equals(impl.get(i).getProType())&&"是".equals(impl.get(i).getIsOperationProduction())){
                    a =a+1;
                }
-               if(impl.get(i).getProType().equals("正常投产")&&!XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+               if("正常投产".equals(impl.get(i).getProType())&&"否".equals(impl.get(i).getIsOperationProduction())){
                     b=b+1;
                }
-               if(impl.get(i).getProType().equals("救火更新")){
+               if("救火更新".equals(impl.get(i).getProType())){
                    c =c+1;
                }
            }
@@ -1378,7 +1377,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 int sumx = 5*8*Integer.parseInt(sum);
                 DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint(impl.get(i).getSecondlevelorganization(),date1,date2);
                 List<String> listSum =demandHoursRspBO.getListSum();
-                String str = "{ product: '"+impl.get(i).getSecondlevelorganization()+"', 工时: '"+listSum.get(0)+"', 标准工时: '"+sumx+"'}";
+                String str = "{ products: '"+impl.get(i).getSecondlevelorganization()+"', 标准工时: '"+sumx+"', 工时: '"+listSum.get(0)+"'}";
                 // { product: '产品测试团队', 工时: '70', 功能点: '150'},
                 workingHoursBOS.add(str);
             }
@@ -1393,11 +1392,12 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
         }
         SumBos.add("product");
-        SumBos.add("工时");
         if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
             SumBos.add("标准工时");
+            SumBos.add("工时");
         }
         if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+            SumBos.add("工时");
             SumBos.add("功能点");
         }
         //{sum='null', listSum=[0, 0], stringList=[工时, 功能点]}
@@ -1524,13 +1524,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             System.err.println(impl.size());
             sum = impl.size()+"";
             for(int i=0;i<impl.size();i++){
-                if(impl.get(i).getProType().equals("正常投产")&&XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                if("正常投产".equals(impl.get(i).getProType())&&"是".equals(impl.get(i).getIsOperationProduction())){
                     a =a+1;
                 }
-                if(impl.get(i).getProType().equals("正常投产")&&!XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                if("正常投产".equals(impl.get(i).getProType())&&"否".equals(impl.get(i).getIsOperationProduction())){
                     b=b+1;
                 }
-                if(impl.get(i).getProType().equals("救火更新")){
+                if("救火更新".equals(impl.get(i).getProType())){
                     c =c+1;
                 }
             }
@@ -1599,13 +1599,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 System.err.println(impl.size());
                 sum = sum + impl.size();
                 for(int i=0;i<impl.size();i++){
-                    if(impl.get(i).getProType().equals("正常投产")&&XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                    if("正常投产".equals(impl.get(i).getProType())&&"是".equals(impl.get(i).getIsOperationProduction())){
                         a =a+1;
                     }
-                    if(impl.get(i).getProType().equals("正常投产")&&!XINGQISAN.equals(testDate(impl.get(i).getProDate().toString()))){
+                    if("正常投产".equals(impl.get(i).getProType())&&"否".equals(impl.get(i).getIsOperationProduction())){
                         b=b+1;
                     }
-                    if(impl.get(i).getProType().equals("救火更新")){
+                    if("救火更新".equals(impl.get(i).getProType())){
                         c =c+1;
                     }
                 }
@@ -2584,6 +2584,44 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         return demandHoursRspBO;
     }
 
+	@Override
+	public DemandHoursRspBO getDemandHoursRole(String epic){
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		List<String> workingHoursBOS = new LinkedList<>();
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        workingHoursDO.setEpickey(epic);
+		List<WorkingHoursDO> impl = iWorkingHoursDao.getDemandHoursRole(workingHoursDO);
+		if(impl ==null || impl.size()==0){
+            return demandHoursRspBO;
+        }
+		impl.forEach(m->
+				workingHoursBOS.add(m.getWorkHoursToString())
+		);
+		List<String> listSumBos = new LinkedList<>();
+		impl.forEach(m->
+				listSumBos.add(m.getRoletype())
+		);
+        String sum = "";
+        List<String> SumBos = new LinkedList<>();
+        impl.forEach(m->
+                SumBos.add(m.getTimespnet())
+        );
+        int sum1 = 0;
+        if(SumBos !=null || SumBos.size()!=0){
+            for (int i=0;i<SumBos.size();i++){
+                int sumx = Integer.parseInt(SumBos.get(i));
+                sum1+=sumx;
+            }
+            double s = getWorkHours(sum1);
+            sum = String.valueOf(s);
+        }
+        demandHoursRspBO.setListSum(listSumBos);
+        demandHoursRspBO.setSum(sum);
+		demandHoursRspBO.setStringList(workingHoursBOS);
+		System.err.println(demandHoursRspBO);
+		return demandHoursRspBO;
+	}
+
     @Override
     public DemandHoursRspBO getWorkLoad(String epic){
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -3452,5 +3490,60 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				() -> BeanConvertUtils.convertList(reqDataCountDao.find(demandDO), DemandBO.class));
 		return pageInfo;
 	}
+    @Override
+    public List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChanges(String dept){
+        List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos =  new LinkedList<>();
+        //该功能计算起始时间
+        String date = "2020-07-01";
+        //获得投产验证不及时清单
+        List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely2(date,dept);
+        //获得系统录入验证不及时清单
+        List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList2(date,dept);
+        if (JudgeUtils.isEmpty(productionDOList) && JudgeUtils.isEmpty(operationApplicationDOList)) {
+            return listOfUntimelyStatusChangesBos;
+        }
+        try{
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            if(productionDOList !=null &&productionDOList.size()!=0) {
+                for (int i = 0; i < productionDOList.size(); i++) {
+                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
+                    productionVerificationIsNotTimelyBO.setProNumber(productionDOList.get(i).getProNumber());
+                    productionVerificationIsNotTimelyBO.setProNeed(productionDOList.get(i).getProNeed());
+                    productionVerificationIsNotTimelyBO.setProType(productionDOList.get(i).getProType());
+                    productionVerificationIsNotTimelyBO.setValidation(productionDOList.get(i).getValidation());
+                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(productionDOList.get(i).getProDate()));
+                    productionVerificationIsNotTimelyBO.setIdentifier(productionDOList.get(i).getIdentifier());
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(sdf.parse(sdf.format(new Date())));
+                    c2.setTime(sdf.parse(sdf.format(productionDOList.get(i).getProDate())));
+                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+                    productionVerificationIsNotTimelyBO.setSumDay(day + "");
+                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
+                }
+            }
+            if(operationApplicationDOList !=null &&operationApplicationDOList.size()!=0){
+                for (int i = 0; i < operationApplicationDOList.size(); i++) {
+                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
+                    productionVerificationIsNotTimelyBO.setProNumber(operationApplicationDOList.get(i).getOperNumber());
+                    productionVerificationIsNotTimelyBO.setProNeed(operationApplicationDOList.get(i).getOperRequestContent());
+                    productionVerificationIsNotTimelyBO.setProType(operationApplicationDOList.get(i).getSysOperType());
+                    productionVerificationIsNotTimelyBO.setValidation("");
+                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(operationApplicationDOList.get(i).getProposeDate()));
+                    productionVerificationIsNotTimelyBO.setIdentifier(operationApplicationDOList.get(i).getIdentifier());
+
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(sdf.parse(sdf.format(new Date())));
+                    c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
+                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
+                    productionVerificationIsNotTimelyBO.setSumDay(day+"");
+                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
+                }
+            }
+            }catch ( ParseException e){
+        }
+        return listOfUntimelyStatusChangesBos;
+    }
 }
 
