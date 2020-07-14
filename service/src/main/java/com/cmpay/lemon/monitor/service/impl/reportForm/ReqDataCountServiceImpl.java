@@ -607,13 +607,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> SumBos = new LinkedList<>();
         String sum = "";
         double sumx = 0;
+        DecimalFormat df = new DecimalFormat("0.##");
         if(impl!=null &&impl.size()!=0){
             for(int i=0;i<impl.size();i++){
                 SumBos.add(impl.get(i).getDisplayname());
                 sumx = sumx + getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()));
-                workingHoursBOS.add(String.valueOf(getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()))));
+                workingHoursBOS.add(df.format(getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()))));
             }
-            DecimalFormat df = new DecimalFormat("#.00");
             sum = df.format(sumx);
         }
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -627,6 +627,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	@Override
 	public DemandHoursRspBO getDeptWorkHoursAndPoint(String devpLeadDept,String date1,String date2){
 		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        DecimalFormat df = new DecimalFormat("0.##");
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
 		workingHoursDO.setDevpLeadDept(devpLeadDept);
@@ -648,7 +649,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(impl!=null &&impl.size()!=0){
                 workingHoursBOS.add("工时");
                 if(!"0".equals(impl.get(0).getSumTime())){
-                    SumBos.add(Double.toString(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+                    SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 }else{
                     SumBos.add("0");
                 }
@@ -676,7 +677,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(impl!=null &&impl.size()!=0){
                 workingHoursBOS.add("工时");
                 if(!"0".equals(impl.get(0).getSumTime())){
-                    SumBos.add(Double.toString(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+                    SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 }else{
                     SumBos.add("0");
                 }
@@ -689,7 +690,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             List<Double> dept =reqWorkLoadService.getExportCountForDevp(demandBO);
             if(dept.get(0) != null){
                 workingHoursBOS.add("功能点");
-                DecimalFormat df = new DecimalFormat("#.00");
                 SumBos.add(df.format(dept.get(0)));
             }else {
                 workingHoursBOS.add("功能点");
@@ -703,7 +703,77 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         System.err.println("团队功能点，工时"+demandHoursRspBO);
 		return  demandHoursRspBO;
 	}
+	public DemandHoursRspBO getDeptWorkHoursAndPoint2(String devpLeadDept,String date1,String date2){
+		WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+		List<String> workingHoursBOS = new LinkedList<>();
+		List<String> SumBos = new LinkedList<>();
+		workingHoursDO.setDevpLeadDept(devpLeadDept);
+		List<WorkingHoursDO> impl = null;
+		System.err.println(date1+"====="+date2);
+		DemandBO demandBO = new DemandBO();
+		demandBO.setDevpLeadDept(devpLeadDept);
+		if(StringUtils.isBlank(date1)&&StringUtils.isBlank(date2)){
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+			MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+			BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+		}
+		// 查询周
+		if(StringUtils.isNotBlank(date1)&&StringUtils.isBlank(date2)){
+			workingHoursDO.setSelectTime(date1);
+			impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
+			//demandBO.setReqImplMon(date1.substring(0,7));
+			System.err.println(impl);
+			if(impl!=null &&impl.size()!=0){
+				workingHoursBOS.add("工时");
+				if(!"0".equals(impl.get(0).getSumTime())){
+					DecimalFormat df = new DecimalFormat("0.##");
+					SumBos.add(df.format(getWorkHoursTime(Integer.parseInt(impl.get(0).getSumTime()))));
+				}else{
+					SumBos.add("0");
+				}
+			}else {
+				workingHoursBOS.add("工时");
+				SumBos.add("0");
+			}
+			workingHoursBOS.add("功能点");
+			SumBos.add("0");
+		}
+		// 查询月
+		if(StringUtils.isNotBlank(date2)&&StringUtils.isBlank(date1)){
+			workingHoursDO.setSelectTime(date2);
+			impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
+			demandBO.setReqImplMon(date2);
 
+			if(impl!=null &&impl.size()!=0){
+				workingHoursBOS.add("工时");
+				if(!"0".equals(impl.get(0).getSumTime())){
+					DecimalFormat df = new DecimalFormat("0.##");
+					SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+				}else{
+					SumBos.add("0");
+				}
+			}else {
+				workingHoursBOS.add("工时");
+				SumBos.add("0");
+			}
+			// 获取当月的功能点
+			System.err.println(demandBO);
+			List<Double> dept =reqWorkLoadService.getExportCountForDevp(demandBO);
+			if(dept.get(0) != null){
+				workingHoursBOS.add("功能点");
+				DecimalFormat df = new DecimalFormat("0.##");
+				SumBos.add(df.format(dept.get(0)));
+			}else {
+				workingHoursBOS.add("功能点");
+				SumBos.add("0");
+			}
+		}
+
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO.setStringList(workingHoursBOS);
+		demandHoursRspBO.setListSum(SumBos);
+		return  demandHoursRspBO;
+	}
     @Override
     public DemandHoursRspBO getDeptProduction(String devpLeadDept,String date1,String date2){
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
@@ -1375,7 +1445,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursDOList = iWorkingHoursDao.findDeptView(workingHoursDO);
                 String sum = workingHoursDOList.get(0).getSumDept();
                 int sumx = 5*8*Integer.parseInt(sum);
-                DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint(impl.get(i).getSecondlevelorganization(),date1,date2);
+                DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint2(impl.get(i).getSecondlevelorganization(),date1,date2);
                 List<String> listSum =demandHoursRspBO.getListSum();
                 String str = "{ products: '"+impl.get(i).getSecondlevelorganization()+"', 标准工时: '"+sumx+"', 工时: '"+listSum.get(0)+"'}";
                 // { product: '产品测试团队', 工时: '70', 功能点: '150'},
@@ -1437,7 +1507,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(impl!=null &&impl.size()!=0){
                 workingHoursBOS.add("工时");
                 if(!"0".equals(impl.get(0).getSumTime())){
-                    SumBos.add(Double.toString(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+					DecimalFormat df = new DecimalFormat("0.##");
+					SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 }else{
                     SumBos.add("0");
                 }
@@ -1457,7 +1528,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(impl!=null &&impl.size()!=0){
                 workingHoursBOS.add("工时");
                 if(!"0".equals(impl.get(0).getSumTime())){
-                    SumBos.add(Double.toString(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+					DecimalFormat df = new DecimalFormat("0.##");
+					SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 }else{
                     SumBos.add("0");
                 }
@@ -1471,7 +1543,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             List<Double> dept =reqWorkLoadService.getExportCountForDevp2(demandBO);
             if(dept.get(0) != null){
                 workingHoursBOS.add("功能点");
-                DecimalFormat df = new DecimalFormat("#.00");
+                DecimalFormat df = new DecimalFormat("0.##");
                 SumBos.add(df.format(dept.get(0)));
             }else {
                 workingHoursBOS.add("功能点");
@@ -2396,6 +2468,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 	 */
 	@Override
 	public DemandHoursRspBO getDemandStaffTask(String displayname,String date1,String date2){
+        DecimalFormat df = new DecimalFormat("0.##");
 		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
 		List<WorkingHoursDO> impl = null;
 		List<String> workingHoursBOS = new LinkedList<>();
@@ -2430,7 +2503,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 				String sumTime1 = impl.get(i).getTimespnet();
 				sumx = sumx + getWorkHours(Integer.parseInt(sumTime1));
 				// {value: 5, name: '需求任务'}
-                String qtDemand =  "{'value': '"+getWorkHours(Integer.parseInt(sumTime1))+"', 'name': '其它任务'}";
+                String qtDemand =  "{'value': '"+df.format(getWorkHours(Integer.parseInt(sumTime1)))+"', 'name': '其它任务'}";
 
 				workingHoursBOS.add(String.valueOf(qtDemand));
 				SumBos.add("其它任务");
@@ -2442,7 +2515,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
 		}
         sumx = sumx + getWorkHours(sumDemand);
-        String Demand =  "{'value': '"+getWorkHours(sumDemand)+"', 'name': '需求任务'}";
+        String Demand =  "{'value': '"+df.format(getWorkHours(sumDemand))+"', 'name': '需求任务'}";
 		workingHoursBOS.add(Demand);
 		SumBos.add("需求任务");
 		sum =String.valueOf(sumx);
@@ -2549,6 +2622,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
     @Override
     public DemandHoursRspBO getDemandHours(String epic){
+        DecimalFormat df = new DecimalFormat("0.##");
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         List<String> workingHoursBOS = new LinkedList<>();
         DemandResourceInvestedDO demandResourceInvestedDO = new DemandResourceInvestedDO();
@@ -2574,8 +2648,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
             System.err.println(sum1);
             double s = getWorkHours(sum1);
-            sum = String.valueOf(s);
-            System.err.println(sum);
+            sum = df.format(s);
         }
         demandHoursRspBO.setListSum(listSumBos);
         demandHoursRspBO.setSum(sum);
@@ -2586,6 +2659,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
 	@Override
 	public DemandHoursRspBO getDemandHoursRole(String epic){
+        DecimalFormat df = new DecimalFormat("0.##");
 		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
 		List<String> workingHoursBOS = new LinkedList<>();
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
@@ -2614,7 +2688,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 sum1+=sumx;
             }
             double s = getWorkHours(sum1);
-            sum = String.valueOf(s);
+            sum = df.format(s);
         }
         demandHoursRspBO.setListSum(listSumBos);
         demandHoursRspBO.setSum(sum);
@@ -2650,10 +2724,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursBOS.add(dept);
             sumx+=Double.valueOf(dept_list[1]);
         }
-        sum = String.valueOf(sumx);
-        System.err.println(sum);
+        DecimalFormat df = new DecimalFormat("0.##");
         demandHoursRspBO.setListSum(SumBos);
-        demandHoursRspBO.setSum(sum);
+        demandHoursRspBO.setSum(df.format(sumx));
         demandHoursRspBO.setStringList(workingHoursBOS);
         System.err.println(demandHoursRspBO);
         return demandHoursRspBO;
@@ -2851,7 +2924,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
      * @return
      */
     public Double getWorkHoursTime(int time){
-        return (double) (Math.round(time* 100 /  3600)/ 100.0);
+        return (double) (Math.round((long)time* 100 /  3600)/ 100.0);
     }
 
     /**
