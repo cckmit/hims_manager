@@ -382,12 +382,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //时间修改备注不为空时，登记
             if (!demandBO.getRevisionTimeNote().isEmpty()) {
                 registrationTimeNodeHistoryTable(demandBO);
-                //项目计划变更 发送邮件
-                productionChangeEmail(demandBO);
             }
             System.err.println(demandBO.getReqSts());
             demandDao.updateReqPlanJsp(BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO));
-
+            if (!demandBO.getRevisionTimeNote().isEmpty()) {
+                //项目计划变更 发送邮件
+                productionChangeEmail(demandBO);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
@@ -411,7 +412,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         //String message = reqPlanService.sendMail("tu_yi@hisuntech.com", "wu_lr@hisuntech.com", content, subject, null);
         if (StringUtils.isNotBlank(message)) {
             //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
-            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
+            MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目计划变更成功，邮件发送失败:" + message);
             BusinessException.throwBusinessException(MsgEnum.ERROR_MAIL_FAIL);
         }
 
