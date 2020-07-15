@@ -648,12 +648,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
      */
     public void setDefaultValue(DemandBO demandBO) {
         // 计划投入数 =投入资源*开发周期/22
-        int inpoyRes = demandBO.getInputRes();
-        int devCycle = demandBO.getDevCycle();
-        Double expInput = new BigDecimal(new Double(inpoyRes) * new Double(devCycle))
-                .divide(new BigDecimal(String.valueOf(22)), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        //Double expInput = (double) (inpoyRes * devCycle / 22);
-        demandBO.setExpInput(expInput);
+//        int inpoyRes = demandBO.getInputRes();
+//        int devCycle = demandBO.getDevCycle();
+//        Double expInput = new BigDecimal(new Double(inpoyRes) * new Double(devCycle))
+//                .divide(new BigDecimal(String.valueOf(22)), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+//        //Double expInput = (double) (inpoyRes * devCycle / 22);
+//        demandBO.setExpInput(expInput);
     }
 
     /**
