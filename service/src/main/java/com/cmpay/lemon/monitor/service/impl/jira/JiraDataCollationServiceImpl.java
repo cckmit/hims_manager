@@ -217,6 +217,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
         proUnhandledIssuesDO.setProductionDate(selectTime);
         proUnhandledIssuesDO.setDepartment( demandDOS.get(0).getDevpLeadDept());
+
+        //N为未处理标识  当天晚上定时任务会通过此表示查找对应的数据
         proUnhandledIssuesDO.setCalculateFlag("N");
 
         ProUnhandledIssuesDO proUnhandledIssuesDO1 = proUnhandledIssuesDao.get(reqNo);
@@ -328,6 +330,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 defectDetailsDO.setAssignee(jiraTaskBodyBO.getProblemHandler());
                 defectDetailsDO.setDefectRegistrant(jiraTaskBodyBO.getCreator());
                 defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
+                if(JudgeUtils.isBlank(jiraTaskBodyBO.getDefectsDepartment())){
+                    defectDetailsDO.setDefectsDepartment("产品测试团队");
+                }
                 defectDetailsDO.setRegistrationDate(jiraTaskBodyBO.getCreateTime());
                 defectDetailsDO.setDefectDetails(jiraTaskBodyBO.getDefectDetails());
                 defectDetailsDO.setTestNumber(jiraTaskBodyBO.getRetestTimes());

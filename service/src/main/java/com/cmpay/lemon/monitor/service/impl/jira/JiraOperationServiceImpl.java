@@ -6,17 +6,12 @@ import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueEpicRequestBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueMainTaskRequestBO;
-import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
-import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
-import com.cmpay.lemon.monitor.dao.IDemandJiraDao;
-import com.cmpay.lemon.monitor.dao.IDemandJiraDevelopMasterTaskDao;
-import com.cmpay.lemon.monitor.dao.IJiraDepartmentDao;
-import com.cmpay.lemon.monitor.dao.IUserExtDao;
+import com.cmpay.lemon.monitor.bo.jira.*;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
+import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import io.restassured.response.Response;
@@ -45,6 +40,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     private IUserExtDao iUserDao;
     @Autowired
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
+    @Autowired
+    IDemandJiraSubtaskDao demandJiraSubtaskDao;
     //jira项目类型 和包项目 jira编号10106(测试环境)
     final static Integer PROJECTTYPE_CMPAY_dev = 10106;
     //jira项目类型 和包项目 jira编号10100
@@ -61,11 +58,15 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     final static Integer ISSUETYPE_DEVELOPMAINTASK = 10100;
     //测试主任务 jira编号
     final static Integer ISSUETYPE_TESTMAINTASK = 10102;
+    //测试子任务 jira编号
+    final static Integer ISSUETYPE_TESTSUBTASK = 10103;
+
+
     //Epic任务
     final static String EPIC = "Epic";
     //开发主任务
     final static String DEVELOPMAINTASK = "开发主任务";
-    //开发主任务
+    //测试主任务
     final static String TESTMAINTASK = "测试主任务";
     //业务失败标识
     final static String FAIL = "fail";
@@ -110,8 +111,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         CreateIssueEpicRequestBO createIssueEpicRequestBO = new CreateIssueEpicRequestBO();
         createIssueEpicRequestBO.setSummary(demandBO.getReqNm());
         createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
-        //设置项目为和包项目，问题类型开发主任务
-
+        //设置项目类型，不为以下三种则为和包项目。
         if ("资金归集项目组".equals(demandBO.getDevpLeadDept())) {
             createIssueEpicRequestBO.setProject(PROJECTTYPE_FCPT);
         } else if ("团体组织交费项目组".equals(demandBO.getDevpLeadDept())) {
@@ -145,6 +145,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
         createIssueEpicRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
         Response response = JiraUtil.CreateIssue(createIssueEpicRequestBO);
+        //如果返回状态码是成功则登记jira关联表
         if (response.getStatusCode() == JIRA_SUCCESS) {
             CreateIssueResponseBO createIssueResponseBO = response.getBody().as(CreateIssueResponseBO.class);
             DemandJiraDO demandJiraDO = new DemandJiraDO();
@@ -198,7 +199,6 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
             //拼凑jira主任务名
             demandJiraDevelopMasterTaskDO.setMasterTaskKey(epicDemandJiraDO.getJiraKey() + "_" + devpCoorDept + "_" + taskType);
-            System.err.println(demandJiraDevelopMasterTaskDO.getMasterTaskKey());
             demandJiraDevelopMasterTaskDO.setReqNm(demandBO.getReqNm());
             demandJiraDevelopMasterTaskDO.setCreateState(FAIL);
             demandJiraDevelopMasterTaskDO.setRemarks(DEPARTMENTDIDNOTMATCH);
@@ -235,8 +235,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
         createMainTaskRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
         createMainTaskRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
+        //创建子任务
         Response response = JiraUtil.CreateIssue(createMainTaskRequestBO);
-        if (response.getStatusCode() == JIRA_SUCCESS) {
+        if (response.getStatusCode() == JIRA_SUCCESS)  {
             CreateIssueResponseBO createIssueResponseBO = response.getBody().as(CreateIssueResponseBO.class);
             DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
             demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
@@ -258,6 +259,64 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             } else {
                 demandJiraDevelopMasterTaskDao.update(demandJiraDevelopMasterTaskDO);
             }
+
+            if(taskType.equals(TESTMAINTASK)){
+                CreateIssueTestSubtaskRequestBO createIssueTestSubtaskRequestBO = new CreateIssueTestSubtaskRequestBO();
+                createIssueTestSubtaskRequestBO.setIssueType(ISSUETYPE_TESTSUBTASK);
+                if (LemonUtils.getEnv().equals(Env.SIT)) {
+                    createIssueTestSubtaskRequestBO.setProject(PROJECTTYPE_CMPAY);
+                } else {
+                    createIssueTestSubtaskRequestBO.setProject(PROJECTTYPE_CMPAY_dev);
+                }
+                createIssueTestSubtaskRequestBO.setParentKey(createIssueResponseBO.getKey());
+                createIssueTestSubtaskRequestBO.setAssignee(jiraDepartmentDO.getManagerjiranm());
+                String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+                createIssueTestSubtaskRequestBO.setStartTime(selectTime);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, + 7);
+                Date time = c.getTime();
+                String preDay = sdf.format(time);
+                createIssueTestSubtaskRequestBO.setEndTime(preDay);
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例编写】"+demandBO.getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试案例编写");
+                Response response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                if (response1.getStatusCode() == JIRA_SUCCESS) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例评审】"+demandBO.getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试案例评审");
+                response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                if (response1.getStatusCode() == JIRA_SUCCESS) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例执行】"+demandBO.getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试用例执行");
+                response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                if (response1.getStatusCode() == JIRA_SUCCESS) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+            }
+
         } else {
             DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
             demandJiraDevelopMasterTaskDO.setCreatTime(LocalDateTime.now());
@@ -307,14 +366,15 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             if (m.equals("行业拓展事业部")) {
                 return;
             }
-            System.err.println(m);
+            //创建开发子任务
             this.CreateJiraMasterTask(m, demandBO, demandJiraDO, DEVELOPMAINTASK);
         });
-        //添加测试主任务
-        if (!demandBO.getDevpLeadDept().equals("团体组织交费项目组") && !demandBO.getDevpLeadDept().equals("资金归集项目组")) {
+        //添加测试主任务，这两个部门不需要测试部测试，不需要测试主任务
+        if (!demandBO.getDevpLeadDept().equals("团体组织交费项目组") && !demandBO.getDevpLeadDept().equals("资金归集项目组")&& !demandBO.getDevpLeadDept().equals("客服中间层项目组")) {
             this.CreateJiraMasterTask(TESTINGDIVISION, demandBO, demandJiraDO, TESTMAINTASK);
         }
     }
+
 
     @Override
     public void getJiraIssue(List<DemandDO> demandDOList) {
@@ -399,9 +459,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         } finally {
             f.delete();
         }
+        //讲所有需要修改的任务添加到这个list
+        List<JiraTaskBodyBO> jiraTastBodyAllTestTesk = new ArrayList<>();
+        //获取导入文件的需求的jirekey
         jiraTaskBodyBOS.forEach(m -> {
-            System.err.println(jiraTaskBodyBOS.size());
-            System.err.println(m.getReqInnerSeq());
             DemandJiraDO demandJiraDO;
             try {
                 demandJiraDO = demandJiraDao.get(m.getReqInnerSeq());
@@ -431,8 +492,32 @@ public class JiraOperationServiceImpl implements JiraOperationService {
                 m.setAssignee(userDOS.get(0).getUsername());
                 userDO.setFullname(m.getAssignee());
             }
+            jiraTastBodyAllTestTesk.add(m);
+            DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+            demandJiraSubtaskDO.setParenttaskkey(m.getJiraKey());
+
+
+            List<DemandJiraSubtaskDO> demandJiraSubtaskDOS = demandJiraSubtaskDao.find(demandJiraSubtaskDO);
+
+            //查询对应的三个测试子任务也同步修改
+            if(JudgeUtils.isNotEmpty(demandJiraSubtaskDOS)){
+                for(int i=0 ;i<demandJiraSubtaskDOS.size();i++){
+                    JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                    jiraTaskBodyBO.setJiraKey(demandJiraSubtaskDOS.get(i).getSubtaskkey());
+                    jiraTaskBodyBO.setAssignee(m.getAssignee());
+                    jiraTaskBodyBO.setPlanStartTime(m.getPlanStartTime());
+                    jiraTaskBodyBO.setPlanEndTime(m.getPlanEndTime());
+                    jiraTastBodyAllTestTesk.add(jiraTaskBodyBO);
+                }
+            }
+        });
+            //修改jira任务
+        jiraTastBodyAllTestTesk.forEach(m->{
             JiraUtil.EditTheTestMainTask(m);
         });
+
+
+
     }
 
 

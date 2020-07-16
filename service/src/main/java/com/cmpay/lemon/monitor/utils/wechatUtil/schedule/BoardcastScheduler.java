@@ -28,7 +28,6 @@ public class BoardcastScheduler {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void pushValidationNotTimelyChecklist(String body , File file){
        boardcastExecutor.getAccessToken(corpid, corpsecret);
-        //todo 固定接收人
         boardcastExecutor.sendTextMessage("@all", body);
         String fileID = boardcastExecutor.sendUploadFile(file);
         boardcastExecutor.sendFileMessage("@all", fileID);
@@ -37,10 +36,15 @@ public class BoardcastScheduler {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void pushTimeOutWarning(String body){
         boardcastExecutor.getAccessToken(corpid, corpsecret);
-        //todo  投产日期定时变动，发给自己，固定接收人
+        // 投产日期定时变动提醒 未收到则需要注意本周投产时是否转入
         boardcastExecutor.sendTextMessage("@all", body);
 
     }
 
-
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void verificationCompleteReminder(String username ,String body){
+        boardcastExecutor.getAccessToken(corpid, corpsecret);
+        //投产验证变更提醒 发送给对应部门经理
+        boardcastExecutor.sendTextMessage(username, body);
+    }
 }

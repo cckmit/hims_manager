@@ -1,8 +1,8 @@
 monitor:
   boardcast:
     cronExpression: 0 0 7 * * ?
-    corpid: wx1ab762ccb661e135
-    corpsecret: YvFG_M56n0tB3ltKwZM0BOfgUyNvUZK8lyA5-Sgwy44
-    agentid: 1000004
+    corpid: wwc2539159ee106832
+    corpsecret: j9OWZzdsKGV8P73KiHHh-UNl0XEGkGY-nKPgm_rIenU
+    agentid: 1000002
 
 #    git分支切换测试

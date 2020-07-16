@@ -73,6 +73,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Autowired
     IPermiUserDao permiUserDao;
     @Autowired
+    IUserExtDao userExtDao;
+    @Autowired
     ITPermiDeptDao permiDeptDao;
     @Autowired
     IDemandExtDao demandDao;
@@ -725,15 +727,36 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("批量操作成功,但您有邮件没有发送成功,请及时联系系统维护人员!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
+            try {
+            //转待投产时，需要登记投产时未完成任务统计表，统计未完成缺陷和问题
+            if (pro_number_list[0].equals("dtc")) {
+                System.err.println(pro_number_list[j]);
+                jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[j]);
+            }
+            //如果是投产待验证则微信通知相关部门经理及时更新验证状态
+            if (pro_number_list[0].equals("dyz")) {
+                    verificationCompleteReminder(pro_number_list[j]);
+            }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
-
-        
-        if (pro_number_list[0].equals("dtc")) {
-            jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[2]);
-        }
-
 
         return;//ajaxDoneSuccess("批量操作成功");
+    }
+
+    private void verificationCompleteReminder(String productionNumber) {
+        ProductionDO productionBean = operationProductionDao.findProductionBean(productionNumber);
+        String deptManagerName = operationProductionService.findDeptManager(productionBean.getApplicationDept()).getDeptManagerName();
+        UserDO userDO = new UserDO();
+        userDO.setFullname(deptManagerName);
+        List<UserDO> userDOS = userExtDao.find(userDO);
+        String username ="";
+        if(JudgeUtils.isNotEmpty(userDOS)){
+            username = userDOS.get(0).getUsername();
+        }
+        String body="投产编号:"+productionBean.getProNumber()+"\n"+"投产内容："+productionBean.getProNeed()+"\n"+"已更变为投产待验证状态;请及时验证，如以验证完成请及时变更状态";
+        boardcastScheduler.verificationCompleteReminder(username,body);
     }
 
     @Override
@@ -1545,11 +1568,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 Map<String, String> map = execCommand(command.toString());
                 String succFlag = map.get("succFlag");
 
-                if ("1".equals(succFlag))
+                if ("1".equals(succFlag)) {
                     s2 = "检查通过";
-                else
+                }
+                else {
                     s2 = map.get("result");
-
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

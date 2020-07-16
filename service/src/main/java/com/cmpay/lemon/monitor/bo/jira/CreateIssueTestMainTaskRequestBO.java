@@ -117,7 +117,7 @@ public class CreateIssueTestMainTaskRequestBO extends CreateIssueRequestBO {
                 "        \"project\":{\n" +
                 "            \"id\":\""+this.getProject()+"\"\n" +
                 "        },\n" +
-                "         \""+this.JIRA_EPICLINK+"\": \""+this.getEpicKey()+"\",\n" +
+                "         \""+JIRA_EPICLINK+"\": \""+this.getEpicKey()+"\",\n" +
                 "        \n" +
                 "        \"description\":\""+this.getDescription().replaceAll("\r|\n", "")+"\",\n" +
                 "        \n" +

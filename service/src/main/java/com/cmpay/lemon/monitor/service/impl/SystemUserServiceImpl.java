@@ -183,7 +183,11 @@ public class SystemUserServiceImpl implements SystemUserService {
         if (res != 1) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
-        res = iUserDao.insert(userDO);
+        try{
+            res = iUserDao.insert(userDO);
+        }catch (Exception e){
+            BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
+        }
         if (res != 1) {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
