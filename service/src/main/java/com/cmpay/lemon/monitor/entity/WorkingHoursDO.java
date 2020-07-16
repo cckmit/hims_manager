@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-07-03 15:25:50
  */
@@ -234,6 +234,13 @@ public class WorkingHoursDO extends BaseDO {
         this.roletype = roletype;
     }
 
+    public String getWorkHoursToString() {
+        return "{'value': '"+getWorkHours(timespnet)+"', 'name': '"+roletype+"'}";
+    }
+    public Double getWorkHours(String value){
+        Long time = Long.parseLong(value);
+        return (double) (Math.round(time* 100 /  28800)/ 100.0);
+    }
     @Override
     public String toString() {
         return "WorkingHoursDO{" +

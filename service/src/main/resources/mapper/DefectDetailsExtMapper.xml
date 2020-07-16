@@ -86,12 +86,16 @@
             <if test="defectRegistrant != null" >
                 and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
             </if>
-            <if test="defectsDepartment != null" >
+            <if test="defectsDepartment != null and defectsDepartment !='产品测试团队'" >
                 and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null and defectsDepartment =='产品测试团队'" >
+                and (defects_department = #{defectsDepartment,jdbcType=VARCHAR} or (ISNULL(defects_department) or defects_department = '') )
             </if>
             <if test="registrationDate != null" >
                 and registration_date LIKE CONCAT('%',#{registrationDate},'%')
             </if>
+
             <if test="defectDetails != null" >
                 and defect_details = #{defectDetails,jdbcType=VARCHAR}
             </if>
@@ -126,8 +130,11 @@
             <if test="defectRegistrant != null" >
                 and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
             </if>
-            <if test="defectsDepartment != null" >
+            <if test="defectsDepartment != null  and defectsDepartment !='产品测试团队'" >
                 and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null and defectsDepartment =='产品测试团队'" >
+                and ( defects_department = #{defectsDepartment,jdbcType=VARCHAR} or (ISNULL(defects_department) or defects_department = '') )
             </if>
             <if test="registrationDate != null" >
                 and YEARWEEK(date_format(registration_date,'%Y-%m-%d')) = YEARWEEK(#{registrationDate,jdbcType=VARCHAR})

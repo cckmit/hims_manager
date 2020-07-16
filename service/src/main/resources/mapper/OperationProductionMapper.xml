@@ -563,6 +563,24 @@
         </where>
     </select>
 
+    <select id="getListOfUntimelyStatusChanges2" resultMap="rm"  >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_records
+        <where >
+            <if test="proStatus != null" >
+                and pro_status = #{proStatus,jdbcType=BIGINT}
+            </if>
+            <if test="proDate != null" >
+                and pro_date > #{proDate,jdbcType=VARCHAR}
+            </if>
+            <if test="applicationDept != null" >
+                and application_dept = #{applicationDept,jdbcType=VARCHAR}
+            </if>
+            ORDER BY application_dept,pro_applicant,pro_date desc
+        </where>
+    </select>
+
     <select id="findExportExcelListByDate" resultMap="rm" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
         SELECT
         <include refid="Base_Column_List"/>

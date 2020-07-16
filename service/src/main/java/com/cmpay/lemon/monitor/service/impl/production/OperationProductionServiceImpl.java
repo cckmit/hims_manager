@@ -728,19 +728,20 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             try {
-            //转待投产时，需要登记投产时未完成任务统计表，统计未完成缺陷和问题
-            if (pro_number_list[0].equals("dtc")) {
-                System.err.println(pro_number_list[j]);
-                jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[j]);
-            }
-            //如果是投产待验证则微信通知相关部门经理及时更新验证状态
-            if (pro_number_list[0].equals("dyz")) {
+                //转待投产时，需要登记投产时未完成任务统计表，统计未完成缺陷和问题
+                if (pro_number_list[0].equals("dtc")) {
+
+                    jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[j]);
+                }
+                //如果是投产待验证则微信通知相关部门经理及时更新验证状态
+                if (pro_number_list[0].equals("dyz")) {
                     verificationCompleteReminder(pro_number_list[j]);
-            }
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
+
 
         return;//ajaxDoneSuccess("批量操作成功");
     }
@@ -877,6 +878,22 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     }
 
     @Override
+    public List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList2(String date,String dept) {
+        OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
+        try {
+            operationApplicationDO.setOperStatus("操作完成");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            operationApplicationDO.setProposeDate(new java.sql.Date(date1.getTime()));
+            operationApplicationDO.setApplicationSector(dept);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //获取系统录入状态变更不及时清单
+        return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList2(operationApplicationDO);
+    }
+
+    @Override
     public List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date) {
         OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
         try {
@@ -910,7 +927,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //获取状态变更不及时清单
         return operationProductionDao.getListOfUntimelyStatusChanges(productionDO);
     }
-
+    @Override
+    public List<ProductionDO> getProductionVerificationIsNotTimely2(String date,String dept) {
+        ProductionDO productionDO = new ProductionDO();
+        try {
+            productionDO.setProStatus("部署完成待验证");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date date1 = sdf.parse(date);
+            productionDO.setProDate(new java.sql.Date(date1.getTime()));
+            productionDO.setApplicationDept(dept);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //获取状态变更不及时清单
+        return operationProductionDao.getListOfUntimelyStatusChanges2(productionDO);
+    }
     /**
      * @param date 日期
      *             计算日期之后投产验证不及时清单
@@ -1568,12 +1599,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 Map<String, String> map = execCommand(command.toString());
                 String succFlag = map.get("succFlag");
 
-                if ("1".equals(succFlag)) {
+                if ("1".equals(succFlag))
                     s2 = "检查通过";
-                }
-                else {
+                else
                     s2 = map.get("result");
-                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

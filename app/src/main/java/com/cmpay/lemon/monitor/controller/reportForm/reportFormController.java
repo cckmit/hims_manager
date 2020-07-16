@@ -3,6 +3,7 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -233,6 +234,16 @@ public class reportFormController {
 	public GenericRspDTO<DemandHoursRspDTO> getDemandHours(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
 		DemandHoursRspBO reportLista = new DemandHoursRspBO();
 		reportLista = reqDataCountService.getDemandHours(workingHoursDTO.getEpickey());
+		DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
+		BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+	}
+
+	@RequestMapping("/getDemandHoursRole")
+	public GenericRspDTO<DemandHoursRspDTO> getDemandHoursRole(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		DemandHoursRspBO reportLista = new DemandHoursRspBO();
+		System.err.println(workingHoursDTO.getEpickey());
+		reportLista = reqDataCountService.getDemandHoursRole(workingHoursDTO.getEpickey());
 		DemandHoursRspDTO reqDataCountRspDTO = new DemandHoursRspDTO();
 		BeanUtils.copyPropertiesReturnDest(reqDataCountRspDTO, reportLista);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
@@ -788,6 +799,19 @@ public class reportFormController {
         BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
     }
+
+	/**
+	 * 团队投产验证未及时
+	 * @param workingHoursDTO
+	 * @return
+	 */
+	@RequestMapping("/listOfUntimelyStatusChanges")
+	public GenericRspDTO<ProductionVerificationIsNotTimelyRspDTO> listOfUntimelyStatusChanges(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		ProductionVerificationIsNotTimelyRspDTO demandHoursRspDTO = new ProductionVerificationIsNotTimelyRspDTO();
+		List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = reqDataCountService.listOfUntimelyStatusChanges(workingHoursDTO.getDevpLeadDept());
+		demandHoursRspDTO.setProductionVerificationIsNotTimelyDTOList(BeanConvertUtils.convertList(listOfUntimelyStatusChangesBos, ProductionVerificationIsNotTimelyDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+	}
 
 	@RequestMapping("/downloadreportform1")
 	public  GenericRspDTO<NoBody> downloadReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO ,HttpServletResponse response) {

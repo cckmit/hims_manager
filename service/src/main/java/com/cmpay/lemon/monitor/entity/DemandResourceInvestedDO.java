@@ -99,7 +99,7 @@ public class DemandResourceInvestedDO extends BaseDO {
         return "{'value': '"+getWorkHours(value)+"', 'name': '"+department+"'}";
     }
     public Double getWorkHours(String value){
-        int time = Integer.parseInt(value);
+        Long time = Long.parseLong(value);
         return (double) (Math.round(time* 100 /  28800)/ 100.0);
     }
 }

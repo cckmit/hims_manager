@@ -184,6 +184,7 @@
 		,req_sts =#{reqSts}
 		,update_time =#{ updateTime }
 		,update_user =#{ updateUser }
+		 ,exp_input =#{expInput }
 		WHERE req_inner_seq = #{reqInnerSeq}
 	</update>
 

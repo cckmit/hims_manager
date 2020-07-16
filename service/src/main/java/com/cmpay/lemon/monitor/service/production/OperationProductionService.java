@@ -100,9 +100,36 @@ public interface OperationProductionService {
 
     void updateMailGroup(MailGroupBO mailGroupBO);
 
+    /**
+     * 根据日期获取验证不及时的操作
+     * @param date
+     * @return
+     */
     List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList(String date);
+
+    /**
+     * 根据日期、部门获取验证不及时的系统操作
+     * @param date
+     * @param dept
+     * @return
+     */
+    List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList2(String date,String dept);
     List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date);
-    List<ProductionDO> getProductionVerificationIsNotTimely(String number);
+
+    /**
+     * 根据日期获取投产验证不及时
+     * @param date
+     * @return
+     */
+    List<ProductionDO> getProductionVerificationIsNotTimely(String date);
+
+    /**
+     * 根据日期和部门获取投产验证不及时的投产
+     * @param date
+     * @param dept
+     * @return
+     */
+    List<ProductionDO> getProductionVerificationIsNotTimely2(String date,String dept);
     List<ProductionDO> getTheListOfProductionToBeDeployed(String number);
 
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
