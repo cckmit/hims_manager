@@ -422,7 +422,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         ids.forEach(m -> {
             this.delete(m);
         });
-        ids.forEach(demandJiraDao::delete);
+      //  ids.forEach(demandJiraDao::delete);
     }
 
     /**

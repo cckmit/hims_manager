@@ -411,8 +411,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     @Async
     @Override
     public void jiraTestMainTaskBatchEdit(MultipartFile file) {
-        File f = null;
         List<JiraTaskBodyBO> jiraTaskBodyBOS = new ArrayList<>();
+
+           File f = null;
+
         try {
             //MultipartFile转file
             String originalFilename = file.getOriginalFilename();
@@ -513,7 +515,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         });
             //修改jira任务
         jiraTastBodyAllTestTesk.forEach(m->{
-            JiraUtil.EditTheTestMainTask(m);
+             JiraUtil.EditTheTestMainTask(m);
         });
 
 
