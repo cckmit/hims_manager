@@ -329,6 +329,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 defectDetailsDO.setDefectStatus(jiraTaskBodyBO.getStatus());
                 defectDetailsDO.setAssignee(jiraTaskBodyBO.getProblemHandler());
                 defectDetailsDO.setDefectRegistrant(jiraTaskBodyBO.getCreator());
+                defectDetailsDO.setSecurityLevel(jiraTaskBodyBO.getSecurityLevel());
                 defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
                 if(JudgeUtils.isBlank(jiraTaskBodyBO.getDefectsDepartment())){
                     defectDetailsDO.setDefectsDepartment("产品测试团队");

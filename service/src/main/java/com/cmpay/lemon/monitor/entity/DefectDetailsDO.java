@@ -1,8 +1,8 @@
 /*
  * @ClassName DefectDetailsDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2020-07-02 10:43:29
+ * @Date 2020-07-20 10:05:31
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -59,6 +59,10 @@ public class DefectDetailsDO extends BaseDO {
      * @Fields testNumber 缺陷重测次数
      */
     private Integer testNumber;
+    /**
+     * @Fields securityLevel 缺陷严重级别（致命 严重 一般 轻微）
+     */
+    private String securityLevel;
 
     private String startTime;
 
@@ -176,20 +180,11 @@ public class DefectDetailsDO extends BaseDO {
         this.testNumber = testNumber;
     }
 
-    @Override
-    public String toString() {
-        return "DefectDetailsDO{" +
-                "jireKey='" + jireKey + '\'' +
-                ", reqNo='" + reqNo + '\'' +
-                ", epicKey='" + epicKey + '\'' +
-                ", defectType='" + defectType + '\'' +
-                ", defectStatus='" + defectStatus + '\'' +
-                ", defectRegistrant='" + defectRegistrant + '\'' +
-                ", defectsDepartment='" + defectsDepartment + '\'' +
-                ", registrationDate='" + registrationDate + '\'' +
-                ", defectDetails='" + defectDetails + '\'' +
-                ", assignee='" + assignee + '\'' +
-                ", testNumber='" + testNumber + '\'' +
-                '}';
+    public String getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
     }
 }

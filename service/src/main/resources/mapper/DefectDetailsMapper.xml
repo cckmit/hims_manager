@@ -15,11 +15,12 @@
         <result column="defect_details" property="defectDetails" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
+        <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant, 
-        defects_department, registration_date, defect_details, assignee, test_number
+        defects_department, registration_date, defect_details, assignee, test_number, security_level
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -73,6 +74,9 @@
             <if test="testNumber != null" >
                 test_number,
             </if>
+            <if test="securityLevel != null" >
+                security_level,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jireKey != null" >
@@ -110,6 +114,9 @@
             </if>
             <if test="testNumber != null" >
                 #{testNumber,jdbcType=INTEGER},
+            </if>
+            <if test="securityLevel != null" >
+                #{securityLevel,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -149,6 +156,9 @@
             </if>
             <if test="testNumber != null" >
                 test_number = #{testNumber,jdbcType=INTEGER},
+            </if>
+            <if test="securityLevel != null" >
+                security_level = #{securityLevel,jdbcType=VARCHAR},
             </if>
         </set>
         where jire_key = #{jireKey,jdbcType=VARCHAR}
@@ -194,6 +204,9 @@
             </if>
             <if test="testNumber != null" >
                 and test_number = #{testNumber,jdbcType=INTEGER}
+            </if>
+            <if test="securityLevel != null" >
+                and security_level = #{securityLevel,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

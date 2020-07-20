@@ -2072,13 +2072,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     }
 
     @Override
-    public void defectMonthlyDownload(HttpServletResponse response) {
-        String startTime ="2020-07-01";
-        String endTime ="2020-07-16";
+    public void defectMonthlyDownload(HttpServletResponse response,String startDateTime,String endDateTime) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date parse=new Date();
         try {
-            parse= sdf.parse(endTime);
+            parse= sdf.parse(endDateTime);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -2090,7 +2088,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
 
-        defectDetailsDO.setStartTime(startTime);
+        defectDetailsDO.setStartTime(startDateTime);
         defectDetailsDO.setEndTime(preDay);
         List<DefectDetailsDO> defectDetailsList = defectDetailsDao.findByTime(defectDetailsDO);
 
@@ -2114,15 +2112,38 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                             defectMonthlyBO.setTotalWorkload(demandDO.getTotalWorkload());
                             defectMonthlyBO.setReqMnger(demandDO.getReqMnger());
                             defectMonthlyBO.setReqMngerDept(demandDO.getReqProDept());
-                            defectMonthlyBO.setDevelopmentLeader(demandDO.getDevpEng());
+                            defectMonthlyBO.setDevpResMng(demandDO.getDevpResMng());
                             defectMonthlyBO.setDevpLeadDept(demandDO.getDevpLeadDept());
                             defectMonthlyBO.setDefectsNumber(1);
                             defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
                             defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
+                            if(JudgeUtils.isNotBlank(defectDetailsList.get(i).getSecurityLevel())){
+                                if(defectDetailsList.get(i).getSecurityLevel().equals("严重")){
+                                    defectMonthlyBO.setSeriousDefectsNumber(defectMonthlyBO.getSeriousDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("一般")){
+                                    defectMonthlyBO.setOrdinaryDefectsNumber(defectMonthlyBO.getOrdinaryDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("轻微")){
+                                    defectMonthlyBO.setMinorDefectsNumber(defectMonthlyBO.getMinorDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("致命")){
+                                    defectMonthlyBO.setFatalDefectsNumber(defectMonthlyBO.getFatalDefectsNumber()+1);
+                                }
+                            }
+
                         }else{
                             DefectMonthlyBO defectMonthlyBO = defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey());
                             defectMonthlyBO.setDefectsNumber(defectMonthlyBO.getDefectsNumber()+1);
                             defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
+                            if(JudgeUtils.isNotBlank(defectDetailsList.get(i).getSecurityLevel())){
+                                if(defectDetailsList.get(i).getSecurityLevel().equals("严重")){
+                                    defectMonthlyBO.setSeriousDefectsNumber(defectMonthlyBO.getSeriousDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("一般")){
+                                    defectMonthlyBO.setOrdinaryDefectsNumber(defectMonthlyBO.getOrdinaryDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("轻微")){
+                                    defectMonthlyBO.setMinorDefectsNumber(defectMonthlyBO.getMinorDefectsNumber()+1);
+                                }else if(defectDetailsList.get(i).getSecurityLevel().equals("致命")){
+                                    defectMonthlyBO.setFatalDefectsNumber(defectMonthlyBO.getFatalDefectsNumber()+1);
+                                }
+                            }
                             defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
                         }
 
@@ -2132,12 +2153,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
 
         for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
-
             DefectMonthlyBO defectMonthlyBO = entry.getValue();
+            defectMonthlyBO.setExecutionCaseNumber(100);
+            defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
+            defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
+            //产品线转换
+            String req_peroid = dictionaryService.findFieldValue("PRD_LINE", defectMonthlyBO.getReqPrdLine());
+            defectMonthlyBO.setReqPrdLine(req_peroid);
             defectMonthlyList.add(defectMonthlyBO);
 
         }
-        
+
         Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DefectMonthlyBO.class, defectMonthlyList);
         try (OutputStream output = response.getOutputStream();
              BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
@@ -2154,6 +2180,102 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         } catch (IOException e) {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
+    }
+
+    @Override
+    public List<DefectMonthlyBO> getDefectMonthlyReport(String defectStartTime, String defectEndTime) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date parse=new Date();
+        try {
+            parse= sdf.parse(defectEndTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(parse);
+        c.add(Calendar.DATE, + 1);
+        Date time = c.getTime();
+        String preDay = sdf.format(time);
+
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+
+        defectDetailsDO.setStartTime(defectStartTime);
+        defectDetailsDO.setEndTime(preDay);
+        List<DefectDetailsDO> defectDetailsList = defectDetailsDao.findByTime(defectDetailsDO);
+
+        HashMap<String,DefectMonthlyBO> defectMonthlyMap = new HashMap<>();
+        List<DefectMonthlyBO> defectMonthlyList = new ArrayList<>();
+        for(int i=0;i<defectDetailsList.size();i++){
+            if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
+                DemandJiraDO demandJiraDO = new DemandJiraDO();
+                demandJiraDao.find(demandJiraDO);
+                demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
+                // 根据jiraKey获取内部编号
+                List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
+                // 根据内部编号获取 需求名及需求编号
+                if(demandJiraDos!=null && demandJiraDos.size()!=0){
+                    if(JudgeUtils.isNull(defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey()))){
+                        DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+                        DefectMonthlyBO defectMonthlyBO = new DefectMonthlyBO();
+                        defectMonthlyBO.setReqNo(demandDO.getReqNo());
+                        defectMonthlyBO.setReqNm(demandDO.getReqNm());
+                        defectMonthlyBO.setReqPrdLine(demandDO.getReqPrdLine());
+                        defectMonthlyBO.setTotalWorkload(demandDO.getTotalWorkload());
+                        defectMonthlyBO.setReqMnger(demandDO.getReqMnger());
+                        defectMonthlyBO.setReqMngerDept(demandDO.getReqProDept());
+                        defectMonthlyBO.setDevpResMng(demandDO.getDevpResMng());
+                        defectMonthlyBO.setDevpLeadDept(demandDO.getDevpLeadDept());
+                        defectMonthlyBO.setDefectsNumber(1);
+                        defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
+                        defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
+                        if(JudgeUtils.isNotBlank(defectDetailsList.get(i).getSecurityLevel())){
+                            if(defectDetailsList.get(i).getSecurityLevel().equals("严重")){
+                                defectMonthlyBO.setSeriousDefectsNumber(defectMonthlyBO.getSeriousDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("一般")){
+                                defectMonthlyBO.setOrdinaryDefectsNumber(defectMonthlyBO.getOrdinaryDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("轻微")){
+                                defectMonthlyBO.setMinorDefectsNumber(defectMonthlyBO.getMinorDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("致命")){
+                                defectMonthlyBO.setFatalDefectsNumber(defectMonthlyBO.getFatalDefectsNumber()+1);
+                            }
+                        }
+
+                    }else{
+                        DefectMonthlyBO defectMonthlyBO = defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey());
+                        defectMonthlyBO.setDefectsNumber(defectMonthlyBO.getDefectsNumber()+1);
+                        defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
+                        if(JudgeUtils.isNotBlank(defectDetailsList.get(i).getSecurityLevel())){
+                            if(defectDetailsList.get(i).getSecurityLevel().equals("严重")){
+                                defectMonthlyBO.setSeriousDefectsNumber(defectMonthlyBO.getSeriousDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("一般")){
+                                defectMonthlyBO.setOrdinaryDefectsNumber(defectMonthlyBO.getOrdinaryDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("轻微")){
+                                defectMonthlyBO.setMinorDefectsNumber(defectMonthlyBO.getMinorDefectsNumber()+1);
+                            }else if(defectDetailsList.get(i).getSecurityLevel().equals("致命")){
+                                defectMonthlyBO.setFatalDefectsNumber(defectMonthlyBO.getFatalDefectsNumber()+1);
+                            }
+                        }
+                        defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
+                    }
+
+                }
+            }
+
+        }
+
+        for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
+            DefectMonthlyBO defectMonthlyBO = entry.getValue();
+            defectMonthlyBO.setExecutionCaseNumber(100);
+            defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
+            defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
+            //产品线转换
+            String req_peroid = dictionaryService.findFieldValue("PRD_LINE", defectMonthlyBO.getReqPrdLine());
+            defectMonthlyBO.setReqPrdLine(req_peroid);
+            defectMonthlyList.add(defectMonthlyBO);
+
+        }
+
+        return defectMonthlyList;
     }
 
     public String[] getTimeAxisData(int position) {

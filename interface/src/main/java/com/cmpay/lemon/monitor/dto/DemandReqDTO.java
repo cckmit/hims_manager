@@ -88,6 +88,10 @@ public class DemandReqDTO extends PageableRspDTO {
     private String reqAbnorType;
     private List<String> ids;
     private String firstLevelOrganization;
+
+    private String defectStartTime;
+
+    private String defectEndTime;
     /**
      * 页数
      */
@@ -113,6 +117,22 @@ public class DemandReqDTO extends PageableRspDTO {
 
     public void setOrderDirection(String orderDirection) {
         this.orderDirection = orderDirection;
+    }
+
+    public String getDefectStartTime() {
+        return defectStartTime;
+    }
+
+    public void setDefectStartTime(String defectStartTime) {
+        this.defectStartTime = defectStartTime;
+    }
+
+    public String getDefectEndTime() {
+        return defectEndTime;
+    }
+
+    public void setDefectEndTime(String defectEndTime) {
+        this.defectEndTime = defectEndTime;
     }
 
     @Override

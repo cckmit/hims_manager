@@ -15,11 +15,12 @@
         <result column="defect_details" property="defectDetails" jdbcType="VARCHAR" />
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
+        <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
-        defects_department, registration_date, defect_details, assignee, test_number
+        defects_department, registration_date, defect_details, assignee, test_number, security_level
     </sql>
 
     <select id="findNotCompleted" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -188,6 +189,9 @@
             </if>
             <if test="testNumber != null" >
                 and test_number = #{testNumber,jdbcType=INTEGER}
+            </if>
+            <if test="securityLevel != null" >
+                and security_level = #{securityLevel,jdbcType=VARCHAR}
             </if>
             <if test="startTime != null and endTime != null" >
                 and registration_date between #{startTime,jdbcType=DATE} and #{endTime,jdbcType=DATE}

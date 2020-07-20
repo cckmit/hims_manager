@@ -163,5 +163,7 @@ public interface ReqTaskService {
 
     TimeAxisDataBO getTimeAxisData(String reqInnerSeq);
 
-    void defectMonthlyDownload(HttpServletResponse response);
+    void defectMonthlyDownload(HttpServletResponse response,String startDateTime,String endDateTime);
+
+    List<DefectMonthlyBO> getDefectMonthlyReport(String defectStartTime, String defectEndTime);
 }

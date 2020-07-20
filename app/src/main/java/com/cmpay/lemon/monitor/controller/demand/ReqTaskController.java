@@ -254,7 +254,7 @@ public class ReqTaskController {
     @RequestMapping("/defectMonthlyDownload")
     public GenericRspDTO<NoBody> defectMonthlyDownload(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
 
-        reqTaskService.defectMonthlyDownload(response);
+        reqTaskService.defectMonthlyDownload(response ,reqDTO.getDefectStartTime(),reqDTO.getDefectEndTime());
         return GenericRspDTO.newSuccessInstance();
 
     }

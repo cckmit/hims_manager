@@ -127,7 +127,6 @@ public class DictionaryServiceImpl implements DictionaryService {
     public String findFieldValue(String req_peroid, String preCurPeriod) {
         String value ="";
         value= dictionaryDao.getValue(req_peroid, preCurPeriod);
-        System.err.println(value);
         return  value;
     }
 

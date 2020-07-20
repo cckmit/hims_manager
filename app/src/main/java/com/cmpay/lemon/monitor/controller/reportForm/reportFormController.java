@@ -3,12 +3,12 @@ package com.cmpay.lemon.monitor.controller.reportForm;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
-import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
@@ -26,7 +26,8 @@ import java.util.List;
 @RestController
 @RequestMapping(value = MonitorConstants.REPORTFORM_PATH)
 public class reportFormController {
-
+	@Autowired
+	private ReqTaskService reqTaskService;
 	@Autowired
 	private ReqDataCountService reqDataCountService;
 
@@ -879,5 +880,17 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
 	}
 
+	@RequestMapping("/getDefectMonthlyReport")
+	public  GenericRspDTO<DefectMonthlyRspDTO> getDefectMonthlyReport(@RequestBody DemandReqDTO reqDTO) {
+		List<DefectMonthlyBO> defectMonthlyReport = reqTaskService.getDefectMonthlyReport(reqDTO.getDefectStartTime(), reqDTO.getDefectEndTime());
+		List<DefectMonthlyDTO> defectMonthlyList = new LinkedList<>();
+		defectMonthlyReport.forEach(m->
+				defectMonthlyList.add(BeanUtils.copyPropertiesReturnDest(new DefectMonthlyDTO(), m))
+		);
+		DefectMonthlyRspDTO defectMonthlyRspDTO = new DefectMonthlyRspDTO();
+		System.err.println(defectMonthlyList.size());
+		defectMonthlyRspDTO.setDefectMonthlyDTOList(defectMonthlyList);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,defectMonthlyRspDTO);
+	}
 
 }

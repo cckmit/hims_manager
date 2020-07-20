@@ -146,6 +146,13 @@ public class JiraUtil {
         String planEndTime = object.getJSONObject("fields").getString("customfield_10253");
         jiraTaskBodyBO.setPlanEndTime(planEndTime);
 
+        //缺陷安全级别
+        if(object.getJSONObject("fields").getString("customfield_10212")!=null) {
+            String securityLevel = object.getJSONObject("fields").getJSONObject("customfield_10212").getString("value");
+            jiraTaskBodyBO.setSecurityLevel(securityLevel);
+        }
+
+
         //日志流水
         String worklogs = object.getJSONObject("fields").getJSONObject("worklog").getString("worklogs");
 
@@ -253,35 +260,6 @@ public class JiraUtil {
                 .get(GETSEARCH + "?" + "jql= updated >= -2d order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
-        JSONObject object = JSONObject.parseObject(json);
-        JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
-        List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
-        if (issueJsonArray != null) {
-            for (int i = 0; i < issueJsonArray.size(); i++) {
-                JSONObject jsonObject1 =JSONObject.parseObject(issueJsonArray.get(i).toString());
-                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
-                jiraTaskBodyBO.setJiraKey(jsonObject1.getString("key"));
-                jiraTaskBodyBOlist.add(jiraTaskBodyBO);
-            }
-        }
-        return jiraTaskBodyBOlist;
-    }
-
-
-
-
-    //依据jql批量获取测试缺陷jira数据
-    public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay1(int page) {
-
-        String startTime="2020-07-01";
-        String endTime="2020-07-16";
-        Response response = given()
-                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
-                .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= project = CMPAY AND issuetype = 内部缺陷 AND created >="+startTime+" AND created <= "+endTime+" order by  created ASC&startAt="+page+"&maxResults=50");
-        ResponseBody body = response.getBody();
-        String json = body.print();
-        body.prettyPrint();
         JSONObject object = JSONObject.parseObject(json);
         JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
         List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();

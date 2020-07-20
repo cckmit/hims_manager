@@ -112,6 +112,18 @@ public class JiraTaskBodyBO {
      *评审问题类型
      */
     String reviewQuestionType;
+    /*
+     *安全级别
+     */
+    String securityLevel;
+
+    public String getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
+    }
 
     public String getReviewQuestionType() {
         return reviewQuestionType;
