@@ -243,6 +243,22 @@ public class ReqTaskController {
         jiraOperationService.jiraTestMainTaskBatchEdit(file);
         return GenericRspDTO.newSuccessInstance();
     }
+
+
+    /**
+     * 缺陷月报导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/defectMonthlyDownload")
+    public GenericRspDTO<NoBody> defectMonthlyDownload(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
+
+        reqTaskService.defectMonthlyDownload(response);
+        return GenericRspDTO.newSuccessInstance();
+
+    }
+
     /**
      * 文档上传接收文档
      *

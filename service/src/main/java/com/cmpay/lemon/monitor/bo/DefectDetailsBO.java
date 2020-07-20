@@ -6,8 +6,6 @@
  */
 package com.cmpay.lemon.monitor.bo;
 
-import com.cmpay.framework.data.BaseDO;
-
 /**
  * @author wlr
  */

@@ -11,6 +11,10 @@ import com.cmpay.lemon.monitor.utils.DateUtil;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -190,7 +194,7 @@ public class JiraUtil {
                 .get(CREATEISSUEURL + "/" + jirakey+"/worklog");
         ResponseBody body = response.getBody();
         String json = body.print();
-        body.prettyPrint();
+
         JSONObject object = JSONObject.parseObject(json);
         String worklogs = object.getString("worklogs");
         return worklogs;
@@ -264,11 +268,52 @@ public class JiraUtil {
     }
 
 
+
+
+    //依据jql批量获取测试缺陷jira数据
+    public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay1(int page) {
+
+        String startTime="2020-07-01";
+        String endTime="2020-07-16";
+        Response response = given()
+                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                .get(GETSEARCH + "?" + "jql= project = CMPAY AND issuetype = 内部缺陷 AND created >="+startTime+" AND created <= "+endTime+" order by  created ASC&startAt="+page+"&maxResults=50");
+        ResponseBody body = response.getBody();
+        String json = body.print();
+        body.prettyPrint();
+        JSONObject object = JSONObject.parseObject(json);
+        JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
+        List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
+        if (issueJsonArray != null) {
+            for (int i = 0; i < issueJsonArray.size(); i++) {
+                JSONObject jsonObject1 =JSONObject.parseObject(issueJsonArray.get(i).toString());
+                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                jiraTaskBodyBO.setJiraKey(jsonObject1.getString("key"));
+                jiraTaskBodyBOlist.add(jiraTaskBodyBO);
+            }
+        }
+        return jiraTaskBodyBOlist;
+    }
+
     /*
      *获取主任务，并解析相关信息
      */
     public static void main(String[] args) {
-        JiraUtil.GetIssue("CMPAY-2066");
+
+        String  a="2020-07-27";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date parse=new Date();
+        try {
+            parse= sdf.parse(a);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(parse);
+        c.add(Calendar.DATE, + 7);
+        Date time = c.getTime();
+        String preDay = sdf.format(time);
     }
 
 

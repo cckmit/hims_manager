@@ -106,7 +106,7 @@ public class ReqMonitorTimer {
         productionTimeBO.setId(Integer.valueOf(4));
         productionTimeBO.setTime(day);
         productTimeService.updateProductTime(productionTimeBO);
-         boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
+        boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
     }
 
     @Scheduled(cron = "0 30 0 1 * ?")
@@ -417,7 +417,7 @@ public class ReqMonitorTimer {
             mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;投产验证不及时清单,详情请参见附件,如已验证完成请及时修改状态<br/><br/>" + sb);
             boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             //企业微信信息推送
-              boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
+            boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
         }
         file.delete();
     }
@@ -471,7 +471,7 @@ public class ReqMonitorTimer {
     /*
      * 每日需求进度异常监控 日终，系统判断需求实际实施完成阶段与计划完成阶段是否存在异常，对于存在异常的需求，每天中午十二点发送进度异常邮件通知
      */
-   // @Scheduled(cron = "0 0 12 * * ?")
+     @Scheduled(cron = "0 0 12 * * ?")
     public void dailyAbnormalMonitor() {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
@@ -565,7 +565,7 @@ public class ReqMonitorTimer {
     // 需求预警 ：“需求定稿时间”或“UAT更新时间”或“测试完成时间”或“预投产时间”、“投产时间”小于1天，系统每日发送微信推送。
     // 日终，根据系统当前时间离关键里程碑计划完成时间剩余天数小于等于1且进度滞后于里程碑阶段的需求，每日上午8点-8点30分发送需求预警邮件通知
     //
-  //  @Scheduled(cron = "0 0 12 * * ?")
+      @Scheduled(cron = "0 0 12 * * ?")
     public void progressAlertPush() {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
@@ -589,7 +589,7 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getPrdFinshTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【需求定稿】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                             boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.pushTimeOutWarning(body);
                         }
                     }
 
@@ -602,7 +602,7 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getUatUpdateTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【UAT更新】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                             boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.pushTimeOutWarning(body);
                         }
                     }
 
@@ -615,7 +615,7 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getTestFinshTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【UAT测试完成】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                               boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.pushTimeOutWarning(body);
                         }
                     }
 
@@ -628,7 +628,7 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getPreTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【预投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                              boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.pushTimeOutWarning(body);
                         }
                     }
                 }
@@ -640,7 +640,7 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getExpPrdReleaseTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                               boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.pushTimeOutWarning(body);
                         }
                     }
                 }

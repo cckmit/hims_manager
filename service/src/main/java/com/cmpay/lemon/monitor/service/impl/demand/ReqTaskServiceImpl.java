@@ -35,7 +35,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -121,7 +122,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     IDemandResourceInvestedDao demandResourceInvestedDao;
     @Autowired
     DictionaryService dictionaryService;
-
+    @Autowired
+    IDefectDetailsExtDao defectDetailsDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -2067,6 +2069,91 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         timeAxisDataBO.setPreCurPeriod(req_peroid);
         timeAxisDataBO.setSelectTime(selectTime);
         return timeAxisDataBO;
+    }
+
+    @Override
+    public void defectMonthlyDownload(HttpServletResponse response) {
+        String startTime ="2020-07-01";
+        String endTime ="2020-07-16";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date parse=new Date();
+        try {
+            parse= sdf.parse(endTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar c = Calendar.getInstance();
+        c.setTime(parse);
+        c.add(Calendar.DATE, + 1);
+        Date time = c.getTime();
+        String preDay = sdf.format(time);
+
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+
+        defectDetailsDO.setStartTime(startTime);
+        defectDetailsDO.setEndTime(preDay);
+        List<DefectDetailsDO> defectDetailsList = defectDetailsDao.findByTime(defectDetailsDO);
+
+        HashMap<String,DefectMonthlyBO> defectMonthlyMap = new HashMap<>();
+        ArrayList<DefectMonthlyBO> defectMonthlyList = new ArrayList<>();
+        for(int i=0;i<defectDetailsList.size();i++){
+            if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
+                DemandJiraDO demandJiraDO = new DemandJiraDO();
+                demandJiraDao.find(demandJiraDO);
+                demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
+                // 根据jiraKey获取内部编号
+                List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
+                    // 根据内部编号获取 需求名及需求编号
+                    if(demandJiraDos!=null && demandJiraDos.size()!=0){
+                        if(JudgeUtils.isNull(defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey()))){
+                            DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+                            DefectMonthlyBO defectMonthlyBO = new DefectMonthlyBO();
+                            defectMonthlyBO.setReqNo(demandDO.getReqNo());
+                            defectMonthlyBO.setReqNm(demandDO.getReqNm());
+                            defectMonthlyBO.setReqPrdLine(demandDO.getReqPrdLine());
+                            defectMonthlyBO.setTotalWorkload(demandDO.getTotalWorkload());
+                            defectMonthlyBO.setReqMnger(demandDO.getReqMnger());
+                            defectMonthlyBO.setReqMngerDept(demandDO.getReqProDept());
+                            defectMonthlyBO.setDevelopmentLeader(demandDO.getDevpEng());
+                            defectMonthlyBO.setDevpLeadDept(demandDO.getDevpLeadDept());
+                            defectMonthlyBO.setDefectsNumber(1);
+                            defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
+                            defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
+                        }else{
+                            DefectMonthlyBO defectMonthlyBO = defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey());
+                            defectMonthlyBO.setDefectsNumber(defectMonthlyBO.getDefectsNumber()+1);
+                            defectMonthlyBO.setDefectRate(String.format("%.2f", (float) defectMonthlyBO.getDefectsNumber() / (float) defectMonthlyBO.getTotalWorkload() * 100)+"%");
+                            defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
+                        }
+
+                    }
+
+            }
+        }
+
+        for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
+
+            DefectMonthlyBO defectMonthlyBO = entry.getValue();
+            defectMonthlyList.add(defectMonthlyBO);
+
+        }
+        
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DefectMonthlyBO.class, defectMonthlyList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "reqTask_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
     }
 
     public String[] getTimeAxisData(int position) {

@@ -162,4 +162,6 @@ public interface ReqTaskService {
     void demandInputResourceStatistics();
 
     TimeAxisDataBO getTimeAxisData(String reqInnerSeq);
+
+    void defectMonthlyDownload(HttpServletResponse response);
 }
