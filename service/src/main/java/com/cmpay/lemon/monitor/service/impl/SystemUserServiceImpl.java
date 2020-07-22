@@ -283,6 +283,12 @@ public class SystemUserServiceImpl implements SystemUserService {
         if (JudgeUtils.isNull(roleIds)) {
             return;
         }
+        if (roleIds.toString().indexOf("10506") != -1) {
+            if(!SecurityUtils.getLoginName().equals("admin")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("非admin账号无法创建超级管理员");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         roleIds.forEach(id -> {
             UserRoleDO userRoleDO = new UserRoleDO();
             userRoleDO.setUserNo(userNo);
@@ -378,7 +384,12 @@ public class SystemUserServiceImpl implements SystemUserService {
         if (roleIds.size() <= 0) {
             return;
         }
-
+        if (roleIds.toString().indexOf("10506") != -1) {
+            if(!SecurityUtils.getLoginName().equals("admin")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("非admin账号无法创建超级管理员");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         roleIds.forEach(id -> {
             UserRoleDO userRoleDO = new UserRoleDO();
             userRoleDO.setUserNo(userNo);

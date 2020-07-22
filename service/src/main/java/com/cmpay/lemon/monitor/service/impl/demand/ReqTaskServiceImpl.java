@@ -2097,7 +2097,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         for(int i=0;i<defectDetailsList.size();i++){
             if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
-                demandJiraDao.find(demandJiraDO);
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
                 // 根据jiraKey获取内部编号
                 List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
@@ -2208,7 +2207,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         for(int i=0;i<defectDetailsList.size();i++){
             if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
-                demandJiraDao.find(demandJiraDO);
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
                 // 根据jiraKey获取内部编号
                 List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
@@ -2265,12 +2263,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
             DefectMonthlyBO defectMonthlyBO = entry.getValue();
-            defectMonthlyBO.setExecutionCaseNumber(100);
-            defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
-            defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
             //产品线转换
             String req_peroid = dictionaryService.findFieldValue("PRD_LINE", defectMonthlyBO.getReqPrdLine());
             defectMonthlyBO.setReqPrdLine(req_peroid);
+            //测试通过率 数据来源暂时无
+         /*  defectMonthlyBO.setExecutionCaseNumber(100);
+            defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
+            defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
+         */
+
             defectMonthlyList.add(defectMonthlyBO);
 
         }
