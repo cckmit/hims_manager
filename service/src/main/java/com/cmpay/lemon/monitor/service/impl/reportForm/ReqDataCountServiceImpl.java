@@ -3840,7 +3840,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             TestStatisticsRspBO testStatisticsRspBO = testDataStatisticsMap.get(m.getEpickey());
             if (JudgeUtils.isNull(testStatisticsRspBO)) {
                 TestStatisticsRspBO testStatisticsRspBO1 = new TestStatisticsRspBO();
-                testStatisticsRspBO1.setDate(workingHoursDO.getStartTime() + "-" + workingHoursDO.getEndTime());
+                testStatisticsRspBO1.setPeriod(workingHoursDO.getStartTime() + "---" + workingHoursDO.getEndTime());
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 demandJiraDO.setJiraKey(m.getEpickey());
                 // 根据jiraKey获取内部编号
@@ -4184,7 +4184,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                  c.setTime(month1);
                  c.add(Calendar.MONTH, i-5);
                  String month2 = simpleDateFormatMonth.format(c.getTime());
-                 System.err.println(month2);
                  months[i]=month2;
              } catch (Exception e) {
                  //todo  时间格式不对

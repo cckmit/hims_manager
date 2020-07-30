@@ -1,7 +1,7 @@
 package com.cmpay.lemon.monitor.dto;
 
 public class TestStatisticsDTO {
-    String date;
+    String period;
     String demandName;
     int caseWritingNumber;
     int caseExecutionNumber;
@@ -11,12 +11,12 @@ public class TestStatisticsDTO {
 
     String workingHours;
 
-    public String getDate() {
-        return date;
+    public String getPeriod() {
+        return period;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setPeriod(String period) {
+        this.period = period;
     }
 
     public String getDemandName() {
