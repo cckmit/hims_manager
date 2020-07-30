@@ -16,11 +16,13 @@
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
         <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
+        <result column="product_line" property="productLine" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant, 
-        defects_department, registration_date, defect_details, assignee, test_number, security_level
+        defects_department, registration_date, defect_details, assignee, test_number, security_level, 
+        product_line
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -77,6 +79,9 @@
             <if test="securityLevel != null" >
                 security_level,
             </if>
+            <if test="productLine != null" >
+                product_line,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jireKey != null" >
@@ -117,6 +122,9 @@
             </if>
             <if test="securityLevel != null" >
                 #{securityLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="productLine != null" >
+                #{productLine,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -159,6 +167,9 @@
             </if>
             <if test="securityLevel != null" >
                 security_level = #{securityLevel,jdbcType=VARCHAR},
+            </if>
+            <if test="productLine != null" >
+                product_line = #{productLine,jdbcType=VARCHAR},
             </if>
         </set>
         where jire_key = #{jireKey,jdbcType=VARCHAR}
@@ -207,6 +218,9 @@
             </if>
             <if test="securityLevel != null" >
                 and security_level = #{securityLevel,jdbcType=VARCHAR}
+            </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

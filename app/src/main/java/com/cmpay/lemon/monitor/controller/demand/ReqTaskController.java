@@ -268,7 +268,6 @@ public class ReqTaskController {
     public GenericRspDTO approvalProcess(HttpServletRequest request, GenericDTO<NoBody> req) {
         MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
         String ids = request.getParameter("ids");
-        System.err.println(ids + "==="+file.getOriginalFilename());
         reqTaskService.approvalProcess(file,ids);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }

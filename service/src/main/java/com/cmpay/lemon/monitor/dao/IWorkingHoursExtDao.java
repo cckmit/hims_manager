@@ -120,4 +120,6 @@ public interface IWorkingHoursExtDao extends IWorkingHoursDao{
      *
      */
     List<WorkingHoursDO> getDemandHoursRole(WorkingHoursDO workingHoursDO);
+
+    List<WorkingHoursDO>  queryByTimeCycle(WorkingHoursDO workingHoursDO);
 }

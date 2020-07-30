@@ -1,8 +1,8 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2020-07-03 15:25:50
+ * @Date 2020-07-23 11:32:44
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -89,6 +89,38 @@ public class WorkingHoursDO extends BaseDO {
      * @Fields roletype 角色类型
      */
     private String roletype;
+    /**
+     * @Fields caseWritingNumber 案例编写数
+     */
+    private int caseWritingNumber;
+    /**
+     * @Fields caseExecutionNumber 案例执行数
+     */
+    private int caseExecutionNumber;
+    /**
+     * @Fields caseCompletedNumber 案例完成数
+     */
+    private int caseCompletedNumber;
+
+    /**
+     * @Fields 开始时间
+     */
+    private String startTime;
+    /**
+     * @Fields 结束时间
+     */
+    private String endTime;
+    public int getCaseWritingNumber() {
+        return caseWritingNumber;
+    }
+
+    public void setCaseWritingNumber(int caseWritingNumber) {
+        this.caseWritingNumber = caseWritingNumber;
+    }
+
+    public int getCaseExecutionNumber() {
+        return caseExecutionNumber;
+    }
 
     public String getJiraworklogkey() {
         return jiraworklogkey;
@@ -234,6 +266,23 @@ public class WorkingHoursDO extends BaseDO {
         this.roletype = roletype;
     }
 
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
     public String getWorkHoursToString() {
         return "{'value': '"+getWorkHours(timespnet)+"', 'name': '"+roletype+"'}";
     }
@@ -264,5 +313,17 @@ public class WorkingHoursDO extends BaseDO {
                 ", registerflag='" + registerflag + '\'' +
                 ", roletype='" + roletype + '\'' +
                 '}';
+    }
+
+    public void setCaseExecutionNumber(int caseExecutionNumber) {
+        this.caseExecutionNumber = caseExecutionNumber;
+    }
+
+    public int getCaseCompletedNumber() {
+        return caseCompletedNumber;
+    }
+
+    public void setCaseCompletedNumber(int caseCompletedNumber) {
+        this.caseCompletedNumber = caseCompletedNumber;
     }
 }

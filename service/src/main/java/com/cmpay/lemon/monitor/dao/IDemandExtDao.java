@@ -83,4 +83,6 @@ public interface IDemandExtDao extends IDemandDao {
 
     List<DemandDO> findListDeptDemand(WorkingHoursDO workingHoursDO);
     List<DemandDO> findListDevpCoorDeptDemand(WorkingHoursDO workingHoursDO);
+
+    List<DemandDO> QueryIsExecutingDemand(DemandDO demandDO);
 }

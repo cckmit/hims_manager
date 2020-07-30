@@ -18,5 +18,5 @@ public interface IDefectDetailsExtDao extends IDefectDetailsDao {
     List<DefectDetailsDO> findList(DefectDetailsDO entity);
     List<DefectDetailsDO> findWeekList(DefectDetailsDO entity);
     List<DefectDetailsDO> findByTime(DefectDetailsDO entity);
-
+    List<DefectDetailsDO> findUnfinishedDefects(DefectDetailsDO entity);
 }

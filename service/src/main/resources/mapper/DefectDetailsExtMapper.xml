@@ -16,11 +16,12 @@
         <result column="assignee" property="assignee" jdbcType="VARCHAR" />
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
         <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
+        <result column="product_line" property="productLine" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
-        defects_department, registration_date, defect_details, assignee, test_number, security_level
+        defects_department, registration_date, defect_details, assignee, test_number, security_level, product_line
     </sql>
 
     <select id="findNotCompleted" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -61,6 +62,9 @@
             </if>
             <if test="testNumber != null" >
                 and test_number = #{testNumber,jdbcType=INTEGER}
+            </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
@@ -106,6 +110,9 @@
             <if test="testNumber != null" >
                 and test_number = #{testNumber,jdbcType=VARCHAR}
             </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
         </where>
     </select>
     <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -149,6 +156,9 @@
             <if test="testNumber != null" >
                 and test_number = #{testNumber,jdbcType=VARCHAR}
             </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
         </where>
     </select>
 
@@ -187,15 +197,61 @@
             <if test="assignee != null" >
                 and assignee = #{assignee,jdbcType=VARCHAR}
             </if>
-            <if test="testNumber != null" >
-                and test_number = #{testNumber,jdbcType=INTEGER}
-            </if>
             <if test="securityLevel != null" >
                 and security_level = #{securityLevel,jdbcType=VARCHAR}
+            </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
             <if test="startTime != null and endTime != null" >
                 and registration_date between #{startTime,jdbcType=DATE} and #{endTime,jdbcType=DATE}
             </if>
         </where>
     </select>
+
+    <select id="findUnfinishedDefects" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_defect_details
+        <where >
+            defect_status not in ('关闭','完成')
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="defectName != null" >
+                and defect_name = #{defectName,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="defectType != null" >
+                and defect_type = #{defectType,jdbcType=VARCHAR}
+            </if>
+            <if test="defectStatus != null" >
+                and defect_status = #{defectStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="defectRegistrant != null" >
+                and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null" >
+                and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="defectDetails != null" >
+                and defect_details = #{defectDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+            <if test="securityLevel != null" >
+                and security_level = #{securityLevel,jdbcType=VARCHAR}
+            </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
 </mapper>

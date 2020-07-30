@@ -238,8 +238,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             demandChangeDetailsBO.setReqNo("");
             DemandStateHistoryRspBO demandStateHistoryRspBO =reqTaskService.findDemandChangeDetails(demandChangeDetailsBO);
             List<DemandStateHistoryBO> demandStateHistoryBOList =demandStateHistoryRspBO.getDemandStateHistoryBOList();
-            if(demandStateHistoryBOList != null){
-                System.err.println(demandStateHistoryBOList);
+            if(JudgeUtils.isNotEmpty(demandStateHistoryBOList) ){
                 DemandStateHistoryBO demandStateHistoryBO = demandStateHistoryBOList.get(demandStateHistoryBOList.size()-1);
                 demandBOList.get(i).setRemarks(demandStateHistoryBO.getRemarks());
             }

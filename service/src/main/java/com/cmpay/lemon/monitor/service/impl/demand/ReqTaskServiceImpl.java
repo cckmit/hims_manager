@@ -92,6 +92,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Autowired
     private IJiraDepartmentDao jiraDepartmentDao;
     @Autowired
+    IJiraBasicInfoDao jiraBasicInfoDao;
+    @Autowired
     private ITPermiDeptDao permiDeptDao;
 
     @Autowired
@@ -2096,6 +2098,12 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         ArrayList<DefectMonthlyBO> defectMonthlyList = new ArrayList<>();
         for(int i=0;i<defectDetailsList.size();i++){
             if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
+                if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-2802")){
+                    defectDetailsList.get(i).setEpicKey("CMPAY-2058");
+                }
+                if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-1040")){
+                    defectDetailsList.get(i).setEpicKey("CMPAY-999");
+                }
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
                 // 根据jiraKey获取内部编号
@@ -2146,16 +2154,25 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                             defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
                         }
 
+                    }else{
+                        System.err.println(2);
                     }
 
+            }else{
+                System.err.println(1);
             }
         }
 
         for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
             DefectMonthlyBO defectMonthlyBO = entry.getValue();
-            defectMonthlyBO.setExecutionCaseNumber(100);
+
+            //测试通过率 数据来源暂时无
+            //defectMonthlyBO.setExecutionCaseNumber(Integer.parseInt(jiraBasicInfoDO.getTestCaseNumber()));
+          /*
             defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
             defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
+         */
+
             //产品线转换
             String req_peroid = dictionaryService.findFieldValue("PRD_LINE", defectMonthlyBO.getReqPrdLine());
             defectMonthlyBO.setReqPrdLine(req_peroid);
@@ -2201,16 +2218,24 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         defectDetailsDO.setStartTime(defectStartTime);
         defectDetailsDO.setEndTime(preDay);
         List<DefectDetailsDO> defectDetailsList = defectDetailsDao.findByTime(defectDetailsDO);
-
         HashMap<String,DefectMonthlyBO> defectMonthlyMap = new HashMap<>();
         List<DefectMonthlyBO> defectMonthlyList = new ArrayList<>();
         for(int i=0;i<defectDetailsList.size();i++){
             if(JudgeUtils.isNotBlank( defectDetailsList.get(i).getEpicKey())){
+                if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-2802")){
+                    defectDetailsList.get(i).setEpicKey("CMPAY-2058");
+                }
+                if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-1040")){
+                    defectDetailsList.get(i).setEpicKey("CMPAY-999");
+                }
+
+
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
                 // 根据jiraKey获取内部编号
                 List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
                 // 根据内部编号获取 需求名及需求编号
+
                 if(demandJiraDos!=null && demandJiraDos.size()!=0){
                     if(JudgeUtils.isNull(defectMonthlyMap.get(defectDetailsList.get(i).getEpicKey()))){
                         DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
@@ -2256,6 +2281,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                         defectMonthlyMap.put(defectDetailsList.get(i).getEpicKey(),defectMonthlyBO);
                     }
 
+                }else{
+                    System.err.println(defectDetailsList.get(i).getEpicKey());
                 }
             }
 
@@ -2263,11 +2290,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         for (Map.Entry<String, DefectMonthlyBO> entry : defectMonthlyMap.entrySet()) {
             DefectMonthlyBO defectMonthlyBO = entry.getValue();
+            String key = entry.getKey();
             //产品线转换
             String req_peroid = dictionaryService.findFieldValue("PRD_LINE", defectMonthlyBO.getReqPrdLine());
             defectMonthlyBO.setReqPrdLine(req_peroid);
+
+
+
             //测试通过率 数据来源暂时无
-         /*  defectMonthlyBO.setExecutionCaseNumber(100);
+            //defectMonthlyBO.setExecutionCaseNumber(Integer.parseInt(jiraBasicInfoDO.getTestCaseNumber()));
+          /*
             defectMonthlyBO.setSuccessCaseNumber(defectMonthlyBO.getExecutionCaseNumber()-defectMonthlyBO.getDefectsNumber());
             defectMonthlyBO.setTestPassRate(String.format("%.2f", (float) defectMonthlyBO.getSuccessCaseNumber() / (float) defectMonthlyBO.getExecutionCaseNumber() * 100)+"%");
          */

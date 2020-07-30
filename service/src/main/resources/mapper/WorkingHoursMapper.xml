@@ -22,12 +22,15 @@
         <result column="epicCreator" property="epiccreator" jdbcType="VARCHAR" />
         <result column="registerFlag" property="registerflag" jdbcType="VARCHAR" />
         <result column="roleType" property="roletype" jdbcType="VARCHAR" />
+        <result column="case_writing_number" property="caseWritingNumber" jdbcType="INTEGER" />
+        <result column="case_execution_number" property="caseExecutionNumber" jdbcType="INTEGER" />
+        <result column="case_completed_number" property="caseCompletedNumber" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jiraWorklogKey, issuekey, timeSpnet, subtaskName, assignment_department, name, displayName, 
         devp_lead_dept, comment, createdTime, startedTime, updatedTime, epicKey, epicCreator, 
-        registerFlag, roleType
+        registerFlag, roleType, case_writing_number, case_execution_number, case_completed_number
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -93,6 +96,15 @@
             <if test="roletype != null" >
                 roleType,
             </if>
+            <if test="caseWritingNumber != null" >
+                case_writing_number,
+            </if>
+            <if test="caseExecutionNumber != null" >
+                case_execution_number,
+            </if>
+            <if test="caseCompletedNumber != null" >
+                case_completed_number,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jiraworklogkey != null" >
@@ -142,6 +154,15 @@
             </if>
             <if test="roletype != null" >
                 #{roletype,jdbcType=VARCHAR},
+            </if>
+            <if test="caseWritingNumber != null" >
+                #{caseWritingNumber,jdbcType=INTEGER},
+            </if>
+            <if test="caseExecutionNumber != null" >
+                #{caseExecutionNumber,jdbcType=INTEGER},
+            </if>
+            <if test="caseCompletedNumber != null" >
+                #{caseCompletedNumber,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -193,6 +214,15 @@
             </if>
             <if test="roletype != null" >
                 roleType = #{roletype,jdbcType=VARCHAR},
+            </if>
+            <if test="caseWritingNumber != null" >
+                case_writing_number = #{caseWritingNumber,jdbcType=INTEGER},
+            </if>
+            <if test="caseExecutionNumber != null" >
+                case_execution_number = #{caseExecutionNumber,jdbcType=INTEGER},
+            </if>
+            <if test="caseCompletedNumber != null" >
+                case_completed_number = #{caseCompletedNumber,jdbcType=INTEGER},
             </if>
         </set>
         where jiraWorklogKey = #{jiraworklogkey,jdbcType=VARCHAR}

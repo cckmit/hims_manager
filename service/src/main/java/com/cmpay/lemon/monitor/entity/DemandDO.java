@@ -26,7 +26,7 @@ public class DemandDO extends BaseDO {
     private String reqNm;
     @Excel(name = "需求描述")
     private String reqDesc;
-    @Excel(name = "工作量预估（人天）")
+    @Excel(name = "总工作量预估（人天）")
     private double expInput;
     @Excel(name = "是否核减")
     private String isCut;

@@ -1548,5 +1548,21 @@
         </where>
         ORDER BY a.req_inner_seq desc
     </select>
+    <select id="QueryIsExecutingDemand" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_demand_info a
+        where	req_sts not in ('10','30','40','60')
+        <if test="reqNm != null and reqNm != ''">
+            AND   a.req_nm =#{reqNm}
+        </if>
+        <if test="reqNo != null and reqNo != ''">
+            AND   OR a.req_no = #{reqNo}
+        </if>
+        <if test="reqImplMon != null and reqImplMon != ''">
+            AND a.req_impl_mon =#{reqImplMon}
+        </if>
+        group by a.req_nm,a.req_no,req_impl_mon
+    </select>
 
 </mapper>

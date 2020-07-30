@@ -2,7 +2,7 @@
  * @ClassName DefectDetailsDO
  * @Description 
  * @version 1.0
- * @Date 2020-07-20 10:05:31
+ * @Date 2020-07-28 10:01:54
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -63,7 +63,10 @@ public class DefectDetailsDO extends BaseDO {
      * @Fields securityLevel 缺陷严重级别（致命 严重 一般 轻微）
      */
     private String securityLevel;
-
+    /**
+     * @Fields productLine 缺陷归属产品线
+     */
+    private String productLine;
     private String startTime;
 
     private String endTime;
@@ -186,5 +189,13 @@ public class DefectDetailsDO extends BaseDO {
 
     public void setSecurityLevel(String securityLevel) {
         this.securityLevel = securityLevel;
+    }
+
+    public String getProductLine() {
+        return productLine;
+    }
+
+    public void setProductLine(String productLine) {
+        this.productLine = productLine;
     }
 }

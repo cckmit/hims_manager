@@ -9,6 +9,7 @@ import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.dao.IMonthWorkdayDao;
 import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao;
+import com.cmpay.lemon.monitor.dao.IUserExtDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
@@ -50,7 +51,8 @@ public class ReqMonitorTimer {
     IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsDao;
     @Autowired
     IMonthWorkdayDao monthWorkdayDao;
-
+    @Autowired
+    IUserExtDao userExtDao;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -84,6 +86,7 @@ public class ReqMonitorTimer {
         }
         reqTaskService.demandInputResourceStatistics();
     }
+
     /**
      * 每周一更新投产时间
      */
@@ -588,8 +591,16 @@ public class ReqMonitorTimer {
                     } else {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getPrdFinshTm());
                         if (date == 1) {
+                            String deptManagerName = operationProductionService.findDeptManager(m.getDevpLeadDept()).getDeptManagerName();
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(deptManagerName);
+                            List<UserDO> userDOS = userExtDao.find(userDO);
+                            String username ="";
+                            if(JudgeUtils.isNotEmpty(userDOS)){
+                                username = userDOS.get(0).getUsername();
+                            }
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【需求定稿】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                            boardcastScheduler.pushTimeOutWarning(body);
+                            boardcastScheduler.verificationCompleteReminder(username,body);
                         }
                     }
 
@@ -602,7 +613,15 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getUatUpdateTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【UAT更新】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                            boardcastScheduler.pushTimeOutWarning(body);
+                            String deptManagerName = operationProductionService.findDeptManager(m.getDevpLeadDept()).getDeptManagerName();
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(deptManagerName);
+                            List<UserDO> userDOS = userExtDao.find(userDO);
+                            String username ="";
+                            if(JudgeUtils.isNotEmpty(userDOS)){
+                                username = userDOS.get(0).getUsername();
+                            }
+                            boardcastScheduler.verificationCompleteReminder(username,body);
                         }
                     }
 
@@ -615,7 +634,15 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getTestFinshTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【UAT测试完成】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                            boardcastScheduler.pushTimeOutWarning(body);
+                            String deptManagerName = operationProductionService.findDeptManager(m.getDevpLeadDept()).getDeptManagerName();
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(deptManagerName);
+                            List<UserDO> userDOS = userExtDao.find(userDO);
+                            String username ="";
+                            if(JudgeUtils.isNotEmpty(userDOS)){
+                                username = userDOS.get(0).getUsername();
+                            }
+                            boardcastScheduler.verificationCompleteReminder(username,body);
                         }
                     }
 
@@ -628,7 +655,15 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getPreTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【预投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                            boardcastScheduler.pushTimeOutWarning(body);
+                            String deptManagerName = operationProductionService.findDeptManager(m.getDevpLeadDept()).getDeptManagerName();
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(deptManagerName);
+                            List<UserDO> userDOS = userExtDao.find(userDO);
+                            String username ="";
+                            if(JudgeUtils.isNotEmpty(userDOS)){
+                                username = userDOS.get(0).getUsername();
+                            }
+                            boardcastScheduler.verificationCompleteReminder(username,body);
                         }
                     }
                 }
@@ -640,7 +675,15 @@ public class ReqMonitorTimer {
                         int date = dateDifference(DateUtil.date2String(new Date(), "yyyy-MM-dd"), m.getExpPrdReleaseTm());
                         if (date == 1) {
                             String body = "主导部门:" + m.getDevpLeadDept() + "\n" + "需求编号:" + m.getReqNo() + "\n" + m.getReqNm() + "\n" + "计划于明日达到阶段性目标【投产】，请按时更新状态或提交文档，若计划有变，请及时变更";
-                            boardcastScheduler.pushTimeOutWarning(body);
+                            String deptManagerName = operationProductionService.findDeptManager(m.getDevpLeadDept()).getDeptManagerName();
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(deptManagerName);
+                            List<UserDO> userDOS = userExtDao.find(userDO);
+                            String username ="";
+                            if(JudgeUtils.isNotEmpty(userDOS)){
+                                username = userDOS.get(0).getUsername();
+                            }
+                            boardcastScheduler.verificationCompleteReminder(username,body);
                         }
                     }
                 }

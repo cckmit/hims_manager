@@ -22,7 +22,13 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import static java.util.regex.Pattern.*;
 
 @Service
 public class JiraDataCollationServiceImpl implements JiraDataCollationService {
@@ -82,7 +88,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 try {
                         JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
                         this.registerJiraBasicInfo(jiraTaskBodyBO);
-                        this.registerWorklogs(jiraTaskBodyBO);
+                       this.registerWorklogs(jiraTaskBodyBO);
                         epicList.add(jiraTaskBodyBO.getEpicKey());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -287,6 +293,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         jiraBasicInfoDO.setDescription(jiraTaskBodyBO.getIssueName());
         jiraBasicInfoDO.setEpickey(jiraTaskBodyBO.getEpicKey());
         jiraBasicInfoDO.setParenttaskkey(jiraTaskBodyBO.getParentTaskKey());
+        jiraBasicInfoDO.setTestCaseNumber(jiraTaskBodyBO.getTestCaseNumber());
         if (JudgeUtils.isBlank(jiraTaskBodyBO.getEpicKey())) {
             JiraBasicInfoDO jiraBasicInfoDO1 = new JiraBasicInfoDO();
             jiraBasicInfoDO1.setJirakey(jiraTaskBodyBO.getParentTaskKey());
@@ -301,6 +308,11 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraBasicInfoDO1.setJirakey(jiraTaskBodyBO.getEpicKey());
             List<JiraBasicInfoDO> jiraBasicInfoDOS = jiraBasicInfoDao.find(jiraBasicInfoDO1);
             jiraTaskBodyBO.setEpicCreator(jiraBasicInfoDOS.get(0).getCreator());
+            //若为测试主任务需要将测试总案例数同步赋值epic信息
+            if(jiraTaskBodyBO.getJiraType().equals("测试主任务")&&JudgeUtils.isNotBlank(jiraBasicInfoDO.getTestCaseNumber())){
+                jiraBasicInfoDOS.get(0).setTestCaseNumber(jiraBasicInfoDO.getTestCaseNumber());
+                jiraBasicInfoDao.update(jiraBasicInfoDOS.get(0));
+            }
         }
         if (jiraTaskBodyBO.getJiraType().equals("测试主任务")) {
             jiraBasicInfoDO.setDepartment("产品测试团队");
@@ -338,6 +350,18 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 defectDetailsDO.setDefectDetails(jiraTaskBodyBO.getDefectDetails());
                 defectDetailsDO.setTestNumber(jiraTaskBodyBO.getRetestTimes());
                 defectDetailsDO.setDefectName(jiraTaskBodyBO.getDefectName());
+                //缺陷归属产品线
+                if(JudgeUtils.isNotBlank(defectDetailsDO.getEpicKey())){
+                    DemandJiraDO demandJiraDO = new DemandJiraDO();
+                    demandJiraDO.setJiraKey(defectDetailsDO.getEpicKey());
+                    // 根据epicKey获取内部编号
+                    List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
+                    if(JudgeUtils.isNotEmpty(demandJiraDos)){
+                        DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+                        defectDetailsDO.setProductLine(demandDO.getReqPrdLine());
+                    }
+                }
+
                 DefectDetailsDO defectDetailsDO1 = defectDetailsDao.get(defectDetailsDO.getJireKey());
                 if (JudgeUtils.isNull(defectDetailsDO1)) {
                     defectDetailsDao.insert(defectDetailsDO);
@@ -409,7 +433,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraWorklogDO.setIssuekey(jiraTaskBodyBO.getJiraKey());
             jiraWorklogDO.setName(worklogs.get(i).getName());
             jiraWorklogDO.setDisplayname(worklogs.get(i).getDisplayname());
-            // jiraWorklogDO.setComment(worklogs.get(i).getComment());
+            jiraWorklogDO.setComment(worklogs.get(i).getComment());
             jiraWorklogDO.setCreatedtime(worklogs.get(i).getCreatedtime());
             jiraWorklogDO.setUpdatedtime(worklogs.get(i).getUpdatedtime());
             jiraWorklogDO.setStartedtime(worklogs.get(i).getStartedtime());
@@ -467,7 +491,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
                 workingHoursDO.setDisplayname(jiraWorklogDO.getDisplayname());
                 workingHoursDO.setTimespnet(jiraWorklogDO.getTimespnet());
-                //workingHoursDO.setAssignmentDepartment();
                 if (StringUtils.isNotBlank(jiraTaskBodyBO.getDepartment())) {
                     workingHoursDO.setDevpLeadDept(jiraTaskBodyBO.getDepartment());
                 } else {
@@ -475,6 +498,40 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     workingHoursDO.setDevpLeadDept(userDO.getDepartment());
                 }
                 workingHoursDO.setComment(jiraWorklogDO.getComment());
+                //工作备注不为空   且是在测试子任务下
+                if(JudgeUtils.isNotBlank(jiraWorklogDO.getComment())){
+                    if(jiraTaskBodyBO.getJiraType().equals("测试子任务")){
+                        if(jiraTaskBodyBO.getIssueName().indexOf("【测试案例编写】")!=-1){
+                            String[] split = jiraWorklogDO.getComment().split("#");
+                            if(split.length==3){
+                                Pattern pattern = compile("^[-\\+]?[\\d]*$");
+                                if(split[1].equals("测试案例编写数")&&pattern.matcher(split[2]).matches()){
+                                    workingHoursDO.setCaseWritingNumber(Integer.parseInt(split[2]));
+                                }else{
+                                    workingHoursDO.setCaseWritingNumber(0);
+                                }
+                            }
+                        }
+                        if(jiraTaskBodyBO.getIssueName().indexOf("【测试案例执行】")!=-1){
+                            String[] split = jiraWorklogDO.getComment().split("#");
+                            Pattern pattern = compile("^[-\\+]?[\\d]*$");
+                            for(int j=0;j<split.length-1;j++){
+                                if(split[j].equals("测试案例执行数")&&pattern.matcher(split[j+1]).matches()){
+                                    workingHoursDO.setCaseExecutionNumber(Integer.parseInt(split[j+1]));
+                                }else{
+                                    workingHoursDO.setCaseExecutionNumber(0);
+                                }
+                                if(split[j].equals("测试案例完成数")&&pattern.matcher(split[j+1]).matches()){
+                                    workingHoursDO.setCaseCompletedNumber(Integer.parseInt(split[j+1]));
+                                }else{
+                                    workingHoursDO.setCaseCompletedNumber(0);
+                                }
+                            }
+                        }
+                    }
+
+                }
+
                 workingHoursDO.setCreatedtime(jiraWorklogDO.getCreatedtime());
                 workingHoursDO.setStartedtime(jiraWorklogDO.getStartedtime());
                 workingHoursDO.setUpdatedtime(jiraWorklogDO.getUpdatedtime());
@@ -487,9 +544,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 UserRoleDO userRoleDO = new UserRoleDO();
                 userRoleDO.setUserNo(userbyLoginName.getUserNo());
                 //测试
-                userRoleDO.setRoleId((long) 41001);
-                List<UserRoleDO> userRoleDOS = userRoleExtDao.find(userRoleDO);
-                if (JudgeUtils.isNotEmpty(userRoleDOS)) {
+                List<UserRoleDO> userRoleDOS = new LinkedList<>();
+                if ( workingHoursDO1.getDevpLeadDept().equals("产品测试团队")) {
                     workingHoursDO.setRoletype("测试人员");
                 } else {
                     userRoleDO.setRoleId((long) 5002);

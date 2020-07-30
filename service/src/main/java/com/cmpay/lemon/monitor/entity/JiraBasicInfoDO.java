@@ -2,7 +2,7 @@
  * @ClassName JiraBasicInfoDO
  * @Description 
  * @version 1.0
- * @Date 2020-06-30 14:26:53
+ * @Date 2020-07-22 16:14:49
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -59,6 +59,10 @@ public class JiraBasicInfoDO extends BaseDO {
      * @Fields planendtime 计划完成时间
      */
     private String planendtime;
+    /**
+     * @Fields testCaseNumber 测试案例总数
+     */
+    private String testCaseNumber;
 
     public String getJirakey() {
         return jirakey;
@@ -154,5 +158,13 @@ public class JiraBasicInfoDO extends BaseDO {
 
     public void setPlanendtime(String planendtime) {
         this.planendtime = planendtime;
+    }
+
+    public String getTestCaseNumber() {
+        return testCaseNumber;
+    }
+
+    public void setTestCaseNumber(String testCaseNumber) {
+        this.testCaseNumber = testCaseNumber;
     }
 }

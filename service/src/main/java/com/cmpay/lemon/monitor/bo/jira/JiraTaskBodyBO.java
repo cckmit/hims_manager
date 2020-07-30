@@ -116,6 +116,18 @@ public class JiraTaskBodyBO {
      *安全级别
      */
     String securityLevel;
+    /*
+     *测试案例总数
+     */
+    String testCaseNumber;
+
+    public String getTestCaseNumber() {
+        return testCaseNumber;
+    }
+
+    public void setTestCaseNumber(String testCaseNumber) {
+        this.testCaseNumber = testCaseNumber;
+    }
 
     public String getSecurityLevel() {
         return securityLevel;

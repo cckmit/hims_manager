@@ -38,7 +38,6 @@ public class BoardcastScheduler {
         boardcastExecutor.getAccessToken(corpid, corpsecret);
         // 投产日期定时变动提醒 未收到则需要注意本周投产时是否转入
         boardcastExecutor.sendTextMessage("@all", body);
-
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
