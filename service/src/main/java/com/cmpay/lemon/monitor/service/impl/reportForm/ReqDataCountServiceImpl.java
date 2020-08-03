@@ -3939,7 +3939,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                         preCurPeriod = Integer.parseInt(demandDOS1.get(j).getPreCurPeriod());
                     }
                     //月初阶段未到uat测试  当前阶段已经达到完成uat测试的需求 的工作量计算
-                    if(preMonPeriod>140||preCurPeriod<140){
+                    if(preMonPeriod>=140||preCurPeriod<140){
                             continue;
                     }
                     workload=workload+demandDOS1.get(j).getTotalWorkload();
@@ -4008,7 +4008,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                         preCurPeriod = Integer.parseInt(demandDOS1.get(j).getPreCurPeriod());
                     }
                     //月初阶段未到uat测试  当前阶段已经达到完成uat测试的需求 的工作量计算
-                    if(preMonPeriod>140||preCurPeriod<140){
+                    if(preMonPeriod>=140||preCurPeriod<140){
                         continue;
                     }
                     workload=workload+demandDOS1.get(j).getTotalWorkload();
@@ -4060,7 +4060,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     preMonPeriod= Integer.parseInt(m.getPreMonPeriod());
                 }
                 //若月初状态已经为测试完成 ，及上月已经测试完成则不展示
-                if(preMonPeriod>140){
+                if(preMonPeriod>=140){
                     return;
                 }
                 DemandTestStatusBO demandTestStatusBO = new DemandTestStatusBO();
@@ -4219,6 +4219,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
     @Override
     public OnlineLeakageRateBO getDeptDefectRate(String devpLeadDept, String month) {
+        //获得6个月周期的月份
         SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM");
         String[] months = new String[6];
         months[5]=month;
@@ -4238,6 +4239,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         }
         String[] leakageRate = new String[6];
         for(int i=0;i<months.length;i++){
+            //按照月份，部门查找需求
             DemandDO demandDO1 = new DemandDO();
             demandDO1.setReqImplMon(months[i]);
             demandDO1.setDevpLeadDept(devpLeadDept);
@@ -4257,7 +4259,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                         preCurPeriod = Integer.parseInt(demandDOS.get(j).getPreCurPeriod());
                     }
                     //月初阶段未到uat测试  当前阶段已经达到完成uat测试的需求 的工作量计算
-                    if(preMonPeriod>140||preCurPeriod<140){
+                    if(preMonPeriod>=140||preCurPeriod<140){
                         continue;
                     }
                     workload=workload+demandDOS.get(j).getTotalWorkload();
@@ -4272,11 +4274,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
                     defectDetailsDO.setEpicKey(jiraKey);
                     List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.find(defectDetailsDO);
+                    //缺陷数增加
                     defectsNumber=defectsNumber+defectDetailsDOList.size();
                 }
             }
-            System.err.println(defectsNumber);
-            System.err.println(workload);
             if(workload==0||defectsNumber==0){
                 leakageRate[i]="0";
             }else{
