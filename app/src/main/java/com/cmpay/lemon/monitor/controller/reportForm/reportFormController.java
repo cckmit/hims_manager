@@ -960,6 +960,7 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, defectMonthlyRspDTO);
 	}
 
+	//测试统计汇总表
 	@RequestMapping("/testStatisticsList")
 	public GenericRspDTO<TestStatisticsRspDTO> testStatisticsList(@RequestBody TestStatisticsReqDTO reqDTO) {
 		TestStatisticsBO testStatisticsBO = new TestStatisticsBO();

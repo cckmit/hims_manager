@@ -58,6 +58,7 @@ public class JiraUtil {
         return jiraTaskBodyBO;
     }
 
+    //解析jira  返回json
     private static JiraTaskBodyBO getJiraTaskBodyBO(JSONObject object) {
         JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
         //获取jirakey

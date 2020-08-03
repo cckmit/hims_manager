@@ -3831,13 +3831,17 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         if (destStatisticsBO.getQueryFlag().equals("personal")) {
             workingHoursDO.setDisplayname(destStatisticsBO.getPersonName());
         }
+        //查出登记工时list
         List<WorkingHoursDO> workingHoursList = iWorkingHoursDao.queryByTimeCycle(workingHoursDO);
+        //利用maq去重
         HashMap<String, TestStatisticsRspBO> testDataStatisticsMap = new HashMap<>();
         workingHoursList.forEach(m -> {
             if (JudgeUtils.isBlank(m.getEpickey())) {
                 return;
             }
+
             TestStatisticsRspBO testStatisticsRspBO = testDataStatisticsMap.get(m.getEpickey());
+            //为空新建，不为空则累计数据
             if (JudgeUtils.isNull(testStatisticsRspBO)) {
                 TestStatisticsRspBO testStatisticsRspBO1 = new TestStatisticsRspBO();
                 testStatisticsRspBO1.setPeriod(workingHoursDO.getStartTime() + "---" + workingHoursDO.getEndTime());

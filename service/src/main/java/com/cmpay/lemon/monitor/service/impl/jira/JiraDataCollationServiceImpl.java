@@ -74,6 +74,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     public void getIssueModifiedWithinOneDay() {
         List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
         int i = 0;
+        //拉取一定时间内有过修改的jira任务内容
         while (true) {
             List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay(i);
             if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
@@ -86,9 +87,12 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
                 try {
+                    //依据jiraKey查找jira详情数据
                         JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                        //登记jira基础表，缺陷任务和问题登记
                         this.registerJiraBasicInfo(jiraTaskBodyBO);
-                       this.registerWorklogs(jiraTaskBodyBO);
+                        //工时处理
+                        this.registerWorklogs(jiraTaskBodyBO);
                         epicList.add(jiraTaskBodyBO.getEpicKey());
                 } catch (Exception e) {
                     e.printStackTrace();

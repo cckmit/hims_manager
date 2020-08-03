@@ -77,7 +77,9 @@ public class ReqMonitorTimer {
         }
         jiraDataCollationService.getIssueModifiedWithinOneDay();
     }
-
+    /**
+     * 需求累计投入资源
+     */
     @Scheduled(cron = "0 0 1 * * ?")
     public void demandInputResourceStatistics() {
         //如果是dev环境则不处理
