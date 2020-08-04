@@ -12,6 +12,9 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.jira.CreateIssueResponseBO;
+import com.cmpay.lemon.monitor.bo.jira.CreateIssueTestSubtaskRequestBO;
+import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -23,6 +26,8 @@ import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
+import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
+import io.restassured.response.Response;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,6 +96,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private IDemandJiraDao demandJiraDao;
     @Autowired
     private IJiraDepartmentDao jiraDepartmentDao;
+    @Autowired
+    IDemandJiraSubtaskDao demandJiraSubtaskDao;
+    @Autowired
+    IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     @Autowired
     IJiraBasicInfoDao jiraBasicInfoDao;
     @Autowired
@@ -2338,6 +2347,114 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         PageInfo<DemandNameChangeBO> pageInfo = PageUtils.pageQueryWithCount(demandNameChangeBO.getPageNum(), demandNameChangeBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(iDemandNameChangeExtDao.findList(demandNameChangeDO), DemandNameChangeBO.class));
         return pageInfo;
+    }
+
+
+
+
+    /**
+     * 补充测试子任务
+     */
+    public void  supplementaryTestSubtask() {
+        DemandDO demandDO1 = new DemandDO();
+        demandDO1.setReqImplMon("2020-08");
+        List<DemandDO> demandDOS1 = demandDao.find(demandDO1);
+
+        System.err.println(demandDOS1.size());
+
+        for (int i = 0; i < demandDOS1.size(); i++) {
+            System.err.println(demandDOS1.get(i).getReqInnerSeq());
+            DemandJiraDO demandJiraDO = new DemandJiraDO();
+            demandJiraDO.setReqInnerSeq(demandDOS1.get(i).getReqInnerSeq());
+            List<DemandJiraDO> demandJiraDOS = demandJiraDao.find(demandJiraDO);
+            if (JudgeUtils.isEmpty(demandJiraDOS)) {
+                continue;
+            }
+            String jiraKey = demandJiraDOS.get(0).getJiraKey();
+            System.err.println(jiraKey);
+            DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO = new DemandJiraDevelopMasterTaskDO();
+            demandJiraDevelopMasterTaskDO.setRelevanceEpic(jiraKey);
+            demandJiraDevelopMasterTaskDO.setIssueType("测试主任务");
+            List<DemandJiraDevelopMasterTaskDO> demandJiraDevelopMasterTaskDOS = demandJiraDevelopMasterTaskDao.find(demandJiraDevelopMasterTaskDO);
+            System.err.println(demandJiraDevelopMasterTaskDOS.size());
+            if (JudgeUtils.isEmpty(demandJiraDevelopMasterTaskDOS)) {
+                continue;
+            }
+            System.err.println(demandJiraDevelopMasterTaskDOS.get(0).getJiraKey());
+            JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+            try {
+                jiraTaskBodyBO = JiraUtil.GetIssue(demandJiraDevelopMasterTaskDOS.get(0).getJiraKey());
+            } catch (Exception e) {
+                continue;
+            }
+
+            DemandJiraSubtaskDO demandJiraSubtaskDO1 = new DemandJiraSubtaskDO();
+            demandJiraSubtaskDO1.setParenttaskkey(demandJiraDevelopMasterTaskDOS.get(0).getJiraKey());
+            List<DemandJiraSubtaskDO> demandJiraSubtaskDOS = demandJiraSubtaskDao.find(demandJiraSubtaskDO1);
+            if (JudgeUtils.isEmpty(demandJiraSubtaskDOS)) {
+
+                CreateIssueTestSubtaskRequestBO createIssueTestSubtaskRequestBO = new CreateIssueTestSubtaskRequestBO();
+                createIssueTestSubtaskRequestBO.setIssueType(10103);
+                if (LemonUtils.getEnv().equals(Env.SIT)) {
+                    createIssueTestSubtaskRequestBO.setProject(10100);
+                } else {
+                    createIssueTestSubtaskRequestBO.setProject(10106);
+                }
+                createIssueTestSubtaskRequestBO.setParentKey(demandJiraDevelopMasterTaskDOS.get(0).getJiraKey());
+                UserDO userDO = new UserDO();
+                userDO.setFullname(jiraTaskBodyBO.getAssignee());
+                List<UserDO> userDOS = iUserDao.find(userDO);
+                createIssueTestSubtaskRequestBO.setAssignee(userDOS.get(0).getUsername());
+                String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+                createIssueTestSubtaskRequestBO.setStartTime(selectTime);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Calendar c = Calendar.getInstance();
+                c.add(Calendar.DATE, +7);
+                Date time = c.getTime();
+                String preDay = sdf.format(time);
+                createIssueTestSubtaskRequestBO.setEndTime(preDay);
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例编写】" + demandDOS1.get(i).getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试案例编写");
+                Response response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                System.err.println(response1.getStatusCode());
+                System.err.println(response1.prettyPrint());
+                if (response1.getStatusCode() == 201) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例评审】" + demandDOS1.get(i).getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试案例评审");
+                response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                if (response1.getStatusCode() == 201) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+
+                createIssueTestSubtaskRequestBO.setSummary("【测试案例执行】" + demandDOS1.get(i).getReqNm());
+                createIssueTestSubtaskRequestBO.setDescription("测试用例执行");
+                response1 = JiraUtil.CreateIssue(createIssueTestSubtaskRequestBO);
+                if (response1.getStatusCode() == 201) {
+                    CreateIssueResponseBO as = response1.getBody().as(CreateIssueResponseBO.class);
+                    DemandJiraSubtaskDO demandJiraSubtaskDO = new DemandJiraSubtaskDO();
+                    demandJiraSubtaskDO.setSubtaskkey(as.getKey());
+                    demandJiraSubtaskDO.setParenttaskkey(createIssueTestSubtaskRequestBO.getParentKey());
+                    demandJiraSubtaskDO.setSubtaskname(createIssueTestSubtaskRequestBO.getSummary());
+                    demandJiraSubtaskDao.insert(demandJiraSubtaskDO);
+                }
+            }
+
+        }
     }
 
 }

@@ -3997,6 +3997,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / (float) Integer.parseInt(productLineDefectsBO.getWorkload()) * 100) + "%";
                 productLineDefectsBO.setDefectRate(defectRate);
             }
+            //如果工作量或者缺陷数为0则不增加
             if(workload !=0&&defectsNumber!=0){
                 productLineDefectsList.add(productLineDefectsBO);
             }
@@ -4108,11 +4109,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 String jiraKey = demandJiraDOS.get(0).getJiraKey();
                 DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
                 defectDetailsDO.setEpicKey(jiraKey);
+                //依据jirakey查找对应缺陷
                 List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.find(defectDetailsDO);
                 //缺陷数
                 demandTestStatusBO.setDefectsNumber(defectDetailsDOList.size());
-                int totalWorkload = m.getTotalWorkload();
-                //缺陷率
+                //缺陷率  缺陷数/工作量
                 String defectRate = String.format("%.2f", (float) demandTestStatusBO.getDefectsNumber() / (float) m.getTotalWorkload() * 100) + "%";
                 demandTestStatusBO.setDefectRate(defectRate);
                 JiraBasicInfoDO jiraBasicInfoDO = jiraBasicInfoDao.get(jiraKey);
@@ -4262,7 +4263,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 c.setTime(month1);
                 c.add(Calendar.MONTH, i-5);
                 String month2 = simpleDateFormatMonth.format(c.getTime());
-                System.err.println(month2);
                 months[i]=month2;
             } catch (Exception e) {
                 //todo  时间格式不对
@@ -4312,6 +4312,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(workload==0||defectsNumber==0){
                 leakageRate[i]="0";
             }else{
+                //计算百分比并保留两位小数
                 String rate = String.format("%.2f", (float) defectsNumber / (float)workload  * 100);
                 leakageRate[i]=rate;
             }
