@@ -960,6 +960,7 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, defectMonthlyRspDTO);
 	}
 
+	//测试统计汇总表
 	@RequestMapping("/testStatisticsList")
 	public GenericRspDTO<TestStatisticsRspDTO> testStatisticsList(@RequestBody TestStatisticsReqDTO reqDTO) {
 		TestStatisticsBO testStatisticsBO = new TestStatisticsBO();
@@ -987,6 +988,7 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,productLineDefectRateRspDTO);
 	}
 
+	//部门缺陷率
 	@RequestMapping("/departmentalDefectRate")
 	public GenericRspDTO<ProductLineDefectRateRspDTO> departmentalDefectRate(@RequestBody ProductLineDefectRateReqDTO reqDTO) {
 		List<ProductLineDefectsBO> productLineDefectsBOS = reqDataCountService.departmentalDefectRate(reqDTO.getSelectTime2());
@@ -999,6 +1001,7 @@ public class reportFormController {
 		productLineDefectRateRspDTO.setProductLineDefectsList(productLineDefectsList);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,productLineDefectRateRspDTO);
 	}
+	//需求测试状态
 	@RequestMapping("/demandTestStatus")
 	public GenericRspDTO<DemandTestStatusRspDTO> demandTestStatus(GenericDTO<NoBody> req) {
 
@@ -1022,6 +1025,7 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,demandTestStatusRspDTOList);
 	}
 
+    //线上漏出率
 	@RequestMapping("/getOnlineLeakageRate")
 	public GenericRspDTO<OnlineLeakageRateRspDTO> getOnlineLeakageRate(@RequestBody ProductLineDefectRateReqDTO reqDTO) {
 		OnlineLeakageRateBO onlineLeakageRate = reqDataCountService.getOnlineLeakageRate(reqDTO.getSelectTime2());
@@ -1030,6 +1034,7 @@ public class reportFormController {
 		onlineLeakageRateRspDTO.setLeakageRate(onlineLeakageRate.getLeakageRate());
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,onlineLeakageRateRspDTO);
 	}
+    //查询6个月内部门的缺陷率
 	@RequestMapping("/getDeptDefectRate")
 	public GenericRspDTO<OnlineLeakageRateRspDTO> getDeptDefectRate(@RequestBody  WorkingHoursReqDTO workingHoursDTO) {
 		OnlineLeakageRateBO deptDefectRate = reqDataCountService.getDeptDefectRate(workingHoursDTO.getDevpLeadDept(), workingHoursDTO.getSelectTime2());

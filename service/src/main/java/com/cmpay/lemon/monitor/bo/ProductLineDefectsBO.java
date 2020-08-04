@@ -1,9 +1,12 @@
 package com.cmpay.lemon.monitor.bo;
 
 
+/*
+ *产品线或部门缺陷率
+ */
 public class ProductLineDefectsBO {
 
-    //产品线
+    //产品线/部门
     private String productLine;
     //缺陷数
     private String defectsNumber;

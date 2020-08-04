@@ -1989,12 +1989,17 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         }
     }
 
+    /**
+     * 需求累计投入资源
+     */
     @Override
     public void demandInputResourceStatistics() {
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        //查找统计表示为N的数据
         workingHoursDO.setRegisterflag("N");
         List<WorkingHoursDO> workingHoursDOS = workingHoursDao.find(workingHoursDO);
         workingHoursDOS.forEach(m -> {
+            //没用epic编号的则不统计
             if (JudgeUtils.isBlank(m.getEpickey())) {
                 m.setRegisterflag("Y");
                 workingHoursDao.update(m);
@@ -2016,6 +2021,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     demandResourceInvestedDO.setValue(m.getTimespnet());
                     demandResourceInvestedDao.insert(demandResourceInvestedDO);
                 }
+                //登记完成后修改状态
                 m.setRegisterflag("Y");
                 workingHoursDao.update(m);
             }
