@@ -118,6 +118,7 @@ public class JiraUtil {
         if(parent!=null){
             parentTaskKey=parent.getString("key");
         }
+        //如果类型是epic
         if(jiraType.equals("Epic")){
             epicKey=jiraTaskBodyBO.getJiraKey();
         }

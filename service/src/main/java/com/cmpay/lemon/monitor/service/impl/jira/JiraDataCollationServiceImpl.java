@@ -100,6 +100,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     e.printStackTrace();
                 }
             });
+            //epic对应缺陷及评审问题登记问题统计表
             epicList.forEach(m -> {
                 if (m == null) {
                     return;
