@@ -8,6 +8,8 @@ package com.cmpay.lemon.monitor.dto;
 
 import com.cmpay.framework.data.request.GenericDTO;
 
+import java.util.List;
+
 public class WorkingHoursDTO extends GenericDTO {
     /**
      * @Fields id ID
@@ -65,6 +67,11 @@ public class WorkingHoursDTO extends GenericDTO {
      * 关联epic
      */
     private String epickey;
+
+    /*
+    每天天工作量
+     */
+    private List<String> listDay;
     /**
      * 页数
      */
@@ -76,6 +83,15 @@ public class WorkingHoursDTO extends GenericDTO {
     private String selectTime;
     private String reqNo;
     private String reqNm;
+
+    public List<String> getListDay() {
+        return listDay;
+    }
+
+    public void setListDay(List<String> listDay) {
+        this.listDay = listDay;
+    }
+
     public String getEpickey() {
         return epickey;
     }
@@ -253,6 +269,7 @@ public class WorkingHoursDTO extends GenericDTO {
                 ", sumTime='" + sumTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
                 ", epickey='" + epickey + '\'' +
+                ", listDay='" + listDay + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +

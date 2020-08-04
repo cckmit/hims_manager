@@ -490,14 +490,45 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date) && StringUtils.isBlank(date1)) {
             workingHoursDO.setSelectTime(date2);
             impl = iWorkingHoursDao.findMonthSum(workingHoursDO);
-        }
+//            // 获取当前月份的天数
+//            int day = DateUtil.getDaysByYearMonth(date2);
+//            for(int j=0;j<impl.size();j++){
+//                List<String> listDay = new LinkedList<>();
+//                for(int i=1;i<=day;i++){
+//                    WorkingHoursDO workingHoursDO1 = new WorkingHoursDO();
+//                    if(i<10){
+//                        String day1 = date2 +"-0"+i ;
+//                        workingHoursDO1.setSelectTime(day1);
+//                    }
+//                    if(i>=10){
+//                        String day1 = date2 +"-"+ i;
+//                        workingHoursDO1.setSelectTime(day1);
+//                    }
+//                    workingHoursDO1.setDisplayname(impl.get(j).getDisplayname());
+//                    workingHoursDO1.setDevpLeadDept(devpLeadDept);
+//                    List<WorkingHoursDO> impl1 = iWorkingHoursDao.findSum(workingHoursDO1);
+//                    if(impl1.isEmpty()){
+//                        listDay.add("0");
+//                    }else{
+//                        listDay.add(getWorkHours(impl1.get(0).getSumTime())+"");
+//                    }
+//
+//                }
+//                impl.get(j).setListDay(listDay);
+//                //impl.get(j).setSumTime(getWorkHours(impl.get(j).getSumTime())+"");
+//            }
 
+
+        }
         impl.forEach(m ->
                 workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
         );
         return workingHoursBOS;
     }
-
+    public Double getWorkHours(String value){
+        Long time = Long.parseLong(value);
+        return (double) (Math.round(time* 100 /  3600)/ 100.0);
+    }
     @Override
     public List<WorkingHoursBO> getReportForm7B(String devpLeadDept, String date, String date1, String date2) {
         List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();

@@ -118,6 +118,9 @@
         on a.fullname=b.displayName
         and LEFT(b.startedTime,10)= #{selectTime,jdbcType=VARCHAR}
         <where>
+            <if test="displayname != null and displayname != ''" >
+                and displayName = #{displayname,jdbcType=VARCHAR}
+            </if>
             <if test="devpLeadDept != null and devpLeadDept != ''" >
                 and department = #{devpLeadDept,jdbcType=VARCHAR}
             </if>
@@ -234,10 +237,10 @@
         <include refid="Base_Column_List" />
         from t_working_hours
         <where >
-            <if test="displayname != null||displayname != ''" >
+            <if test="displayname != null and displayname != ''" >
                 and displayName = #{displayname,jdbcType=VARCHAR}
             </if>
-            <if test="selectTime != null||selectTime != ''" >
+            <if test="selectTime != null and  selectTime != ''" >
                 and YEARWEEK(date_format(startedTime,'%Y-%m-%d')) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
             </if>
         </where>
@@ -253,10 +256,10 @@
         <include refid="Base_Column_List" />
         from t_working_hours
         <where >
-            <if test="displayname != null||displayname != ''" >
+            <if test="displayname != null and  displayname != ''" >
                 and displayName = #{displayname,jdbcType=VARCHAR}
             </if>
-            <if test="selectTime != null||selectTime != ''" >
+            <if test="selectTime != null and  selectTime != ''" >
                 and LEFT(startedTime,10)  like CONCAT('%',#{selectTime},'%')
             </if>
         </where>
