@@ -28,7 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.*;
+import static java.util.regex.Pattern.compile;
 
 @Service
 public class JiraDataCollationServiceImpl implements JiraDataCollationService {
@@ -446,11 +446,12 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
             String week = DateUtil.testDate(selectTime);
-
+            //如果是星期一则可以重新登记星期五的数据
             if(week.equals("星期一")){
-                int betweenDate = 0;
+               int betweenDate = 0;
                 try {
-                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 6));
+                    //登记工时开始时间
                     Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
                     betweenDate = (int) (d1.getTime() - d2.getTime()) / (3*60 * 60 * 24 * 1000);
                 } catch (ParseException e) {
@@ -549,7 +550,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 userRoleDO.setUserNo(userbyLoginName.getUserNo());
                 //测试
                 List<UserRoleDO> userRoleDOS = new LinkedList<>();
-                if ( workingHoursDO1.getDevpLeadDept().equals("产品测试团队")) {
+
+                if (workingHoursDO.getDevpLeadDept().equals("产品测试团队")) {
                     workingHoursDO.setRoletype("测试人员");
                 } else {
                     userRoleDO.setRoleId((long) 5002);
