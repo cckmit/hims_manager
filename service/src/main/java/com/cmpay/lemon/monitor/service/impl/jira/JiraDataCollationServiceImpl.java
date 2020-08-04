@@ -66,6 +66,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
+    @Autowired
+    private IUserExtDao iUserDao;
 
     @Autowired
     private IProUnhandledIssuesExtDao proUnhandledIssuesDao;
@@ -339,12 +341,30 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 defectDetailsDO.setEpicKey(jiraTaskBodyBO.getEpicKey());
                 defectDetailsDO.setDefectType(jiraTaskBodyBO.getProblemType());
                 defectDetailsDO.setDefectStatus(jiraTaskBodyBO.getStatus());
-                defectDetailsDO.setAssignee(jiraTaskBodyBO.getProblemHandler());
+                if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getProblemHandler())){
+                    defectDetailsDO.setAssignee(jiraTaskBodyBO.getProblemHandler());
+                }else{
+                    defectDetailsDO.setAssignee(jiraTaskBodyBO.getAssignee());
+                }
+
                 defectDetailsDO.setDefectRegistrant(jiraTaskBodyBO.getCreator());
                 defectDetailsDO.setSecurityLevel(jiraTaskBodyBO.getSecurityLevel());
                 defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
+                // 如果内部缺陷归属部门为空，则根据归属部门为经办人所属部门
                 if(JudgeUtils.isBlank(jiraTaskBodyBO.getDefectsDepartment())){
-                    defectDetailsDO.setDefectsDepartment("产品测试团队");
+                    // 经办人不为空，则根据姓名查询部门
+                    if(JudgeUtils.isNotBlank(defectDetailsDO.getAssignee())){
+                        UserDO userDO = new UserDO();
+                        userDO.setFullname(defectDetailsDO.getAssignee());
+                        List<UserDO> userDOS = iUserDao.find(userDO);
+                        if(!userDOS.isEmpty()){
+                            defectDetailsDO.setDefectsDepartment(userDOS.get(0).getDepartment());
+                        }else{
+                            defectDetailsDO.setDefectsDepartment("产品测试团队");
+                        }
+                    }else{
+                        defectDetailsDO.setDefectsDepartment("产品测试团队");
+                    }
                 }
                 defectDetailsDO.setRegistrationDate(jiraTaskBodyBO.getCreateTime());
                 defectDetailsDO.setDefectDetails(jiraTaskBodyBO.getDefectDetails());
