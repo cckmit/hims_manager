@@ -3966,6 +3966,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / (float) Integer.parseInt(productLineDefectsBO.getWorkload()) * 100) + "%";
                 productLineDefectsBO.setDefectRate(defectRate);
             }
+            //如果工作量或者缺陷数为0则不增加
             if(workload !=0&&defectsNumber!=0){
                 productLineDefectsList.add(productLineDefectsBO);
             }

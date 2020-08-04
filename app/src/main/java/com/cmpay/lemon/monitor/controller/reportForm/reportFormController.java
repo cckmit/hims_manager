@@ -974,7 +974,7 @@ public class reportFormController {
 		testStatisticsRspDTO.setTestStatisticsDTOList(testStatisticsDTOList);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, testStatisticsRspDTO);
 	}
-
+    //产品线缺陷率
 	@RequestMapping("/productLineDefectRate")
 	public GenericRspDTO<ProductLineDefectRateRspDTO> productLineDefectRate(@RequestBody ProductLineDefectRateReqDTO reqDTO) {
 		List<ProductLineDefectsBO> productLineDefectsBOS = reqDataCountService.productLineDefectRate(reqDTO.getSelectTime2());
