@@ -469,7 +469,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
     @Override
     public List<WorkingHoursBO> getReportForm7(String devpLeadDept, String date, String date1, String date2) {
-        System.err.println(devpLeadDept + "++++++" + date + "++++++" + date1 + "++++++" + date2);
         List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
         List<WorkingHoursDO> impl = null;
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
@@ -530,7 +529,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
     @Override
     public List<String> getReportForm8(String date) {
-        System.err.println(date + "++++++" + date);
         List<String> workingHoursBOS = new LinkedList<>();
         List<DepartmentWorkDO> impl = iWorkingHoursDao.findDeptHours(date);
         impl.forEach(m ->
@@ -571,7 +569,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<WorkingHoursDO> impl = null;
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
         workingHoursDO.setDevpLeadDept(devpLeadDept);
-        System.err.println(date1 + "=====" + date2);
         if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -1731,6 +1728,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
     @Override
     public DemandHoursRspBO getTestStaffWork(String date1, String date2) {
+        System.err.println(date1);
+        System.err.println(date2);
         System.err.println("测试部人员工作");
         List<String> workingHoursBOS = new LinkedList<>();
         if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
@@ -1761,7 +1760,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
         }
         //周计算
-        else if (JudgeUtils.isBlank(date1) && JudgeUtils.isNotBlank(date2)) {
+        else if (JudgeUtils.isNotBlank(date1) && JudgeUtils.isBlank(date2)) {
             //获取下个月时间
             SimpleDateFormat simpleDateFormatMonth = new SimpleDateFormat("yyyy-MM-dd");
             try {
@@ -1980,7 +1979,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursBOS.add("0");
             }
         }
-        System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);

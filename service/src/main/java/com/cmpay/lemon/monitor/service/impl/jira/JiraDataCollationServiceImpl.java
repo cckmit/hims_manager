@@ -543,6 +543,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 //工作备注不为空   且是在测试子任务下
                 if(JudgeUtils.isNotBlank(jiraWorklogDO.getComment())){
                     if(jiraTaskBodyBO.getJiraType().equals("测试子任务")){
+                        //判断需求名称是否带有 【测试案例编写】 如果有 则查看是否有编写了测试案例编写数
                         if(jiraTaskBodyBO.getIssueName().indexOf("【测试案例编写】")!=-1){
                             String[] split = jiraWorklogDO.getComment().split("#");
                             if(split.length==3){
@@ -554,6 +555,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                                 }
                             }
                         }
+                        //判断需求名称是否带有 【测试案例执行】 如果有 则查看是否有编写了测试案例执行数和测试案例完成数
                         if(jiraTaskBodyBO.getIssueName().indexOf("【测试案例执行】")!=-1){
                             String[] split = jiraWorklogDO.getComment().split("#");
                             Pattern pattern = compile("^[-\\+]?[\\d]*$");
