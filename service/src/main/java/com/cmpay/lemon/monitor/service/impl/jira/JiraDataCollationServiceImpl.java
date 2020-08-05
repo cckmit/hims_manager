@@ -97,6 +97,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                         this.registerWorklogs(jiraTaskBodyBO);
                         epicList.add(jiraTaskBodyBO.getEpicKey());
                 } catch (Exception e) {
+
                     e.printStackTrace();
                 }
             });
@@ -471,14 +472,14 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             if(week.equals("星期一")){
                int betweenDate = 0;
                 try {
-                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 6));
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
                     //登记工时开始时间
                     Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
                     betweenDate = (int) (d1.getTime() - d2.getTime()) / (3*60 * 60 * 24 * 1000);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
+                //周一时创建时间和工作登记开始时间超过四天则不计算
                 if (betweenDate > 4) {
                     continue;
                 }
@@ -491,15 +492,22 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+                //非周一  创建时间和工作登记开始时间超过1天则不计算
                 if (betweenDate > 1) {
                     continue;
                 }
             }
-            //是否是
+            //如果工时信息未被登记 则新登记，若已登记则需要判断这条信息创建时间和 工作开始时间的差时是否大于2天
             if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
-                String date1 = StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10);
-                String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
-                if (date1.equals(date2)) {
+                int betweenDate=0;
+                try {
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                if (betweenDate<2) {
                     jiraWorklogDao.update(jiraWorklogDO);
                 }
             } else {
@@ -507,7 +515,15 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             }
             String date1 = StringUtils.substring(LocalDateTime.now().toString().trim(), 0, 10);
             String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
-            if (date1.equals(date2)) {
+            int betweenDate=0;
+            try {
+                Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (betweenDate<2) {
                 WorkingHoursDO workingHoursDO = new WorkingHoursDO();
                 workingHoursDO.setJiraworklogkey(jiraWorklogDO.getJiraworklogkey());
                 //需求名
