@@ -489,14 +489,45 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date) && StringUtils.isBlank(date1)) {
             workingHoursDO.setSelectTime(date2);
             impl = iWorkingHoursDao.findMonthSum(workingHoursDO);
-        }
+            // 获取当前月份的天数
+            int day = DateUtil.getDaysByYearMonth(date2);
+            for(int j=0;j<impl.size();j++){
+                List<String> listDay = new LinkedList<>();
+                for(int i=1;i<=day;i++){
+                    WorkingHoursDO workingHoursDO1 = new WorkingHoursDO();
+                    if(i<10){
+                        String day1 = date2 +"-0"+i ;
+                        workingHoursDO1.setSelectTime(day1);
+                    }
+                    if(i>=10){
+                        String day1 = date2 +"-"+ i;
+                        workingHoursDO1.setSelectTime(day1);
+                    }
+                    workingHoursDO1.setDisplayname(impl.get(j).getDisplayname());
+                    workingHoursDO1.setDevpLeadDept(devpLeadDept);
+                    List<WorkingHoursDO> impl1 = iWorkingHoursDao.findSum(workingHoursDO1);
+                    if(impl1.isEmpty()){
+                        listDay.add("0");
+                    }else{
+                        listDay.add(getWorkHours(impl1.get(0).getSumTime())+"");
+                    }
 
+                }
+                impl.get(j).setListDay(listDay);
+                impl.get(j).setSumTime(getWorkHours(impl.get(j).getSumTime())+"");
+            }
+
+
+        }
         impl.forEach(m ->
                 workingHoursBOS.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
         );
         return workingHoursBOS;
     }
-
+    public Double getWorkHours(String value){
+        Long time = Long.parseLong(value);
+        return (double) (Math.round(time* 100 /  3600)/ 100.0);
+    }
     @Override
     public List<WorkingHoursBO> getReportForm7B(String devpLeadDept, String date, String date1, String date2) {
         List<WorkingHoursBO> workingHoursBOS = new LinkedList<>();
@@ -4291,8 +4322,168 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         onlineLeakageRateBO.setLeakageRate(leakageRate);
         return onlineLeakageRateBO;
     }
+    @Override
+    public void downloadReportForm7(String devpLeadDept,String date,String date1,String date2, HttpServletResponse response){
+        List<WorkloadMonthBO> workloadMonthBOArrayList = new ArrayList<>();
+        List<WorkingHoursBO> reportLista = new ArrayList<>();
+        reportLista = this.getReportForm7(devpLeadDept,date,date1,date2);
+        if (JudgeUtils.isNotEmpty(reportLista)) {
+            reportLista.forEach(m -> {
+                WorkloadMonthBO workloadMonthBO = new WorkloadMonthBO();
+                // 姓名喝汇总
+                workloadMonthBO.setDisplayname(m.getDisplayname());
+                workloadMonthBO.setSumTime(m.getSumTime());
+                // 判断m.getListDay().size()的大小
+                if(m.getListDay().size() == 31){
+                    workloadMonthBO.setA1(m.getListDay().get(0));
+                    workloadMonthBO.setA2(m.getListDay().get(1));
+                    workloadMonthBO.setA3(m.getListDay().get(2));
+                    workloadMonthBO.setA4(m.getListDay().get(3));
+                    workloadMonthBO.setA5(m.getListDay().get(4));
+                    workloadMonthBO.setA6(m.getListDay().get(5));
+                    workloadMonthBO.setA7(m.getListDay().get(6));
+                    workloadMonthBO.setA8(m.getListDay().get(7));
+                    workloadMonthBO.setA9(m.getListDay().get(8));
+                    workloadMonthBO.setA10(m.getListDay().get(9));
+                    workloadMonthBO.setA11(m.getListDay().get(10));
+                    workloadMonthBO.setA12(m.getListDay().get(11));
+                    workloadMonthBO.setA13(m.getListDay().get(12));
+                    workloadMonthBO.setA14(m.getListDay().get(13));
+                    workloadMonthBO.setA15(m.getListDay().get(14));
+                    workloadMonthBO.setA16(m.getListDay().get(15));
+                    workloadMonthBO.setA17(m.getListDay().get(16));
+                    workloadMonthBO.setA18(m.getListDay().get(17));
+                    workloadMonthBO.setA19(m.getListDay().get(18));
+                    workloadMonthBO.setA20(m.getListDay().get(19));
+                    workloadMonthBO.setA21(m.getListDay().get(20));
+                    workloadMonthBO.setA22(m.getListDay().get(21));
+                    workloadMonthBO.setA23(m.getListDay().get(22));
+                    workloadMonthBO.setA24(m.getListDay().get(23));
+                    workloadMonthBO.setA25(m.getListDay().get(24));
+                    workloadMonthBO.setA26(m.getListDay().get(25));
+                    workloadMonthBO.setA27(m.getListDay().get(26));
+                    workloadMonthBO.setA28(m.getListDay().get(27));
+                    workloadMonthBO.setA29(m.getListDay().get(28));
+                    workloadMonthBO.setA30(m.getListDay().get(29));
+                    workloadMonthBO.setA31(m.getListDay().get(30));
 
-
+                }
+                // 判断m.getListDay().size()的大小
+                if(m.getListDay().size() == 30){
+                    workloadMonthBO.setA1(m.getListDay().get(0));
+                    workloadMonthBO.setA2(m.getListDay().get(1));
+                    workloadMonthBO.setA3(m.getListDay().get(2));
+                    workloadMonthBO.setA4(m.getListDay().get(3));
+                    workloadMonthBO.setA5(m.getListDay().get(4));
+                    workloadMonthBO.setA6(m.getListDay().get(5));
+                    workloadMonthBO.setA7(m.getListDay().get(6));
+                    workloadMonthBO.setA8(m.getListDay().get(7));
+                    workloadMonthBO.setA9(m.getListDay().get(8));
+                    workloadMonthBO.setA10(m.getListDay().get(9));
+                    workloadMonthBO.setA11(m.getListDay().get(10));
+                    workloadMonthBO.setA12(m.getListDay().get(11));
+                    workloadMonthBO.setA13(m.getListDay().get(12));
+                    workloadMonthBO.setA14(m.getListDay().get(13));
+                    workloadMonthBO.setA15(m.getListDay().get(14));
+                    workloadMonthBO.setA16(m.getListDay().get(15));
+                    workloadMonthBO.setA17(m.getListDay().get(16));
+                    workloadMonthBO.setA18(m.getListDay().get(17));
+                    workloadMonthBO.setA19(m.getListDay().get(18));
+                    workloadMonthBO.setA20(m.getListDay().get(19));
+                    workloadMonthBO.setA21(m.getListDay().get(20));
+                    workloadMonthBO.setA22(m.getListDay().get(21));
+                    workloadMonthBO.setA23(m.getListDay().get(22));
+                    workloadMonthBO.setA24(m.getListDay().get(23));
+                    workloadMonthBO.setA25(m.getListDay().get(24));
+                    workloadMonthBO.setA26(m.getListDay().get(25));
+                    workloadMonthBO.setA27(m.getListDay().get(26));
+                    workloadMonthBO.setA28(m.getListDay().get(27));
+                    workloadMonthBO.setA29(m.getListDay().get(28));
+                    workloadMonthBO.setA30(m.getListDay().get(29));
+                }
+                // 判断m.getListDay().size()的大小
+                if(m.getListDay().size() == 29){
+                    workloadMonthBO.setA1(m.getListDay().get(0));
+                    workloadMonthBO.setA2(m.getListDay().get(1));
+                    workloadMonthBO.setA3(m.getListDay().get(2));
+                    workloadMonthBO.setA4(m.getListDay().get(3));
+                    workloadMonthBO.setA5(m.getListDay().get(4));
+                    workloadMonthBO.setA6(m.getListDay().get(5));
+                    workloadMonthBO.setA7(m.getListDay().get(6));
+                    workloadMonthBO.setA8(m.getListDay().get(7));
+                    workloadMonthBO.setA9(m.getListDay().get(8));
+                    workloadMonthBO.setA10(m.getListDay().get(9));
+                    workloadMonthBO.setA11(m.getListDay().get(10));
+                    workloadMonthBO.setA12(m.getListDay().get(11));
+                    workloadMonthBO.setA13(m.getListDay().get(12));
+                    workloadMonthBO.setA14(m.getListDay().get(13));
+                    workloadMonthBO.setA15(m.getListDay().get(14));
+                    workloadMonthBO.setA16(m.getListDay().get(15));
+                    workloadMonthBO.setA17(m.getListDay().get(16));
+                    workloadMonthBO.setA18(m.getListDay().get(17));
+                    workloadMonthBO.setA19(m.getListDay().get(18));
+                    workloadMonthBO.setA20(m.getListDay().get(19));
+                    workloadMonthBO.setA21(m.getListDay().get(20));
+                    workloadMonthBO.setA22(m.getListDay().get(21));
+                    workloadMonthBO.setA23(m.getListDay().get(22));
+                    workloadMonthBO.setA24(m.getListDay().get(23));
+                    workloadMonthBO.setA25(m.getListDay().get(24));
+                    workloadMonthBO.setA26(m.getListDay().get(25));
+                    workloadMonthBO.setA27(m.getListDay().get(26));
+                    workloadMonthBO.setA28(m.getListDay().get(27));
+                    workloadMonthBO.setA29(m.getListDay().get(28));
+                }
+                // 判断m.getListDay().size()的大小
+                if(m.getListDay().size() == 28){
+                    workloadMonthBO.setA1(m.getListDay().get(0));
+                    workloadMonthBO.setA2(m.getListDay().get(1));
+                    workloadMonthBO.setA3(m.getListDay().get(2));
+                    workloadMonthBO.setA4(m.getListDay().get(3));
+                    workloadMonthBO.setA5(m.getListDay().get(4));
+                    workloadMonthBO.setA6(m.getListDay().get(5));
+                    workloadMonthBO.setA7(m.getListDay().get(6));
+                    workloadMonthBO.setA8(m.getListDay().get(7));
+                    workloadMonthBO.setA9(m.getListDay().get(8));
+                    workloadMonthBO.setA10(m.getListDay().get(9));
+                    workloadMonthBO.setA11(m.getListDay().get(10));
+                    workloadMonthBO.setA12(m.getListDay().get(11));
+                    workloadMonthBO.setA13(m.getListDay().get(12));
+                    workloadMonthBO.setA14(m.getListDay().get(13));
+                    workloadMonthBO.setA15(m.getListDay().get(14));
+                    workloadMonthBO.setA16(m.getListDay().get(15));
+                    workloadMonthBO.setA17(m.getListDay().get(16));
+                    workloadMonthBO.setA18(m.getListDay().get(17));
+                    workloadMonthBO.setA19(m.getListDay().get(18));
+                    workloadMonthBO.setA20(m.getListDay().get(19));
+                    workloadMonthBO.setA21(m.getListDay().get(20));
+                    workloadMonthBO.setA22(m.getListDay().get(21));
+                    workloadMonthBO.setA23(m.getListDay().get(22));
+                    workloadMonthBO.setA24(m.getListDay().get(23));
+                    workloadMonthBO.setA25(m.getListDay().get(24));
+                    workloadMonthBO.setA26(m.getListDay().get(25));
+                    workloadMonthBO.setA27(m.getListDay().get(26));
+                    workloadMonthBO.setA28(m.getListDay().get(27));
+                }
+                workloadMonthBOArrayList.add(workloadMonthBO);
+            });
+        }
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), WorkloadMonthBO.class, workloadMonthBOArrayList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "部门员工工时月统计" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
 
 }
 

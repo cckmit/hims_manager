@@ -1,6 +1,6 @@
 /*
  * @ClassName WorkingHoursDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-07-23 11:32:44
  */
@@ -8,6 +8,8 @@ package com.cmpay.lemon.monitor.entity;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
+
+import java.util.List;
 
 @DataObject
 public class WorkingHoursDO extends BaseDO {
@@ -110,6 +112,11 @@ public class WorkingHoursDO extends BaseDO {
      * @Fields 结束时间
      */
     private String endTime;
+    /*
+每天天工作量
+ */
+    private List<String> listDay;
+
     public int getCaseWritingNumber() {
         return caseWritingNumber;
     }
@@ -284,12 +291,35 @@ public class WorkingHoursDO extends BaseDO {
     }
 
     public String getWorkHoursToString() {
-        return "{'value': '"+getWorkHours(timespnet)+"', 'name': '"+roletype+"'}";
+        return "{'value': '" + getWorkHours(timespnet) + "', 'name': '" + roletype + "'}";
     }
-    public Double getWorkHours(String value){
+
+    public Double getWorkHours(String value) {
         Long time = Long.parseLong(value);
-        return (double) (Math.round(time* 100 /  28800)/ 100.0);
+        return (double) (Math.round(time * 100 / 28800) / 100.0);
     }
+
+    public void setCaseExecutionNumber(int caseExecutionNumber) {
+        this.caseExecutionNumber = caseExecutionNumber;
+    }
+
+    public int getCaseCompletedNumber() {
+        return caseCompletedNumber;
+    }
+
+    public void setCaseCompletedNumber(int caseCompletedNumber) {
+        this.caseCompletedNumber = caseCompletedNumber;
+
+    }
+
+    public List<String> getListDay() {
+        return listDay;
+    }
+
+    public void setListDay(List<String> listDay) {
+        this.listDay = listDay;
+    }
+
     @Override
     public String toString() {
         return "WorkingHoursDO{" +
@@ -312,18 +342,12 @@ public class WorkingHoursDO extends BaseDO {
                 ", epiccreator='" + epiccreator + '\'' +
                 ", registerflag='" + registerflag + '\'' +
                 ", roletype='" + roletype + '\'' +
+                ", caseWritingNumber=" + caseWritingNumber +
+                ", caseExecutionNumber=" + caseExecutionNumber +
+                ", caseCompletedNumber=" + caseCompletedNumber +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", listDay='" + listDay + '\'' +
                 '}';
-    }
-
-    public void setCaseExecutionNumber(int caseExecutionNumber) {
-        this.caseExecutionNumber = caseExecutionNumber;
-    }
-
-    public int getCaseCompletedNumber() {
-        return caseCompletedNumber;
-    }
-
-    public void setCaseCompletedNumber(int caseCompletedNumber) {
-        this.caseCompletedNumber = caseCompletedNumber;
     }
 }

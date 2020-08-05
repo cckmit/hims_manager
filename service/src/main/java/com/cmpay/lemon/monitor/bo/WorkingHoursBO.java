@@ -9,6 +9,8 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
+import java.util.List;
+
 public class WorkingHoursBO extends BaseDO {
     /**
      * @Fields id ID
@@ -62,6 +64,10 @@ public class WorkingHoursBO extends BaseDO {
     private String sumTime;
     // 总部门人数
     private String sumDept;
+    /*
+    每天天工作量
+     */
+    private List<String> listDay;
     /**
      * 页数
      */
@@ -234,6 +240,14 @@ public class WorkingHoursBO extends BaseDO {
         this.sumDept = sumDept;
     }
 
+    public List<String> getListDay() {
+        return listDay;
+    }
+
+    public void setListDay(List<String> listDay) {
+        this.listDay = listDay;
+    }
+
     @Override
     public String toString() {
         return "WorkingHoursBO{" +
@@ -251,6 +265,7 @@ public class WorkingHoursBO extends BaseDO {
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
+                ", listDay='" + listDay + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +
