@@ -948,6 +948,12 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
 	}
 
+	@RequestMapping("/downloadreportform7")
+	public GenericRspDTO<NoBody> downloadReportForm7(@RequestBody WorkingHoursReqDTO workingHoursDTO, HttpServletResponse response) {
+		reqDataCountService.downloadReportForm7(workingHoursDTO.getDevpLeadDept(), workingHoursDTO.getSelectTime(), workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2(),response);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS);
+	}
+
 	@RequestMapping("/getDefectMonthlyReport")
 	public GenericRspDTO<DefectMonthlyRspDTO> getDefectMonthlyReport(@RequestBody DemandReqDTO reqDTO) {
 		List<DefectMonthlyBO> defectMonthlyReport = reqTaskService.getDefectMonthlyReport(reqDTO.getDefectStartTime(), reqDTO.getDefectEndTime());
