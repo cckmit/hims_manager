@@ -4147,8 +4147,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     demandTestStatusBO.setDefectDiscoveryRate("NaN%");
                 }
                 //测试进度
-                if(Integer.parseInt(demandTestStatusBO.getTestCaseNumber())!=0) {
-                    String testProgress = String.format("%.2f", (float) demandTestStatusBO.getCaseCompletedNumber() / (float) Integer.parseInt(demandTestStatusBO.getTestCaseNumber()) * 100) + "%";
+                System.err.println(demandTestStatusBO.getTestCaseNumber());
+                int intValue = Double.valueOf(demandTestStatusBO.getTestCaseNumber()).intValue();
+                if(intValue!=0) {
+                    String testProgress = String.format("%.2f", (float) demandTestStatusBO.getCaseCompletedNumber() / (float) intValue * 100) + "%";
                     demandTestStatusBO.setTestProgress(testProgress);
                 }else{
                     demandTestStatusBO.setTestProgress("NaN%");
