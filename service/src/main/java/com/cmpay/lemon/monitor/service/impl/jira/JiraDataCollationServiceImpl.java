@@ -560,13 +560,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                             for(int j=0;j<split.length-1;j++){
                                 if(split[j].equals("测试案例执行数")&&pattern.matcher(split[j+1]).matches()){
                                     workingHoursDO.setCaseExecutionNumber(Integer.parseInt(split[j+1]));
-                                }else{
-                                    workingHoursDO.setCaseExecutionNumber(0);
                                 }
                                 if(split[j].equals("测试案例完成数")&&pattern.matcher(split[j+1]).matches()){
                                     workingHoursDO.setCaseCompletedNumber(Integer.parseInt(split[j+1]));
-                                }else{
-                                    workingHoursDO.setCaseCompletedNumber(0);
                                 }
                             }
                         }
