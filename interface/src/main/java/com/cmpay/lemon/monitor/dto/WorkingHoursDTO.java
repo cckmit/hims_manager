@@ -73,6 +73,19 @@ public class WorkingHoursDTO extends GenericDTO {
      */
     private List<String> listDay;
     /**
+     * 测试部人均每月发现缺陷数
+     */
+    private String meanDefect;
+
+    public String getMeanDefect() {
+        return meanDefect;
+    }
+
+    public void setMeanDefect(String meanDefect) {
+        this.meanDefect = meanDefect;
+    }
+
+    /**
      * 页数
      */
     private int pageNum;
@@ -269,7 +282,8 @@ public class WorkingHoursDTO extends GenericDTO {
                 ", sumTime='" + sumTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
                 ", epickey='" + epickey + '\'' +
-                ", listDay='" + listDay + '\'' +
+                ", listDay=" + listDay +
+                ", meanDefect='" + meanDefect + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +

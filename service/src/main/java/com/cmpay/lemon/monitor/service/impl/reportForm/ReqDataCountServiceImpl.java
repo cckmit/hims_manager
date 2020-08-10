@@ -606,10 +606,29 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         impl = iWorkingHoursDao.findDeptView(workingHoursDO);
-        System.err.println(impl);
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             BeanUtils.copyPropertiesReturnDest(workingHoursBO, impl.get(0));
+            DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+            if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+                defectDetailsDO.setRegistrationDate(date1.substring(0,7));
+            }
+            if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+                defectDetailsDO.setRegistrationDate(date2);
+            }
+            List<DefectDetailsDO> list = defectDetailsExtDao.findList(defectDetailsDO);
+            if(list == null ||list.size()<0){
+                workingHoursBO.setMeanDefect("0");
+            }else{
+                // 获取当前月份的天数
+                int day = DateUtil.getDaysByYearMonth(defectDetailsDO.getRegistrationDate());
+                int a = list.size();
+                int b = Integer.parseInt(workingHoursBO.getSumDept()) * day;
+                DecimalFormat df = new DecimalFormat("0.##");//格式化小数
+                String meanDefect = df.format((float)a/b);//返回的是String类型
+                workingHoursBO.setMeanDefect(meanDefect);
+            }
         }
+        System.err.println(workingHoursBO);
         return workingHoursBO;
     }
 
@@ -650,7 +669,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         String sum = "";
         double sumx = 0;
         DecimalFormat df = new DecimalFormat("0.##");
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 SumBos.add(impl.get(i).getDisplayname());
                 sumx = sumx + getWorkHoursTime(Integer.parseInt(impl.get(i).getSumTime()));
@@ -688,7 +707,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
             //demandBO.setReqImplMon(date1.substring(0,7));
             System.err.println(impl);
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
@@ -716,7 +735,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
             demandBO.setReqImplMon(date2);
 
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
@@ -766,7 +785,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
             //demandBO.setReqImplMon(date1.substring(0,7));
             System.err.println(impl);
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     DecimalFormat df = new DecimalFormat("0.##");
@@ -787,7 +806,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
             demandBO.setReqImplMon(date2);
 
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     DecimalFormat df = new DecimalFormat("0.##");
@@ -848,7 +867,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             System.err.println(impl.size());
             sum = impl.size() + "";
             for (int i = 0; i < impl.size(); i++) {
@@ -923,7 +942,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             System.err.println(impl.size());
             sum = impl.size() + "";
             for (int i = 0; i < impl.size(); i++) {
@@ -984,7 +1003,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         int sum = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             workingHoursBOS.add(impl.size() + "");
             SumBos.add("主导需求");
             sum = sum + impl.size();
@@ -1028,7 +1047,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setRegistrationDate(list.get(i));
             impl = defectDetailsExtDao.findList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -1062,7 +1081,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setRegistrationDate(list.get(i));
             impl = issueDetailsExtDao.findList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -1095,7 +1114,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setProcessstartdate(list.get(i));
             impl = productionDefectsExtDao.findMonthList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -1129,7 +1148,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proCheckTimeOutStatisticsExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getCount();
                 }
@@ -1166,7 +1185,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getDefectsNumber();
                 }
@@ -1203,7 +1222,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getProblemNumber();
                 }
@@ -1254,7 +1273,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iOperationProductionDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     if ("投产回退".equals(impl.get(j).getProStatus())) {
                         sum = sum + 1;
@@ -1372,7 +1391,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         impl = iOperationProductionDao.findWeek(workingHoursDO);
         SumBos.add("投产回退");
         int suma = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int j = 0; j < impl.size(); j++) {
                 if ("投产回退".equals(impl.get(j).getProStatus())) {
                     suma = suma + 1;
@@ -1398,7 +1417,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 if (impl.get(i).getCount() == 1) {
                     a = a + 1;
@@ -1434,7 +1453,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 if (impl.get(i).getCount() == 1) {
                     a = a + 1;
@@ -1470,7 +1489,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     public DemandHoursRspBO getReportForm12() {
         List<WorkingHoursDO> impl = iWorkingHoursDao.findSumPer();
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             demandHoursRspBO.setSum(impl.get(0).getSumTime());
         }
         System.err.println(demandHoursRspBO);
@@ -1563,7 +1582,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
             //demandBO.setReqImplMon(date1.substring(0,6));
             System.err.println(impl);
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     DecimalFormat df = new DecimalFormat("0.##");
@@ -1584,7 +1603,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
             demandBO.setReqImplMon(date2);
             System.err.println("yuegos" + impl);
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
                     DecimalFormat df = new DecimalFormat("0.##");
@@ -1652,7 +1671,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             System.err.println(impl.size());
             sum = impl.size() + "";
             for (int i = 0; i < impl.size(); i++) {
@@ -1728,7 +1747,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int a = 0;
             int b = 0;
             int c = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 System.err.println(impl.size());
                 sum = sum + impl.size();
                 for (int i = 0; i < impl.size(); i++) {
@@ -1861,7 +1880,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 if (impl.get(i).getCount() == 1) {
                     a = a + 1;
@@ -1896,7 +1915,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 if (impl.get(i).getCount() == 1) {
                     a = a + 1;
@@ -1941,7 +1960,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setRegistrationDate(list.get(i));
             impl = defectDetailsExtDao.findList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -1973,7 +1992,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setRegistrationDate(list.get(i));
             impl = issueDetailsExtDao.findList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -2004,7 +2023,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setProcessstartdate(list.get(i));
             impl = productionDefectsExtDao.findMonthList(workingHoursDO);
             SumBos.add(list.get(i));
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -2035,7 +2054,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proCheckTimeOutStatisticsExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getCount();
                 }
@@ -2070,7 +2089,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getDefectsNumber();
                 }
@@ -2105,7 +2124,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = proUnhandledIssuesExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getProblemNumber();
                 }
@@ -2155,7 +2174,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 impl = defectDetailsExtDao.findList(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -2201,7 +2220,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 impl = issueDetailsExtDao.findList(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -2246,7 +2265,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 impl = productionDefectsExtDao.findMonthList(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
             } else {
                 workingHoursBOS.add("0");
@@ -2292,7 +2311,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     sum = sum + impl.get(j).getCount();
                 }
@@ -2341,7 +2360,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     System.err.println(impl.get(j).getJirakey());
                     sum = sum + impl.get(j).getDefectsNumber();
@@ -2391,7 +2410,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             int sum = 0;
-            if (impl != null && impl.size() != 0) {
+            if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
                     System.err.println(impl.get(j).getJirakey());
                     sum = sum + impl.get(j).getProblemNumber();
@@ -2422,7 +2441,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int a = 0;
         int b = 0;
         int c = 0;
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             System.err.println(impl.size());
             sum = impl.size() + "";
             for (int i = 0; i < impl.size(); i++) {
@@ -2523,7 +2542,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             impl = iWorkingHoursDao.findMonthView(workingHoursDO);
             System.err.println(impl);
         }
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             BeanUtils.copyPropertiesReturnDest(workingHoursBO, impl.get(0));
         }
         System.err.println(impl);
@@ -2557,7 +2576,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         impl.forEach(m ->
                 workingHoursBos.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
         );
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 if (impl.get(i).getEpickey() == null || impl.get(i).getEpickey() == "") {
@@ -2613,7 +2632,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         impl.forEach(m ->
                 workingHoursBos.add(BeanUtils.copyPropertiesReturnDest(new WorkingHoursBO(), m))
         );
-        if (impl != null && impl.size() != 0) {
+        if (impl != null && impl.size() >= 0) {
             for (int i = 0; i < impl.size(); i++) {
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 if (impl.get(i).getEpickey() == null || impl.get(i).getEpickey() == "") {

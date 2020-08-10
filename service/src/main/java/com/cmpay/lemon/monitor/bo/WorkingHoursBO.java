@@ -69,6 +69,18 @@ public class WorkingHoursBO extends BaseDO {
      */
     private List<String> listDay;
     /**
+     * 测试部人均每月发现缺陷数
+     */
+    private String meanDefect;
+
+    public String getMeanDefect() {
+        return meanDefect;
+    }
+
+    public void setMeanDefect(String meanDefect) {
+        this.meanDefect = meanDefect;
+    }
+    /**
      * 页数
      */
     private int pageNum;
@@ -265,7 +277,8 @@ public class WorkingHoursBO extends BaseDO {
                 ", updatedtime='" + updatedtime + '\'' +
                 ", sumTime='" + sumTime + '\'' +
                 ", sumDept='" + sumDept + '\'' +
-                ", listDay='" + listDay + '\'' +
+                ", listDay=" + listDay +
+                ", meanDefect='" + meanDefect + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", selectTime='" + selectTime + '\'' +
