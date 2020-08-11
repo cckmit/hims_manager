@@ -29,7 +29,7 @@ public class DemandDO extends BaseDO {
     @Excel(name = "预计总工作量(人天)")
     private double expInput;
     @Excel(name = "本月预计投入工作量(人天)")
-    private Integer projectedWorkload;
+    private int projectedWorkload;
     @Excel(name = "是否核减")
     private String isCut;
     @Excel(name = "月初备注")
@@ -143,11 +143,11 @@ public class DemandDO extends BaseDO {
 
     private String preCurPeriod2;
 
-    public Integer getProjectedWorkload() {
+    public int getProjectedWorkload() {
         return projectedWorkload;
     }
 
-    public void setProjectedWorkload(Integer projectedWorkload) {
+    public void setProjectedWorkload(int projectedWorkload) {
         this.projectedWorkload = projectedWorkload;
     }
 

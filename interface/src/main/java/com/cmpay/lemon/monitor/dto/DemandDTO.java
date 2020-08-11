@@ -119,15 +119,16 @@ public class DemandDTO extends GenericDTO {
     private int pageSize;
     private String preCurPeriod2;
     private String remarks;
-    private Integer projectedWorkload;
+    private int projectedWorkload;
 
-    public Integer getProjectedWorkload() {
+    public int getProjectedWorkload() {
         return projectedWorkload;
     }
 
-    public void setProjectedWorkload(Integer projectedWorkload) {
+    public void setProjectedWorkload(int projectedWorkload) {
         this.projectedWorkload = projectedWorkload;
     }
+
     public String getRemarks() {
         return remarks;
     }
