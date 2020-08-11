@@ -96,6 +96,15 @@ public class DemandBO {
     private String site;
 
     private String remarks;
+    private int projectedWorkload;
+
+    public int getProjectedWorkload() {
+        return projectedWorkload;
+    }
+
+    public void setProjectedWorkload(int projectedWorkload) {
+        this.projectedWorkload = projectedWorkload;
+    }
 
     public String getRemarks() {
         return remarks;
@@ -862,6 +871,7 @@ public class DemandBO {
                 ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", site='" + site + '\'' +
                 ", remarks='" + remarks + '\'' +
+                ", projectedWorkload=" + projectedWorkload +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +

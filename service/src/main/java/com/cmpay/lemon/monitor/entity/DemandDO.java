@@ -26,8 +26,10 @@ public class DemandDO extends BaseDO {
     private String reqNm;
     @Excel(name = "需求描述")
     private String reqDesc;
-    @Excel(name = "总工作量预估（人天）")
+    @Excel(name = "预计总工作量(人天)")
     private double expInput;
+    @Excel(name = "本月预计投入工作量(人天)")
+    private Integer projectedWorkload;
     @Excel(name = "是否核减")
     private String isCut;
     @Excel(name = "月初备注")
@@ -42,9 +44,7 @@ public class DemandDO extends BaseDO {
     private String reqInnerSeq;
     @Excel(name = "需求编号")
     private String reqNo;
-    @Excel(name = "投入资源")
     private int inputRes;
-    @Excel(name = "开发周期")
     private int devCycle;
     @Excel(name = "反馈时间")
     private String riskFeedbackTm;
@@ -142,6 +142,14 @@ public class DemandDO extends BaseDO {
     private String planEndTime;
 
     private String preCurPeriod2;
+
+    public Integer getProjectedWorkload() {
+        return projectedWorkload;
+    }
+
+    public void setProjectedWorkload(Integer projectedWorkload) {
+        this.projectedWorkload = projectedWorkload;
+    }
 
     public String getPreCurPeriod2() {
         return preCurPeriod2;
@@ -850,9 +858,12 @@ public class DemandDO extends BaseDO {
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 ", reqType='" + reqType + '\'' +
                 ", reqSts='" + reqSts + '\'' +
+                ", endMonRemark='" + endMonRemark + '\'' +
+                ", requirementStatusModificationNotes='" + requirementStatusModificationNotes + '\'' +
+                ", isApprovalProcess='" + isApprovalProcess + '\'' +
+                ", projectMng='" + projectMng + '\'' +
                 ", actPrdFinshTm='" + actPrdFinshTm + '\'' +
                 ", devpResMng='" + devpResMng + '\'' +
-                ", projectMng='" + projectMng + '\'' +
                 ", qaMng='" + qaMng + '\'' +
                 ", configMng='" + configMng + '\'' +
                 ", devpEng='" + devpEng + '\'' +
@@ -862,13 +873,12 @@ public class DemandDO extends BaseDO {
                 ", preTm='" + preTm + '\'' +
                 ", testFinshTm='" + testFinshTm + '\'' +
                 ", actTestFinshTm='" + actTestFinshTm + '\'' +
-                ", endMonRemark='" + endMonRemark + '\'' +
                 ", endFeedbackTm='" + endFeedbackTm + '\'' +
                 ", totalWorkload=" + totalWorkload +
                 ", inputWorkload=" + inputWorkload +
                 ", lastInputWorkload=" + lastInputWorkload +
-                ", remainWorkload=" + remainWorkload +
                 ", monInputWorkload=" + monInputWorkload +
+                ", remainWorkload=" + remainWorkload +
                 ", leadDeptPro='" + leadDeptPro + '\'' +
                 ", coorDeptPro='" + coorDeptPro + '\'' +
                 ", leadDeptWorkload='" + leadDeptWorkload + '\'' +
@@ -892,9 +902,8 @@ public class DemandDO extends BaseDO {
                 ", assignee='" + assignee + '\'' +
                 ", planStartTime='" + planStartTime + '\'' +
                 ", planEndTime='" + planEndTime + '\'' +
-                ", requirementStatusModificationNotes='" + requirementStatusModificationNotes + '\'' +
-                ", isApprovalProcess='" + isApprovalProcess + '\'' +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +
+                ", projectedWorkload=" + projectedWorkload +
                 '}';
     }
 }

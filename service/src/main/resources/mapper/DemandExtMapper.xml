@@ -70,6 +70,7 @@
         <result property="actUatUploadTm" jdbcType="VARCHAR" column="act_uat_upload_tm" />
         <result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
         <result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
+        <result property="projectedWorkload" jdbcType="INTEGER" column="projectedWorkload" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -129,7 +130,8 @@
 		creat_time ,
 		update_time ,
 		creat_user ,
-		update_user
+		update_user,
+		projectedWorkload
     </sql>
 
     <sql id="Base_Column_List1">
@@ -160,7 +162,8 @@
 		req_prd_line,
 		devp_res_mng,
 		is_svn_build,
-		req_abnor_type
+		req_abnor_type,
+		projectedWorkload
 	</sql>
 
     <update id="updateReqPlanJsp" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
@@ -264,6 +267,7 @@
         creat_time ,
         update_time ,
         creat_user ,
+        projectedWorkload,
         update_user)
         values(
         #{reqInnerSeq },
@@ -322,6 +326,7 @@
         #{creatTime },
         #{updateTime },
         #{creatUser},
+        #{projectedWorkload},
         #{updateUser})
     </insert>
     <update id="updateReqSts" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
@@ -502,7 +507,12 @@
         <if test="updateUser != null and updateUser != ''">
             ,update_user =#{updateUser}
         </if>
-            ,devp_coor_dept =#{devpCoorDept }
+        <if test="projectedWorkload != null">
+            ,projectedWorkload =#{projectedWorkload }
+        </if>
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept}
+        </if>
         where req_inner_seq =#{reqInnerSeq }
     </update>
 
