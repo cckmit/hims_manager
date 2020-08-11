@@ -546,12 +546,10 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                         //判断需求名称是否带有 【测试案例编写】 如果有 则查看是否有编写了测试案例编写数
                         if(jiraTaskBodyBO.getIssueName().indexOf("【测试案例编写】")!=-1){
                             String[] split = jiraWorklogDO.getComment().split("#");
-                            if(split.length==3){
-                                Pattern pattern = compile("^[-\\+]?[\\d]*$");
-                                if(split[1].equals("测试案例编写数")&&pattern.matcher(split[2]).matches()){
+                            Pattern pattern = compile("^[-\\+]?[\\d]*$");
+                            for(int j=0;j<split.length-1;j++) {
+                                if (split[j].equals("测试案例编写数") && pattern.matcher(split[j+1]).matches()) {
                                     workingHoursDO.setCaseWritingNumber(Integer.parseInt(split[2]));
-                                }else{
-                                    workingHoursDO.setCaseWritingNumber(0);
                                 }
                             }
                         }

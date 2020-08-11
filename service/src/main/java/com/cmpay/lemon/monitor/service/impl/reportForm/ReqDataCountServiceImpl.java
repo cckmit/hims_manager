@@ -619,12 +619,24 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(list == null ||list.size()<0){
                 workingHoursBO.setMeanDefect("0");
             }else{
+                //获取当前月份
+                Date date = new Date();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+                String month = simpleDateFormat.format(date);
+                int day = 1;
+                //如果选择的月份是当前月
+                if(month.equals(defectDetailsDO.getRegistrationDate())){
+                    day = DateUtil.getDaysByMonth();
+                }else{
+                    day = DateUtil.getDaysByYearMonth(defectDetailsDO.getRegistrationDate());
+                }
                 // 获取当前月份的天数
-                int day = DateUtil.getDaysByYearMonth(defectDetailsDO.getRegistrationDate());
+
                 int a = list.size();
                 int b = Integer.parseInt(workingHoursBO.getSumDept()) * day;
-                DecimalFormat df = new DecimalFormat("0.##");//格式化小数
-                String meanDefect = df.format((float)a/b);//返回的是String类型
+                //保留两位小数
+                DecimalFormat df = new DecimalFormat("0.##");
+                String meanDefect = df.format((float)a/b);
                 workingHoursBO.setMeanDefect(meanDefect);
             }
         }

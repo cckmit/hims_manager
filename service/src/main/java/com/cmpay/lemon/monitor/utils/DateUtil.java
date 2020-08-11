@@ -255,6 +255,13 @@ public class DateUtil {
         return format.format(date);
 
     }
+    public static int getDaysByMonth() {
+        Calendar calendar = Calendar.getInstance();
+        Date today = new Date();
+        calendar.setTime(today);
+        int monthDay = calendar.get(Calendar.DAY_OF_MONTH);
+        return  monthDay;
+    }
     /**
      * 根据年 月 获取对应的月份 天数
      */
