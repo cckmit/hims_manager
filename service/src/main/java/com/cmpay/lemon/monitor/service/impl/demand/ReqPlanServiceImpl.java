@@ -137,6 +137,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     private IErcdmgErorDao iErcdmgErorDao;
     @Autowired
     private IUserExtDao iUserDao;
+    @Autowired
+    private IOrganizationStructureDao iOrganizationStructureDao;
 
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
@@ -1217,7 +1219,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
                 //获取下一条内部编号
                 String nextInnerSeq = getNextInnerSeq();
-                if (dem.size() == 0) {
+                if (dem.size() == 0 || dem == null) {
                     String reqInnerSeq = demand.getReqInnerSeq();
                     demand.setReqInnerSeq(nextInnerSeq);
                     demandDao.insertStockReq(demand);
@@ -1259,25 +1261,26 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setCreatTime(LocalDateTime.now());
                     //登记需求状态历史表
                     demandStateHistoryDao.insert(demandStateHistoryDO);
+                    // 插入jk领导审核记录
+                    if ("是".equals(demand.getIsApprovalProcess())) {
+                        DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
+                        demandPictureDO.setPicId(null);
+                        demandPictureDO.setPicReqinnerseq(nextInnerSeq);
+                        demandPictureDO.setPicUser(user);
+                        demandPictureDO.setPicTime(time);
+                        demandPictureDO.setPicMoth(last_month);
+                        demandPictureDO.setPicReqnm(list.get(i).getReqNm());
+                        demandPictureDO.setPicReqno(list.get(i).getReqNo());
+                        //登记JK需求审核表
+                        iDemandPictureDao.insert(demandPictureDO);
+                    }
 
-                } else {
-                    //若下月已有该需求则不做修改
-                  /*  demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
-                    demandDao.updateStockReq(demand);*/
                 }
-                // 插入jk领导审核记录
-                if ("是".equals(demand.getIsApprovalProcess())) {
-                    DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(picReqinnerseq);
-                    demandPictureDO.setPicId(null);
-                    demandPictureDO.setPicReqinnerseq(nextInnerSeq);
-                    demandPictureDO.setPicUser(user);
-                    demandPictureDO.setPicTime(time);
-                    demandPictureDO.setPicMoth(last_month);
-                    demandPictureDO.setPicReqnm(list.get(i).getReqNm());
-                    demandPictureDO.setPicReqno(list.get(i).getReqNo());
-                    //登记JK需求审核表
-                    iDemandPictureDao.insert(demandPictureDO);
-                }
+//                else {
+//                    //若下月已有该需求则不做修改
+//                  /*  demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
+//                    demandDao.updateStockReq(demand);*/
+//                }
 
             }
         } catch (Exception e) {
@@ -1317,7 +1320,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String devpLeadDept = demandDO.getDevpLeadDept();
         TPermiDeptDO permiDeptDO = new TPermiDeptDO();
 
-
+        //根据操作人姓名查询组织表的一级团队负责人
+        OrganizationStructureDO organizationStructureDO = new OrganizationStructureDO();
+        organizationStructureDO.setSecondlevelorganization(devpLeadDept);
+        organizationStructureDO.setFirstlevelorganizationleader(userName);
+        List<OrganizationStructureDO> organizationStructureDOList =  iOrganizationStructureDao.find(organizationStructureDO);
+        if (organizationStructureDOList!=null && organizationStructureDOList.size()>0){
+           //当前操作人为该需求主导部门的一级团队负责人
+            return true;
+        }
         //判断开发主导部门和部门经理不为空
         if (!(StringUtils.isBlank(devpLeadDept) && (StringUtils.isBlank(productMng)))) {
             //有产品经理，无主导部门,判断该操作员是否是该产品经理
@@ -1373,13 +1384,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             Date date = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM");
             String month = df.format(date);
+            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            // 操作人
+            String user = userService.getFullname(SecurityUtils.getLoginName());
             //获取登录用户ID
             String update_user = SecurityUtils.getLoginName();
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
                 DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
                 DemandDO demandDO1 = demandDao.get(ids.get(i));
-                System.err.println(demand.getReqSts());
                 //判断需求是否暂停需求，不是则跳过
                 if (!REQCANCEL.equals(demand.getReqSts())) {
                     continue;
@@ -1423,7 +1436,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //判断该需求是否当前月已存在
                 List<DemandDO> dem = demandDao.getReqTaskByUKImpl(vo);
                 //如果当前月需求不存在，则新增，否则更新需求信息
-                if (dem.size() == 0) {
+                if (dem.size() == 0||dem ==null) {
                     String reqInnerSeq = demand.getReqInnerSeq();
                     demand.setReqInnerSeq(getNextInnerSeq());
                     demandDao.insertStockReq(demand);
@@ -1463,6 +1476,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //登记需求状态历史表
                     demandStateHistoryDao.insert(demandStateHistoryDO);
+                    // 插入jk领导审核记录
+                    if ("是".equals(demand.getIsApprovalProcess())) {
+                        DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(ids.get(i));
+                        demandPictureDO.setPicId(null);
+                        demandPictureDO.setPicReqinnerseq(getNextInnerSeq());
+                        demandPictureDO.setPicUser(user);
+                        demandPictureDO.setPicTime(time);
+                        demandPictureDO.setPicMoth(month);
+                        demandPictureDO.setPicReqnm(demand.getReqNm());
+                        demandPictureDO.setPicReqno(demand.getReqNo());
+                        //登记JK需求审核表
+                        iDemandPictureDao.insert(demandPictureDO);
+                    }
                 } else {
                     demand.setReqInnerSeq(dem.get(0).getReqInnerSeq());
                     demandDao.updateStockReq(demand);
@@ -1486,6 +1512,20 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
                     //登记需求状态历史表
                     demandStateHistoryDao.insert(demandStateHistoryDO);
+                    // 插入jk领导审核记录
+                    // l历史数据上传了图片，本月未上传
+                    if ("是".equals(demand.getIsApprovalProcess())&&"否".equals(reqPlanService.findById(demand.getReqInnerSeq()).getIsApprovalProcess())) {
+                        DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(ids.get(i));
+                        demandPictureDO.setPicId(null);
+                        demandPictureDO.setPicReqinnerseq(dem.get(0).getReqInnerSeq());
+                        demandPictureDO.setPicUser(user);
+                        demandPictureDO.setPicTime(time);
+                        demandPictureDO.setPicMoth(month);
+                        demandPictureDO.setPicReqnm(demand.getReqNm());
+                        demandPictureDO.setPicReqno(demand.getReqNo());
+                        //登记JK需求审核表
+                        iDemandPictureDao.insert(demandPictureDO);
+                    }
                 }
             }
         } catch (Exception e) {

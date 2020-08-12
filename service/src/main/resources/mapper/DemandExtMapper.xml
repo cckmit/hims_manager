@@ -195,9 +195,7 @@
         select
         (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS firstLevelOrganization,
         (CASE WHEN (SELECT pic_name FROM t_demand_picture t
-        <where>
-            t.pic_reqInnerSeq = req_inner_seq
-        </where>
+        where t.pic_reqInnerSeq = req_inner_seq
         ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         from t_demand_info

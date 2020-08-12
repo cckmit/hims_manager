@@ -146,6 +146,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Autowired
     private JiraOperationService jiraOperationService;
+    @Autowired
+    private IOrganizationStructureDao iOrganizationStructureDao;
 
     @Override
     public DemandBO findById(String req_inner_seq) {
@@ -1435,7 +1437,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         String productMng = demandDO.getProductMng();
         String devpLeadDept = demandDO.getDevpLeadDept();
         TPermiDeptDO permiDeptDO = new TPermiDeptDO();
-
+        //根据操作人姓名查询组织表的一级团队负责人
+        OrganizationStructureDO organizationStructureDO = new OrganizationStructureDO();
+        organizationStructureDO.setSecondlevelorganization(devpLeadDept);
+        organizationStructureDO.setFirstlevelorganizationleader(userName);
+        List<OrganizationStructureDO> organizationStructureDOList =  iOrganizationStructureDao.find(organizationStructureDO);
+        if (organizationStructureDOList!=null && organizationStructureDOList.size()>0){
+            //当前操作人为该需求主导部门的一级团队负责人
+            return true;
+        }
 
         //判断开发主导部门和部门经理不为空
         if (!(StringUtils.isBlank(devpLeadDept) && (StringUtils.isBlank(productMng)))) {

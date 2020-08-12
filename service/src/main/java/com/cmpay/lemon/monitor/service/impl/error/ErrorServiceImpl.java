@@ -180,6 +180,10 @@ public class ErrorServiceImpl implements ErrorService {
         }
         ercdmgError.setProdUserId( tPermiUser.getUserId());
 
+        //判断cr的长度 ,如果长度超过30，则截取前三十位
+        if(ercdmgError.getCr().length()>30){
+            ercdmgError.setCr(ercdmgError.getCr().substring(0,30));
+        }
         ErcdmgErrorComditionDO errorComditionDO = new ErcdmgErrorComditionDO();
         BeanConvertUtils.convert(errorComditionDO, ercdmgError);
         iErcdmgErorDao.insert(errorComditionDO);

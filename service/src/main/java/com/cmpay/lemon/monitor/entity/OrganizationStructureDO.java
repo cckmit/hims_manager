@@ -1,8 +1,8 @@
 /*
  * @ClassName OrganizationStructureDO
- * @Description
+ * @Description 
  * @version 1.0
- * @Date 2020-07-08 19:17:54
+ * @Date 2020-08-12 11:49:00
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -23,6 +23,10 @@ public class OrganizationStructureDO extends BaseDO {
      * @Fields secondlevelorganization 二级组织
      */
     private String secondlevelorganization;
+    /**
+     * @Fields firstlevelorganizationleader 一级部门领导
+     */
+    private String firstlevelorganizationleader;
 
     public Integer getOrganizationid() {
         return organizationid;
@@ -48,12 +52,11 @@ public class OrganizationStructureDO extends BaseDO {
         this.secondlevelorganization = secondlevelorganization;
     }
 
-    @Override
-    public String toString() {
-        return "OrganizationStructureDO{" +
-                "organizationid=" + organizationid +
-                ", firstlevelorganization='" + firstlevelorganization + '\'' +
-                ", secondlevelorganization='" + secondlevelorganization + '\'' +
-                '}';
+    public String getFirstlevelorganizationleader() {
+        return firstlevelorganizationleader;
+    }
+
+    public void setFirstlevelorganizationleader(String firstlevelorganizationleader) {
+        this.firstlevelorganizationleader = firstlevelorganizationleader;
     }
 }
