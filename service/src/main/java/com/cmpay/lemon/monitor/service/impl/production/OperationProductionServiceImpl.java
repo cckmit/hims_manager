@@ -965,7 +965,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
         //未投产,req前缀投产编号则查询该编号对应的需求计划
         DemandDO demandDO = new DemandDO();
-        if (proNumber.startsWith("REQ")) {
+        if (proNumber.startsWith("REQ") && !proNumber.startsWith("REQS")) {
             //查询该是编号是否已经投产
             ProductionBO productionBO = this.searchProdutionDetail(proNumber);
             if (productionBO != null && !productionBO.getProStatus().equals("投产取消") && !productionBO.getProStatus().equals("投产打回") && !productionBO.getProStatus().equals("投产回退")) {
@@ -2030,7 +2030,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             // 附件
             Vector<File> filesv = new Vector<File>();
             // 添加附件信息
-            if (!file.isEmpty()) {
+            if (file != null && !file.isEmpty()) {
                 filesv = this.setVectorFile(file, filesv, bean);
             }
             filesv.add(unusualFile);
@@ -2212,7 +2212,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             Vector<File> files = new Vector<File>();
             File file_fire = this.exportUrgentExcel(list);
             // 添加救火附件
-            if (!file.isEmpty()) {
+            if (file != null && !file.isEmpty()) {
                 files = this.setVectorFile(file, files, bean);
             }
             files.add(file_fire);
