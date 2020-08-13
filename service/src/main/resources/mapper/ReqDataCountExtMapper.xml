@@ -430,8 +430,8 @@
 	</select>
 
 	<select id="getReportForm6" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ReqDateCountDO">
-		select DISTINCT a.req_no 'req_no',
-		a.req_nm 'req_nm',
+		select  b.req_no 'req_no',
+		b.req_nm 'req_nm',
 		a.project_start_tm 'project_start_tm',
 		a.act_prd_upload_tm 'act_prd_upload_tm',
 		a.act_workload_upload_tm 'act_workload_upload_tm' ,
@@ -448,24 +448,24 @@
 		b.test_eng 'test_eng',
 		b.pre_cur_period 'pre_cur_period2',
 		(select value from t_permi_dic_data where dic_id ='REQ_PEROID' and name =b.pre_cur_period) 'pre_cur_period'
-		from t_demand_extra a ,t_demand_info b
-		<where>
-			a.req_no = b.req_no
-			and b.req_sts !=60
-			<if test="reqImplMon != null and reqImplMon != ''">
-				AND b.req_impl_mon =#{reqImplMon}
-			</if>
-			<if test="devpLeadDept != null and devpLeadDept != ''">
-				AND b.devp_lead_dept = #{devpLeadDept}
-			</if>
-			<if test="productMng != null and productMng != ''">
-				AND b.product_mng = #{productMng}
-			</if>
-			<if test="firstLevelOrganization != null and firstLevelOrganization != ''">
-				AND  b.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
-			</if>
-		</where>
-		  ORDER BY  project_start_tm desc
+		from t_demand_info b  left join t_demand_extra a
+		on
+		b.req_no = a.req_no
+		where  b.req_sts !=60
+		<if test="reqImplMon != null and reqImplMon != ''">
+			AND b.req_impl_mon =#{reqImplMon}
+		</if>
+		<if test="devpLeadDept != null and devpLeadDept != ''">
+			AND b.devp_lead_dept = #{devpLeadDept}
+		</if>
+		<if test="productMng != null and productMng != ''">
+			AND b.product_mng = #{productMng}
+		</if>
+		<if test="firstLevelOrganization != null and firstLevelOrganization != ''">
+			AND  b.devp_lead_dept in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+		</if>
+		GROUP BY req_no, req_nm
+		ORDER BY project_start_tm desc
 	</select>
 
 	<select id="getStageByJd" resultMap="rt">
