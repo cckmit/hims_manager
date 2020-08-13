@@ -324,7 +324,32 @@ public class OperationApplicationServiceImpl implements OperationApplicationServ
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 输入字段不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-
+        //新增提示，当字段超长时
+        // 判断名称
+        if (bean.getOperRequestContent().length()>100) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 系统操作名称字数超长，请不要超过100字");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
+        //判断操作原因
+        if (bean.getOperApplicationReason().length()>1000) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 系统操作原因描述字数超长，请不要超过1000字");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
+        //判断分析描述
+        if (bean.getAnalysis().length()>1000) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 影响分析描述字数超长，请不要超过1000字");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
+        //更新完成时间说明
+        if (bean.getCompletionUpdate().length()>1000) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 更新要求完成时间说明字数超长，请不要超过1000字");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
+        //备注
+        if (bean.getRemark().length()>1000) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 备注字数超长，请不要超过1000字");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
         this.addOperationalApplication(bean);
         ScheduleDO scheduleBean = new ScheduleDO(bean.getOperNumber(), SecurityUtils.getLoginName(), "录入", "", "提出", "");
         //操作员姓名

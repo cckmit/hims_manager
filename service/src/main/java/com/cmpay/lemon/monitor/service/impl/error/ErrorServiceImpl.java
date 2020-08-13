@@ -202,12 +202,8 @@ public class ErrorServiceImpl implements ErrorService {
         SimpleDateFormat df2 = new SimpleDateFormat("yyyyMMddHHmmss");//设置日期格式
         errorComditionDO.setUpdDt(df1.format(ss));
         errorComditionDO.setTmSmp(df2.format(ss));
-        System.err.println(errorComditionDO.getUpdDt());
-        System.err.println(errorComditionDO.getTmSmp());
         String sitmsg_cd= iErcdmgErorDao.selectPubtmsg(ercdmgErrorComditionBO.getErrorCd());
         String sittsg_cd= iErcdmgErorDao.selectPubttms(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
-        System.err.println("查询sit"+sitmsg_cd);
-        System.err.println("查询sit"+sittsg_cd);
         if(sittsg_cd!=null){
             //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -218,25 +214,25 @@ public class ErrorServiceImpl implements ErrorService {
             iErcdmgErorDao.insertPubtmsg(errorComditionDO);
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
-        try {
-            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-            URL sit_url = new URL(sit_url_str);
-            //得到connection对象。
-            HttpURLConnection sit_connection = (HttpURLConnection) sit_url.openConnection();
-            //设置请求方式
-            sit_connection.setRequestMethod("GET");
-            //连接
-            sit_connection.connect();
-            int sit_responseCode = sit_connection.getResponseCode();
-            if(sit_responseCode != HttpURLConnection.HTTP_OK){
-                return "SIT";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        try {
+//            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+//            URL sit_url = new URL(sit_url_str);
+//            //得到connection对象。
+//            HttpURLConnection sit_connection = (HttpURLConnection) sit_url.openConnection();
+//            //设置请求方式
+//            sit_connection.setRequestMethod("GET");
+//            //连接
+//            sit_connection.connect();
+//            int sit_responseCode = sit_connection.getResponseCode();
+//            if(sit_responseCode != HttpURLConnection.HTTP_OK){
+//                return "SIT";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
         return "";
     }
     /**
@@ -254,7 +250,6 @@ public class ErrorServiceImpl implements ErrorService {
         errorComditionDO.setTmSmp(df2.format(ss));
         String uatmsg_cd= iErcdmgErorDao.selectPubtmsg(ercdmgErrorComditionBO.getErrorCd());
         String uattsg_cd= iErcdmgErorDao.selectPubttms(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
-        System.err.println("uat:"+uatmsg_cd+""+uattsg_cd);
         if(uattsg_cd!=null){
             //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -265,26 +260,26 @@ public class ErrorServiceImpl implements ErrorService {
             iErcdmgErorDao.insertPubtmsg(errorComditionDO);
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
-        try {
-            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-
-            URL uat_url = new URL(uat_url_str);
-            //得到connection对象。
-            HttpURLConnection uat_connection = (HttpURLConnection) uat_url.openConnection();
-            //设置请求方式
-            uat_connection.setRequestMethod("GET");
-            //连接
-            uat_connection.connect();
-            int uat_responseCode = uat_connection.getResponseCode();
-            if(uat_responseCode != HttpURLConnection.HTTP_OK){
-                return "UAT";
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        try {
+//            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+//
+//            URL uat_url = new URL(uat_url_str);
+//            //得到connection对象。
+//            HttpURLConnection uat_connection = (HttpURLConnection) uat_url.openConnection();
+//            //设置请求方式
+//            uat_connection.setRequestMethod("GET");
+//            //连接
+//            uat_connection.connect();
+//            int uat_responseCode = uat_connection.getResponseCode();
+//            if(uat_responseCode != HttpURLConnection.HTTP_OK){
+//                return "UAT";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
         return "";
     }
     @Override
@@ -336,8 +331,6 @@ public class ErrorServiceImpl implements ErrorService {
         System.err.println(errorComditionDO.getTmSmp());
         String sitmsg_cd= iErcdmgErorDao.selectPubtmsg(ercdmgErrorComditionBO.getErrorCd());
         String sittsg_cd= iErcdmgErorDao.selectPubttms(ercdmgErrorComditionBO.getErrorCd(),ercdmgErrorComditionBO.getBuscnl());
-        System.err.println("查询sit"+sitmsg_cd);
-        System.err.println("查询sit"+sittsg_cd);
         if(sittsg_cd==null){
             //throw new ServiceException("你输入的错误码"+ercdmgError.getErrorCd()+"|"+ercdmgError.getBuscnl()+"在SIT数控库pubttms表中已存在");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -349,24 +342,24 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在SIT数控库pubttms表中不存在");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        try {
-            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-            URL sit_url = new URL(sit_url_str);
-            HttpURLConnection sit_connection = (HttpURLConnection)sit_url.openConnection();
-            sit_connection.setRequestMethod("GET");
-            sit_connection.connect();
-            int sit_responseCode = sit_connection.getResponseCode();
-            if (sit_responseCode != 200) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"SIT更新在SIT数控库pubttms表中不存在");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        try {
+//            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+//            URL sit_url = new URL(sit_url_str);
+//            HttpURLConnection sit_connection = (HttpURLConnection)sit_url.openConnection();
+//            sit_connection.setRequestMethod("GET");
+//            sit_connection.connect();
+//            int sit_responseCode = sit_connection.getResponseCode();
+//            if (sit_responseCode != 200) {
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"SIT更新在SIT数控库pubttms表中不存在");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
         try {
             iErcdmgErorDao.updatePubtmsg(errorComditionDO);
             iErcdmgErorDao.updatePubttms(errorComditionDO);
@@ -405,24 +398,24 @@ public class ErrorServiceImpl implements ErrorService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"在UAT数控库pubttms表中不存在");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        try {
-            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-            URL uat_url = new URL(uat_url_str);
-            HttpURLConnection uat_connection = (HttpURLConnection)uat_url.openConnection();
-            uat_connection.setRequestMethod("GET");
-            uat_connection.connect();
-            int uat_responseCode = uat_connection.getResponseCode();
-            if (uat_responseCode != 200) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"UAT更新在UAT数控库pubttms表中不存在");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        try {
+//            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+//            URL uat_url = new URL(uat_url_str);
+//            HttpURLConnection uat_connection = (HttpURLConnection)uat_url.openConnection();
+//            uat_connection.setRequestMethod("GET");
+//            uat_connection.connect();
+//            int uat_responseCode = uat_connection.getResponseCode();
+//            if (uat_responseCode != 200) {
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                MsgEnum.ERROR_CUSTOM.setMsgInfo("你输入的错误码"+ercdmgErrorComditionBO.getErrorCd()+"|"+ercdmgErrorComditionBO.getBuscnl()+"UAT更新在UAT数控库pubttms表中不存在");
+//                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
         try {
             iErcdmgErorDao.updatePubtmsg(errorComditionDO);
             iErcdmgErorDao.updatePubttms(errorComditionDO);
