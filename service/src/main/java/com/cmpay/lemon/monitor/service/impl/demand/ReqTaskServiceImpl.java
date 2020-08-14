@@ -83,6 +83,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private static final int FINISHUATTEST = 140;
     // 老产品线
     private static final String OLDPRDLINE = "老产品线";
+    //  无效问题
+    private static final String WUXIAOWENTI = "无效问题";
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqTaskServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
@@ -2127,6 +2129,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-1040")){
                     defectDetailsList.get(i).setEpicKey("CMPAY-999");
                 }
+                // 无效问题在缺陷月报报表不统计
+                if(WUXIAOWENTI.equals(defectDetailsList.get(i).getDefectType())){
+                    continue;
+                }
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
                 // 根据jiraKey获取内部编号
@@ -2251,7 +2257,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 if(defectDetailsList.get(i).getEpicKey().equals("CMPAY-1040")){
                     defectDetailsList.get(i).setEpicKey("CMPAY-999");
                 }
-
+                // 无效问题在缺陷月报报表不统计
+                if(WUXIAOWENTI.equals(defectDetailsList.get(i).getDefectType())){
+                    continue;
+                }
 
                 DemandJiraDO demandJiraDO = new DemandJiraDO();
                 demandJiraDO.setJiraKey(defectDetailsList.get(i).getEpicKey());
