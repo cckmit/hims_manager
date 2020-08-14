@@ -357,7 +357,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         );
         return reqDataCountBOS;
     }
-
     @Override
     public List<DemandBO> getReportForm6(String reqImplMon, String devpLeadDept, String productMng, String firstLevelOrganization) {
         List<DemandBO> reqDataCountBOS = new LinkedList<>();
@@ -370,12 +369,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         impl.forEach(m ->
                 reqDataCountBOS.add(BeanUtils.copyPropertiesReturnDest(new DemandBO(), m))
         );
-
         for (int i = 0; i < reqDataCountBOS.size(); i++) {
             int sum = 0;
             //如果当前阶段为已完成，则需要上次6个文档
-            System.err.println(reqDataCountBOS.get(i));
-            if (FINISHPRD1.equals(reqDataCountBOS.get(i).getPreCurPeriod2())) {
+            if (FINISHPRD == Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
@@ -394,10 +391,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 if (reqDataCountBOS.get(i).getActProductionUploadTm() == null || reqDataCountBOS.get(i).getActProductionUploadTm() == "") {
                     sum = sum + 1;
                 }
-                System.err.println(1111 + "====" + sum);
             }
             //预投产
-            else if (FINISHPRETEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) <= 0 && FINISHPRD1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) > 0) {
+            else if (FINISHPRETEST <= Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())  && FINISHPRD > Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
@@ -413,10 +409,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 if (reqDataCountBOS.get(i).getActPreUploadTm() == null || reqDataCountBOS.get(i).getActPreUploadTm() == "") {
                     sum = sum + 1;
                 }
-                System.err.println(22222 + "====" + sum);
             }
             // uat
-            else if (FINISHUATTEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) <= 0 && FINISHPRETEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) > 0) {
+            else if (FINISHUATTEST <= Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())&& FINISHPRETEST > Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
@@ -429,10 +424,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 //				if(reqDataCountBOS.get(i).getActUatUploadTm()==null || reqDataCountBOS.get(i).getActUatUploadTm()==""){
 //                    sum=sum+1;
 //				}
-                System.err.println(3333 + "====" + sum);
             }
             // sit
-            else if (FINISHSITTEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) <= 0 && FINISHUATTEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) > 0) {
+            else if (FINISHSITTEST <= Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2()) && FINISHUATTEST > Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
@@ -442,26 +436,22 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 if (reqDataCountBOS.get(i).getActSitUploadTm() == null || reqDataCountBOS.get(i).getActSitUploadTm() == "") {
                     sum = sum + 1;
                 }
-                System.err.println(4444 + "====" + sum);
             }
             // 技术文档
-            else if (TECHDOCCONFIRM1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) <= 0 && FINISHSITTEST1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) > 0) {
+            else if (TECHDOCCONFIRM <= Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2()) && FINISHSITTEST > Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
                 if (reqDataCountBOS.get(i).getActWorkloadUploadTm() == null || reqDataCountBOS.get(i).getActWorkloadUploadTm() == "") {
                     sum = sum + 1;
                 }
-                System.err.println(5555 + "====" + sum);
             }
             // 需求定搞
-            else if (REQCONFIRM1.compareTo(reqDataCountBOS.get(i).getPreCurPeriod2()) <= 0) {
+            else if (REQCONFIRM <= Integer.parseInt(reqDataCountBOS.get(i).getPreCurPeriod2())) {
                 if (reqDataCountBOS.get(i).getActPrdUploadTm() == null || reqDataCountBOS.get(i).getActPrdUploadTm() == "") {
                     sum = sum + 1;
                 }
-                System.err.println(6666 + "====" + sum);
             }
-            System.err.println(sum);
             reqDataCountBOS.get(i).setNoUpload(sum);
         }
         return reqDataCountBOS;

@@ -451,7 +451,7 @@
 		from t_demand_info b  left join t_demand_extra a
 		on
 		b.req_no = a.req_no
-		where  b.req_sts !=60
+		where  b.req_sts !=60 and b.req_no != ''
 		<if test="reqImplMon != null and reqImplMon != ''">
 			AND b.req_impl_mon =#{reqImplMon}
 		</if>
