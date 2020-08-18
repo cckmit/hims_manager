@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ITestProgressDetailDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="test_case_number" property="testCaseNumber" jdbcType="VARCHAR" />
+        <result column="case_execution_number" property="caseExecutionNumber" jdbcType="VARCHAR" />
+        <result column="case_completed_number" property="caseCompletedNumber" jdbcType="VARCHAR" />
+        <result column="defects_number" property="defectsNumber" jdbcType="VARCHAR" />
+        <result column="test_progress" property="testProgress" jdbcType="VARCHAR" />
+        <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
+        <result column="req_prd_line" property="reqPrdLine" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, epicKey, test_case_number, case_execution_number, case_completed_number, defects_number, 
+        test_progress, test_Date, req_prd_line
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_test_progress_detail
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_test_progress_detail
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        insert into t_test_progress_detail
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="epickey != null" >
+                epicKey,
+            </if>
+            <if test="testCaseNumber != null" >
+                test_case_number,
+            </if>
+            <if test="caseExecutionNumber != null" >
+                case_execution_number,
+            </if>
+            <if test="caseCompletedNumber != null" >
+                case_completed_number,
+            </if>
+            <if test="defectsNumber != null" >
+                defects_number,
+            </if>
+            <if test="testProgress != null" >
+                test_progress,
+            </if>
+            <if test="testDate != null" >
+                test_Date,
+            </if>
+            <if test="reqPrdLine != null" >
+                req_prd_line,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="epickey != null" >
+                #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="testCaseNumber != null" >
+                #{testCaseNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="caseExecutionNumber != null" >
+                #{caseExecutionNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="caseCompletedNumber != null" >
+                #{caseCompletedNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="defectsNumber != null" >
+                #{defectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="testProgress != null" >
+                #{testProgress,jdbcType=VARCHAR},
+            </if>
+            <if test="testDate != null" >
+                #{testDate,jdbcType=VARCHAR},
+            </if>
+            <if test="reqPrdLine != null" >
+                #{reqPrdLine,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        update t_test_progress_detail
+        <set >
+            <if test="epickey != null" >
+                epicKey = #{epickey,jdbcType=VARCHAR},
+            </if>
+            <if test="testCaseNumber != null" >
+                test_case_number = #{testCaseNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="caseExecutionNumber != null" >
+                case_execution_number = #{caseExecutionNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="caseCompletedNumber != null" >
+                case_completed_number = #{caseCompletedNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="defectsNumber != null" >
+                defects_number = #{defectsNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="testProgress != null" >
+                test_progress = #{testProgress,jdbcType=VARCHAR},
+            </if>
+            <if test="testDate != null" >
+                test_Date = #{testDate,jdbcType=VARCHAR},
+            </if>
+            <if test="reqPrdLine != null" >
+                req_prd_line = #{reqPrdLine,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_test_progress_detail
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="epickey != null" >
+                and epicKey = #{epickey,jdbcType=VARCHAR}
+            </if>
+            <if test="testCaseNumber != null" >
+                and test_case_number = #{testCaseNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="caseExecutionNumber != null" >
+                and case_execution_number = #{caseExecutionNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="caseCompletedNumber != null" >
+                and case_completed_number = #{caseCompletedNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsNumber != null" >
+                and defects_number = #{defectsNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="testProgress != null" >
+                and test_progress = #{testProgress,jdbcType=VARCHAR}
+            </if>
+            <if test="testDate != null" >
+                and test_Date = #{testDate,jdbcType=VARCHAR}
+            </if>
+            <if test="reqPrdLine != null" >
+                and req_prd_line = #{reqPrdLine,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
