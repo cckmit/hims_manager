@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ITestProgressDetailExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="epicKey" property="epickey" jdbcType="VARCHAR" />
+        <result column="test_case_number" property="testCaseNumber" jdbcType="VARCHAR" />
+        <result column="case_execution_number" property="caseExecutionNumber" jdbcType="VARCHAR" />
+        <result column="case_completed_number" property="caseCompletedNumber" jdbcType="VARCHAR" />
+        <result column="defects_number" property="defectsNumber" jdbcType="VARCHAR" />
+        <result column="test_progress" property="testProgress" jdbcType="VARCHAR" />
+        <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
+        <result column="req_prd_line" property="reqPrdLine" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, epicKey, test_case_number, case_execution_number, case_completed_number, defects_number,
+        test_progress, test_Date, req_prd_line
+    </sql>
+
+
+
+</mapper>
