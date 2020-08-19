@@ -19,6 +19,38 @@
         test_progress, test_Date, req_prd_line
     </sql>
 
+    <select id="findListLine" resultType="string" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        select DISTINCT
+        req_prd_line
+        from t_test_progress_detail
+        where test_Date between #{startTime} and #{endTime}
+    </select>
+    <select id="findListEpic" resultType="string" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        select DISTINCT
+        epickey
+        from t_test_progress_detail
+        where test_Date between #{startTime} and #{endTime}
+        and req_prd_line = #{reqPrdLine}
+        GROUP BY epicKey
+    </select>
 
+    <select id="findListDate" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_test_progress_detail
+        where test_Date between #{startTime} and #{endTime}
+        and req_prd_line = #{reqPrdLine}
+        and epicKey = #{epickey}
+        GROUP BY epicKey,test_Date ORDER BY test_Date
+    </select>
 
+    <select id="findListPriorDate" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.TestProgressDetailDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_test_progress_detail
+        where  test_Date &lt; #{startTime}
+        and req_prd_line = #{reqPrdLine}
+        and epicKey = #{epickey}
+        GROUP BY epicKey,test_Date ORDER BY test_Date
+    </select>
 </mapper>

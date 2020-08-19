@@ -1565,7 +1565,7 @@
             AND   a.req_nm =#{reqNm}
         </if>
         <if test="reqNo != null and reqNo != ''">
-            AND   OR a.req_no = #{reqNo}
+            AND   a.req_no = #{reqNo}
         </if>
         <if test="reqImplMon != null and reqImplMon != ''">
             AND a.req_impl_mon =#{reqImplMon}

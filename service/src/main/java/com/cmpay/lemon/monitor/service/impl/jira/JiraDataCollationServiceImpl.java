@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.impl.jira;
 
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.DemandTestStatusBO;
 import com.cmpay.lemon.monitor.bo.UserInfoBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
@@ -12,6 +13,7 @@ import com.cmpay.lemon.monitor.service.SystemRoleService;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
+import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +70,10 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     private IUserRoleExtDao userRoleExtDao;
     @Autowired
     private IUserExtDao iUserDao;
+    @Autowired
+    private ReqDataCountService reqDataCountService;
+    @Autowired
+    private ITestProgressDetailExtDao testProgressDetailDao;
 
     @Autowired
     private IProUnhandledIssuesExtDao proUnhandledIssuesDao;
@@ -180,6 +186,81 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         //获得投产需求 未完成的问题，//需要在统计完缺陷后执行
         getproductedsRemainingQuestions();
 
+    }
+
+    @Async
+    @Override
+    public void TestProgressDetailOneDay(){
+        //获取当前日期的前一天
+        String date = DateUtil.getBeforeDay();
+        //获取当月时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        String month = simpleDateFormat.format(new Date());
+        DemandDO demandDO = new DemandDO();
+        demandDO.setReqImplMon(month);
+        // 测试部需求进度
+        List<DemandTestStatusBO>  list =  reqDataCountService.demandTestStatusList();
+        for(int i =0;i<list.size();i++){
+            // 如果未填写需求测试案例总数，导致测试进度为NAN，则跳过 并且测试执行数，完成数，缺陷数都为0的情况跳过
+            if("NaN%".equals(list.get(i).getTestProgress()) && list.get(i).getCaseCompletedNumber() == 0
+            && list.get(i).getCaseExecutionNumber() == 0 && list.get(i).getDefectsNumber() == 0) {
+                continue;
+            }
+            // 根据需求名，需求编号、月份 获取 需求的jira编号
+            demandDO.setReqNo(list.get(i).getReqNo());
+            demandDO.setReqNm(list.get(i).getReqNm());
+            List<DemandDO> demandDos = demandDao.QueryIsExecutingDemand(demandDO);
+
+            //从搜索到的需求中  找到对应的jira编号
+            DemandJiraDO demandJiraDO = new DemandJiraDO();
+            demandJiraDO.setReqInnerSeq(demandDos.get(0).getReqInnerSeq());
+            List<DemandJiraDO> demandJiraDOS = demandJiraDao.find(demandJiraDO);
+            // jira编号
+            String jiraKey = demandJiraDOS.get(0).getJiraKey();
+            // 产品线
+            String  reqPrdLind = demandDos.get(0).getReqPrdLine();
+            TestProgressDetailDO testProgressDetailDO = new TestProgressDetailDO();
+            testProgressDetailDO.setEpickey(jiraKey);
+            testProgressDetailDO.setTestDate(date);
+            testProgressDetailDO.setReqPrdLine(reqPrdLind);
+            testProgressDetailDO.setTestProgress(list.get(i).getTestProgress());
+            testProgressDetailDO.setTestCaseNumber(list.get(i).getTestCaseNumber());
+            testProgressDetailDO.setCaseCompletedNumber(list.get(i).getCaseCompletedNumber()+"");
+            testProgressDetailDO.setCaseExecutionNumber(list.get(i).getCaseExecutionNumber()+"");
+            testProgressDetailDO.setDefectsNumber(list.get(i).getDefectsNumber()+"");
+            // 根据epic和日期查询该天是否已存在数据
+            TestProgressDetailDO testProgressDetailDO1 = new TestProgressDetailDO();
+            testProgressDetailDO1.setEpickey(jiraKey);
+            testProgressDetailDO1.setTestDate(date);
+            List<TestProgressDetailDO> testProgressDetailDOList = testProgressDetailDao.find(testProgressDetailDO1);
+            if(testProgressDetailDOList ==null || testProgressDetailDOList.size() <=0){
+                // 根据epic查询是否存在历史数据
+                TestProgressDetailDO testProgressDetailDO2 = new TestProgressDetailDO();
+                testProgressDetailDO2.setEpickey(jiraKey);
+                List<TestProgressDetailDO> testProgressDetailDos = testProgressDetailDao.find(testProgressDetailDO2);
+                //为空，说明是新需求进行测试
+                if(testProgressDetailDos ==null || testProgressDetailDos.size() <=0){
+                    //插入
+                    testProgressDetailDao.insert(testProgressDetailDO);
+                }else{
+                    // 比较历史数据最后一条，与当前数据，如果数据不变，则不插入
+                    if(!testProgressDetailDO.getCaseCompletedNumber().equals(testProgressDetailDos.get(testProgressDetailDos.size()-1).getCaseCompletedNumber())
+                    || !testProgressDetailDO.getCaseExecutionNumber().equals(testProgressDetailDos.get(testProgressDetailDos.size()-1).getCaseExecutionNumber())
+                    || !testProgressDetailDO.getTestCaseNumber().equals(testProgressDetailDos.get(testProgressDetailDos.size()-1).getTestCaseNumber())
+                    || !testProgressDetailDO.getDefectsNumber().equals(testProgressDetailDos.get(testProgressDetailDos.size()-1).getDefectsNumber())){
+                        //测试案例总数，测试案例执行数，测试案例完成数，缺陷数，如果有不同，则添加记录
+                        //插入
+                        testProgressDetailDao.insert(testProgressDetailDO);
+                    }
+                }
+
+            }else{
+                //更新
+                testProgressDetailDO.setId(testProgressDetailDOList.get(0).getId());
+                testProgressDetailDao.update(testProgressDetailDO);
+            }
+
+        }
     }
 
     private void getproductedsRemainingQuestions() {

@@ -2078,12 +2078,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setMailCopyPerson(copy_mail);
             mailInfo.setReceivers(receiver_mail.split(";"));
             mailInfo.setCcs(copy_mail.split(";"));
-            mailInfo.setSubject("【正常投产(非投产日)审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
+            mailInfo.setSubject("【正常投产(非投产日)通知】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             //拼接邮件内容
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
             // 这个类主要来发送邮件
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)审核】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
+            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)通知】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
             if (unusualFile.isFile() && unusualFile.exists()) {
                 unusualFile.delete();
             }
@@ -2178,13 +2178,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setCcs(copy_mail.split(";"));
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
-            mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
+            mailInfo.setSubject("【救火更新通知】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             boolean flag = true;
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-            this.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
+            this.addMailFlow(new MailFlowBean("【救火更新通知】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
             }
@@ -2248,13 +2248,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setCcs(copy_mail.split(";"));
             //保存抄送人
 //	          bean.setMail_copy_person(mailCopySum);
-            mailInfo.setSubject("【救火更新审核】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
+            mailInfo.setSubject("【救火更新通知】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             boolean flag = false;
-            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请审批，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
+            mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
             isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-            this.addMailFlow(new MailFlowBean("【救火更新审核】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
+            this.addMailFlow(new MailFlowBean("【救火更新通知】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
             if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
                 file_fire.delete();
             }

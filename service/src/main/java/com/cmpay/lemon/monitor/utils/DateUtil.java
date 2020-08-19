@@ -307,5 +307,48 @@ public class DateUtil {
         }
         return dayNames[c.get(Calendar.DAY_OF_WEEK) - 1];
     }
+    // 获取当前日期前一天
+    public static String getBeforeDay(){
+        Date dNow = new Date();
+        Date dBefore = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dNow);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        dBefore = calendar.getTime();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(dBefore);
+    }
+    //获取上周五
+    public static String getFriday(String specifiedDay){
+        Date date=null;
+        try {
+            date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date dBefore = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, -3);
+        dBefore = calendar.getTime();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(dBefore);
+    }
+    //获取本周四
+    public static String getThursday(String specifiedDay){
+        Date date=null;
+        try {
+            date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date dBefore = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, +3);
+        dBefore = calendar.getTime();
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        return sdf.format(dBefore);
+    }
 
 }

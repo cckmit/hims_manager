@@ -4,9 +4,13 @@ import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
+import com.cmpay.lemon.monitor.bo.TestProgressDetailRspBO;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.impl.reportForm.ReqDataCountServiceImpl;
+import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -18,7 +22,6 @@ import java.util.*;
 
 public class MultiMailsender {
     private static Logger logger = Logger.getLogger(MultiMailsender.class);
-
     public static boolean sendMailtoMultiReceiver(MailSenderInfo mailInfo){
     	 // 判断是否需要身份认证
 	      MyAuthenticator authenticator = null;
@@ -288,17 +291,7 @@ public class MultiMailsender {
 
     public static void main(String[] args) throws Exception{
 
-        String a =UUID.randomUUID().toString();
-        System.err.println(a);
-        String aa = "";
-        if(StringUtils.isNotBlank(aa)){
-            aa = "";
-        }
-        if(aa.equals("123")){
-            System.err.println("111111111111");
-        }else{
-            System.err.println("22222222222");
-        }
+
     }
 
 

@@ -18,6 +18,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
+import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.SendExcelProductionVerificationIsNotTimely;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
@@ -46,13 +47,13 @@ public class ReqMonitorTimer {
     @Autowired
     private BoardcastScheduler boardcastScheduler;
     @Autowired
-    JiraDataCollationService jiraDataCollationService;
+    private JiraDataCollationService jiraDataCollationService;
     @Autowired
-    IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsDao;
+    private IProCheckTimeOutStatisticsExtDao proCheckTimeOutStatisticsDao;
     @Autowired
-    IMonthWorkdayDao monthWorkdayDao;
+    private IMonthWorkdayDao monthWorkdayDao;
     @Autowired
-    IUserExtDao userExtDao;
+    private IUserExtDao userExtDao;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -76,6 +77,17 @@ public class ReqMonitorTimer {
             return;
         }
         jiraDataCollationService.getIssueModifiedWithinOneDay();
+    }
+    /**
+     * 每天凌晨1点定时处理统计前一天测试部需求测试进度表
+     */
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void TestProgressDetailOneDay() {
+        //如果是dev环境则不处理
+        if (LemonUtils.getEnv().equals(Env.DEV)) {
+            return;
+        }
+        jiraDataCollationService.TestProgressDetailOneDay();
     }
     /**
      * 需求累计投入资源

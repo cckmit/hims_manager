@@ -20,6 +20,7 @@ import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +123,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IDictionaryExtDao dictionaryDao;
     @Autowired
     private IUserExtDao iUserDao;
+    @Autowired
+    private ITestProgressDetailExtDao testProgressDetailExtDao;
 
 
     /**
@@ -690,7 +693,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Override
     public DemandHoursRspBO getDeptWorkHoursAndPoint(String devpLeadDept, String date1, String date2) {
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
-        DecimalFormat df = new DecimalFormat("0.##");
+        DecimalFormat df = new DecimalFormat("0");
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         workingHoursDO.setDevpLeadDept(devpLeadDept);
@@ -790,7 +793,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
-                    DecimalFormat df = new DecimalFormat("0.##");
+                    DecimalFormat df = new DecimalFormat("0");
                     SumBos.add(df.format(getWorkHoursTime(Integer.parseInt(impl.get(0).getSumTime()))));
                 } else {
                     SumBos.add("0");
@@ -1587,7 +1590,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
-                    DecimalFormat df = new DecimalFormat("0.##");
+                    DecimalFormat df = new DecimalFormat("0");
                     SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 } else {
                     SumBos.add("0");
@@ -1608,7 +1611,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
-                    DecimalFormat df = new DecimalFormat("0.##");
+                    DecimalFormat df = new DecimalFormat("0");
                     SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
                 } else {
                     SumBos.add("0");
@@ -1623,7 +1626,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             List<Double> dept = reqWorkLoadService.getExportCountForDevp2(demandBO);
             if (dept.get(0) != null) {
                 workingHoursBOS.add("功能点");
-                DecimalFormat df = new DecimalFormat("0.##");
+                DecimalFormat df = new DecimalFormat("0");
                 SumBos.add(df.format(dept.get(0)));
             } else {
                 workingHoursBOS.add("功能点");
@@ -2158,6 +2161,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             System.err.println(date1 + "=====" + date2);
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -2204,6 +2210,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             System.err.println(date1 + "=====" + date2);
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -2249,7 +2258,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            System.err.println(date1 + "=====" + date2);
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -2294,7 +2305,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            System.err.println(date1 + "=====" + date2);
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -2343,7 +2356,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            System.err.println(date1 + "=====" + date2);
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -2393,7 +2408,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            System.err.println(date1 + "=====" + date2);
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -2435,8 +2452,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
         workingHoursDO.setSelectTime(date2);
         impl = demandDao.findListDeptDemand(workingHoursDO);
-        System.err.println(impl);
-
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         String sum = "";
@@ -2444,7 +2459,17 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int b = 0;
         int c = 0;
         if (impl != null && impl.size() >= 0) {
-            System.err.println(impl.size());
+            // 查询月需求进度异常需求的个数
+            DemandBO demandBO = new DemandBO();
+            demandBO.setReqImplMon(date2);
+            demandBO.setReqAbnorType("02");
+            demandBO.setPageNum(1);
+            demandBO.setPageSize(500);
+            DemandRspBO demandRspBO = reqPlanService.findDemand(demandBO);
+            int d =0;
+            if(demandRspBO.getDemandBOList()!=null ||demandRspBO.getDemandBOList().size()>0){
+                d = demandRspBO.getDemandBOList().size();
+            }
             sum = impl.size() + "";
             for (int i = 0; i < impl.size(); i++) {
                 if (!impl.get(i).getReqSts().equals("30") && !impl.get(i).getReqSts().equals("40")) {
@@ -2458,7 +2483,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 }
             }
             if (a > 0) {
-                String a1 = "{'value': '" + a + "', 'name': '正常需求'}";
+                int f = a - d;
+                String a1 = "{'value': '" + f + "', 'name': '正常需求'}";
                 workingHoursBOS.add(a1);
                 SumBos.add("正常需求");
             }
@@ -2472,9 +2498,13 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursBOS.add(c1);
                 SumBos.add("暂停需求");
             }
+            String d1 = "{'value': '" + d + "', 'name': '异常需求'}";
+            workingHoursBOS.add(d1);
+            SumBos.add("异常需求");
         } else {
             sum = "0";
         }
+
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
@@ -4504,6 +4534,102 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         } catch (IOException e) {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
+    }
+    @Override
+    public TestProgressDetailRspBO testProgressDetail(String selectTime2){
+        if (StringUtils.isBlank(selectTime2) ) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        TestProgressDetailRspBO testProgressDetailRspBO = new TestProgressDetailRspBO();
+        // 根据传入的星期一，获取上周五，和本周四的日期
+        //上周五
+        String startTime =  DateUtil.getFriday(selectTime2);
+        //本周四
+        String endTime =  DateUtil.getThursday(selectTime2);
+        TestProgressDetailDO testProgressDetailDO = new TestProgressDetailDO();
+        testProgressDetailDO.setStartTime(startTime);
+        testProgressDetailDO.setEndTime(endTime);
+        //查询产品线
+        List<String> listLine =  testProgressDetailExtDao.findListLine(testProgressDetailDO);
+        if(listLine == null || listLine.size() <=0){
+            return testProgressDetailRspBO;
+        }
+        List<TestProgressDetailBO> list = new ArrayList<>();
+        //循环产品线，查询该产品线的需求测试进度
+        for(int i= 0;i<listLine.size();i++){
+            TestProgressDetailBO testProgressDetailBO = new TestProgressDetailBO();
+            testProgressDetailBO.setReqPrdLine(listLine.get(i));
+             int completionNumber = 0;
+             int underwayNumber = 0;
+             int caseExecutionNumber = 0;
+             int plogNumber = 0;
+             testProgressDetailDO.setReqPrdLine(listLine.get(i));
+            // 根据产品线查询，周期内有多少个需求epic
+            List<String> listEpic =  testProgressDetailExtDao.findListEpic(testProgressDetailDO);
+            //如果listEpic为空，则跳过该产品线
+            if(listEpic == null || listEpic.size() <=0){
+               continue;
+            }
+            // 在根据epic查询周期内部的每天需求进度情况
+            for(int j=0;j<listEpic.size();j++){
+                testProgressDetailDO.setEpickey(listEpic.get(j));
+                //单个需求周期内的测试进度情况
+                List<TestProgressDetailDO> listDate =  testProgressDetailExtDao.findListDate(testProgressDetailDO);
+                // 查询前一个周期的测试进度
+                List<TestProgressDetailDO> listPriorDate =  testProgressDetailExtDao.findListPriorDate(testProgressDetailDO);
+
+                if(listDate == null || listDate.size() <=0){
+                    continue;
+                }
+                //判断进度 if进度为NaN 并且测试案例执行数和测试案例完成数不为0则进行中需求+1
+                //进度
+                String testProgress =  listDate.get(listDate.size()-1).getTestProgress();
+                //测试案例执行数
+                int caseExecution = Integer.parseInt(listDate.get(listDate.size()-1).getCaseExecutionNumber());
+                //测试案例完成数
+                int CaseCompleted = Integer.parseInt(listDate.get(listDate.size()-1).getCaseCompletedNumber());
+                //缺陷数
+                int defects = Integer.parseInt(listDate.get(listDate.size()-1).getDefectsNumber());
+                //判断需求是否进行中
+                if(testProgress.equals("NaN%")){
+                    if(caseExecution!=0 ||CaseCompleted!=0){
+                        underwayNumber = underwayNumber+1;
+                    }
+                }
+                if(!testProgress.equals("NaN%")){
+                    double progressNumber = Double.valueOf(testProgress.replaceAll("%",""));
+                    if(progressNumber>=100){
+                        completionNumber = completionNumber+1;
+                    }else{
+                        underwayNumber = underwayNumber+1;
+                    }
+                }
+                //如果本周期之前没有数据，则测试案例执行数，和plog数就为本周最后一条记录的数值
+                if(listPriorDate == null || listPriorDate.size() <=0){
+                    caseExecutionNumber = caseExecutionNumber + caseExecution;
+                    plogNumber = plogNumber + defects;
+                }else{
+                    //测试案例执行数
+                    int caseExecution1 = caseExecution - Integer.parseInt(listPriorDate.get(listDate.size()-1).getCaseExecutionNumber());
+                    //缺陷数
+                    int defects1 = defects -Integer.parseInt(listPriorDate.get(listDate.size()-1).getDefectsNumber());
+                    caseExecutionNumber = caseExecutionNumber + caseExecution1;
+                    plogNumber = plogNumber + defects1;
+
+                }
+
+
+            }
+            testProgressDetailBO.setCompletionNumber(completionNumber);
+            testProgressDetailBO.setCaseExecutionNumber(caseExecutionNumber);
+            testProgressDetailBO.setUnderwayNumber(underwayNumber);
+            testProgressDetailBO.setPlogNumber(plogNumber);
+            list.add(testProgressDetailBO);
+        }
+        testProgressDetailRspBO.setTestProgressDetailBOList(list);
+        return testProgressDetailRspBO;
     }
 
 }

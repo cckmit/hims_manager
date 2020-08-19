@@ -1050,5 +1050,14 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,onlineLeakageRateRspDTO);
 	}
 
+	//查询测试部测试进度
+	@RequestMapping("/testProgressDetail")
+	public GenericRspDTO<TestProgressDetailRspDTO> testProgressDetail(@RequestBody  WorkingHoursReqDTO workingHoursDTO) {
+        TestProgressDetailRspBO testProgressDetailRspBO = reqDataCountService.testProgressDetail(workingHoursDTO.getSelectTime1());
+        TestProgressDetailRspDTO testProgressDetailRspDTO = new TestProgressDetailRspDTO();
+        testProgressDetailRspDTO.setTestProgressDetailDTOList(BeanConvertUtils.convertList(testProgressDetailRspBO.getTestProgressDetailBOList(), TestProgressDetailDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,testProgressDetailRspDTO);
+	}
+
 
 }
