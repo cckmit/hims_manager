@@ -49,7 +49,7 @@
                 and processStatus = #{processstatus,jdbcType=VARCHAR}
             </if>
             <if test="processstartdate != null and processstartdate != ''" >
-                and processStartDate = #{processstartdate,jdbcType=VARCHAR}
+                and processStartDate  like CONCAT('%',#{processstartdate,jdbcType=VARCHAR},'%')
             </if>
             <if test="currentsession != null and currentsession != ''" >
                 and currentSession = #{currentsession,jdbcType=VARCHAR}

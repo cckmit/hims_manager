@@ -56,7 +56,7 @@ public class ProductTimeController {
         cal.add(Calendar.DATE, 7 - cal.get(Calendar.DAY_OF_WEEK));
         // 设置投产日最大值
         productionTimeRspDTO.setMaxProDate(sdf.format(cal.getTime()));
-        //reqMonitorTimer.TestProgressDetailOneDay();
+        //reqMonitorTimer.getIssueModifiedWithinOneDay();
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, productionTimeRspDTO);
     }
 

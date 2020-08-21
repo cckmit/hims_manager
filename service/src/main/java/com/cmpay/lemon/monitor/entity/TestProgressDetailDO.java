@@ -1,6 +1,6 @@
 /*
  * @ClassName TestProgressDetailDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-08-18 10:50:32
  */
@@ -47,6 +47,24 @@ public class TestProgressDetailDO extends BaseDO {
      * @Fields reqPrdLine 产品线
      */
     private String reqPrdLine;
+    private String startTime;
+    private String endTime;
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
     public Long getId() {
         return id;
@@ -118,5 +136,22 @@ public class TestProgressDetailDO extends BaseDO {
 
     public void setReqPrdLine(String reqPrdLine) {
         this.reqPrdLine = reqPrdLine;
+    }
+
+    @Override
+    public String toString() {
+        return "TestProgressDetailDO{" +
+                "id=" + id +
+                ", epickey='" + epickey + '\'' +
+                ", testCaseNumber='" + testCaseNumber + '\'' +
+                ", caseExecutionNumber='" + caseExecutionNumber + '\'' +
+                ", caseCompletedNumber='" + caseCompletedNumber + '\'' +
+                ", defectsNumber='" + defectsNumber + '\'' +
+                ", testProgress='" + testProgress + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", reqPrdLine='" + reqPrdLine + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                '}';
     }
 }

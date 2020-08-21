@@ -33,6 +33,14 @@ public class SmokeTestRegistrationReqDTO extends PageableRspDTO {
      * @Fields testdescription
      */
     private String testdescription;
+    /**
+     * @Fields testDate
+     */
+    private String testDate;
+    /**
+     * @Fields department
+     */
+    private String department;
 
     public String getReqNm() {
         return reqNm;
@@ -82,15 +90,33 @@ public class SmokeTestRegistrationReqDTO extends PageableRspDTO {
         this.testdescription = testdescription;
     }
 
+    public String getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(String testDate) {
+        this.testDate = testDate;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
     @Override
     public String toString() {
-        return "SmokeTestRegistrationDTO{" +
+        return "SmokeTestRegistrationReqDTO{" +
                 "reqNm='" + reqNm + '\'' +
                 ", reqNo='" + reqNo + '\'' +
                 ", reqInnerSeq='" + reqInnerSeq + '\'' +
                 ", jiraKey='" + jiraKey + '\'' +
                 ", testers='" + testers + '\'' +
                 ", testdescription='" + testdescription + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", department='" + department + '\'' +
                 '}';
     }
 }

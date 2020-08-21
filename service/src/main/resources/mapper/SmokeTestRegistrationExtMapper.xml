@@ -11,10 +11,12 @@
         <result column="testers" property="testers" jdbcType="VARCHAR" />
         <result column="testDescription" property="testdescription" jdbcType="VARCHAR" />
         <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription, test_Date
+        id, req_nm, req_no, req_inner_seq, jira_key, testers, testDescription, test_Date,
+        department
     </sql>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestRegistrationDO" >
@@ -44,7 +46,10 @@
                 and testDescription = #{testdescription,jdbcType=VARCHAR}
             </if>
             <if test="testDate != null and testDate != ''" >
-                and test_Date = #{testDate,jdbcType=VARCHAR}
+                and test_Date like CONCAT('%',#{testDate,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
             </if>
         </where>
         order by test_Date desc

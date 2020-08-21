@@ -452,6 +452,21 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     }else{
                         defectDetailsDO.setDefectsDepartment("产品测试团队");
                     }
+                }else{
+                    //如果归属部门填的是测试部，则根据经办人获取部门
+                    if("产品测试团队".equals(jiraTaskBodyBO.getDefectsDepartment())){
+                        // 经办人不为空，则根据姓名查询部门
+                        if(JudgeUtils.isNotBlank(defectDetailsDO.getAssignee())){
+                            UserDO userDO = new UserDO();
+                            userDO.setFullname(defectDetailsDO.getAssignee());
+                            List<UserDO> userDOS = iUserDao.find(userDO);
+                            if(!userDOS.isEmpty()){
+                                defectDetailsDO.setDefectsDepartment(userDOS.get(0).getDepartment());
+                            }else{
+                                defectDetailsDO.setDefectsDepartment("产品测试团队");
+                            }
+                        }
+                    }
                 }
                 defectDetailsDO.setRegistrationDate(jiraTaskBodyBO.getCreateTime());
                 defectDetailsDO.setDefectDetails(jiraTaskBodyBO.getDefectDetails());

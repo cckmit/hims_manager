@@ -414,13 +414,13 @@ public class ReqMonitorTimer {
             mailInfo.setUsername(Constant.EMAIL_NAME);
             mailInfo.setPassword(Constant.EMAIL_PSWD);
             mailInfo.setFromAddress(Constant.EMAIL_NAME);
-            //收件人 所有部门经理
+            //收件人 所有部门经理 暂时写死，后续查库
             String result = "tian_qun@hisuntech.com;tan_wj1@hisuntech.com;duan_chj@hisuntech.com;wan_hao@hisuntech.com;zhang_dy@hisuntech.com;"
                     +
                     "li_ys@hisuntech.com;lu_zhou@hisuntech.com;yu_zhou@hisuntech.com;liao_jie@hisuntech.com;zhou_xl@hisuntech.com;liao_yk@hisuntech.com;"
                     +
                     "liao_jie@hisuntech.com;huang_yh1@hisuntech.com;yang_chl@hisuntech.com;li_zhen@hisuntech.com;liao_lj@hisuntech.com;li_ms@hisuntech.com;"
-                    + "wang_yw@hisuntech.com;yu_kuan@hisuntech.com;li_fan@hisuntech.com";
+                    + "wang_yw@hisuntech.com;yu_kuan@hisuntech.com;li_fan@hisuntech.com;jiang_qiong@hisuntech.com;peng_cong@hisuntech.com";
             String[] mailToAddress = result.split(";");
             mailInfo.setReceivers(mailToAddress);
             //抄送人

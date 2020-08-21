@@ -24,7 +24,6 @@ public class ProductTimeServiceImpl  implements ProductTimeService {
         productTimeDOList.forEach(m->{
             productionTimeBOS.add(BeanUtils.copyPropertiesReturnDest(new ProductionTimeBO(), m));
         });
-
         return productionTimeBOS;
     }
 

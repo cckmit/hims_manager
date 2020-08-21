@@ -113,6 +113,8 @@ public class SmokeTestRegistrationDTO {
                 ", jiraKey='" + jiraKey + '\'' +
                 ", testers='" + testers + '\'' +
                 ", testdescription='" + testdescription + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", department='" + department + '\'' +
                 '}';
     }
 }

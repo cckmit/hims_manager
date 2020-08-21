@@ -38,6 +38,10 @@ public class SmokeTestRegistrationBO {
      */
     private String testDate;
     /**
+     * @Fields department
+     */
+    private String department;
+    /**
      * 页数
      */
     private int pageNum;
@@ -45,10 +49,6 @@ public class SmokeTestRegistrationBO {
      * 页面大小
      */
     private int pageSize;
-    /**
-     * @Fields department
-     */
-    private String department;
 
     public String getDepartment() {
         return department;
@@ -128,5 +128,21 @@ public class SmokeTestRegistrationBO {
 
     public void setTestDate(String testDate) {
         this.testDate = testDate;
+    }
+
+    @Override
+    public String toString() {
+        return "SmokeTestRegistrationBO{" +
+                "reqNm='" + reqNm + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
+                ", testers='" + testers + '\'' +
+                ", testdescription='" + testdescription + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", department='" + department + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }
