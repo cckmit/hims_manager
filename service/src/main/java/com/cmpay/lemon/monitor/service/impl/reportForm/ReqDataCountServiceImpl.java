@@ -2161,7 +2161,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             System.err.println(date1 + "=====" + date2);
@@ -2210,7 +2212,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             System.err.println(date1 + "=====" + date2);
@@ -2258,7 +2262,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
@@ -2305,7 +2311,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
@@ -2356,7 +2364,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
@@ -2408,7 +2418,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
                 continue;
             }
             if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {

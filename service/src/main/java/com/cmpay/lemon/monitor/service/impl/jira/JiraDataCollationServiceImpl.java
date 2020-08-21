@@ -437,22 +437,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 defectDetailsDO.setDefectRegistrant(jiraTaskBodyBO.getCreator());
                 defectDetailsDO.setSecurityLevel(jiraTaskBodyBO.getSecurityLevel());
                 defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
-                // 如果内部缺陷归属部门为空，则根据归属部门为经办人所属部门
-                if(JudgeUtils.isBlank(jiraTaskBodyBO.getDefectsDepartment())){
-                    // 经办人不为空，则根据姓名查询部门
-                    if(JudgeUtils.isNotBlank(defectDetailsDO.getAssignee())){
-                        UserDO userDO = new UserDO();
-                        userDO.setFullname(defectDetailsDO.getAssignee());
-                        List<UserDO> userDOS = iUserDao.find(userDO);
-                        if(!userDOS.isEmpty()){
-                            defectDetailsDO.setDefectsDepartment(userDOS.get(0).getDepartment());
-                        }else{
-                            defectDetailsDO.setDefectsDepartment("产品测试团队");
-                        }
-                    }else{
-                        defectDetailsDO.setDefectsDepartment("产品测试团队");
-                    }
-                }else{
+                // 逻辑更新，归属部门可以为空
+                if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getDefectsDepartment())){
                     //如果归属部门填的是测试部，则根据经办人获取部门
                     if("产品测试团队".equals(jiraTaskBodyBO.getDefectsDepartment())){
                         // 经办人不为空，则根据姓名查询部门

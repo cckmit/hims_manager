@@ -14,7 +14,7 @@
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_organization_structure
         where organizationId = #{organizationid,jdbcType=INTEGER}
@@ -74,7 +74,7 @@
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_organization_structure
         <where >
@@ -91,5 +91,6 @@
                 and firstLevelOrganizationLeader = #{firstlevelorganizationleader,jdbcType=VARCHAR}
             </if>
         </where>
+        GROUP BY firstLevelOrganization, secondLevelOrganization
     </select>
 </mapper>

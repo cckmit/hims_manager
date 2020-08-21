@@ -337,18 +337,30 @@
                concat(round( ( req_abnormal / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ),'%') req_abnormal_rate,
 			   concat(round( ( a.req_finish / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ), '%' ) req_finish_rate,
 			   concat(round( a.req_oper / (a.req_total  - a.req_suspend - a.req_cancel ) * 100 , 2 ), '%' ) total
-		from (
-				SELECT
-					count(*) req_total,
-					sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
-					(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target  >= -pre_cur_period  THEN 1 ELSE 0 END ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target  >= -pre_cur_period THEN 1 ELSE 0 END ) ) req_finish,
-					sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend,
-					sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel,
-					sum( CASE WHEN req_abnor_type not like '%01%' THEN 1 ELSE 0 END ) req_abnormal
-				FROM
-					t_demand_info
-				WHERE req_impl_mon =#{0} and req_sts!='60'
-		)a
+		from
+		(
+			SELECT   b.*,
+			(select COALESCE(sum(1) , 0) from  t_demand_info a where a.req_sts not in ('60') and  a.req_impl_mon = #{0}
+			AND( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
+			OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
+			OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
+			AND req_sts not in ('30','40','60')
+			AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+			OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )) req_abnormal
+			from
+			(
+			SELECT
+				count(*) req_total,
+				sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
+				(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target  >= -pre_cur_period  THEN 1 ELSE 0 END ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target  >= -pre_cur_period THEN 1 ELSE 0 END ) ) req_finish,
+				sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend,
+				sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel
+			FROM
+			t_demand_info
+			WHERE req_impl_mon = #{0} and req_sts!='60'
+			)  b
+		) a
+
 	</select>
 
 
@@ -357,25 +369,35 @@
 	<select id="getCompByDept" resultMap="rt">
 		select a.*,
 		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS 		firstLevelOrganization,
-               round( a.req_total - a.req_suspend - a.req_cancel ) req_acceptance,
-               concat(round( ((a.req_suspend + a.req_cancel) / a.req_total )* 100 , 2 ),'%') req_inaccuracy_rate,
-               concat(round( ( req_abnormal / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ),'%') req_abnormal_rate,
-			   concat(round( ( a.req_finish / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ), '%' ) req_finish_rate,
-			   concat(round( a.req_oper / (a.req_total  - a.req_suspend - a.req_cancel ) * 100 , 2 ), '%' ) total
+		round( a.req_total - a.req_suspend - a.req_cancel ) req_acceptance,
+		concat(round( ((a.req_suspend + a.req_cancel) / a.req_total )* 100 , 2 ),'%') req_inaccuracy_rate,
+		concat(round( ( req_abnormal / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ),'%') req_abnormal_rate,
+		concat(round( ( a.req_finish / ( a.req_total - a.req_suspend - a.req_cancel ) )* 100 , 2 ), '%' ) req_finish_rate,
+		concat(round( a.req_oper / (a.req_total  - a.req_suspend - a.req_cancel ) * 100 , 2 ), '%' ) total
 		from (
-				SELECT
-					CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END devp_lead_dept,
-					count(*) req_total,
-					sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
-					(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) ) req_finish,
-					sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend,
-					sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel,
-					sum( CASE WHEN req_abnor_type not like '%01%' THEN 1 ELSE 0 END ) req_abnormal
-				FROM
-					t_demand_info
-				WHERE req_impl_mon = #{0} and req_sts!='60'
-				GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
-		)a
+		SELECT   b.*,
+		(select COALESCE(sum(1) , 0) from  t_demand_info a where a.req_sts not in ('60') and  a.req_impl_mon = #{0} and a.devp_lead_dept = b.devp_lead_dept
+		AND( ( (a.prd_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND 30 > pre_cur_period )
+		OR (a.uat_update_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 30 AND  120 > pre_cur_period )
+		OR (a.test_finsh_tm &lt; date_format(SYSDATE(),'%Y-%m-%d')  AND pre_cur_period >= 120 AND  140 > pre_cur_period ) )
+		AND req_sts not in ('30','40','60')
+		AND(ISNULL(prd_finsh_tm)=0) AND  (LENGTH(trim(prd_finsh_tm))>0) AND(ISNULL(uat_update_tm)=0) AND  (LENGTH(trim(uat_update_tm))>0)AND(ISNULL(test_finsh_tm)=0) AND  (LENGTH(trim(test_finsh_tm))>0) AND(ISNULL(pre_cur_period)=0) AND  (LENGTH(trim(pre_cur_period))>0)
+		OR( ( (ISNULL(prd_finsh_tm)=1) OR (LENGTH(trim(prd_finsh_tm))&lt;1) OR (ISNULL(uat_update_tm)=1) OR  (LENGTH(trim(uat_update_tm))&lt;1) OR (ISNULL(test_finsh_tm)=1) OR (LENGTH(trim(test_finsh_tm))&lt;1) OR(ISNULL(pre_cur_period)=1) OR (LENGTH(trim(pre_cur_period))&lt;1)) AND req_abnor_type NOT LIKE '%01%' ) )) req_abnormal
+		from
+		(
+		SELECT
+		CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END devp_lead_dept,
+		count(*) req_total,
+		sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
+		(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) ) req_finish,
+		sum( CASE WHEN req_sts = '40' THEN 1 ELSE 0 END ) req_suspend,
+		sum( CASE WHEN req_sts = '30' THEN 1 ELSE 0 END ) req_cancel
+		FROM
+		t_demand_info
+		WHERE req_impl_mon = #{0} and req_sts!='60'
+		GROUP BY (CASE WHEN coalesce (devp_lead_dept,'') = '' THEN '无' ELSE devp_lead_dept END	)
+		)  b
+		) a GROUP BY firstLevelOrganization ,devp_lead_dept
 	</select>
 	<select id="getCompByDept2" resultMap="rt">
 		select a.*,
@@ -387,7 +409,6 @@
 		from (
 				SELECT
 				(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = devp_lead_dept) AS 		firstLevelOrganization,
-
 					count(*) req_total,
 					sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' THEN 1 ELSE 0 END )req_oper,
 					(sum( CASE WHEN req_sts = '50' or pre_cur_period = '180' or -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) - sum( CASE WHEN (req_sts = '40' OR req_sts = '30') AND -cur_mon_target >= -pre_cur_period THEN 1 ELSE 0 END  ) ) req_finish,
