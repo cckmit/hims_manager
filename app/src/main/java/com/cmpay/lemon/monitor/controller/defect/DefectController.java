@@ -3,10 +3,8 @@ package com.cmpay.lemon.monitor.controller.defect;
 
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
-import com.cmpay.lemon.monitor.bo.ProductionDefectsBO;
-import com.cmpay.lemon.monitor.bo.ProductionDefectsRspBO;
-import com.cmpay.lemon.monitor.bo.SmokeTestRegistrationBO;
-import com.cmpay.lemon.monitor.bo.SmokeTestRegistrationRspBO;
+import com.cmpay.lemon.framework.data.NoBody;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -17,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = MonitorConstants.DEFECT_PATH)
@@ -52,6 +53,18 @@ public class DefectController {
         rspDTO.setTotal(smokeTestRegistrationRspBO.getPageInfo().getTotal());
         rspDTO.setPageSize(smokeTestRegistrationRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/download")
+    public GenericRspDTO<NoBody> download(@RequestBody ProductionDefectsReqDTO productionDefectsReqDTO, HttpServletResponse response) {
+        ProductionDefectsBO productionDefectsBO = BeanUtils.copyPropertiesReturnDest(new ProductionDefectsBO(), productionDefectsReqDTO);
+        defectsService.getDownload(response, productionDefectsBO);
+        return GenericRspDTO.newSuccessInstance();
     }
 
 }

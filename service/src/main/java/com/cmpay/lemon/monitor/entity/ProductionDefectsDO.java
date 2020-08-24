@@ -1,11 +1,12 @@
 /*
  * @ClassName ProductionDefectsDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-06-16 15:15:52
  */
 package com.cmpay.lemon.monitor.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
@@ -24,64 +25,79 @@ public class ProductionDefectsDO extends BaseDO {
      */
     private String documentnumber;
     /**
+     * @Fields questionnumber 问题录入(问题编号)
+     */
+    @Excel(name = "问题编号")
+    private String questionnumber;
+    /**
+     * @Fields questiontitle 问题录入(问题标题)
+     */
+    @Excel(name = "问题标题")
+    private String questiontitle;
+    /**
      * @Fields processstatus 流程状态
      */
+    @Excel(name = "流程状态")
     private String processstatus;
     /**
      * @Fields processstartdate 流程开始日期
      */
+    @Excel(name = "流程开始日期")
     private String processstartdate;
     /**
      * @Fields currentsession 当前环节
      */
+    @Excel(name = "当前环节")
     private String currentsession;
     /**
      * @Fields currentexecutor 当前执行人
      */
+    @Excel(name = "当前执行人")
     private String currentexecutor;
     /**
      * @Fields problemraiser 问题录入(问题提出人)
      */
+    @Excel(name = "问题提出人")
     private String problemraiser;
-    /**
-     * @Fields questiontitle 问题录入(问题标题)
-     */
-    private String questiontitle;
-    /**
-     * @Fields questionnumber 问题录入(问题编号)
-     */
-    private String questionnumber;
     /**
      * @Fields questiondetails 问题录入(问题详细)
      */
+    @Excel(name = "问题详细")
     private String questiondetails;
     /**
      * @Fields solution 问题分析(问题原因及解决方案)
      */
+    @Excel(name = "问题原因及解决方案")
     private String solution;
     /**
      * @Fields problemattributiondept 问题分析(问题归属部门)
      */
+    @Excel(name = "问题归属部门")
     private String problemattributiondept;
     /**
      * @Fields personincharge 问题分析(问题负责人)
      */
+    @Excel(name = "问题负责人")
     private String personincharge;
     /**
      * @Fields questiontype 问题分析(问题类型)
      */
+    @Excel(name = "问题类型")
     private String questiontype;
     /**
      * @Fields identifytheproblem 回复审核(问题定位)
      */
+    @Excel(name = "问题定位")
     private String identifytheproblem;
     /**
      * @Fields developmentleader 程序修改(开发负责人)
      */
+    @Excel(name = "开发负责人")
     private String developmentleader;
     /**
      * @Fields updatetype 程序修改(更新类型)
      */
+    @Excel(name = "更新类型")
     private String updatetype;
 
     public Integer getId() {
