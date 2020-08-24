@@ -91,6 +91,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             jiraTaskBodyBOList.addAll(jiraTaskBodyBOS);
             i = i + 50;
         }
+//        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
+//        jiraTaskBodyBO1.setJiraKey("CMPAY-979");
+//        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
@@ -536,6 +539,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     void registerWorklogs(JiraTaskBodyBO jiraTaskBodyBO) {
         List<JiraWorklogBO> worklogs = JiraUtil.getWorklogs(jiraTaskBodyBO);
         for (int i = 0; i < worklogs.size(); i++) {
+            if(!worklogs.get(i).getActive()){
+                continue;
+            }
             JiraWorklogDO jiraWorklogDO = new JiraWorklogDO();
             jiraWorklogDO.setJiraworklogkey(worklogs.get(i).getJiraWorklogKey());
             jiraWorklogDO.setIssuekey(jiraTaskBodyBO.getJiraKey());

@@ -202,7 +202,7 @@ public class JiraUtil {
         return null;
 
     }
-    
+
     public static  String getAllWorklogs(String jirakey) {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
@@ -231,6 +231,9 @@ public class JiraUtil {
                 jiraWorklogBO.setDisplayname(displayName);
                 String name = jsonObject1.getJSONObject("author").getString("name");
                 jiraWorklogBO.setName(name);
+                //账号状态 flase 为不存在 true为正常
+                boolean active = jsonObject1.getJSONObject("author").getBoolean("active");
+                jiraWorklogBO.setActive(active);
                 //备注
                 String comment = jsonObject1.getString("comment");
                 jiraWorklogBO.setComment(comment);

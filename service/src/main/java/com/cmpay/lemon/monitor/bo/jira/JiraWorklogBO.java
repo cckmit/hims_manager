@@ -31,6 +31,10 @@ public class JiraWorklogBO {
      */
     private String comment;
     /**
+     * @Fields active 账号状态
+     */
+    private Boolean active;
+    /**
      * @Fields createdtime 录入时间
      */
     private String createdtime;
@@ -43,6 +47,13 @@ public class JiraWorklogBO {
      */
     private String updatedtime;
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
     public String getIssueid() {
         return issueid;
@@ -122,5 +133,22 @@ public class JiraWorklogBO {
 
     public void setJiraWorklogKey(String jiraWorklogKey) {
         this.jiraWorklogKey = jiraWorklogKey;
+    }
+
+    @Override
+    public String toString() {
+        return "JiraWorklogBO{" +
+                "jiraWorklogKey='" + jiraWorklogKey + '\'' +
+                ", issueid='" + issueid + '\'' +
+                ", issuekey='" + issuekey + '\'' +
+                ", timespnet='" + timespnet + '\'' +
+                ", name='" + name + '\'' +
+                ", displayname='" + displayname + '\'' +
+                ", comment='" + comment + '\'' +
+                ", active=" + active +
+                ", createdtime='" + createdtime + '\'' +
+                ", startedtime='" + startedtime + '\'' +
+                ", updatedtime='" + updatedtime + '\'' +
+                '}';
     }
 }
