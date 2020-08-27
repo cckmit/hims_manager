@@ -23,6 +23,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
+import com.cmpay.lemon.monitor.service.reportForm.GenRptService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.ReadExcelUtils;
@@ -38,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.text.ParseException;
@@ -137,6 +139,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     DictionaryService dictionaryService;
     @Autowired
     IDefectDetailsExtDao defectDetailsDao;
+    @Resource
+    private GenRptService genRptService;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -2473,5 +2477,31 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
         }
     }
-
+    @Override
+    public File getReportForm11(String displayname,String date1,String date2){
+        if (org.apache.commons.lang3.StringUtils.isBlank(date1) && org.apache.commons.lang3.StringUtils.isBlank(date2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        //设置查询参数
+        String[] raqArgs = new String[2];
+        raqArgs[0] = displayname;
+        String reportId = "RPX-Z-2011_HBST";
+        // 查询周
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(date1) && org.apache.commons.lang3.StringUtils.isBlank(date2)) {
+            reportId = "RPX-Z-2011_HBST";
+            raqArgs[1] = date1;
+        }
+        // 查询月
+        if (org.apache.commons.lang3.StringUtils.isNotBlank(date2) && org.apache.commons.lang3.StringUtils.isBlank(date1)) {
+            reportId = "RPX-Z-2012_HBST";
+            raqArgs[1] = date2;
+        }
+        GenerateReportBO generateReportBO = new GenerateReportBO();
+        generateReportBO.setReportId(reportId);
+        generateReportBO.setRaqArgs(raqArgs);
+        generateReportBO.setReportStyle("xlsx");
+        return genRptService.genRaqRpt(generateReportBO);
+    }
 }

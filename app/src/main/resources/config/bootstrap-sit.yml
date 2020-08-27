@@ -56,3 +56,7 @@ lemon:
 
 
 
+report:
+  licUrl: /home/devms/report/runreport/ServerLinux.lic
+  reportFilePath: /home/devms/report/reportFile/
+  dataSourceName: newhimsdb

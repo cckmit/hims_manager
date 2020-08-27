@@ -181,6 +181,10 @@ public enum MsgEnum implements AlertCapable {
      */
     WECHAT_QUERY_FAILED("MON00501", "向企业微信请求失败"),
     /**
+     * 导出文件失败
+     */
+    EXCEL_EXPORT_FAILURE("MON00511", "导出文件失败"),
+    /**
      * 失败
      */
     ERROR_FAIL_CHANGE("MON00510", "存量需求转存失败:");

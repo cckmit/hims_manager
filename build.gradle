@@ -70,6 +70,11 @@ subprojects{
         archives jar
         archives sourcesJar
     }
+    configurations {
+        optional
+        compile.extendsFrom optional
+        all*.exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+    }
 }
 configure(subprojects.findAll {it.name.matches ('\\S*(-interface|-constant)\\S*')}){
     println("project name:"+project.getName())

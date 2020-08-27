@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDiningReportDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DiningReportDO" >
+        <id column="REPORT_ID" property="reportId" jdbcType="VARCHAR" />
+        <result column="REPORT_NAME" property="reportName" jdbcType="VARCHAR" />
+        <result column="REPORT_SRC" property="reportSrc" jdbcType="VARCHAR" />
+        <result column="REPORT_TYPE" property="reportType" jdbcType="VARCHAR" />
+        <result column="REPORT_STYLE" property="reportStyle" jdbcType="VARCHAR" />
+        <result column="REPORT_PERIOD" property="reportPeriod" jdbcType="VARCHAR" />
+        <result column="REPORT_DAY" property="reportDay" jdbcType="VARCHAR" />
+        <result column="REPORT_STS" property="reportSts" jdbcType="VARCHAR" />
+        <result column="REPORT_GROUP" property="reportGroup" jdbcType="VARCHAR" />
+        <result column="REPORT_LINK" property="reportLink" jdbcType="VARCHAR" />
+        <result column="RAQ_PATH" property="raqPath" jdbcType="VARCHAR" />
+        <result column="REPORT_FILE" property="reportFile" jdbcType="VARCHAR" />
+        <result column="RAQ_ARGS" property="raqArgs" jdbcType="VARCHAR" />
+        <result column="START_TM" property="startTm" jdbcType="VARCHAR" />
+        <result column="END_TM" property="endTm" jdbcType="VARCHAR" />
+        <result column="RUN_TYPE" property="runType" jdbcType="VARCHAR" />
+        <result column="RUN_DT" property="runDt" jdbcType="VARCHAR" />
+        <result column="UP_TM" property="upTm" jdbcType="VARCHAR" />
+        <result column="UP_USER" property="upUser" jdbcType="VARCHAR" />
+        <result column="TM_SMP" property="tmSmp" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        REPORT_ID, REPORT_NAME, REPORT_SRC, REPORT_TYPE, REPORT_STYLE, REPORT_PERIOD, REPORT_DAY, 
+        REPORT_STS, REPORT_GROUP, REPORT_LINK, RAQ_PATH, REPORT_FILE, RAQ_ARGS, START_TM, 
+        END_TM, RUN_TYPE, RUN_DT, UP_TM, UP_USER, TM_SMP
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from dining_report
+        where REPORT_ID = #{reportId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from dining_report
+        where REPORT_ID = #{reportId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DiningReportDO" >
+        insert into dining_report
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="reportId != null" >
+                REPORT_ID,
+            </if>
+            <if test="reportName != null" >
+                REPORT_NAME,
+            </if>
+            <if test="reportSrc != null" >
+                REPORT_SRC,
+            </if>
+            <if test="reportType != null" >
+                REPORT_TYPE,
+            </if>
+            <if test="reportStyle != null" >
+                REPORT_STYLE,
+            </if>
+            <if test="reportPeriod != null" >
+                REPORT_PERIOD,
+            </if>
+            <if test="reportDay != null" >
+                REPORT_DAY,
+            </if>
+            <if test="reportSts != null" >
+                REPORT_STS,
+            </if>
+            <if test="reportGroup != null" >
+                REPORT_GROUP,
+            </if>
+            <if test="reportLink != null" >
+                REPORT_LINK,
+            </if>
+            <if test="raqPath != null" >
+                RAQ_PATH,
+            </if>
+            <if test="reportFile != null" >
+                REPORT_FILE,
+            </if>
+            <if test="raqArgs != null" >
+                RAQ_ARGS,
+            </if>
+            <if test="startTm != null" >
+                START_TM,
+            </if>
+            <if test="endTm != null" >
+                END_TM,
+            </if>
+            <if test="runType != null" >
+                RUN_TYPE,
+            </if>
+            <if test="runDt != null" >
+                RUN_DT,
+            </if>
+            <if test="upTm != null" >
+                UP_TM,
+            </if>
+            <if test="upUser != null" >
+                UP_USER,
+            </if>
+            <if test="tmSmp != null" >
+                TM_SMP,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="reportId != null" >
+                #{reportId,jdbcType=VARCHAR},
+            </if>
+            <if test="reportName != null" >
+                #{reportName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportSrc != null" >
+                #{reportSrc,jdbcType=VARCHAR},
+            </if>
+            <if test="reportType != null" >
+                #{reportType,jdbcType=VARCHAR},
+            </if>
+            <if test="reportStyle != null" >
+                #{reportStyle,jdbcType=VARCHAR},
+            </if>
+            <if test="reportPeriod != null" >
+                #{reportPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="reportDay != null" >
+                #{reportDay,jdbcType=VARCHAR},
+            </if>
+            <if test="reportSts != null" >
+                #{reportSts,jdbcType=VARCHAR},
+            </if>
+            <if test="reportGroup != null" >
+                #{reportGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="reportLink != null" >
+                #{reportLink,jdbcType=VARCHAR},
+            </if>
+            <if test="raqPath != null" >
+                #{raqPath,jdbcType=VARCHAR},
+            </if>
+            <if test="reportFile != null" >
+                #{reportFile,jdbcType=VARCHAR},
+            </if>
+            <if test="raqArgs != null" >
+                #{raqArgs,jdbcType=VARCHAR},
+            </if>
+            <if test="startTm != null" >
+                #{startTm,jdbcType=VARCHAR},
+            </if>
+            <if test="endTm != null" >
+                #{endTm,jdbcType=VARCHAR},
+            </if>
+            <if test="runType != null" >
+                #{runType,jdbcType=VARCHAR},
+            </if>
+            <if test="runDt != null" >
+                #{runDt,jdbcType=VARCHAR},
+            </if>
+            <if test="upTm != null" >
+                #{upTm,jdbcType=VARCHAR},
+            </if>
+            <if test="upUser != null" >
+                #{upUser,jdbcType=VARCHAR},
+            </if>
+            <if test="tmSmp != null" >
+                #{tmSmp,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DiningReportDO" >
+        update dining_report
+        <set >
+            <if test="reportName != null" >
+                REPORT_NAME = #{reportName,jdbcType=VARCHAR},
+            </if>
+            <if test="reportSrc != null" >
+                REPORT_SRC = #{reportSrc,jdbcType=VARCHAR},
+            </if>
+            <if test="reportType != null" >
+                REPORT_TYPE = #{reportType,jdbcType=VARCHAR},
+            </if>
+            <if test="reportStyle != null" >
+                REPORT_STYLE = #{reportStyle,jdbcType=VARCHAR},
+            </if>
+            <if test="reportPeriod != null" >
+                REPORT_PERIOD = #{reportPeriod,jdbcType=VARCHAR},
+            </if>
+            <if test="reportDay != null" >
+                REPORT_DAY = #{reportDay,jdbcType=VARCHAR},
+            </if>
+            <if test="reportSts != null" >
+                REPORT_STS = #{reportSts,jdbcType=VARCHAR},
+            </if>
+            <if test="reportGroup != null" >
+                REPORT_GROUP = #{reportGroup,jdbcType=VARCHAR},
+            </if>
+            <if test="reportLink != null" >
+                REPORT_LINK = #{reportLink,jdbcType=VARCHAR},
+            </if>
+            <if test="raqPath != null" >
+                RAQ_PATH = #{raqPath,jdbcType=VARCHAR},
+            </if>
+            <if test="reportFile != null" >
+                REPORT_FILE = #{reportFile,jdbcType=VARCHAR},
+            </if>
+            <if test="raqArgs != null" >
+                RAQ_ARGS = #{raqArgs,jdbcType=VARCHAR},
+            </if>
+            <if test="startTm != null" >
+                START_TM = #{startTm,jdbcType=VARCHAR},
+            </if>
+            <if test="endTm != null" >
+                END_TM = #{endTm,jdbcType=VARCHAR},
+            </if>
+            <if test="runType != null" >
+                RUN_TYPE = #{runType,jdbcType=VARCHAR},
+            </if>
+            <if test="runDt != null" >
+                RUN_DT = #{runDt,jdbcType=VARCHAR},
+            </if>
+            <if test="upTm != null" >
+                UP_TM = #{upTm,jdbcType=VARCHAR},
+            </if>
+            <if test="upUser != null" >
+                UP_USER = #{upUser,jdbcType=VARCHAR},
+            </if>
+            <if test="tmSmp != null" >
+                TM_SMP = #{tmSmp,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where REPORT_ID = #{reportId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DiningReportDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from dining_report
+        <where >
+            <if test="reportId != null" >
+                and REPORT_ID = #{reportId,jdbcType=VARCHAR}
+            </if>
+            <if test="reportName != null" >
+                and REPORT_NAME = #{reportName,jdbcType=VARCHAR}
+            </if>
+            <if test="reportSrc != null" >
+                and REPORT_SRC = #{reportSrc,jdbcType=VARCHAR}
+            </if>
+            <if test="reportType != null" >
+                and REPORT_TYPE = #{reportType,jdbcType=VARCHAR}
+            </if>
+            <if test="reportStyle != null" >
+                and REPORT_STYLE = #{reportStyle,jdbcType=VARCHAR}
+            </if>
+            <if test="reportPeriod != null" >
+                and REPORT_PERIOD = #{reportPeriod,jdbcType=VARCHAR}
+            </if>
+            <if test="reportDay != null" >
+                and REPORT_DAY = #{reportDay,jdbcType=VARCHAR}
+            </if>
+            <if test="reportSts != null" >
+                and REPORT_STS = #{reportSts,jdbcType=VARCHAR}
+            </if>
+            <if test="reportGroup != null" >
+                and REPORT_GROUP = #{reportGroup,jdbcType=VARCHAR}
+            </if>
+            <if test="reportLink != null" >
+                and REPORT_LINK = #{reportLink,jdbcType=VARCHAR}
+            </if>
+            <if test="raqPath != null" >
+                and RAQ_PATH = #{raqPath,jdbcType=VARCHAR}
+            </if>
+            <if test="reportFile != null" >
+                and REPORT_FILE = #{reportFile,jdbcType=VARCHAR}
+            </if>
+            <if test="raqArgs != null" >
+                and RAQ_ARGS = #{raqArgs,jdbcType=VARCHAR}
+            </if>
+            <if test="startTm != null" >
+                and START_TM = #{startTm,jdbcType=VARCHAR}
+            </if>
+            <if test="endTm != null" >
+                and END_TM = #{endTm,jdbcType=VARCHAR}
+            </if>
+            <if test="runType != null" >
+                and RUN_TYPE = #{runType,jdbcType=VARCHAR}
+            </if>
+            <if test="runDt != null" >
+                and RUN_DT = #{runDt,jdbcType=VARCHAR}
+            </if>
+            <if test="upTm != null" >
+                and UP_TM = #{upTm,jdbcType=VARCHAR}
+            </if>
+            <if test="upUser != null" >
+                and UP_USER = #{upUser,jdbcType=VARCHAR}
+            </if>
+            <if test="tmSmp != null" >
+                and TM_SMP = #{tmSmp,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

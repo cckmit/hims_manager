@@ -4624,9 +4624,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     plogNumber = plogNumber + defects;
                 }else{
                     //测试案例执行数
-                    int caseExecution1 = caseExecution - Integer.parseInt(listPriorDate.get(listDate.size()-1).getCaseExecutionNumber());
+                    int caseExecution1 = caseExecution - Integer.parseInt(listPriorDate.get(listPriorDate.size()-1).getCaseExecutionNumber());
                     //缺陷数
-                    int defects1 = defects -Integer.parseInt(listPriorDate.get(listDate.size()-1).getDefectsNumber());
+                    int defects1 = defects -Integer.parseInt(listPriorDate.get(listPriorDate.size()-1).getDefectsNumber());
                     caseExecutionNumber = caseExecutionNumber + caseExecution1;
                     plogNumber = plogNumber + defects1;
 

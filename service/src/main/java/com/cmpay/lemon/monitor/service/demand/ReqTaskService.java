@@ -166,4 +166,5 @@ public interface ReqTaskService {
     void defectMonthlyDownload(HttpServletResponse response,String startDateTime,String endDateTime);
 
     List<DefectMonthlyBO> getDefectMonthlyReport(String defectStartTime, String defectEndTime);
+    File getReportForm11(String displayname,String date1,String date2);
 }

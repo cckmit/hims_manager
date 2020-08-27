@@ -14,6 +14,8 @@ import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +23,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
@@ -31,11 +33,14 @@ import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
 @RestController
 @RequestMapping(value = MonitorConstants.REQTASK_PATH)
 public class ReqTaskController {
+    private static Logger logger = LoggerFactory.getLogger(ReqTaskController.class);
 
     @Autowired
     private ReqTaskService reqTaskService;
     @Autowired
     private JiraOperationService jiraOperationService;
+    @Autowired
+    private HttpServletResponse httpServletResponse;
     /**
      * 分页需求列表
      *
@@ -319,5 +324,49 @@ public class ReqTaskController {
         SmokeTestRegistrationBO smokeTestRegistrationBO = BeanUtils.copyPropertiesReturnDest(new SmokeTestRegistrationBO(), req);
         reqTaskService.smokeTestRegistration(smokeTestRegistrationBO);
         return GenericRspDTO.newSuccessInstance();
+    }
+
+    @PostMapping("/download/reportform11")
+    public GenericRspDTO<NoBody> downloadReportform11(@RequestBody WorkingHoursReqDTO workingHoursDTO, HttpServletResponse response) {
+        File file = reqTaskService.getReportForm11(workingHoursDTO.getDisplayname(), workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        if (null!=file){
+            this.downloadFile(file);
+        }
+        return GenericRspDTO.newInstance(MsgEnum.EXCEL_EXPORT_FAILURE);
+    }
+    /**
+     * 下载文件响应处理
+     *
+     * @param file
+     */
+    private void downloadFile(File file) {
+        httpServletResponse.setHeader("content-type", "application/octet-stream");
+        httpServletResponse.setContentType("application/octet-stream");
+        BufferedInputStream bufferedInputStream = null;
+        try {
+            httpServletResponse.setHeader("Content-Disposition", "attachment;filename=" + java.net.URLEncoder.encode(file.getName(), "UTF-8"));
+            byte[] buff = new byte[1024];
+            bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
+            OutputStream outputStream = httpServletResponse.getOutputStream();
+            int read = bufferedInputStream.read(buff);
+            while (read != -1) {
+                outputStream.write(buff, 0, buff.length);
+                outputStream.flush();
+                read = bufferedInputStream.read(buff);
+            }
+        } catch (IOException e) {
+            logger.warn(e.getMessage());
+        } finally {
+            if (bufferedInputStream != null) {
+                try {
+                    bufferedInputStream.close();
+                } catch (IOException e) {
+                    logger.warn(e.getMessage());
+                }
+            }
+            //删除临时文件
+            //  FileUtils.deleteQuietly(file);
+        }
+        return;
     }
 }

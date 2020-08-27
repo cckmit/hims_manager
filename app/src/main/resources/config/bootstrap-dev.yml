@@ -69,4 +69,7 @@ lemon:
       cluster:
         nodes: 172.16.49.73:6679,172.16.49.73:6680,172.16.49.74:6679,172.16.49.74:6680,172.16.49.75:6679,172.16.49.75:6680
 
-
+report:
+  licUrl: /home/devadm/report/runreport/ServerLinux.lic
+  reportFilePath: /home/devadm/report/reportFile/
+  dataSourceName: newhimsdb

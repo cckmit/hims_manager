@@ -81,19 +81,19 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     @Override
     public void getIssueModifiedWithinOneDay() {
         List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
-        int i = 0;
-        //拉取一定时间内有过修改的jira任务内容
-        while (true) {
-            List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay(i);
-            if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
-                break;
-            }
-            jiraTaskBodyBOList.addAll(jiraTaskBodyBOS);
-            i = i + 50;
-        }
-//        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
-//        jiraTaskBodyBO1.setJiraKey("CMPAY-979");
-//        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
+//        int i = 0;
+//        //拉取一定时间内有过修改的jira任务内容
+//        while (true) {
+//            List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay(i);
+//            if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
+//                break;
+//            }
+//            jiraTaskBodyBOList.addAll(jiraTaskBodyBOS);
+//            i = i + 50;
+//        }
+        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
+        jiraTaskBodyBO1.setJiraKey("FCPT-32");
+        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
             jiraTaskBodyBOList.forEach(m -> {
