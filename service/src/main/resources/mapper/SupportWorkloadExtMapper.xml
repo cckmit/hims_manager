@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISupportWorkloadExtDao" >
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        <id column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="productManagementDepartment" property="productmanagementdepartment" jdbcType="VARCHAR" />
+        <result column="productOwner" property="productowner" jdbcType="VARCHAR" />
+        <result column="supportingManufacturerProducts" property="supportingmanufacturerproducts" jdbcType="VARCHAR" />
+        <result column="supportTheTopic" property="supportthetopic" jdbcType="VARCHAR" />
+        <result column="contentDescription" property="contentdescription" jdbcType="VARCHAR" />
+        <result column="functionPointsDetail" property="functionpointsdetail" jdbcType="VARCHAR" />
+        <result column="proposalTime" property="proposaltime" jdbcType="VARCHAR" />
+        <result column="completionTime" property="completiontime" jdbcType="VARCHAR" />
+        <result column="supportManager" property="supportmanager" jdbcType="VARCHAR" />
+        <result column="supportWorkload" property="supportworkload" jdbcType="VARCHAR" />
+        <result column="finalWorkload" property="finalworkload" jdbcType="VARCHAR" />
+        <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
+        <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
+        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts,
+        supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime,
+        supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment,
+        secondLevelOrganization, remark
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_support_workload
+        <where >
+            <if test="documentnumber != null and documentnumber != ''" >
+                and documentNumber LIKE CONCAT('%',#{documentnumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''  ">
+                and substr(processStartDate,1,10) between #{startTime} and #{endTime}
+            </if>
+            <if test="processstartdate != null and processstartdate != ''" >
+                and substr(processStartDate,1,10) = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="productmanagementdepartment != null and productmanagementdepartment != ''" >
+                and productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="productowner != null and productowner != ''" >
+                and productOwner = #{productowner,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturerproducts != null and supportingmanufacturerproducts != ''" >
+                and supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
+            </if>
+            <if test="supportthetopic != null and supportthetopic != ''" >
+                and supportTheTopic LIKE CONCAT('%',#{supportthetopic,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="contentdescription != null and contentdescription != ''" >
+                and contentDescription = #{contentdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="functionpointsdetail != null and functionpointsdetail != ''" >
+                and functionPointsDetail = #{functionpointsdetail,jdbcType=VARCHAR}
+            </if>
+            <if test="proposaltime != null and proposaltime != ''" >
+                and proposalTime = #{proposaltime,jdbcType=VARCHAR}
+            </if>
+            <if test="completiontime != null and completiontime != ''" >
+                and completionTime = #{completiontime,jdbcType=VARCHAR}
+            </if>
+            <if test="supportmanager != null and supportmanager != ''" >
+                and supportManager = #{supportmanager,jdbcType=VARCHAR}
+            </if>
+            <if test="supportworkload != null and supportworkload != ''" >
+                and supportWorkload = #{supportworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="finalworkload != null and finalworkload != ''" >
+                and finalWorkload = #{finalworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturers != null and supportingmanufacturers != ''" >
+                and supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="costdepartment != null and costdepartment != ''" >
+                and costDepartment = #{costdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null and secondlevelorganization != ''" >
+                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != ''" >
+                and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -6,10 +6,7 @@ import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.data.NoBody;
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.DictionaryBO;
-import com.cmpay.lemon.monitor.bo.WorkloadLockedStateBO;
+import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
@@ -312,5 +309,61 @@ public class ReqWorkLoadController {
         workloadLockedStateBO = reqWorkLoadService.getFeedbackEntryStatus(workloadLockedStateBO);
         WorkLoadDTO workLoadDTO = BeanUtils.copyPropertiesReturnDest(new WorkLoadDTO(), workloadLockedStateBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, workLoadDTO);
+    }
+
+    /**
+     * 分页需求列表
+     *
+     * @param reqDTO
+     * @return
+     */
+    @RequestMapping("/supportWorkloadfindList")
+    public GenericRspDTO<SupportWorkloadRspDTO> supportWorkloadfindList(@RequestBody SupportWorkloadReqDTO reqDTO) {
+        if((reqDTO.getStartTime() != null && !reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()==null || reqDTO.getEndTime().equals(""))){
+            reqDTO.setProcessstartdate(reqDTO.getStartTime());
+        }
+        if((reqDTO.getStartTime() == null|| reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()!=null && !reqDTO.getEndTime().equals(""))){
+            reqDTO.setProcessstartdate(reqDTO.getEndTime());
+        }
+        SupportWorkloadBO supportWorkloadBO = BeanUtils.copyPropertiesReturnDest(new SupportWorkloadBO(), reqDTO);
+        SupportWorkloadRspBO supportWorkloadRspBO = reqWorkLoadService.supportWorkloadfindList(supportWorkloadBO);
+        SupportWorkloadRspDTO rspDTO = new SupportWorkloadRspDTO();
+        rspDTO.setSupportWorkloadDTOList(BeanConvertUtils.convertList(supportWorkloadRspBO.getSupportWorkloadBOList(), SupportWorkloadDTO.class));
+        rspDTO.setPageNum(supportWorkloadRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(supportWorkloadRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(supportWorkloadRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(supportWorkloadRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+    /**
+     * 支撑工作量导入
+     *
+     * @return
+     */
+    @PostMapping("/supportWorkloadDown")
+    public GenericRspDTO<NoBody> supportWorkloadDown(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        reqWorkLoadService.supportWorkloadDown(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 支撑工作量导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/download")
+    public GenericRspDTO<NoBody> download(@RequestBody SupportWorkloadReqDTO reqDTO, HttpServletResponse response) {
+        if((reqDTO.getStartTime() != null && !reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()==null || reqDTO.getEndTime().equals(""))){
+            reqDTO.setProcessstartdate(reqDTO.getStartTime());
+        }
+        if((reqDTO.getStartTime() == null|| reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()!=null && !reqDTO.getEndTime().equals(""))){
+            reqDTO.setProcessstartdate(reqDTO.getEndTime());
+        }
+        SupportWorkloadBO supportWorkloadBO = BeanUtils.copyPropertiesReturnDest(new SupportWorkloadBO(), reqDTO);
+        reqWorkLoadService.getDownload(response, supportWorkloadBO);
+        return GenericRspDTO.newSuccessInstance();
     }
 }

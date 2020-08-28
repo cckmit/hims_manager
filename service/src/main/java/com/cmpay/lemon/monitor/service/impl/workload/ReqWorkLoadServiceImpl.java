@@ -13,9 +13,7 @@ import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
-import com.cmpay.lemon.monitor.entity.DemandDO;
-import com.cmpay.lemon.monitor.entity.DictionaryDO;
-import com.cmpay.lemon.monitor.entity.WorkloadLockedStateDO;
+import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
@@ -93,6 +91,9 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     IWorkloadLockedStateDao workloadLockedStateDao;
     @Autowired
     private IDemandExtDao demandDao;
+    @Autowired
+    private ISupportWorkloadExtDao iSupportWorkloadExtDao;
+
 
     @Override
     public DemandRspBO findDemand(DemandBO demandBO) {
@@ -160,6 +161,23 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         BeanConvertUtils.convert(demandDO, demandBO);
         PageInfo<DemandBO> pageInfo = PageUtils.pageQueryWithCount(demandBO.getPageNum(), demandBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(workLoadDao.find(demandDO), DemandBO.class));
+        return pageInfo;
+    }
+
+    @Override
+    public SupportWorkloadRspBO supportWorkloadfindList(SupportWorkloadBO supportWorkloadBO){
+        PageInfo<SupportWorkloadBO> pageInfo = getPageInfo1(supportWorkloadBO);
+        List<SupportWorkloadBO> supportWorkloadBOList = BeanConvertUtils.convertList(pageInfo.getList(), SupportWorkloadBO.class);
+        SupportWorkloadRspBO supportWorkloadRspBO = new SupportWorkloadRspBO();
+        supportWorkloadRspBO.setSupportWorkloadBOList(supportWorkloadBOList);
+        supportWorkloadRspBO.setPageInfo(pageInfo);
+        return supportWorkloadRspBO;
+    }
+    private PageInfo<SupportWorkloadBO>  getPageInfo1(SupportWorkloadBO supportWorkloadBO) {
+        SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+        BeanConvertUtils.convert(supportWorkloadDO, supportWorkloadBO);
+        PageInfo<SupportWorkloadBO> pageInfo = PageUtils.pageQueryWithCount(supportWorkloadBO.getPageNum(), supportWorkloadBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(iSupportWorkloadExtDao.findList(supportWorkloadDO), SupportWorkloadBO.class));
         return pageInfo;
     }
     /**
@@ -639,11 +657,9 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     public List<Double> getExportCountForDevp(DemandBO demandBO){
         DemandDO demandDO = new DemandDO();
         BeanConvertUtils.convert(demandDO, demandBO);
-        System.err.println(demandDO);
         List list = null;
         String[] headerNames =null;
         List<DemandDO>  mon_input_workload_list = workLoadDao.goExportCountForDevp(demandDO);
-        System.err.println(mon_input_workload_list);
         List<DemandBO> DevpWorkLoadList = new ArrayList<>();
         for (int i = 0; i < mon_input_workload_list.size(); i++){
             DemandDO demand = mon_input_workload_list.get(i);
@@ -1321,5 +1337,109 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         bean.setUpdateUser(currentUser);
         bean.setUpdateTime(new Date());
 
+    }
+    @Override
+    public void supportWorkloadDown(MultipartFile file) {
+        File f = null;
+        LinkedList<SupportWorkloadDO> supportWorkloadDOLinkedList = new LinkedList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f = File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+//                `documentNumber` varchar(255) DEFAULT NULL COMMENT '文号',
+//                        `processStartDate` varchar(255) DEFAULT NULL COMMENT '流程开始日期',
+//                        `productManagementDepartment` varchar(255) DEFAULT NULL COMMENT '产品管理部门',
+//                        `productOwner` varchar(255) DEFAULT NULL COMMENT '产品负责人',
+//                        `supportingManufacturerProducts` varchar(255) DEFAULT NULL COMMENT '支撑厂家产品',
+//                        `supportTheTopic` varchar(2555) DEFAULT NULL COMMENT '支撑主题',
+//                        `contentDescription` varchar(2555) DEFAULT NULL COMMENT '内容描述',
+//                        `functionPointsDetail` varchar(2048) DEFAULT NULL COMMENT '功能点明细',
+//                        `proposalTime` varchar(255) DEFAULT NULL COMMENT '需求提出时间',
+//                        `completionTime` varchar(255) DEFAULT NULL COMMENT '需求完成时间',
+//                        `supportManager` varchar(255) DEFAULT NULL COMMENT '支撑负责人',
+//                        `supportWorkload` varchar(255) DEFAULT NULL COMMENT '支撑工作量',
+//                        `finalWorkload` varchar(255) DEFAULT NULL COMMENT '最终工作量',
+//                        `supportingManufacturers` varchar(255) DEFAULT NULL COMMENT '支撑厂家',
+//                        `costDepartment` varchar(255) DEFAULT NULL COMMENT '成本管理部门',
+//                        `secondLevelOrganization` varchar(255) DEFAULT NULL COMMENT '二级主导团队',
+//                        `remark` varchar(2555) DEFAULT NULL COMMENT '备注',
+                SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+                supportWorkloadDO.setDocumentnumber(map.get(i).get(0).toString().trim());
+                supportWorkloadDO.setProcessstartdate(map.get(i).get(1).toString().trim());
+                supportWorkloadDO.setProductmanagementdepartment(map.get(i).get(2).toString().trim());
+                supportWorkloadDO.setProductowner(map.get(i).get(3).toString().trim());
+                supportWorkloadDO.setSupportingmanufacturerproducts(map.get(i).get(4).toString().trim());
+                supportWorkloadDO.setSupportthetopic(map.get(i).get(5).toString().trim());
+                supportWorkloadDO.setContentdescription(map.get(i).get(6).toString().trim());
+                supportWorkloadDO.setFunctionpointsdetail(map.get(i).get(7).toString().trim());
+                supportWorkloadDO.setProposaltime(map.get(i).get(8).toString().trim());
+                supportWorkloadDO.setCompletiontime(map.get(i).get(9).toString().trim());
+                supportWorkloadDO.setSupportmanager(map.get(i).get(10).toString().trim());
+                supportWorkloadDO.setSupportworkload(map.get(i).get(11).toString().trim());
+                supportWorkloadDO.setFinalworkload(map.get(i).get(12).toString().trim());
+                supportWorkloadDO.setSupportingmanufacturers(map.get(i).get(13).toString().trim());
+                supportWorkloadDO.setCostdepartment(map.get(i).get(14).toString().trim());
+                supportWorkloadDO.setSecondlevelorganization(map.get(i).get(15).toString().trim());
+                supportWorkloadDO.setRemark(map.get(i).get(16).toString().trim());
+                supportWorkloadDOLinkedList.add(supportWorkloadDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } finally {
+            f.delete();
+        }
+        supportWorkloadDOLinkedList.forEach(m -> {
+            SupportWorkloadDO supportWorkloadDO1 = new SupportWorkloadDO();
+            supportWorkloadDO1.setDocumentnumber(m.getDocumentnumber());
+            List<SupportWorkloadDO> productionDefectsDOS = iSupportWorkloadExtDao.find(supportWorkloadDO1);
+            if (JudgeUtils.isEmpty(productionDefectsDOS)) {
+                iSupportWorkloadExtDao.insert(m);
+            } else {
+                iSupportWorkloadExtDao.update(m);
+            }
+        });
+    }
+    //导出
+    @Override
+    public void getDownload(HttpServletResponse response, SupportWorkloadBO supportWorkloadBO) {
+        SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+        BeanConvertUtils.convert(supportWorkloadDO, supportWorkloadBO);
+        List<SupportWorkloadDO> demandDOList = iSupportWorkloadExtDao.findList(supportWorkloadDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SupportWorkloadDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "supportWorkloadDO" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
     }
 }

@@ -1,8 +1,6 @@
 package com.cmpay.lemon.monitor.service.workload;
 
-import com.cmpay.lemon.monitor.bo.DemandBO;
-import com.cmpay.lemon.monitor.bo.DemandRspBO;
-import com.cmpay.lemon.monitor.bo.WorkloadLockedStateBO;
+import com.cmpay.lemon.monitor.bo.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,12 +13,19 @@ import java.util.Map;
  */
 public interface ReqWorkLoadService {
     /**
-     * 分页查询
+     * 工作量管理分页查询
      *
      * @param demandBO
      * @return
      */
     DemandRspBO findDemand(DemandBO demandBO);
+    /**
+     * 支撑工作量分页查询
+     *
+     * @param supportWorkloadBO
+     * @return
+     */
+    SupportWorkloadRspBO supportWorkloadfindList(SupportWorkloadBO supportWorkloadBO);
     /**
      * 工作量变更
      */
@@ -31,6 +36,8 @@ public interface ReqWorkLoadService {
      * @param file
      */
     void doBatchImport(MultipartFile file);
+    void supportWorkloadDown(MultipartFile file);
+    void getDownload(HttpServletResponse response, SupportWorkloadBO supportWorkloadBO);
 
     /**
      * 检查配合部门工作量占比

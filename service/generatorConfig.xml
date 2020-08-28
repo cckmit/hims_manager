@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="dining_report" domainObjectName="DiningReportDO" enableCountByExample="false"
+        <table tableName="t_support_workload" domainObjectName="SupportWorkloadDO" enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

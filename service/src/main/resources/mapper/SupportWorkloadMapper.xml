@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISupportWorkloadDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        <id column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="productManagementDepartment" property="productmanagementdepartment" jdbcType="VARCHAR" />
+        <result column="productOwner" property="productowner" jdbcType="VARCHAR" />
+        <result column="supportingManufacturerProducts" property="supportingmanufacturerproducts" jdbcType="VARCHAR" />
+        <result column="supportTheTopic" property="supportthetopic" jdbcType="VARCHAR" />
+        <result column="contentDescription" property="contentdescription" jdbcType="VARCHAR" />
+        <result column="functionPointsDetail" property="functionpointsdetail" jdbcType="VARCHAR" />
+        <result column="proposalTime" property="proposaltime" jdbcType="VARCHAR" />
+        <result column="completionTime" property="completiontime" jdbcType="VARCHAR" />
+        <result column="supportManager" property="supportmanager" jdbcType="VARCHAR" />
+        <result column="supportWorkload" property="supportworkload" jdbcType="VARCHAR" />
+        <result column="finalWorkload" property="finalworkload" jdbcType="VARCHAR" />
+        <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
+        <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
+        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts, 
+        supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime, 
+        supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment, 
+        secondLevelOrganization, remark
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_support_workload
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_support_workload
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        insert into t_support_workload
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="documentnumber != null" >
+                documentNumber,
+            </if>
+            <if test="processstartdate != null" >
+                processStartDate,
+            </if>
+            <if test="productmanagementdepartment != null" >
+                productManagementDepartment,
+            </if>
+            <if test="productowner != null" >
+                productOwner,
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                supportingManufacturerProducts,
+            </if>
+            <if test="supportthetopic != null" >
+                supportTheTopic,
+            </if>
+            <if test="contentdescription != null" >
+                contentDescription,
+            </if>
+            <if test="functionpointsdetail != null" >
+                functionPointsDetail,
+            </if>
+            <if test="proposaltime != null" >
+                proposalTime,
+            </if>
+            <if test="completiontime != null" >
+                completionTime,
+            </if>
+            <if test="supportmanager != null" >
+                supportManager,
+            </if>
+            <if test="supportworkload != null" >
+                supportWorkload,
+            </if>
+            <if test="finalworkload != null" >
+                finalWorkload,
+            </if>
+            <if test="supportingmanufacturers != null" >
+                supportingManufacturers,
+            </if>
+            <if test="costdepartment != null" >
+                costDepartment,
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="documentnumber != null" >
+                #{documentnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processstartdate != null" >
+                #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="productmanagementdepartment != null" >
+                #{productmanagementdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="productowner != null" >
+                #{productowner,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                #{supportingmanufacturerproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="supportthetopic != null" >
+                #{supportthetopic,jdbcType=VARCHAR},
+            </if>
+            <if test="contentdescription != null" >
+                #{contentdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="functionpointsdetail != null" >
+                #{functionpointsdetail,jdbcType=VARCHAR},
+            </if>
+            <if test="proposaltime != null" >
+                #{proposaltime,jdbcType=VARCHAR},
+            </if>
+            <if test="completiontime != null" >
+                #{completiontime,jdbcType=VARCHAR},
+            </if>
+            <if test="supportmanager != null" >
+                #{supportmanager,jdbcType=VARCHAR},
+            </if>
+            <if test="supportworkload != null" >
+                #{supportworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="finalworkload != null" >
+                #{finalworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturers != null" >
+                #{supportingmanufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="costdepartment != null" >
+                #{costdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        update t_support_workload
+        <set >
+            <if test="processstartdate != null" >
+                processStartDate = #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="productmanagementdepartment != null" >
+                productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="productowner != null" >
+                productOwner = #{productowner,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="supportthetopic != null" >
+                supportTheTopic = #{supportthetopic,jdbcType=VARCHAR},
+            </if>
+            <if test="contentdescription != null" >
+                contentDescription = #{contentdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="functionpointsdetail != null" >
+                functionPointsDetail = #{functionpointsdetail,jdbcType=VARCHAR},
+            </if>
+            <if test="proposaltime != null" >
+                proposalTime = #{proposaltime,jdbcType=VARCHAR},
+            </if>
+            <if test="completiontime != null" >
+                completionTime = #{completiontime,jdbcType=VARCHAR},
+            </if>
+            <if test="supportmanager != null" >
+                supportManager = #{supportmanager,jdbcType=VARCHAR},
+            </if>
+            <if test="supportworkload != null" >
+                supportWorkload = #{supportworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="finalworkload != null" >
+                finalWorkload = #{finalworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturers != null" >
+                supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="costdepartment != null" >
+                costDepartment = #{costdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_support_workload
+        <where >
+            <if test="documentnumber != null" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null" >
+                and processStartDate = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="productmanagementdepartment != null" >
+                and productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="productowner != null" >
+                and productOwner = #{productowner,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                and supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
+            </if>
+            <if test="supportthetopic != null" >
+                and supportTheTopic = #{supportthetopic,jdbcType=VARCHAR}
+            </if>
+            <if test="contentdescription != null" >
+                and contentDescription = #{contentdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="functionpointsdetail != null" >
+                and functionPointsDetail = #{functionpointsdetail,jdbcType=VARCHAR}
+            </if>
+            <if test="proposaltime != null" >
+                and proposalTime = #{proposaltime,jdbcType=VARCHAR}
+            </if>
+            <if test="completiontime != null" >
+                and completionTime = #{completiontime,jdbcType=VARCHAR}
+            </if>
+            <if test="supportmanager != null" >
+                and supportManager = #{supportmanager,jdbcType=VARCHAR}
+            </if>
+            <if test="supportworkload != null" >
+                and supportWorkload = #{supportworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="finalworkload != null" >
+                and finalWorkload = #{finalworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturers != null" >
+                and supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="costdepartment != null" >
+                and costDepartment = #{costdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null" >
+                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null" >
+                and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

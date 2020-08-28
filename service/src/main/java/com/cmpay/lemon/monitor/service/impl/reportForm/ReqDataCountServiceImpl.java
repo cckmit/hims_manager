@@ -698,7 +698,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> SumBos = new LinkedList<>();
         workingHoursDO.setDevpLeadDept(devpLeadDept);
         List<WorkingHoursDO> impl = null;
-        System.err.println(date1 + "=====" + date2);
         DemandBO demandBO = new DemandBO();
         demandBO.setDevpLeadDept(devpLeadDept);
         if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
@@ -711,7 +710,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setSelectTime(date1);
             impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
             //demandBO.setReqImplMon(date1.substring(0,7));
-            System.err.println(impl);
             if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add("工时");
                 if (!"0".equals(impl.get(0).getSumTime())) {
@@ -752,7 +750,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 SumBos.add("0");
             }
             // 获取当月的功能点
-            System.err.println(demandBO);
             List<Double> dept = reqWorkLoadService.getExportCountForDevp(demandBO);
             if (dept.get(0) != null) {
                 workingHoursBOS.add("功能点");
@@ -766,7 +763,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
-        System.err.println("团队功能点，工时" + demandHoursRspBO);
         return demandHoursRspBO;
     }
 
@@ -1515,6 +1511,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> SumBos = new LinkedList<>();
         List<WorkingHoursDO> workingHoursDOList = null;
         List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        DecimalFormat df = new DecimalFormat("0.##");
         // 二级团队集合
         List<String> deptName = new LinkedList<>();
         for (int i = 0; i < impl.size(); i++) {
@@ -1529,7 +1526,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 int sumx = 5 * 8 * Integer.parseInt(sum);
                 DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint2(impl.get(i).getSecondlevelorganization(), date1, date2);
                 List<String> listSum = demandHoursRspBO.getListSum();
-                String str = "{ products: '" + impl.get(i).getSecondlevelorganization() + "', 标准工时: '" + sumx + "', 工时: '" + listSum.get(0) + "'}";
+                double  d1 = (double) (Math.round((long) Integer.parseInt(listSum.get(0)) * 100 / sumx) / 100.0);
+                String str = "{ products: '" + impl.get(i).getSecondlevelorganization() + "', 工时标准工时: '" + df.format(d1)  + "'}";
                 // { product: '产品测试团队', 工时: '70', 功能点: '150'},
                 workingHoursBOS.add(str);
             }
@@ -1537,7 +1535,24 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
                 DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint(impl.get(i).getSecondlevelorganization(), date1, date2);
                 List<String> listSum = demandHoursRspBO.getListSum();
-                String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 工时: '" + listSum.get(0) + "', 功能点: '" + listSum.get(1) + "'}";
+                //根据部门获取部门人数
+                WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+                workingHoursDO.setDevpLeadDept(impl.get(i).getSecondlevelorganization());
+                workingHoursDOList = iWorkingHoursDao.findDeptView(workingHoursDO);
+                String sum = workingHoursDOList.get(0).getSumDept();
+                // 获取当前月份的天数
+                //int day = DateUtil.getDaysByYearMonth(date2);
+                int sumx = 21 * 8 * Integer.parseInt(sum);
+                double d1 = 0.00;
+                double d2 = 0.00;
+                if(Integer.parseInt(listSum.get(0)) != 0){
+                    System.err.println("111111111111111111111====="+Integer.parseInt(listSum.get(0)));
+                    System.err.println("111111111111111111111====="+Integer.parseInt(listSum.get(1)));
+                    System.err.println("111111111111111111111====="+sumx);
+                    d1 = (double) (Math.round((long) Integer.parseInt(listSum.get(0)) * 100 / sumx) / 100.0);
+                    d2 = (double) (Math.round((long) Integer.parseInt(listSum.get(1)) * 100 / Integer.parseInt(listSum.get(0))) / 100.0);
+                }
+                String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 工时标准工时: '" + df.format(d1) + "', 功能点工时: '" + df.format(d2) + "'}";
                 // { product: '产品测试团队', 工时: '70', 功能点: '150'},
                 workingHoursBOS.add(str);
             }
@@ -1545,12 +1560,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         }
         SumBos.add("product");
         if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
-            SumBos.add("标准工时");
-            SumBos.add("工时");
+            SumBos.add("工时标准工时");
         }
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
-            SumBos.add("工时");
-            SumBos.add("功能点");
+            SumBos.add("工时标准工时");
+            SumBos.add("功能点工时");
         }
         //{sum='null', listSum=[0, 0], stringList=[工时, 功能点]}
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -4614,7 +4628,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     double progressNumber = Double.valueOf(testProgress.replaceAll("%",""));
                     if(progressNumber>=100){
                         completionNumber = completionNumber+1;
-                    }else{
+                    }
+                    if(progressNumber>0&&progressNumber<100){
                         underwayNumber = underwayNumber+1;
                     }
                 }
