@@ -1040,7 +1040,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     public DemandHoursRspBO getDeptFlawNumber(String devpLeadDept, String date1, String date2) {
         List<DefectDetailsDO> impl = null;
         DefectDetailsDO workingHoursDO = new DefectDetailsDO();
-        workingHoursDO.setDefectsDepartment(devpLeadDept);
+        if(!"产品测试团队".equals(devpLeadDept)){
+            workingHoursDO.setDefectsDepartment(devpLeadDept);
+        }
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
@@ -1055,7 +1057,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
 
         }
-        System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
@@ -1498,6 +1499,44 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
 
     /**
+     * 需求进度异常柱状图
+     * @param list
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO planSearch(List<DemandBO> list){
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        List<WorkingHoursDO> workingHoursDOList = null;
+        //二级部门集合
+        List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        DecimalFormat df = new DecimalFormat("0.##");
+        if(list == null || list.size()<=0){
+            return demandHoursRspBO;
+        }
+        // 二级团队集合
+        List<String> deptName = new LinkedList<>();
+        for (int i = 0; i < impl.size(); i++) {
+            int sum = 0;
+            // 各个部门的数量
+            for(int j=0;j< list.size();j++){
+                if(impl.get(i).getSecondlevelorganization().equals(list.get(j).getDevpLeadDept())){
+                    sum =sum+1;
+                }
+            }
+            String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 进度异常需求数: '" + sum + "'}";
+            workingHoursBOS.add(str);
+
+        }
+        SumBos.add("product");
+        SumBos.add("进度异常需求数");
+
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+    /**
      * 各部门中心功能点和工时
      *
      * @param date1
@@ -1542,17 +1581,14 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 String sum = workingHoursDOList.get(0).getSumDept();
                 // 获取当前月份的天数
                 //int day = DateUtil.getDaysByYearMonth(date2);
-                int sumx = 21 * 8 * Integer.parseInt(sum);
+                int sumx = 21 * Integer.parseInt(sum);
                 double d1 = 0.00;
                 double d2 = 0.00;
                 if(Integer.parseInt(listSum.get(0)) != 0){
-                    System.err.println("111111111111111111111====="+Integer.parseInt(listSum.get(0)));
-                    System.err.println("111111111111111111111====="+Integer.parseInt(listSum.get(1)));
-                    System.err.println("111111111111111111111====="+sumx);
                     d1 = (double) (Math.round((long) Integer.parseInt(listSum.get(0)) * 100 / sumx) / 100.0);
                     d2 = (double) (Math.round((long) Integer.parseInt(listSum.get(1)) * 100 / Integer.parseInt(listSum.get(0))) / 100.0);
                 }
-                String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 工时标准工时: '" + df.format(d1) + "', 功能点工时: '" + df.format(d2) + "'}";
+                String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 工时标准工时: '" + df.format(d1) + "'}";
                 // { product: '产品测试团队', 工时: '70', 功能点: '150'},
                 workingHoursBOS.add(str);
             }
@@ -1564,13 +1600,140 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         }
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
             SumBos.add("工时标准工时");
-            SumBos.add("功能点工时");
         }
         //{sum='null', listSum=[0, 0], stringList=[工时, 功能点]}
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
-        System.err.println(demandHoursRspBO);
+        return demandHoursRspBO;
+    }
+    @Override
+    public DemandHoursRspBO getCentreWorkHours2(String date1, String date2) {
+        System.err.println("中心功能点和工时");
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        List<WorkingHoursDO> workingHoursDOList = null;
+        List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        DecimalFormat df = new DecimalFormat("0.##");
+        // 二级团队集合
+        List<String> deptName = new LinkedList<>();
+        //中台汇总
+        double sumZhoTai = 0;
+        int sumQiTa = 0;
+        int x =0;
+        for (int i = 0; i < impl.size(); i++) {
+            deptName.add(impl.get(i).getSecondlevelorganization());
+            //查询月
+            if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+                DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint(impl.get(i).getSecondlevelorganization(), date1, date2);
+                List<String> listSum = demandHoursRspBO.getListSum();
+                double d2 = 0.00;
+                //判断部门 基准工作量
+                if("话费充值研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 371;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("聚合支付研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 234;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("营销活动研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 382;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("渠道产品研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 527;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("信用购机研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 868;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("号码借研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 203;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("商户业务研发团队".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 483;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("智慧食堂研发团队".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 187;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("银行&公共中心研发组".equals(impl.get(i).getSecondlevelorganization())||"用户&清算&账务研发组".equals(impl.get(i).getSecondlevelorganization())
+                ||"支付研发组".equals(impl.get(i).getSecondlevelorganization()) ||"营销研发组".equals(impl.get(i).getSecondlevelorganization())){
+                    x = x+1;
+                    sumQiTa = 1785;
+                    sumZhoTai = sumZhoTai +  Double.valueOf(listSum.get(1));
+                    if(x==4){
+                        d2 = (double) (Math.round( sumZhoTai * 100 / sumQiTa) / 100.0);
+                        String rate = sumZhoTai+"/"+sumQiTa;
+                        String str = "{ product: '" + "业务中台" + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                        // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                        workingHoursBOS.add(str);
+                    }
+
+                }
+                if("平台架构研发团队".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 250;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+                if("前端技术研发团队".equals(impl.get(i).getSecondlevelorganization())){
+                    sumQiTa = 675;
+                    d2 = (double) (Math.round(Double.valueOf(listSum.get(1)) * 100 / sumQiTa) / 100.0);
+                    String rate = listSum.get(1)+"/"+sumQiTa;
+                    String str = "{ product: '" + impl.get(i).getSecondlevelorganization() + "', 功能点基准工作量: '" + df.format(d2) + "', rate: '" + rate + "'}";
+                    // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                    workingHoursBOS.add(str);
+                }
+            }
+
+        }
+        SumBos.add("product");
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            SumBos.add("功能点基准工作量");
+        }
+        //{sum='null', listSum=[0, 0], stringList=[工时, 功能点]}
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
         return demandHoursRspBO;
     }
 
@@ -1618,6 +1781,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         }
         // 查询月
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            // 月标准工时 人天
+            workingHoursBOS.add("标准工时");
+            List<WorkingHoursDO> list = iWorkingHoursDao.findSumPer();
+            int workTime = 21* Integer.parseInt(list.get(0).getSumTime());
+            SumBos.add(workTime+"");
             workingHoursDO.setSelectTime(date2);
             impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
             demandBO.setReqImplMon(date2);
@@ -1635,6 +1803,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursBOS.add("工时");
                 SumBos.add("0");
             }
+            workingHoursBOS.add("基准工作量");
+            SumBos.add("6382.75");
             // 获取当月的功能点
             System.err.println(demandBO);
             List<Double> dept = reqWorkLoadService.getExportCountForDevp2(demandBO);
@@ -1992,6 +2162,30 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         demandHoursRspBO.setListSum(SumBos);
         return demandHoursRspBO;
     }
+    @Override
+    public DemandHoursRspBO getCentreFlawNumberA(String date1, String date2) {
+        List<ProductionDefectsDO> impl = null;
+        ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < list.size(); i++) {
+            workingHoursDO.setProcessstartdate(list.get(i));
+            impl = productionDefectsExtDao.findList(workingHoursDO);
+            SumBos.add(list.get(i));
+            if (impl != null && impl.size() >= 0) {
+                workingHoursBOS.add(impl.size() + "");
+            } else {
+                workingHoursBOS.add("0");
+            }
+
+        }
+        System.err.println(impl);
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
 
     /**
      * 团队视图按月份查询评审问题
@@ -2110,7 +2304,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getDefectsNumber();
+                    if(impl.get(j).getDefectsNumber() > 0){
+                        sum = sum + 1;
+                    }
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -2145,7 +2341,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getProblemNumber();
+                    if(impl.get(j).getProblemNumber() >0){
+                        sum = sum + 1;
+                    }
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -2196,6 +2394,50 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
                 workingHoursDO.setRegistrationDate(date2);
                 impl = defectDetailsExtDao.findList(workingHoursDO);
+            }
+            SumBos.add(dos.get(i).getSecondlevelorganization());
+            if (impl != null && impl.size() >= 0) {
+                workingHoursBOS.add(impl.size() + "");
+            } else {
+                workingHoursBOS.add("0");
+            }
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    @Override
+    public DemandHoursRspBO getCentreFlawNumberDeptA(String date1, String date2) {
+        // 查询各个部门集合
+        List<OrganizationStructureDO> dos = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        List<ProductionDefectsDO> impl = null;
+        ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < dos.size(); i++) {
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
+                continue;
+            }
+            System.err.println(date1 + "=====" + date2);
+            if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            workingHoursDO.setProblemattributiondept(dos.get(i).getSecondlevelorganization());
+            // 查询周
+            if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+                workingHoursDO.setProcessstartdate(date1);
+                impl = productionDefectsExtDao.findWeekList(workingHoursDO);
+            }
+            // 查询月
+            if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+                workingHoursDO.setProcessstartdate(date2);
+                impl = productionDefectsExtDao.findList(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             if (impl != null && impl.size() >= 0) {
@@ -2403,8 +2645,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    System.err.println(impl.get(j).getJirakey());
-                    sum = sum + impl.get(j).getDefectsNumber();
+                    if(impl.get(j).getDefectsNumber() > 0){
+                        sum = sum + 1;
+                    }
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -2457,8 +2700,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    System.err.println(impl.get(j).getJirakey());
-                    sum = sum + impl.get(j).getProblemNumber();
+                    if(impl.get(j).getProblemNumber() > 0){
+                        sum = sum + 1;
+                    }
+
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -2740,13 +2985,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
             workingHoursDO.setSelectTime(date1);
             impl = iWorkingHoursDao.findListWeekView(workingHoursDO);
-            System.err.println(impl);
         }
         // 查询月
         if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
             workingHoursDO.setSelectTime(date2);
             impl = iWorkingHoursDao.findListMonthView(workingHoursDO);
-            System.err.println(impl);
         }
         int sumDemand = 0;
         for (int i = 0; i < impl.size(); i++) {
@@ -2771,12 +3014,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         String Demand = "{'value': '" + df.format(getWorkHours(sumDemand)) + "', 'name': '需求任务'}";
         workingHoursBOS.add(Demand);
         SumBos.add("需求任务");
-        sum = String.valueOf(sumx);
-        System.err.println(sum);
+        sum = df.format(sumx);
         demandHoursRspBO.setListSum(SumBos);
         demandHoursRspBO.setSum(sum);
         demandHoursRspBO.setStringList(workingHoursBOS);
-        System.err.println(demandHoursRspBO);
         return demandHoursRspBO;
     }
 
@@ -4083,21 +4324,23 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Override
     public List<ProductLineDefectsBO> departmentalDefectRate(String month) {
         //  查找部门
-        DictionaryDO dictionaryDO = new DictionaryDO();
-        dictionaryDO.setDicId("DEV_DEPT");
-        List<DictionaryDO> departmentList = dictionaryDao.getDicByDicId(dictionaryDO);
-
+        //二级部门集合
+        List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
         LinkedList<ProductLineDefectsBO> productLineDefectsList = new LinkedList();
-        for(int i=0;i<departmentList.size();i++){
-
+        for(int i=0;i<impl.size();i++){
+            // 去掉4个项目组和质量监督、产品测试
+            if("质量监督组".equals(impl.get(i).getSecondlevelorganization())||"产品测试团队".equals(impl.get(i).getSecondlevelorganization())||"资金归集项目组".equals(impl.get(i).getSecondlevelorganization())
+                    ||"设计项目组".equals(impl.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(impl.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(impl.get(i).getSecondlevelorganization())){
+                continue;
+            }
             ProductLineDefectsBO productLineDefectsBO = new ProductLineDefectsBO();
-            productLineDefectsBO.setProductLine(departmentList.get(i).getValue());
+            productLineDefectsBO.setProductLine(impl.get(i).getSecondlevelorganization());
             //问题数默认为0
             productLineDefectsBO.setDefectsNumber("0");
 
             DemandDO demandDO1 = new DemandDO();
             demandDO1.setReqImplMon(month);
-            demandDO1.setDevpLeadDept(departmentList.get(i).getName());
+            demandDO1.setDevpLeadDept(impl.get(i).getSecondlevelorganization());
             List<DemandDO> demandDOS1 = demandDao.find(demandDO1);
             //工作量和缺陷计数器
             int workload =0;
@@ -4142,9 +4385,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / (float) Integer.parseInt(productLineDefectsBO.getWorkload()) * 100) + "%";
                 productLineDefectsBO.setDefectRate(defectRate);
             }
-            if(workload !=0&&defectsNumber!=0){
-                productLineDefectsList.add(productLineDefectsBO);
-            }
+            productLineDefectsList.add(productLineDefectsBO);
         }
         return productLineDefectsList;
     }
@@ -4658,6 +4899,37 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         testProgressDetailRspBO.setTestProgressDetailBOList(list);
         return testProgressDetailRspBO;
     }
-
+    @Override
+    public DemandHoursRspBO departmentalDefectRate2(String selectTime1, String selectTime2){
+        List<ProductLineDefectsBO> impl = null;
+        List<String> list = getSixMonth(selectTime2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < list.size(); i++) {
+            impl = departmentalDefectRate(list.get(i));
+            SumBos.add(list.get(i));
+            int sum = 0;
+            double defectsNumber = 0;
+            double workload = 0;
+            if (impl != null && impl.size() >= 0) {
+                for (int j = 0; j < impl.size(); j++) {
+                    defectsNumber = defectsNumber + Integer.parseInt(impl.get(j).getDefectsNumber());
+                    workload = workload + Double.valueOf(impl.get(j).getWorkload());
+                }
+                if(workload==0){
+                    workingHoursBOS.add("0");
+                }else{
+                    String defectRate = String.format("%.2f", defectsNumber / workload * 100);
+                    workingHoursBOS.add(defectRate);
+                }
+            } else {
+                workingHoursBOS.add("0");
+            }
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
 }
 

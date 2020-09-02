@@ -366,4 +366,25 @@ public class ReqWorkLoadController {
         reqWorkLoadService.getDownload(response, supportWorkloadBO);
         return GenericRspDTO.newSuccessInstance();
     }
+
+    // 各一级部门支撑工作量月统计明细报表导出
+    @RequestMapping("/supportWorkloadCountForDevp")
+    public GenericRspDTO<NoBody> supportWorkloadCountForDevp(@RequestBody SupportWorkloadReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        SupportWorkloadBO supportWorkloadBO = BeanUtils.copyPropertiesReturnDest(new SupportWorkloadBO(), reqDTO);
+        if (StringUtils.isBlank(supportWorkloadBO.getReqImplMon())) {
+            supportWorkloadBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
+        }
+        reqWorkLoadService.supportWorkloadCountForDevp(request,response, supportWorkloadBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    // 各二级部门支撑工作量月统计明细报表导出
+    @RequestMapping("/supportWorkloadCountForDevp2")
+    public GenericRspDTO<NoBody> supportWorkloadCountForDevp2(@RequestBody SupportWorkloadReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        SupportWorkloadBO supportWorkloadBO = BeanUtils.copyPropertiesReturnDest(new SupportWorkloadBO(), reqDTO);
+        if (StringUtils.isBlank(supportWorkloadBO.getReqImplMon())) {
+            supportWorkloadBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
+        }
+        reqWorkLoadService.supportWorkloadCountForDevp2(request,response, supportWorkloadBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

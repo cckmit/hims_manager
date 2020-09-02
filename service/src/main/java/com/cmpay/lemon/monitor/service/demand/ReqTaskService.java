@@ -6,6 +6,7 @@ import com.cmpay.lemon.monitor.entity.DemandDO;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.List;
@@ -167,4 +168,10 @@ public interface ReqTaskService {
 
     List<DefectMonthlyBO> getDefectMonthlyReport(String defectStartTime, String defectEndTime);
     File getReportForm11(String displayname,String date1,String date2);
+
+    DemandEaseDevelopmentRspBO easeDevelopmentfindList(DemandEaseDevelopmentBO demandEaseDevelopmentBO);
+    void easeDevelopmentDown(MultipartFile file);
+    void getDownload(HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO);
+    void easeDevelopmentWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO );
+    void easeDevelopmentWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO);
 }

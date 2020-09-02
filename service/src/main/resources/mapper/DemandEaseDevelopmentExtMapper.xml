@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandEaseDevelopmentExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        <id column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="developmentOwner" property="developmentowner" jdbcType="VARCHAR" />
+        <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
+        <result column="supportingManufacturerProducts" property="supportingmanufacturerproducts" jdbcType="VARCHAR" />
+        <result column="cutType" property="cuttype" jdbcType="VARCHAR" />
+        <result column="demandTheme" property="demandtheme" jdbcType="VARCHAR" />
+        <result column="requirementDescription" property="requirementdescription" jdbcType="VARCHAR" />
+        <result column="commissioningDate" property="commissioningdate" jdbcType="VARCHAR" />
+        <result column="acceptanceDate" property="acceptancedate" jdbcType="VARCHAR" />
+        <result column="acceptor" property="acceptor" jdbcType="VARCHAR" />
+        <result column="developmentWorkloadAssess" property="developmentworkloadassess" jdbcType="VARCHAR" />
+        <result column="developmentWorkload" property="developmentworkload" jdbcType="VARCHAR" />
+        <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
+        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        documentNumber, processStartDate, developmentOwner, supportingManufacturers, supportingManufacturerProducts,
+        cutType, demandTheme, requirementDescription, commissioningDate, acceptanceDate,
+        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, secondLevelOrganization,
+        remark
+    </sql>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
+        <include refid="Base_Column_List" />
+        from t_demand_ease_development a
+        <where >
+            <if test="documentnumber != null and documentnumber != ''" >
+                and a.documentNumber LIKE CONCAT('%',#{documentnumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''  ">
+                and substr(a.acceptanceDate,1,10) between #{startTime} and #{endTime}
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.acceptanceDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null and processstartdate != ''" >
+                and substr(a.processStartDate,1,10) = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentowner != null and developmentowner != ''" >
+                and a.developmentOwner = #{developmentowner,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturers != null and supportingmanufacturers != ''" >
+                and a.supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturerproducts != null and supportingmanufacturerproducts != ''" >
+                and a.supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
+            </if>
+            <if test="cuttype != null and cuttype != ''">
+                and a.cutType = #{cuttype,jdbcType=VARCHAR}
+            </if>
+            <if test="demandtheme != null and demandtheme != ''" >
+                and a.demandTheme LIKE CONCAT('%',#{demandtheme,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="requirementdescription != null and requirementdescription != ''" >
+                and a.requirementDescription = #{requirementdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="commissioningdate != null and commissioningdate != ''" >
+                and a.commissioningDate = #{commissioningdate,jdbcType=VARCHAR}
+            </if>
+            <if test="acceptancedate != null and acceptancedate != ''" >
+                and substr(a.acceptanceDate,1,10) = #{acceptancedate,jdbcType=VARCHAR}
+            </if>
+            <if test="acceptor != null and acceptor != ''" >
+                and a.acceptor = #{acceptor,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentworkloadassess != null and developmentworkloadassess != ''" >
+                and a.developmentWorkloadAssess = #{developmentworkloadassess,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentworkload != null and developmentworkload != ''" >
+                and a.developmentWorkload = #{developmentworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="costdepartment != null and costdepartment != ''" >
+                and a.costDepartment = #{costdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null and secondlevelorganization != ''" >
+                and a.secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null and remark != ''" >
+                and a.remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+                AND  a.secondLevelOrganization in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+            </if>
+        </where>
+    </select>
+
+    <select id="easeDevelopmentWorkloadCountForDevp" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
+        sum(a.developmentWorkload) developmentWorkload
+        from t_demand_ease_development a
+        <where >
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY firstLevelOrganization
+    </select>
+
+
+    <select id="easeDevelopmentWorkloadCountForDevp2" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        select
+        secondLevelOrganization,
+        sum(a.developmentWorkload) developmentWorkload
+        from t_demand_ease_development a
+        <where >
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY secondLevelOrganization
+    </select>
+</mapper>

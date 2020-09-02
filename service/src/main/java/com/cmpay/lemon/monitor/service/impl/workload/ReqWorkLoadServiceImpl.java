@@ -93,6 +93,8 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     private IDemandExtDao demandDao;
     @Autowired
     private ISupportWorkloadExtDao iSupportWorkloadExtDao;
+    @Autowired
+    private IOrganizationStructureDao iOrganizationStructureDao;
 
 
     @Override
@@ -1434,6 +1436,107 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
             // 设置excel的文件名称
             String excelName = "supportWorkloadDO" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    @Override
+    public void supportWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO ){
+        SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+        BeanConvertUtils.convert(supportWorkloadDO, supportWorkloadBO);
+        // 获取一级团队支撑工作量汇总数据
+        List<SupportWorkloadDO>  mon_input_workload_list = iSupportWorkloadExtDao.supportWorkloadCountForDevp(supportWorkloadDO);
+       if(mon_input_workload_list == null || mon_input_workload_list.size()<=0){
+           MsgEnum.ERROR_CUSTOM.setMsgInfo("一级团队支撑工作量均为空，请先导入数据!");
+           BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+       }
+        //获取所有的一级团队
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+        List<SupportWorkload2DO> DevpWorkLoadList = new ArrayList<>();
+        BigDecimal sum = new BigDecimal("0");
+        for(int i=0;i<firstLevelOrganizationList.size();i++){
+            SupportWorkload2DO supportWorkload2DO = new SupportWorkload2DO();
+            // 一级团队赋值
+            supportWorkload2DO.setSecondlevelorganization(firstLevelOrganizationList.get(i));
+            supportWorkload2DO.setFinalworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(firstLevelOrganizationList.get(i).equals(mon_input_workload_list.get(j).getFirstLevelOrganization())){
+                    supportWorkload2DO.setFinalworkload(mon_input_workload_list.get(j).getFinalworkload());
+                }
+            }
+            sum = sum.add(new BigDecimal(supportWorkload2DO.getFinalworkload()));
+            DevpWorkLoadList.add(supportWorkload2DO);
+        }
+        // 汇总数据
+        SupportWorkload2DO supportWorkload2DO = new SupportWorkload2DO();
+        supportWorkload2DO.setSecondlevelorganization("一级团队汇总");
+        supportWorkload2DO.setFinalworkload(sum+"");
+        DevpWorkLoadList.add(supportWorkload2DO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SupportWorkload2DO.class, DevpWorkLoadList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+
+    }
+    @Override
+    public void supportWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO){
+        SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+        BeanConvertUtils.convert(supportWorkloadDO, supportWorkloadBO);
+        // 获取二级团队支撑工作量汇总数据
+        List<SupportWorkloadDO>  mon_input_workload_list = iSupportWorkloadExtDao.supportWorkloadCountForDevp2(supportWorkloadDO);
+        if(mon_input_workload_list == null || mon_input_workload_list.size()<=0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("二级团队支撑工作量均为空，请先导入数据!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        //获取所有的二级团队
+        List<OrganizationStructureDO> secondlevelorganizationList = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        List<SupportWorkload2DO> DevpWorkLoadList = new ArrayList<>();
+        BigDecimal sum = new BigDecimal("0");
+        for(int i=0;i<secondlevelorganizationList.size();i++){
+            SupportWorkload2DO supportWorkload2DO = new SupportWorkload2DO();
+            // 一级团队赋值
+            supportWorkload2DO.setSecondlevelorganization(secondlevelorganizationList.get(i).getSecondlevelorganization());
+            supportWorkload2DO.setFinalworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(secondlevelorganizationList.get(i).getSecondlevelorganization().equals(mon_input_workload_list.get(j).getSecondlevelorganization())){
+                    supportWorkload2DO.setFinalworkload(mon_input_workload_list.get(j).getFinalworkload());
+                }
+            }
+            sum = sum.add(new BigDecimal(supportWorkload2DO.getFinalworkload()));
+            DevpWorkLoadList.add(supportWorkload2DO);
+        }
+        // 汇总数据
+        SupportWorkload2DO supportWorkload2DO = new SupportWorkload2DO();
+        supportWorkload2DO.setSecondlevelorganization("二级团队汇总");
+        supportWorkload2DO.setFinalworkload(sum+"");
+        DevpWorkLoadList.add(supportWorkload2DO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SupportWorkload2DO.class, DevpWorkLoadList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
             response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             workbook.write(bufferedOutPut);

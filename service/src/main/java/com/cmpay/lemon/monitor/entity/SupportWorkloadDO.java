@@ -101,6 +101,24 @@ public class SupportWorkloadDO extends BaseDO {
     private String remark;
     private String startTime;
     private String endTime;
+    private String reqImplMon;
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
+
+    public String getReqImplMon() {
+        return reqImplMon;
+    }
+
+    public void setReqImplMon(String reqImplMon) {
+        this.reqImplMon = reqImplMon;
+    }
 
     public String getStartTime() {
         return startTime;

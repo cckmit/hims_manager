@@ -93,4 +93,9 @@
         </where>
         GROUP BY firstLevelOrganization, secondLevelOrganization
     </select>
+    <select id="findFirstLevelOrganization" resultType="java.lang.String" parameterType="com.cmpay.lemon.monitor.entity.OrganizationStructureDO" >
+        select
+        DISTINCT firstLevelOrganization
+        from t_organization_structure
+    </select>
 </mapper>

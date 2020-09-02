@@ -9,6 +9,7 @@ import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
 import com.cmpay.lemon.monitor.dto.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
+import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
@@ -31,6 +32,8 @@ public class reportFormController {
 	private ReqTaskService reqTaskService;
 	@Autowired
 	private ReqDataCountService reqDataCountService;
+    @Autowired
+    private ReqPlanService reqPlanService;
 
 	@RequestMapping("/reportform1")
 	public GenericRspDTO<ReqDataCountRspDTO> getReportForm1(@RequestBody ReqDataCountReqDTO reqDataCountReqDTO) {
@@ -656,6 +659,14 @@ public class reportFormController {
 		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
 	}
+	@RequestMapping("/getCentreWorkHours2")
+	public GenericRspDTO<DemandHoursRspDTO> getCentreWorkHours2(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO = reqDataCountService.getCentreWorkHours2(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+		DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+	}
 
 	@RequestMapping("/getCentreWorkHoursPoint")
 	public GenericRspDTO<DemandHoursRspDTO> getCentreWorkHoursPoint(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
@@ -728,6 +739,14 @@ public class reportFormController {
 		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
 	}
+    @RequestMapping("/getCentreFlawNumberA")
+    public GenericRspDTO<DemandHoursRspDTO> getCentreFlawNumberA(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.getCentreFlawNumberA(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 
 	@RequestMapping("/getCentreIssueNumber")
 	public GenericRspDTO<DemandHoursRspDTO> getCentreIssueNumber(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
@@ -800,6 +819,14 @@ public class reportFormController {
 		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
 	}
+    @RequestMapping("/getCentreFlawNumberDeptA")
+    public GenericRspDTO<DemandHoursRspDTO> getCentreFlawNumberDeptA(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.getCentreFlawNumberDeptA(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 
 	@RequestMapping("/getCentreIssueNumberDept")
 	public GenericRspDTO<DemandHoursRspDTO> getCentreIssueNumberDept(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
@@ -1007,6 +1034,20 @@ public class reportFormController {
 		productLineDefectRateRspDTO.setProductLineDefectsList(productLineDefectsList);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,productLineDefectRateRspDTO);
 	}
+    /**
+     * 中心缺陷未解决
+     *
+     * @param workingHoursDTO
+     * @return
+     */
+    @RequestMapping("/departmentalDefectRate2")
+    public GenericRspDTO<DemandHoursRspDTO> departmentalDefectRate2(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.departmentalDefectRate2(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 	//需求测试状态
 	@RequestMapping("/demandTestStatus")
 	public GenericRspDTO<DemandTestStatusRspDTO> demandTestStatus(GenericDTO<NoBody> req) {
@@ -1058,6 +1099,22 @@ public class reportFormController {
         testProgressDetailRspDTO.setTestProgressDetailDTOList(BeanConvertUtils.convertList(testProgressDetailRspBO.getTestProgressDetailBOList(), TestProgressDetailDTO.class));
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,testProgressDetailRspDTO);
 	}
-
+    /**
+     * 中心缺陷未解决
+     *
+     * @param reqDTO
+     * @return
+     */
+    @RequestMapping("/planSearch")
+    public GenericRspDTO<DemandHoursRspDTO> planSearch(@RequestBody DemandReqDTO reqDTO) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        DemandRspBO demandRspBO = reqPlanService.findDemand(demandBO);
+        List<DemandBO> list = demandRspBO.getDemandBOList();
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.planSearch(list);
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 
 }

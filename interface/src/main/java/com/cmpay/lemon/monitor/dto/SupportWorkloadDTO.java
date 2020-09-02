@@ -88,6 +88,15 @@ public class SupportWorkloadDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+    private String firstLevelOrganization;
+
+    public String getFirstLevelOrganization() {
+        return firstLevelOrganization;
+    }
+
+    public void setFirstLevelOrganization(String firstLevelOrganization) {
+        this.firstLevelOrganization = firstLevelOrganization;
+    }
     public String getDocumentnumber() {
         return documentnumber;
     }

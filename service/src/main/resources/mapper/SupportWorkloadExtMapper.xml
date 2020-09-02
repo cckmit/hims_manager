@@ -30,63 +30,96 @@
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
         select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
         <include refid="Base_Column_List" />
-        from t_support_workload
+        from t_support_workload a
         <where >
             <if test="documentnumber != null and documentnumber != ''" >
-                and documentNumber LIKE CONCAT('%',#{documentnumber,jdbcType=VARCHAR},'%')
+                and a.documentNumber LIKE CONCAT('%',#{documentnumber,jdbcType=VARCHAR},'%')
             </if>
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''  ">
-                and substr(processStartDate,1,10) between #{startTime} and #{endTime}
+                and substr(a.processStartDate,1,10) between #{startTime} and #{endTime}
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
             </if>
             <if test="processstartdate != null and processstartdate != ''" >
-                and substr(processStartDate,1,10) = #{processstartdate,jdbcType=VARCHAR}
+                and substr(a.processStartDate,1,10) = #{processstartdate,jdbcType=VARCHAR}
             </if>
             <if test="productmanagementdepartment != null and productmanagementdepartment != ''" >
-                and productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
+                and a.productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
             </if>
             <if test="productowner != null and productowner != ''" >
-                and productOwner = #{productowner,jdbcType=VARCHAR}
+                and a.productOwner = #{productowner,jdbcType=VARCHAR}
             </if>
             <if test="supportingmanufacturerproducts != null and supportingmanufacturerproducts != ''" >
-                and supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
+                and a.supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
             </if>
             <if test="supportthetopic != null and supportthetopic != ''" >
-                and supportTheTopic LIKE CONCAT('%',#{supportthetopic,jdbcType=VARCHAR},'%')
+                and a.supportTheTopic LIKE CONCAT('%',#{supportthetopic,jdbcType=VARCHAR},'%')
             </if>
             <if test="contentdescription != null and contentdescription != ''" >
-                and contentDescription = #{contentdescription,jdbcType=VARCHAR}
+                and a.contentDescription = #{contentdescription,jdbcType=VARCHAR}
             </if>
             <if test="functionpointsdetail != null and functionpointsdetail != ''" >
-                and functionPointsDetail = #{functionpointsdetail,jdbcType=VARCHAR}
+                and a.functionPointsDetail = #{functionpointsdetail,jdbcType=VARCHAR}
             </if>
             <if test="proposaltime != null and proposaltime != ''" >
-                and proposalTime = #{proposaltime,jdbcType=VARCHAR}
+                and a.proposalTime = #{proposaltime,jdbcType=VARCHAR}
             </if>
             <if test="completiontime != null and completiontime != ''" >
-                and completionTime = #{completiontime,jdbcType=VARCHAR}
+                and a.completionTime = #{completiontime,jdbcType=VARCHAR}
             </if>
             <if test="supportmanager != null and supportmanager != ''" >
-                and supportManager = #{supportmanager,jdbcType=VARCHAR}
+                and a.supportManager = #{supportmanager,jdbcType=VARCHAR}
             </if>
             <if test="supportworkload != null and supportworkload != ''" >
-                and supportWorkload = #{supportworkload,jdbcType=VARCHAR}
+                and a.supportWorkload = #{supportworkload,jdbcType=VARCHAR}
             </if>
             <if test="finalworkload != null and finalworkload != ''" >
-                and finalWorkload = #{finalworkload,jdbcType=VARCHAR}
+                and a.finalWorkload = #{finalworkload,jdbcType=VARCHAR}
             </if>
             <if test="supportingmanufacturers != null and supportingmanufacturers != ''" >
-                and supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
+                and a.supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
             </if>
             <if test="costdepartment != null and costdepartment != ''" >
-                and costDepartment = #{costdepartment,jdbcType=VARCHAR}
+                and a.costDepartment = #{costdepartment,jdbcType=VARCHAR}
             </if>
             <if test="secondlevelorganization != null and secondlevelorganization != ''" >
-                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+                and a.secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
             </if>
             <if test="remark != null and remark != ''" >
-                and remark = #{remark,jdbcType=VARCHAR}
+                and a.remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
+                AND  a.secondLevelOrganization in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
             </if>
         </where>
+    </select>
+    <select id="supportWorkloadCountForDevp" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
+        sum(a.finalWorkload) finalWorkload
+        from t_support_workload a
+        <where >
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY firstLevelOrganization
+    </select>
+
+
+    <select id="supportWorkloadCountForDevp2" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
+        select
+        secondLevelOrganization,
+         sum(a.finalWorkload) finalWorkload
+        from t_support_workload a
+        <where >
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY secondLevelOrganization
     </select>
 </mapper>

@@ -40,8 +40,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -141,6 +143,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     IDefectDetailsExtDao defectDetailsDao;
     @Resource
     private GenRptService genRptService;
+    @Resource
+    private IDemandEaseDevelopmentExtDao easeDevelopmentExtDao;
     /**
      * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
      */
@@ -813,7 +817,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     demandDO.setExpInput(Double.parseDouble(map.get(i).get(6).toString().trim()));
                 }
                 if (!JudgeUtils.isEmpty(map.get(i).get(7).toString().trim())) {
-                    demandDO.setProjectedWorkload(Integer.parseInt(map.get(i).get(7).toString().trim()));
+                    demandDO.setProjectedWorkload((int)Double.parseDouble(map.get(i).get(7).toString().trim()));
                 }
                 demandDO.setIsCut(map.get(i).get(8).toString().trim());
                 demandDO.setMonRemark(map.get(i).get(9).toString().trim());
@@ -2503,5 +2507,207 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         generateReportBO.setRaqArgs(raqArgs);
         generateReportBO.setReportStyle("xlsx");
         return genRptService.genRaqRpt(generateReportBO);
+    }
+
+    @Override
+    public DemandEaseDevelopmentRspBO easeDevelopmentfindList(DemandEaseDevelopmentBO demandEaseDevelopmentBO){
+        PageInfo<DemandEaseDevelopmentBO> pageInfo = getPageInfo1(demandEaseDevelopmentBO);
+        List<DemandEaseDevelopmentBO> easeDevelopmentBOList = BeanConvertUtils.convertList(pageInfo.getList(), DemandEaseDevelopmentBO.class);
+        DemandEaseDevelopmentRspBO easeDevelopmentRspBO = new DemandEaseDevelopmentRspBO();
+        easeDevelopmentRspBO.setDemandEaseDevelopmentBOList(easeDevelopmentBOList);
+        easeDevelopmentRspBO.setPageInfo(pageInfo);
+        return easeDevelopmentRspBO;
+    }
+    private PageInfo<DemandEaseDevelopmentBO>  getPageInfo1(DemandEaseDevelopmentBO demandEaseDevelopmentBO) {
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        BeanConvertUtils.convert(easeDevelopmentDO, demandEaseDevelopmentBO);
+        PageInfo<DemandEaseDevelopmentBO> pageInfo = PageUtils.pageQueryWithCount(demandEaseDevelopmentBO.getPageNum(), demandEaseDevelopmentBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(easeDevelopmentExtDao.findList(easeDevelopmentDO), DemandEaseDevelopmentBO.class));
+        return pageInfo;
+    }
+    @Override
+    public void easeDevelopmentDown(MultipartFile file){
+        File f = null;
+        LinkedList<DemandEaseDevelopmentDO> easeDevelopmentDOLinkedList = new LinkedList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f = File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+                easeDevelopmentDO.setDocumentnumber(map.get(i).get(0).toString().trim());
+                easeDevelopmentDO.setProcessstartdate(map.get(i).get(1).toString().trim());
+                easeDevelopmentDO.setDevelopmentowner(map.get(i).get(2).toString().trim());
+                easeDevelopmentDO.setSupportingmanufacturers(map.get(i).get(3).toString().trim());
+                easeDevelopmentDO.setSupportingmanufacturerproducts(map.get(i).get(4).toString().trim());
+                easeDevelopmentDO.setCuttype(map.get(i).get(5).toString().trim());
+                easeDevelopmentDO.setDemandtheme(map.get(i).get(6).toString().trim());
+                easeDevelopmentDO.setRequirementdescription(map.get(i).get(7).toString().trim());
+                easeDevelopmentDO.setDevelopmentworkloadassess(map.get(i).get(8).toString().trim());
+                easeDevelopmentDO.setDevelopmentworkload(map.get(i).get(9).toString().trim());
+                easeDevelopmentDO.setCommissioningdate(map.get(i).get(10).toString().trim());
+                easeDevelopmentDO.setAcceptor(map.get(i).get(11).toString().trim());
+                easeDevelopmentDO.setAcceptancedate(map.get(i).get(12).toString().trim());
+                easeDevelopmentDO.setCostdepartment(map.get(i).get(13).toString().trim());
+                easeDevelopmentDO.setSecondlevelorganization(map.get(i).get(14).toString().trim());
+                easeDevelopmentDO.setRemark(map.get(i).get(15).toString().trim());
+                easeDevelopmentDOLinkedList.add(easeDevelopmentDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } finally {
+            f.delete();
+        }
+        easeDevelopmentDOLinkedList.forEach(m -> {
+            DemandEaseDevelopmentDO supportWorkloadDO1 = new DemandEaseDevelopmentDO();
+            supportWorkloadDO1.setDocumentnumber(m.getDocumentnumber());
+            List<DemandEaseDevelopmentDO> productionDefectsDOS = easeDevelopmentExtDao.find(supportWorkloadDO1);
+            if (JudgeUtils.isEmpty(productionDefectsDOS)) {
+                easeDevelopmentExtDao.insert(m);
+            } else {
+                easeDevelopmentExtDao.update(m);
+            }
+        });
+    }
+    @Override
+    public void getDownload(HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO){
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        BeanConvertUtils.convert(easeDevelopmentDO, demandEaseDevelopmentBO);
+        List<DemandEaseDevelopmentDO> demandDOList = easeDevelopmentExtDao.findList(easeDevelopmentDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandEaseDevelopmentDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "easeDevelopmentDO" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    @Override
+    public void easeDevelopmentWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO ){
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        BeanConvertUtils.convert(easeDevelopmentDO, demandEaseDevelopmentBO);
+        // 获取一级团队支撑工作量汇总数据
+        List<DemandEaseDevelopmentDO>  mon_input_workload_list = easeDevelopmentExtDao.easeDevelopmentWorkloadCountForDevp(easeDevelopmentDO);
+        if(mon_input_workload_list == null || mon_input_workload_list.size()<=0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("一级团队支撑工作量均为空，请先导入数据!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        //获取所有的一级团队
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+        List<DemandEaseDevelopment2DO> DevpWorkLoadList = new ArrayList<>();
+        BigDecimal sum = new BigDecimal("0");
+        for(int i=0;i<firstLevelOrganizationList.size();i++){
+            DemandEaseDevelopment2DO demandEaseDevelopment2DO = new DemandEaseDevelopment2DO();
+            // 一级团队赋值
+            demandEaseDevelopment2DO.setSecondlevelorganization(firstLevelOrganizationList.get(i));
+            demandEaseDevelopment2DO.setDevelopmentworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(firstLevelOrganizationList.get(i).equals(mon_input_workload_list.get(j).getFirstLevelOrganization())){
+                    demandEaseDevelopment2DO.setDevelopmentworkload(mon_input_workload_list.get(j).getDevelopmentworkload());
+                }
+            }
+            sum = sum.add(new BigDecimal(demandEaseDevelopment2DO.getDevelopmentworkload()));
+            DevpWorkLoadList.add(demandEaseDevelopment2DO);
+        }
+        // 汇总数据
+        DemandEaseDevelopment2DO supportWorkload2DO = new DemandEaseDevelopment2DO();
+        supportWorkload2DO.setSecondlevelorganization("一级团队汇总");
+        supportWorkload2DO.setDevelopmentworkload(sum+"");
+        DevpWorkLoadList.add(supportWorkload2DO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandEaseDevelopment2DO.class, DevpWorkLoadList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    @Override
+    public void easeDevelopmentWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO){
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        BeanConvertUtils.convert(easeDevelopmentDO, demandEaseDevelopmentBO);
+        // 获取二级团队支撑工作量汇总数据
+        List<DemandEaseDevelopmentDO>  mon_input_workload_list = easeDevelopmentExtDao.easeDevelopmentWorkloadCountForDevp2(easeDevelopmentDO);
+        if(mon_input_workload_list == null || mon_input_workload_list.size()<=0){
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("二级团队支撑工作量均为空，请先导入数据!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        //获取所有的二级团队
+        List<OrganizationStructureDO> secondlevelorganizationList = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        List<DemandEaseDevelopment2DO> DevpWorkLoadList = new ArrayList<>();
+        BigDecimal sum = new BigDecimal("0");
+        for(int i=0;i<secondlevelorganizationList.size();i++){
+            DemandEaseDevelopment2DO supportWorkload2DO = new DemandEaseDevelopment2DO();
+            // 一级团队赋值
+            supportWorkload2DO.setSecondlevelorganization(secondlevelorganizationList.get(i).getSecondlevelorganization());
+            supportWorkload2DO.setDevelopmentworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(secondlevelorganizationList.get(i).getSecondlevelorganization().equals(mon_input_workload_list.get(j).getSecondlevelorganization())){
+                    supportWorkload2DO.setDevelopmentworkload(mon_input_workload_list.get(j).getDevelopmentworkload());
+                }
+            }
+            sum = sum.add(new BigDecimal(supportWorkload2DO.getDevelopmentworkload()));
+            DevpWorkLoadList.add(supportWorkload2DO);
+        }
+        // 汇总数据
+        DemandEaseDevelopment2DO supportWorkload2DO = new DemandEaseDevelopment2DO();
+        supportWorkload2DO.setSecondlevelorganization("二级团队汇总");
+        supportWorkload2DO.setDevelopmentworkload(sum+"");
+        DevpWorkLoadList.add(supportWorkload2DO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DemandEaseDevelopment2DO.class, DevpWorkLoadList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "base_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
     }
 }

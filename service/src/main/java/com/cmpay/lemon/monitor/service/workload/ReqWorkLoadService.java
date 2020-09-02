@@ -70,4 +70,6 @@ public interface ReqWorkLoadService {
     void updateFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
 
     WorkloadLockedStateBO getFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
+    void supportWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO );
+    void supportWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO);
 }

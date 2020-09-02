@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IDemandEaseDevelopmentDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        <id column="documentNumber" property="documentnumber" jdbcType="VARCHAR" />
+        <result column="processStartDate" property="processstartdate" jdbcType="VARCHAR" />
+        <result column="developmentOwner" property="developmentowner" jdbcType="VARCHAR" />
+        <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
+        <result column="supportingManufacturerProducts" property="supportingmanufacturerproducts" jdbcType="VARCHAR" />
+        <result column="cutType" property="cuttype" jdbcType="VARCHAR" />
+        <result column="demandTheme" property="demandtheme" jdbcType="VARCHAR" />
+        <result column="requirementDescription" property="requirementdescription" jdbcType="VARCHAR" />
+        <result column="commissioningDate" property="commissioningdate" jdbcType="VARCHAR" />
+        <result column="acceptanceDate" property="acceptancedate" jdbcType="VARCHAR" />
+        <result column="acceptor" property="acceptor" jdbcType="VARCHAR" />
+        <result column="developmentWorkloadAssess" property="developmentworkloadassess" jdbcType="VARCHAR" />
+        <result column="developmentWorkload" property="developmentworkload" jdbcType="VARCHAR" />
+        <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
+        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        documentNumber, processStartDate, developmentOwner, supportingManufacturers, supportingManufacturerProducts, 
+        cutType, demandTheme, requirementDescription, commissioningDate, acceptanceDate, 
+        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, secondLevelOrganization, 
+        remark
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_ease_development
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_demand_ease_development
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        insert into t_demand_ease_development
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="documentnumber != null" >
+                documentNumber,
+            </if>
+            <if test="processstartdate != null" >
+                processStartDate,
+            </if>
+            <if test="developmentowner != null" >
+                developmentOwner,
+            </if>
+            <if test="supportingmanufacturers != null" >
+                supportingManufacturers,
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                supportingManufacturerProducts,
+            </if>
+            <if test="cuttype != null" >
+                cutType,
+            </if>
+            <if test="demandtheme != null" >
+                demandTheme,
+            </if>
+            <if test="requirementdescription != null" >
+                requirementDescription,
+            </if>
+            <if test="commissioningdate != null" >
+                commissioningDate,
+            </if>
+            <if test="acceptancedate != null" >
+                acceptanceDate,
+            </if>
+            <if test="acceptor != null" >
+                acceptor,
+            </if>
+            <if test="developmentworkloadassess != null" >
+                developmentWorkloadAssess,
+            </if>
+            <if test="developmentworkload != null" >
+                developmentWorkload,
+            </if>
+            <if test="costdepartment != null" >
+                costDepartment,
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="documentnumber != null" >
+                #{documentnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processstartdate != null" >
+                #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentowner != null" >
+                #{developmentowner,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturers != null" >
+                #{supportingmanufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                #{supportingmanufacturerproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="cuttype != null" >
+                #{cuttype,jdbcType=VARCHAR},
+            </if>
+            <if test="demandtheme != null" >
+                #{demandtheme,jdbcType=VARCHAR},
+            </if>
+            <if test="requirementdescription != null" >
+                #{requirementdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="commissioningdate != null" >
+                #{commissioningdate,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancedate != null" >
+                #{acceptancedate,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptor != null" >
+                #{acceptor,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentworkloadassess != null" >
+                #{developmentworkloadassess,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentworkload != null" >
+                #{developmentworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="costdepartment != null" >
+                #{costdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        update t_demand_ease_development
+        <set >
+            <if test="processstartdate != null" >
+                processStartDate = #{processstartdate,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentowner != null" >
+                developmentOwner = #{developmentowner,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturers != null" >
+                supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="cuttype != null" >
+                cutType = #{cuttype,jdbcType=VARCHAR},
+            </if>
+            <if test="demandtheme != null" >
+                demandTheme = #{demandtheme,jdbcType=VARCHAR},
+            </if>
+            <if test="requirementdescription != null" >
+                requirementDescription = #{requirementdescription,jdbcType=VARCHAR},
+            </if>
+            <if test="commissioningdate != null" >
+                commissioningDate = #{commissioningdate,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptancedate != null" >
+                acceptanceDate = #{acceptancedate,jdbcType=VARCHAR},
+            </if>
+            <if test="acceptor != null" >
+                acceptor = #{acceptor,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentworkloadassess != null" >
+                developmentWorkloadAssess = #{developmentworkloadassess,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentworkload != null" >
+                developmentWorkload = #{developmentworkload,jdbcType=VARCHAR},
+            </if>
+            <if test="costdepartment != null" >
+                costDepartment = #{costdepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where documentNumber = #{documentnumber,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_demand_ease_development
+        <where >
+            <if test="documentnumber != null" >
+                and documentNumber = #{documentnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processstartdate != null" >
+                and processStartDate = #{processstartdate,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentowner != null" >
+                and developmentOwner = #{developmentowner,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturers != null" >
+                and supportingManufacturers = #{supportingmanufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="supportingmanufacturerproducts != null" >
+                and supportingManufacturerProducts = #{supportingmanufacturerproducts,jdbcType=VARCHAR}
+            </if>
+            <if test="cuttype != null" >
+                and cutType = #{cuttype,jdbcType=VARCHAR}
+            </if>
+            <if test="demandtheme != null" >
+                and demandTheme = #{demandtheme,jdbcType=VARCHAR}
+            </if>
+            <if test="requirementdescription != null" >
+                and requirementDescription = #{requirementdescription,jdbcType=VARCHAR}
+            </if>
+            <if test="commissioningdate != null" >
+                and commissioningDate = #{commissioningdate,jdbcType=VARCHAR}
+            </if>
+            <if test="acceptancedate != null" >
+                and acceptanceDate = #{acceptancedate,jdbcType=VARCHAR}
+            </if>
+            <if test="acceptor != null" >
+                and acceptor = #{acceptor,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentworkloadassess != null" >
+                and developmentWorkloadAssess = #{developmentworkloadassess,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentworkload != null" >
+                and developmentWorkload = #{developmentworkload,jdbcType=VARCHAR}
+            </if>
+            <if test="costdepartment != null" >
+                and costDepartment = #{costdepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null" >
+                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="remark != null" >
+                and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
