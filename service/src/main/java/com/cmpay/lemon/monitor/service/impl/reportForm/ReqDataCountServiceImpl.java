@@ -1803,6 +1803,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursBOS.add("工时");
                 SumBos.add("0");
             }
+            workingHoursBOS.add("");
+            SumBos.add("");
             workingHoursBOS.add("基准工作量");
             SumBos.add("6382.75");
             // 获取当月的功能点

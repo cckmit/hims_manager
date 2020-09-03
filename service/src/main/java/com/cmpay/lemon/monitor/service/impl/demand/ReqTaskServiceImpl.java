@@ -1185,7 +1185,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
             response.addHeader("Access-Control-Max-Age", "3600");
             response.setContentType("application/octet-stream; charset=utf-8");
-            output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
+            int len = 0 ;
+            byte[] buffer = new byte[1024];
+            FileInputStream fis = new FileInputStream(zip);
+            while ((len = fis.read(buffer)) > 0) {
+                output.write(buffer, 0, len);
+                output.flush();
+            }
+           // output.write(org.apache.commons.io.FileUtils.readFileToByteArray(zip));
             bufferedOutPut.flush();
 
             // 删除文件
