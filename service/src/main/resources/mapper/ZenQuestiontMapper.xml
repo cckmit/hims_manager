@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IZenQuestiontDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ZenQuestiontDO" >
+        <id column="bugNumber" property="bugnumber" jdbcType="VARCHAR" />
+        <result column="belongProducts" property="belongproducts" jdbcType="VARCHAR" />
+        <result column="belongModule" property="belongmodule" jdbcType="VARCHAR" />
+        <result column="belongProject" property="belongproject" jdbcType="VARCHAR" />
+        <result column="relatedDemand" property="relateddemand" jdbcType="VARCHAR" />
+        <result column="relatedTask" property="relatedtask" jdbcType="VARCHAR" />
+        <result column="bugTitle" property="bugtitle" jdbcType="VARCHAR" />
+        <result column="keyword" property="keyword" jdbcType="VARCHAR" />
+        <result column="severity" property="severity" jdbcType="VARCHAR" />
+        <result column="priority" property="priority" jdbcType="VARCHAR" />
+        <result column="bugType" property="bugtype" jdbcType="VARCHAR" />
+        <result column="operatingSystem" property="operatingsystem" jdbcType="VARCHAR" />
+        <result column="browser" property="browser" jdbcType="VARCHAR" />
+        <result column="repeatSteps" property="repeatsteps" jdbcType="VARCHAR" />
+        <result column="bugStatus" property="bugstatus" jdbcType="VARCHAR" />
+        <result column="expirationDate" property="expirationdate" jdbcType="VARCHAR" />
+        <result column="activateNumber" property="activatenumber" jdbcType="VARCHAR" />
+        <result column="whetherConfirm" property="whetherconfirm" jdbcType="VARCHAR" />
+        <result column="carbonCopy" property="carboncopy" jdbcType="VARCHAR" />
+        <result column="creator" property="creator" jdbcType="VARCHAR" />
+        <result column="createdDate" property="createddate" jdbcType="VARCHAR" />
+        <result column="affectsVersion" property="affectsversion" jdbcType="VARCHAR" />
+        <result column="assigned" property="assigned" jdbcType="VARCHAR" />
+        <result column="assignedDate" property="assigneddate" jdbcType="VARCHAR" />
+        <result column="solver" property="solver" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="solveVersion" property="solveversion" jdbcType="VARCHAR" />
+        <result column="solveDate" property="solvedate" jdbcType="VARCHAR" />
+        <result column="shutPerson" property="shutperson" jdbcType="VARCHAR" />
+        <result column="shutDate" property="shutdate" jdbcType="VARCHAR" />
+        <result column="repetitionId" property="repetitionid" jdbcType="VARCHAR" />
+        <result column="relatedBug" property="relatedbug" jdbcType="VARCHAR" />
+        <result column="relatedCase" property="relatedcase" jdbcType="VARCHAR" />
+        <result column="lastReviser" property="lastreviser" jdbcType="VARCHAR" />
+        <result column="changedDate" property="changeddate" jdbcType="VARCHAR" />
+        <result column="accessory" property="accessory" jdbcType="VARCHAR" />
+        <result column="secondlevelorganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        bugNumber, belongProducts, belongModule, belongProject, relatedDemand, relatedTask, 
+        bugTitle, keyword, severity, priority, bugType, operatingSystem, browser, repeatSteps, 
+        bugStatus, expirationDate, activateNumber, whetherConfirm, carbonCopy, creator, createdDate, 
+        affectsVersion, assigned, assignedDate, solver, solution, solveVersion, solveDate, 
+        shutPerson, shutDate, repetitionId, relatedBug, relatedCase, lastReviser, changedDate, 
+        accessory, secondlevelorganization
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_zen_questiont
+        where bugNumber = #{bugnumber,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_zen_questiont
+        where bugNumber = #{bugnumber,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ZenQuestiontDO" >
+        insert into t_zen_questiont
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="bugnumber != null" >
+                bugNumber,
+            </if>
+            <if test="belongproducts != null" >
+                belongProducts,
+            </if>
+            <if test="belongmodule != null" >
+                belongModule,
+            </if>
+            <if test="belongproject != null" >
+                belongProject,
+            </if>
+            <if test="relateddemand != null" >
+                relatedDemand,
+            </if>
+            <if test="relatedtask != null" >
+                relatedTask,
+            </if>
+            <if test="bugtitle != null" >
+                bugTitle,
+            </if>
+            <if test="keyword != null" >
+                keyword,
+            </if>
+            <if test="severity != null" >
+                severity,
+            </if>
+            <if test="priority != null" >
+                priority,
+            </if>
+            <if test="bugtype != null" >
+                bugType,
+            </if>
+            <if test="operatingsystem != null" >
+                operatingSystem,
+            </if>
+            <if test="browser != null" >
+                browser,
+            </if>
+            <if test="repeatsteps != null" >
+                repeatSteps,
+            </if>
+            <if test="bugstatus != null" >
+                bugStatus,
+            </if>
+            <if test="expirationdate != null" >
+                expirationDate,
+            </if>
+            <if test="activatenumber != null" >
+                activateNumber,
+            </if>
+            <if test="whetherconfirm != null" >
+                whetherConfirm,
+            </if>
+            <if test="carboncopy != null" >
+                carbonCopy,
+            </if>
+            <if test="creator != null" >
+                creator,
+            </if>
+            <if test="createddate != null" >
+                createdDate,
+            </if>
+            <if test="affectsversion != null" >
+                affectsVersion,
+            </if>
+            <if test="assigned != null" >
+                assigned,
+            </if>
+            <if test="assigneddate != null" >
+                assignedDate,
+            </if>
+            <if test="solver != null" >
+                solver,
+            </if>
+            <if test="solution != null" >
+                solution,
+            </if>
+            <if test="solveversion != null" >
+                solveVersion,
+            </if>
+            <if test="solvedate != null" >
+                solveDate,
+            </if>
+            <if test="shutperson != null" >
+                shutPerson,
+            </if>
+            <if test="shutdate != null" >
+                shutDate,
+            </if>
+            <if test="repetitionid != null" >
+                repetitionId,
+            </if>
+            <if test="relatedbug != null" >
+                relatedBug,
+            </if>
+            <if test="relatedcase != null" >
+                relatedCase,
+            </if>
+            <if test="lastreviser != null" >
+                lastReviser,
+            </if>
+            <if test="changeddate != null" >
+                changedDate,
+            </if>
+            <if test="accessory != null" >
+                accessory,
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondlevelorganization,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="bugnumber != null" >
+                #{bugnumber,jdbcType=VARCHAR},
+            </if>
+            <if test="belongproducts != null" >
+                #{belongproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="belongmodule != null" >
+                #{belongmodule,jdbcType=VARCHAR},
+            </if>
+            <if test="belongproject != null" >
+                #{belongproject,jdbcType=VARCHAR},
+            </if>
+            <if test="relateddemand != null" >
+                #{relateddemand,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedtask != null" >
+                #{relatedtask,jdbcType=VARCHAR},
+            </if>
+            <if test="bugtitle != null" >
+                #{bugtitle,jdbcType=VARCHAR},
+            </if>
+            <if test="keyword != null" >
+                #{keyword,jdbcType=VARCHAR},
+            </if>
+            <if test="severity != null" >
+                #{severity,jdbcType=VARCHAR},
+            </if>
+            <if test="priority != null" >
+                #{priority,jdbcType=VARCHAR},
+            </if>
+            <if test="bugtype != null" >
+                #{bugtype,jdbcType=VARCHAR},
+            </if>
+            <if test="operatingsystem != null" >
+                #{operatingsystem,jdbcType=VARCHAR},
+            </if>
+            <if test="browser != null" >
+                #{browser,jdbcType=VARCHAR},
+            </if>
+            <if test="repeatsteps != null" >
+                #{repeatsteps,jdbcType=VARCHAR},
+            </if>
+            <if test="bugstatus != null" >
+                #{bugstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="expirationdate != null" >
+                #{expirationdate,jdbcType=VARCHAR},
+            </if>
+            <if test="activatenumber != null" >
+                #{activatenumber,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherconfirm != null" >
+                #{whetherconfirm,jdbcType=VARCHAR},
+            </if>
+            <if test="carboncopy != null" >
+                #{carboncopy,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null" >
+                #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createddate != null" >
+                #{createddate,jdbcType=VARCHAR},
+            </if>
+            <if test="affectsversion != null" >
+                #{affectsversion,jdbcType=VARCHAR},
+            </if>
+            <if test="assigned != null" >
+                #{assigned,jdbcType=VARCHAR},
+            </if>
+            <if test="assigneddate != null" >
+                #{assigneddate,jdbcType=VARCHAR},
+            </if>
+            <if test="solver != null" >
+                #{solver,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="solveversion != null" >
+                #{solveversion,jdbcType=VARCHAR},
+            </if>
+            <if test="solvedate != null" >
+                #{solvedate,jdbcType=VARCHAR},
+            </if>
+            <if test="shutperson != null" >
+                #{shutperson,jdbcType=VARCHAR},
+            </if>
+            <if test="shutdate != null" >
+                #{shutdate,jdbcType=VARCHAR},
+            </if>
+            <if test="repetitionid != null" >
+                #{repetitionid,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedbug != null" >
+                #{relatedbug,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedcase != null" >
+                #{relatedcase,jdbcType=VARCHAR},
+            </if>
+            <if test="lastreviser != null" >
+                #{lastreviser,jdbcType=VARCHAR},
+            </if>
+            <if test="changeddate != null" >
+                #{changeddate,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null" >
+                #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ZenQuestiontDO" >
+        update t_zen_questiont
+        <set >
+            <if test="belongproducts != null" >
+                belongProducts = #{belongproducts,jdbcType=VARCHAR},
+            </if>
+            <if test="belongmodule != null" >
+                belongModule = #{belongmodule,jdbcType=VARCHAR},
+            </if>
+            <if test="belongproject != null" >
+                belongProject = #{belongproject,jdbcType=VARCHAR},
+            </if>
+            <if test="relateddemand != null" >
+                relatedDemand = #{relateddemand,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedtask != null" >
+                relatedTask = #{relatedtask,jdbcType=VARCHAR},
+            </if>
+            <if test="bugtitle != null" >
+                bugTitle = #{bugtitle,jdbcType=VARCHAR},
+            </if>
+            <if test="keyword != null" >
+                keyword = #{keyword,jdbcType=VARCHAR},
+            </if>
+            <if test="severity != null" >
+                severity = #{severity,jdbcType=VARCHAR},
+            </if>
+            <if test="priority != null" >
+                priority = #{priority,jdbcType=VARCHAR},
+            </if>
+            <if test="bugtype != null" >
+                bugType = #{bugtype,jdbcType=VARCHAR},
+            </if>
+            <if test="operatingsystem != null" >
+                operatingSystem = #{operatingsystem,jdbcType=VARCHAR},
+            </if>
+            <if test="browser != null" >
+                browser = #{browser,jdbcType=VARCHAR},
+            </if>
+            <if test="repeatsteps != null" >
+                repeatSteps = #{repeatsteps,jdbcType=VARCHAR},
+            </if>
+            <if test="bugstatus != null" >
+                bugStatus = #{bugstatus,jdbcType=VARCHAR},
+            </if>
+            <if test="expirationdate != null" >
+                expirationDate = #{expirationdate,jdbcType=VARCHAR},
+            </if>
+            <if test="activatenumber != null" >
+                activateNumber = #{activatenumber,jdbcType=VARCHAR},
+            </if>
+            <if test="whetherconfirm != null" >
+                whetherConfirm = #{whetherconfirm,jdbcType=VARCHAR},
+            </if>
+            <if test="carboncopy != null" >
+                carbonCopy = #{carboncopy,jdbcType=VARCHAR},
+            </if>
+            <if test="creator != null" >
+                creator = #{creator,jdbcType=VARCHAR},
+            </if>
+            <if test="createddate != null" >
+                createdDate = #{createddate,jdbcType=VARCHAR},
+            </if>
+            <if test="affectsversion != null" >
+                affectsVersion = #{affectsversion,jdbcType=VARCHAR},
+            </if>
+            <if test="assigned != null" >
+                assigned = #{assigned,jdbcType=VARCHAR},
+            </if>
+            <if test="assigneddate != null" >
+                assignedDate = #{assigneddate,jdbcType=VARCHAR},
+            </if>
+            <if test="solver != null" >
+                solver = #{solver,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                solution = #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="solveversion != null" >
+                solveVersion = #{solveversion,jdbcType=VARCHAR},
+            </if>
+            <if test="solvedate != null" >
+                solveDate = #{solvedate,jdbcType=VARCHAR},
+            </if>
+            <if test="shutperson != null" >
+                shutPerson = #{shutperson,jdbcType=VARCHAR},
+            </if>
+            <if test="shutdate != null" >
+                shutDate = #{shutdate,jdbcType=VARCHAR},
+            </if>
+            <if test="repetitionid != null" >
+                repetitionId = #{repetitionid,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedbug != null" >
+                relatedBug = #{relatedbug,jdbcType=VARCHAR},
+            </if>
+            <if test="relatedcase != null" >
+                relatedCase = #{relatedcase,jdbcType=VARCHAR},
+            </if>
+            <if test="lastreviser != null" >
+                lastReviser = #{lastreviser,jdbcType=VARCHAR},
+            </if>
+            <if test="changeddate != null" >
+                changedDate = #{changeddate,jdbcType=VARCHAR},
+            </if>
+            <if test="accessory != null" >
+                accessory = #{accessory,jdbcType=VARCHAR},
+            </if>
+            <if test="secondlevelorganization != null" >
+                secondlevelorganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where bugNumber = #{bugnumber,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ZenQuestiontDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_zen_questiont
+        <where >
+            <if test="bugnumber != null" >
+                and bugNumber = #{bugnumber,jdbcType=VARCHAR}
+            </if>
+            <if test="belongproducts != null" >
+                and belongProducts = #{belongproducts,jdbcType=VARCHAR}
+            </if>
+            <if test="belongmodule != null" >
+                and belongModule = #{belongmodule,jdbcType=VARCHAR}
+            </if>
+            <if test="belongproject != null" >
+                and belongProject = #{belongproject,jdbcType=VARCHAR}
+            </if>
+            <if test="relateddemand != null" >
+                and relatedDemand = #{relateddemand,jdbcType=VARCHAR}
+            </if>
+            <if test="relatedtask != null" >
+                and relatedTask = #{relatedtask,jdbcType=VARCHAR}
+            </if>
+            <if test="bugtitle != null" >
+                and bugTitle = #{bugtitle,jdbcType=VARCHAR}
+            </if>
+            <if test="keyword != null" >
+                and keyword = #{keyword,jdbcType=VARCHAR}
+            </if>
+            <if test="severity != null" >
+                and severity = #{severity,jdbcType=VARCHAR}
+            </if>
+            <if test="priority != null" >
+                and priority = #{priority,jdbcType=VARCHAR}
+            </if>
+            <if test="bugtype != null" >
+                and bugType = #{bugtype,jdbcType=VARCHAR}
+            </if>
+            <if test="operatingsystem != null" >
+                and operatingSystem = #{operatingsystem,jdbcType=VARCHAR}
+            </if>
+            <if test="browser != null" >
+                and browser = #{browser,jdbcType=VARCHAR}
+            </if>
+            <if test="repeatsteps != null" >
+                and repeatSteps = #{repeatsteps,jdbcType=VARCHAR}
+            </if>
+            <if test="bugstatus != null" >
+                and bugStatus = #{bugstatus,jdbcType=VARCHAR}
+            </if>
+            <if test="expirationdate != null" >
+                and expirationDate = #{expirationdate,jdbcType=VARCHAR}
+            </if>
+            <if test="activatenumber != null" >
+                and activateNumber = #{activatenumber,jdbcType=VARCHAR}
+            </if>
+            <if test="whetherconfirm != null" >
+                and whetherConfirm = #{whetherconfirm,jdbcType=VARCHAR}
+            </if>
+            <if test="carboncopy != null" >
+                and carbonCopy = #{carboncopy,jdbcType=VARCHAR}
+            </if>
+            <if test="creator != null" >
+                and creator = #{creator,jdbcType=VARCHAR}
+            </if>
+            <if test="createddate != null" >
+                and createdDate = #{createddate,jdbcType=VARCHAR}
+            </if>
+            <if test="affectsversion != null" >
+                and affectsVersion = #{affectsversion,jdbcType=VARCHAR}
+            </if>
+            <if test="assigned != null" >
+                and assigned = #{assigned,jdbcType=VARCHAR}
+            </if>
+            <if test="assigneddate != null" >
+                and assignedDate = #{assigneddate,jdbcType=VARCHAR}
+            </if>
+            <if test="solver != null" >
+                and solver = #{solver,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="solveversion != null" >
+                and solveVersion = #{solveversion,jdbcType=VARCHAR}
+            </if>
+            <if test="solvedate != null" >
+                and solveDate = #{solvedate,jdbcType=VARCHAR}
+            </if>
+            <if test="shutperson != null" >
+                and shutPerson = #{shutperson,jdbcType=VARCHAR}
+            </if>
+            <if test="shutdate != null" >
+                and shutDate = #{shutdate,jdbcType=VARCHAR}
+            </if>
+            <if test="repetitionid != null" >
+                and repetitionId = #{repetitionid,jdbcType=VARCHAR}
+            </if>
+            <if test="relatedbug != null" >
+                and relatedBug = #{relatedbug,jdbcType=VARCHAR}
+            </if>
+            <if test="relatedcase != null" >
+                and relatedCase = #{relatedcase,jdbcType=VARCHAR}
+            </if>
+            <if test="lastreviser != null" >
+                and lastReviser = #{lastreviser,jdbcType=VARCHAR}
+            </if>
+            <if test="changeddate != null" >
+                and changedDate = #{changeddate,jdbcType=VARCHAR}
+            </if>
+            <if test="accessory != null" >
+                and accessory = #{accessory,jdbcType=VARCHAR}
+            </if>
+            <if test="secondlevelorganization != null" >
+                and secondlevelorganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

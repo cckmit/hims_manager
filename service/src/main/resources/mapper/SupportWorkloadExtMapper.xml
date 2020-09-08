@@ -19,13 +19,14 @@
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
         <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts,
         supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime,
         supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment,
-        secondLevelOrganization, remark
+        secondLevelOrganization, remark,reqImplMon
     </sql>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
@@ -41,7 +42,7 @@
                 and substr(a.processStartDate,1,10) between #{startTime} and #{endTime}
             </if>
             <if test="reqImplMon != null and reqImplMon != ''" >
-                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+                and a.reqImplMon = #{reqImplMon,jdbcType=VARCHAR}
             </if>
             <if test="processstartdate != null and processstartdate != ''" >
                 and substr(a.processStartDate,1,10) = #{processstartdate,jdbcType=VARCHAR}
@@ -103,7 +104,7 @@
         from t_support_workload a
         <where >
             <if test="reqImplMon != null and reqImplMon != ''" >
-                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+                and a.reqImplMon = #{reqImplMon,jdbcType=VARCHAR}
             </if>
         </where>
         GROUP BY firstLevelOrganization
@@ -117,7 +118,7 @@
         from t_support_workload a
         <where >
             <if test="reqImplMon != null and reqImplMon != ''" >
-                and substr(a.processStartDate,1,7) = #{reqImplMon,jdbcType=VARCHAR}
+                and a.reqImplMon = #{reqImplMon,jdbcType=VARCHAR}
             </if>
         </where>
         GROUP BY secondLevelOrganization

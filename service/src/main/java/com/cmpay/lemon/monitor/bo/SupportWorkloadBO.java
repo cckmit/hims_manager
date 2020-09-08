@@ -297,6 +297,12 @@ public class SupportWorkloadBO  {
                 ", costdepartment='" + costdepartment + '\'' +
                 ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 ", remark='" + remark + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", reqImplMon='" + reqImplMon + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }

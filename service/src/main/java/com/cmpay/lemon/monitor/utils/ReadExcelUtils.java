@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -151,7 +152,7 @@ public class ReadExcelUtils {
 
     public static void main(String[] args) {
         try {
-            String filepath = "C:\\Users\\ty\\Downloads\\qq1.xlsx";
+            String filepath = "C:\\Users\\tuyi\\Desktop\\禅道PLOG.xlsx";
             ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
             // 对读取Excel表格标题测试
 //			String[] title = excelReader.readExcelTitle();
@@ -167,18 +168,22 @@ public class ReadExcelUtils {
                 demandDO.setReqNo(map.get(i).get(1).toString());
                 demandDO.setReqNm(map.get(i).get(2).toString());
                 demandDO.setReqPrdLine(map.get(i).get(3).toString());
-                demandDO.setDevpLeadDept(map.get(i).get(4).toString());
-                demandDO.setDevpResMng(map.get(i).get(5).toString());
-                if(!JudgeUtils.isEmpty(map.get(i).get(6).toString())) {
-                    demandDO.setTotalWorkload(Integer.parseInt( map.get(i).get(6).toString()));
+                demandDO.setDevpLeadDept(map.get(i).get(15).toString());
+                demandDO.setDevpResMng(map.get(i).get(20).toString());
+                if (map.get(i).get(0) instanceof String) {
+                    System.err.println("15类型String==="+(int)Double.parseDouble(map.get(i).get(9).toString().trim()));
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(7).toString())) {
-                    demandDO.setInputWorkload(Integer.parseInt( map.get(i).get(7).toString()));
+                if (map.get(i).get(0) instanceof Integer) {
+                    System.err.println("15类型Integer==="+map.get(i).get(0));
                 }
-                if(!JudgeUtils.isEmpty(map.get(i).get(8).toString())) {
-                    demandDO.setMonInputWorkload(Integer.parseInt( map.get(i).get(8).toString()));
+                if (map.get(i).get(0) instanceof Double) {
+                    System.err.println("15类型Double==="+map.get(i).get(0));
                 }
+
+
+
             }
+            System.err.println(map.size());
         } catch (FileNotFoundException e) {
             System.out.println("未找到指定路径的文件!");
             e.printStackTrace();

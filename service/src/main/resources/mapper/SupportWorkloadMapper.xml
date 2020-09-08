@@ -20,17 +20,18 @@
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
         <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts, 
-        supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime, 
-        supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment, 
-        secondLevelOrganization, remark
+        documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts,
+        supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime,
+        supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment,
+        secondLevelOrganization, remark,reqImplMon
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_support_workload
         where documentNumber = #{documentnumber,jdbcType=VARCHAR}
@@ -95,6 +96,9 @@
             <if test="remark != null" >
                 remark,
             </if>
+            <if test="reqImplMon != null" >
+                reqImplMon,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="documentnumber != null" >
@@ -147,6 +151,9 @@
             </if>
             <if test="remark != null" >
                 #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="reqImplMon != null" >
+                #{reqImplMon,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -202,12 +209,15 @@
             <if test="remark != null" >
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
+            <if test="reqImplMon != null" >
+                reqImplMon = #{remark,jdbcType=VARCHAR},
+            </if>
         </set>
         where documentNumber = #{documentnumber,jdbcType=VARCHAR}
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_support_workload
         <where >
@@ -261,6 +271,9 @@
             </if>
             <if test="remark != null" >
                 and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="reqImplMon != null" >
+                and reqImplMon = #{remark,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

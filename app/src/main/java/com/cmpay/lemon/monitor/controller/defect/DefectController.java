@@ -1,6 +1,7 @@
 package com.cmpay.lemon.monitor.controller.defect;
 
 
+import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.framework.data.NoBody;
@@ -11,13 +12,15 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.defects.DefectsService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
 
 @RestController
 @RequestMapping(value = MonitorConstants.DEFECT_PATH)
@@ -67,4 +70,49 @@ public class DefectController {
         return GenericRspDTO.newSuccessInstance();
     }
 
+
+    @RequestMapping(value = "/zenQuestiontFindList", method = RequestMethod.POST)
+    public GenericRspDTO<ZenQuestiontRspDTO> zenQuestiontFindList(@RequestBody ZenQuestiontReqDTO zenQuestiontReqDTO) {
+        if((zenQuestiontReqDTO.getStartTime() != null && !zenQuestiontReqDTO.getStartTime().equals(""))&&(zenQuestiontReqDTO.getEndTime()==null || zenQuestiontReqDTO.getEndTime().equals(""))){
+            zenQuestiontReqDTO.setCreateddate(zenQuestiontReqDTO.getStartTime());
+        }
+        if((zenQuestiontReqDTO.getStartTime() == null|| zenQuestiontReqDTO.getStartTime().equals(""))&&(zenQuestiontReqDTO.getEndTime()!=null && !zenQuestiontReqDTO.getEndTime().equals(""))){
+            zenQuestiontReqDTO.setCreateddate(zenQuestiontReqDTO.getEndTime());
+        }
+        ZenQuestiontBO zenQuestiontBO = BeanUtils.copyPropertiesReturnDest(new ZenQuestiontBO(), zenQuestiontReqDTO);
+
+        ZenQuestiontRspBO zenQuestiontRspBO = defectsService.zenQuestiontFindList(zenQuestiontBO);
+
+        ZenQuestiontRspDTO rspDTO = new ZenQuestiontRspDTO();
+        rspDTO.setZenQuestiontDTOList(BeanConvertUtils.convertList(zenQuestiontRspBO.getZenQuestiontBOList(), ZenQuestiontDTO.class));
+        rspDTO.setPageNum(zenQuestiontRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(zenQuestiontRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(zenQuestiontRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(zenQuestiontRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    /**
+     * 禅道数据导入
+     *
+     * @return
+     */
+    @PostMapping("/zennDataImport")
+    public GenericRspDTO<NoBody> zennDataImport (HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        defectsService.zennDataImport(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/downloadZenQuestiont")
+    public GenericRspDTO<NoBody> downloadZenQuestiont(@RequestBody ZenQuestiontReqDTO zenQuestiontReqDTO, HttpServletResponse response) {
+        ZenQuestiontBO zenQuestiontBO = BeanUtils.copyPropertiesReturnDest(new ZenQuestiontBO(), zenQuestiontReqDTO);
+        defectsService.downloadZenQuestiont(response, zenQuestiontBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

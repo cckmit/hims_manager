@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="t_demand_ease_development" domainObjectName="DemandEaseDevelopmentDO" enableCountByExample="false"
+        <table tableName="t_zen_questiont" domainObjectName="ZenQuestiontDO" enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

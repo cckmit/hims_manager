@@ -202,7 +202,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         DemandDO demandDO = new DemandDO();
         demandDO.setReqImplMon(month);
         // 测试部需求进度
-        List<DemandTestStatusBO>  list =  reqDataCountService.demandTestStatusList();
+        List<DemandTestStatusBO>  list =  reqDataCountService.demandTestStatusList2();
         for(int i =0;i<list.size();i++){
             // 如果未填写需求测试案例总数，导致测试进度为NAN，则跳过 并且测试执行数，完成数，缺陷数都为0的情况跳过
             if("NaN%".equals(list.get(i).getTestProgress()) && list.get(i).getCaseCompletedNumber() == 0
@@ -212,7 +212,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             // 根据需求名，需求编号、月份 获取 需求的jira编号
             demandDO.setReqNo(list.get(i).getReqNo());
             demandDO.setReqNm(list.get(i).getReqNm());
-            List<DemandDO> demandDos = demandDao.QueryIsExecutingDemand(demandDO);
+            List<DemandDO> demandDos = demandDao.QueryIsExecutingDemand2(demandDO);
 
             //从搜索到的需求中  找到对应的jira编号
             DemandJiraDO demandJiraDO = new DemandJiraDO();

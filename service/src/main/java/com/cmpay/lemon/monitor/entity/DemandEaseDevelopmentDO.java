@@ -12,6 +12,8 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 
 @DataObject
 public class DemandEaseDevelopmentDO extends BaseDO {
+    @Excel(name = "实施月份")
+    private String reqImplMon;
     /**
      * @Fields documentnumber 文号
      */
@@ -94,7 +96,6 @@ public class DemandEaseDevelopmentDO extends BaseDO {
     private String remark;
     private String startTime;
     private String endTime;
-    private String reqImplMon;
     private String firstLevelOrganization;
 
     public String getStartTime() {

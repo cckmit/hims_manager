@@ -80,6 +80,8 @@ public class SupportWorkloadDTO extends GenericDTO {
      *  remark 备注
      */
     private String remark;
+
+    private String reqImplMon;
     /**
      * 页数
      */
@@ -249,9 +251,17 @@ public class SupportWorkloadDTO extends GenericDTO {
         this.pageSize = pageSize;
     }
 
+    public String getReqImplMon() {
+        return reqImplMon;
+    }
+
+    public void setReqImplMon(String reqImplMon) {
+        this.reqImplMon = reqImplMon;
+    }
+
     @Override
     public String toString() {
-        return "SupportWorkloadBO{" +
+        return "SupportWorkloadDTO{" +
                 "documentnumber='" + documentnumber + '\'' +
                 ", processstartdate='" + processstartdate + '\'' +
                 ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
@@ -269,6 +279,10 @@ public class SupportWorkloadDTO extends GenericDTO {
                 ", costdepartment='" + costdepartment + '\'' +
                 ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 ", remark='" + remark + '\'' +
+                ", reqImplMon='" + reqImplMon + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }

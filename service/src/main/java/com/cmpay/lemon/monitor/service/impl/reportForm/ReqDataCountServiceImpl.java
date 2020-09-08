@@ -4481,6 +4481,85 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
 
     @Override
+    public List<DemandTestStatusBO> demandTestStatusList2() {
+        //获取当月时间
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        String month = simpleDateFormat.format(new Date());
+        DemandDO demandDO1 = new DemandDO();
+        demandDO1.setReqImplMon(month);
+        List<DemandTestStatusBO> demandTestStatusBOList = new LinkedList<>();
+        //查询当月正在执行的需求
+        List<DemandDO> demandDOS1 = demandDao.QueryIsExecutingDemand2(demandDO1);
+        if(JudgeUtils.isNotEmpty(demandDOS1)){
+            demandDOS1.forEach(m->{
+                DemandTestStatusBO demandTestStatusBO = new DemandTestStatusBO();
+                demandTestStatusBO.setReqNm(m.getReqNm());
+                demandTestStatusBO.setReqNo(m.getReqNo());
+                //从搜索到的需求中  找到对应的jira编号并搜索该需求所创建的缺陷数
+                DemandJiraDO demandJiraDO = new DemandJiraDO();
+                demandJiraDO.setReqInnerSeq(m.getReqInnerSeq());
+                List<DemandJiraDO> demandJiraDOS = demandJiraDao.find(demandJiraDO);
+
+                if(JudgeUtils.isEmpty(demandJiraDOS)){
+                    return;
+                }
+                String jiraKey = demandJiraDOS.get(0).getJiraKey();
+                DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+                defectDetailsDO.setEpicKey(jiraKey);
+                //依据jirakey查找对应缺陷
+                List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.find(defectDetailsDO);
+                //缺陷数
+                demandTestStatusBO.setDefectsNumber(defectDetailsDOList.size());
+                //缺陷率  缺陷数/工作量
+                String defectRate = String.format("%.2f", (float) demandTestStatusBO.getDefectsNumber() / (float) m.getTotalWorkload() * 100) + "%";
+                demandTestStatusBO.setDefectRate(defectRate);
+                JiraBasicInfoDO jiraBasicInfoDO = jiraBasicInfoDao.get(jiraKey);
+                //当日新录入 暂未定时拉去存入数据库的需求 暂不统计
+                if(JudgeUtils.isNull(jiraBasicInfoDO)){
+                    return;
+                }
+                //测试案例总数
+                if (JudgeUtils.isBlank(jiraBasicInfoDO.getTestCaseNumber())){
+                    demandTestStatusBO.setTestCaseNumber("0");
+                }else{
+                    demandTestStatusBO.setTestCaseNumber(jiraBasicInfoDO.getTestCaseNumber());
+                }
+
+                WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+                workingHoursDO.setRoletype("测试人员");
+                workingHoursDO.setEpickey(jiraKey);
+                List<WorkingHoursDO> workingHoursList = iWorkingHoursDao.find(workingHoursDO);
+                if(JudgeUtils.isNotEmpty(workingHoursList)){
+                    for(int i=0;i<workingHoursList.size();i++){
+                        //累加计算测试完成案例及测试执行案例
+                        demandTestStatusBO.setCaseCompletedNumber(workingHoursList.get(i).getCaseCompletedNumber()+demandTestStatusBO.getCaseCompletedNumber());
+                        demandTestStatusBO.setCaseExecutionNumber(workingHoursList.get(i).getCaseExecutionNumber()+demandTestStatusBO.getCaseExecutionNumber());
+                    }
+                }
+                //缺陷发现率
+                if(demandTestStatusBO.getCaseCompletedNumber()!=0) {
+                    String defectDiscoveryRate = String.format("%.2f", (float) demandTestStatusBO.getDefectsNumber() / (float) demandTestStatusBO.getCaseCompletedNumber() * 100) + "%";
+                    demandTestStatusBO.setDefectDiscoveryRate(defectDiscoveryRate);
+                }else{
+                    demandTestStatusBO.setDefectDiscoveryRate("NaN%");
+                }
+                //测试进度
+                System.err.println(demandTestStatusBO.getTestCaseNumber());
+                int intValue = Double.valueOf(demandTestStatusBO.getTestCaseNumber()).intValue();
+                if(intValue!=0) {
+                    String testProgress = String.format("%.2f", (float) demandTestStatusBO.getCaseCompletedNumber() / (float) intValue * 100) + "%";
+                    demandTestStatusBO.setTestProgress(testProgress);
+                }else{
+                    demandTestStatusBO.setTestProgress("NaN%");
+                }
+
+                demandTestStatusBOList.add(demandTestStatusBO);
+            });
+        }
+        return demandTestStatusBOList;
+    }
+
+    @Override
     public List<DefectProcesStatusBO> defectProcesStatus() {
         DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
         List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.findUnfinishedDefects(defectDetailsDO);

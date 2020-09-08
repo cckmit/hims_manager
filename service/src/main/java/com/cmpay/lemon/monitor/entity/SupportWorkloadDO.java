@@ -14,6 +14,8 @@ import com.cmpay.lemon.framework.annotation.DataObject;
  */
 @DataObject
 public class SupportWorkloadDO extends BaseDO {
+    @Excel(name = "实施月份")
+    private String reqImplMon;
     /**
      * @Fields documentnumber 文号
      */
@@ -101,7 +103,7 @@ public class SupportWorkloadDO extends BaseDO {
     private String remark;
     private String startTime;
     private String endTime;
-    private String reqImplMon;
+
     private String firstLevelOrganization;
 
     public String getFirstLevelOrganization() {
@@ -274,7 +276,8 @@ public class SupportWorkloadDO extends BaseDO {
     @Override
     public String toString() {
         return "SupportWorkloadDO{" +
-                "documentnumber='" + documentnumber + '\'' +
+                "reqImplMon='" + reqImplMon + '\'' +
+                ", documentnumber='" + documentnumber + '\'' +
                 ", processstartdate='" + processstartdate + '\'' +
                 ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
                 ", productowner='" + productowner + '\'' +
@@ -291,6 +294,9 @@ public class SupportWorkloadDO extends BaseDO {
                 ", costdepartment='" + costdepartment + '\'' +
                 ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 ", remark='" + remark + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }
