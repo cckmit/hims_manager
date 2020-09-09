@@ -5012,5 +5012,72 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         demandHoursRspBO.setListSum(SumBos);
         return demandHoursRspBO;
     }
+
+    /**
+     * 缺陷详情数据
+     * @param selectTime1
+     * @param selectTime2
+     * @param seriesName
+     * @param name
+     * @return
+     */
+    @Override
+    public DefectDetailsRspBO getDetails(String selectTime1, String selectTime2,String seriesName,String name){
+        List<DefectDetailsDO> defectDetailsDOList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        defectDetailsDO.setDefectsDepartment(name);
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            defectDetailsDO.setRegistrationDate(selectTime1);
+            defectDetailsDOList = defectDetailsExtDao.findWeekList(defectDetailsDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            defectDetailsDO.setRegistrationDate(selectTime2);
+            defectDetailsDOList = defectDetailsExtDao.findList(defectDetailsDO);
+        }
+        List<DefectDetailsBO> defectDetailsBOList = new LinkedList<>();
+        defectDetailsBOList = BeanConvertUtils.convertList(defectDetailsDOList, DefectDetailsBO.class);
+
+        System.err.println(defectDetailsBOList.size());
+        DefectDetailsRspBO defectDetailsRspBO = new DefectDetailsRspBO();
+         defectDetailsRspBO.setDefectDetailsBos(defectDetailsBOList);
+
+        return defectDetailsRspBO;
+    }
+
+    @Override
+    public IssueDetailsRspBO getIssueDetails(String selectTime1, String selectTime2,String seriesName,String name){
+        List<IssueDetailsDO> issueDetailsDOLinkedList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
+        issueDetailsDO.setIssueDepartment(name);
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            issueDetailsDO.setRegistrationDate(selectTime1);
+            issueDetailsDOLinkedList = issueDetailsExtDao.findWeekList(issueDetailsDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            issueDetailsDO.setRegistrationDate(selectTime2);
+            issueDetailsDOLinkedList = issueDetailsExtDao.findList(issueDetailsDO);
+        }
+        List<IssueDetailsBO> issueDetailsBOList = new LinkedList<>();
+        issueDetailsBOList = BeanConvertUtils.convertList(issueDetailsDOLinkedList, IssueDetailsBO.class);
+
+        IssueDetailsRspBO issueDetailsRspBO = new IssueDetailsRspBO();
+        issueDetailsRspBO.setIssueDetailsBOList(issueDetailsBOList);
+
+        return issueDetailsRspBO;
+    }
 }
 

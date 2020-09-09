@@ -402,7 +402,6 @@ public class reportFormController {
 		IssueDetailsRspBO reportLista = new IssueDetailsRspBO();
 		reportLista = reqDataCountService.getDemandIssueDetails(workingHoursDTO.getDisplayname(), workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
 		issueDetailsRspDTO.setIssueDetailsDTOList(BeanConvertUtils.convertList(reportLista.getIssueDetailsBOList(), IssueDetailsDTO.class));
-		System.err.println("demandHoursRspDTO==" + issueDetailsRspDTO);
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, issueDetailsRspDTO);
 	}
 
@@ -1116,5 +1115,35 @@ public class reportFormController {
         BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
     }
+
+	/**
+	 * 双击柱状图缺陷数据详情
+	 * @param detailsReqDTO
+	 * @return
+	 */
+	@RequestMapping("/getDetails")
+	public GenericRspDTO<DefectDetailsRspDTO> getDefectDetails(@RequestBody DetailsReqDTO detailsReqDTO) {
+		DefectDetailsRspBO defectDetailsRspBO = new DefectDetailsRspBO();
+		defectDetailsRspBO = reqDataCountService.getDetails(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getSeriesName(),detailsReqDTO.getName());
+		DefectDetailsRspDTO defectDetailsRspDTO = new DefectDetailsRspDTO();
+		defectDetailsRspDTO.setDefectDetailsDTOArrayList(BeanConvertUtils.convertList(defectDetailsRspBO.getDefectDetailsBos(), DefectDetailsDTO.class));
+		System.err.println(defectDetailsRspDTO.getDefectDetailsDTOArrayList().size());
+		System.err.println(defectDetailsRspDTO.getDefectDetailsDTOArrayList().get(0));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, defectDetailsRspDTO);
+	}
+
+	/**
+	 * 双击柱状图评审问题详情
+	 * @param detailsReqDTO
+	 * @return
+	 */
+	@RequestMapping("/getIssueDetails")
+	public GenericRspDTO<IssueDetailsRspDTO> getIssueDetails(@RequestBody DetailsReqDTO detailsReqDTO) {
+		IssueDetailsRspBO issueDetailsRspBO = new IssueDetailsRspBO();
+		issueDetailsRspBO = reqDataCountService.getIssueDetails(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getSeriesName(),detailsReqDTO.getName());
+		IssueDetailsRspDTO issueDetailsRspDTO = new IssueDetailsRspDTO();
+		issueDetailsRspDTO.setIssueDetailsDTOList(BeanConvertUtils.convertList(issueDetailsRspBO.getIssueDetailsBOList(), IssueDetailsDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, issueDetailsRspDTO);
+	}
 
 }
