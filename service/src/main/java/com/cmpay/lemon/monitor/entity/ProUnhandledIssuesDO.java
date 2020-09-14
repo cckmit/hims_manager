@@ -2,7 +2,7 @@
  * @ClassName ProUnhandledIssuesDO
  * @Description 
  * @version 1.0
- * @Date 2020-07-03 17:03:49
+ * @Date 2020-09-14 15:49:03
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -39,6 +39,14 @@ public class ProUnhandledIssuesDO extends BaseDO {
      * @Fields calculateFlag 处理标识（Y已处理，N未处理）
      */
     private String calculateFlag;
+    /**
+     * @Fields problemNumberSum 评审问题未解决总数
+     */
+    private Integer problemNumberSum;
+    /**
+     * @Fields defectsNumberSum 缺陷问题未解决总数
+     */
+    private Integer defectsNumberSum;
 
     public String getReqNo() {
         return reqNo;
@@ -94,5 +102,21 @@ public class ProUnhandledIssuesDO extends BaseDO {
 
     public void setCalculateFlag(String calculateFlag) {
         this.calculateFlag = calculateFlag;
+    }
+
+    public Integer getProblemNumberSum() {
+        return problemNumberSum;
+    }
+
+    public void setProblemNumberSum(Integer problemNumberSum) {
+        this.problemNumberSum = problemNumberSum;
+    }
+
+    public Integer getDefectsNumberSum() {
+        return defectsNumberSum;
+    }
+
+    public void setDefectsNumberSum(Integer defectsNumberSum) {
+        this.defectsNumberSum = defectsNumberSum;
     }
 }

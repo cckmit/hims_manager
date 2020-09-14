@@ -8,4 +8,5 @@ public interface JiraDataCollationService {
     void getIssueModifiedWithinOneDay();
     void TestProgressDetailOneDay();
     void inquiriesAboutRemainingProblems(String reqNo);
+    void getDefectAndProblem();
 }

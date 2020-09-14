@@ -38,6 +38,14 @@ public class ProUnhandledIssuesBO   {
      * calculateFlag 处理标识（Y已处理，N未处理）
      */
     private String calculateFlag;
+    /**
+     *  problemNumberSum 评审问题未解决总数
+     */
+    private Integer problemNumberSum;
+    /**
+     *  defectsNumberSum 缺陷问题未解决总数
+     */
+    private Integer defectsNumberSum;
 
     public String getReqNo() {
         return reqNo;
@@ -95,6 +103,22 @@ public class ProUnhandledIssuesBO   {
         this.calculateFlag = calculateFlag;
     }
 
+    public Integer getProblemNumberSum() {
+        return problemNumberSum;
+    }
+
+    public void setProblemNumberSum(Integer problemNumberSum) {
+        this.problemNumberSum = problemNumberSum;
+    }
+
+    public Integer getDefectsNumberSum() {
+        return defectsNumberSum;
+    }
+
+    public void setDefectsNumberSum(Integer defectsNumberSum) {
+        this.defectsNumberSum = defectsNumberSum;
+    }
+
     @Override
     public String toString() {
         return "ProUnhandledIssuesBO{" +
@@ -105,6 +129,8 @@ public class ProUnhandledIssuesBO   {
                 ", defectsNumber=" + defectsNumber +
                 ", productionDate='" + productionDate + '\'' +
                 ", calculateFlag='" + calculateFlag + '\'' +
+                ", problemNumberSum=" + problemNumberSum +
+                ", defectsNumberSum=" + defectsNumberSum +
                 '}';
     }
 }

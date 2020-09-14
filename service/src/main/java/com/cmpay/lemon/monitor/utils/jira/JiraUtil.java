@@ -284,6 +284,27 @@ public class JiraUtil {
         }
         return jiraTaskBodyBOlist;
     }
+    //依据jql批量获取一天内的jira数据
+    public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay2(int page) {
+        Response response = given()
+                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created ASC&startAt="+page+"&maxResults=50");
+        ResponseBody body = response.getBody();
+        String json = body.print();
+        JSONObject object = JSONObject.parseObject(json);
+        JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
+        List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
+        if (issueJsonArray != null) {
+            for (int i = 0; i < issueJsonArray.size(); i++) {
+                JSONObject jsonObject1 =JSONObject.parseObject(issueJsonArray.get(i).toString());
+                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                jiraTaskBodyBO.setJiraKey(jsonObject1.getString("key"));
+                jiraTaskBodyBOlist.add(jiraTaskBodyBO);
+            }
+        }
+        return jiraTaskBodyBOlist;
+    }
 
     /*
      *获取主任务，并解析相关信息

@@ -730,7 +730,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             try {
                 //转待投产时，需要登记投产时未完成任务统计表，统计未完成缺陷和问题
                 if (pro_number_list[0].equals("dtc")) {
-
                     jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[j]);
                 }
                 //如果是投产待验证则微信通知相关部门经理及时更新验证状态
@@ -741,7 +740,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 e.printStackTrace();
             }
         }
-
+        //投产状态未待部署，异步批量拉取jira数据
+        if("投产待部署".equals(pro_status_after)){
+            jiraDataCollationService.getDefectAndProblem();
+        }
 
         return;//ajaxDoneSuccess("批量操作成功");
     }

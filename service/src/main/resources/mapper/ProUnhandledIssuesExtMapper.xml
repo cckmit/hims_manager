@@ -10,10 +10,13 @@
         <result column="defects_number" property="defectsNumber" jdbcType="INTEGER" />
         <result column="production_date" property="productionDate" jdbcType="VARCHAR" />
         <result column="calculate_flag" property="calculateFlag" jdbcType="VARCHAR" />
+        <result column="problem_number_sum" property="problemNumberSum" jdbcType="INTEGER" />
+        <result column="defects_number_sum" property="defectsNumberSum" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        req_no, jiraKey, department, problem_number, defects_number, production_date, calculate_flag
+        req_no, jiraKey, department, problem_number, defects_number, production_date, calculate_flag,
+        problem_number_sum, defects_number_sum
     </sql>
 
     <select id="findWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProUnhandledIssuesDO" >
@@ -42,6 +45,12 @@
             <if test="calculateFlag != null" >
                 and calculate_flag = #{calculateFlag,jdbcType=VARCHAR}
             </if>
+            <if test="problemNumberSum != null" >
+                and problem_number_sum = #{problemNumberSum,jdbcType=INTEGER}
+            </if>
+            <if test="defectsNumberSum != null" >
+                and defects_number_sum = #{defectsNumberSum,jdbcType=INTEGER}
+            </if>
         </where>
     </select>
     <select id="findMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProUnhandledIssuesDO" >
@@ -69,6 +78,12 @@
             </if>
             <if test="calculateFlag != null" >
                 and calculate_flag = #{calculateFlag,jdbcType=VARCHAR}
+            </if>
+            <if test="problemNumberSum != null" >
+                and problem_number_sum = #{problemNumberSum,jdbcType=INTEGER}
+            </if>
+            <if test="defectsNumberSum != null" >
+                and defects_number_sum = #{defectsNumberSum,jdbcType=INTEGER}
             </if>
         </where>
     </select>

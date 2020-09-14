@@ -186,9 +186,115 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             });
         }
 
+
+    }
+
+    @Async
+    @Override
+    public void getDefectAndProblem(){
+        List<JiraTaskBodyBO> jiraTaskBodyBOList = new LinkedList<>();
+        int i = 0;
+        //拉取一天内有过修改的jira任务内容
+        while (true) {
+            List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinOneDay2(i);
+            if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
+                break;
+            }
+            jiraTaskBodyBOList.addAll(jiraTaskBodyBOS);
+            i = i + 50;
+        }
+        if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
+            HashSet<String> epicList = new HashSet<>();
+            jiraTaskBodyBOList.forEach(m -> {
+                try {
+                    //依据jiraKey查找jira详情数据
+                    JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
+                    //登记jira基础表，缺陷任务和问题登记
+                    this.registerJiraBasicInfo(jiraTaskBodyBO);
+                    epicList.add(jiraTaskBodyBO.getEpicKey());
+                } catch (Exception e) {
+
+                    e.printStackTrace();
+                }
+            });
+            //epic对应缺陷及评审问题登记问题统计表
+            epicList.forEach(m -> {
+                if (m == null) {
+                    return;
+                }
+                ProblemStatisticDO problemStatisticDO = new ProblemStatisticDO();
+                problemStatisticDO.setEpicKey(m);
+                DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+                defectDetailsDO.setEpicKey(m);
+                List<DefectDetailsDO> defectDetailsDOList = defectDetailsDao.find(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    for (int j = 0; j < defectDetailsDOList.size(); j++) {
+                        if(JudgeUtils.isBlank(defectDetailsDOList.get(j).getDefectType())){
+                            continue;
+                        }
+                        if (defectDetailsDOList.get(j).getDefectType().equals("环境问题-外围平台")) {
+                            problemStatisticDO.setExternalDefectsNumber(problemStatisticDO.getExternalDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("环境问题-版本更新")) {
+                            problemStatisticDO.setVersionDefectsNumber(problemStatisticDO.getVersionDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("环境问题-参数配置")) {
+                            problemStatisticDO.setParameterDefectsNumber(problemStatisticDO.getParameterDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("产品设计-功能设计")) {
+                            problemStatisticDO.setFunctionDefectsNumber(problemStatisticDO.getFunctionDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("产品设计-流程优化")) {
+                            problemStatisticDO.setProcessDefectsNumber(problemStatisticDO.getProcessDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("产品设计-提示语优化")) {
+                            problemStatisticDO.setPromptDefectsNumber(problemStatisticDO.getPromptDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("产品设计-页面设计")) {
+                            problemStatisticDO.setPageDefectsNumber(problemStatisticDO.getPageDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("程序问题-后台应用")) {
+                            problemStatisticDO.setBackgroundDefectsNumber(problemStatisticDO.getBackgroundDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("程序问题-前端开发")) {
+                            problemStatisticDO.setFrontDefectsNumber(problemStatisticDO.getFrontDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("程序问题-修改引入问题")) {
+                            problemStatisticDO.setModifyDefectsNumber(problemStatisticDO.getModifyDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("技术设计-技术设计")) {
+                            problemStatisticDO.setDesignDefectsNumber(problemStatisticDO.getDesignDefectsNumber() + 1);
+                        } else if (defectDetailsDOList.get(j).getDefectType().equals("无效问题")) {
+                            problemStatisticDO.setInvalidDefectsNumber(problemStatisticDO.getInvalidDefectsNumber() + 1);
+                        }
+                    }
+                }
+                IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
+                issueDetailsDO.setEpicKey(m);
+                List<IssueDetailsDO> issueDetailsDOList = issueDetailsDao.find(issueDetailsDO);
+                if(JudgeUtils.isNotEmpty(issueDetailsDOList)){
+                    for (int j = 0; j < issueDetailsDOList.size(); j++) {
+                        if(JudgeUtils.isBlank(issueDetailsDOList.get(j).getIssueType())){
+                            continue;
+                        }
+                        if (issueDetailsDOList.get(j).getIssueType().equals("需求评审")) {
+                            problemStatisticDO.setRequirementsReviewNumber(problemStatisticDO.getRequirementsReviewNumber() + 1);
+                        } else if (issueDetailsDOList.get(j).getIssueType().equals("技术方案评审")) {
+                            problemStatisticDO.setVersionDefectsNumber(problemStatisticDO.getVersionDefectsNumber() + 1);
+                        } else if (issueDetailsDOList.get(j).getIssueType().equals("代码评审")) {
+                            problemStatisticDO.setCodeReviewNumber(problemStatisticDO.getCodeReviewNumber() + 1);
+                        } else if (issueDetailsDOList.get(j).getIssueType().equals("测试案例评审")) {
+                            problemStatisticDO.setTestReviewNumber(problemStatisticDO.getTestReviewNumber() + 1);
+                        } else if (issueDetailsDOList.get(j).getIssueType().equals("投产方案评审")) {
+                            problemStatisticDO.setProductionReviewNumber(problemStatisticDO.getProductionReviewNumber() + 1);
+                        } else if (issueDetailsDOList.get(j).getIssueType().equals("其他评审")) {
+                            problemStatisticDO.setOtherReviewsNumber(problemStatisticDO.getOtherReviewsNumber() + 1);
+                        }
+                    }
+                }
+                ProblemStatisticDO problemStatisticDO1 = problemStatisticDao.get(problemStatisticDO.getEpicKey());
+                if (JudgeUtils.isNull(problemStatisticDO1)) {
+                    problemStatisticDao.insert(problemStatisticDO);
+                } else {
+                    problemStatisticDao.update(problemStatisticDO);
+                }
+
+
+            });
+        }
+
         //获得投产需求 未完成的问题，//需要在统计完缺陷后执行
         getproductedsRemainingQuestions();
-
     }
 
     @Async
@@ -273,22 +379,35 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         proUnhandledIssuesDOS.forEach(m->{
             DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
             defectDetailsDO.setEpicKey(m.getJirakey());
-
+            // 投产未解决缺陷数
             List<DefectDetailsDO> list = defectDetailsDao.findNotCompleted(defectDetailsDO);
-
+            // 缺陷总数
+            List<DefectDetailsDO> listSum = defectDetailsDao.findList(defectDetailsDO);
             if(JudgeUtils.isNotEmpty(list)){
                 m.setDefectsNumber(list.size());
             }else{
                 m.setDefectsNumber(0);
             }
+            if(JudgeUtils.isNotEmpty(listSum)){
+                m.setDefectsNumberSum(listSum.size());
+            }else{
+                m.setDefectsNumberSum(0);
+            }
             IssueDetailsDO issueDetailsDO = new IssueDetailsDO();
             issueDetailsDO.setEpicKey(m.getJirakey());
-
+            // 投产时间未解决评审问题数
             List<IssueDetailsDO> list1 = issueDetailsDao.findNotCompleted(issueDetailsDO);
+            //评审问题总数
+            List<IssueDetailsDO> list1Sum = issueDetailsDao.findList(issueDetailsDO);
             if(JudgeUtils.isNotEmpty(list1)){
                 m.setProblemNumber(list1.size());
             }else{
                 m.setProblemNumber(0);
+            }
+            if(JudgeUtils.isNotEmpty(list1Sum)){
+                m.setProblemNumberSum(list1Sum.size());
+            }else{
+                m.setProblemNumberSum(0);
             }
             m.setCalculateFlag("Y");
             proUnhandledIssuesDao.update(m);
@@ -327,6 +446,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         if(JudgeUtils.isNull(proUnhandledIssuesDO1)){
             proUnhandledIssuesDO.setProblemNumber(0);
             proUnhandledIssuesDO.setDefectsNumber(0);
+            proUnhandledIssuesDO.setProblemNumberSum(0);
+            proUnhandledIssuesDO.setDefectsNumberSum(0);
             proUnhandledIssuesDao.insert(proUnhandledIssuesDO);
         }else{
             proUnhandledIssuesDao.update(proUnhandledIssuesDO);

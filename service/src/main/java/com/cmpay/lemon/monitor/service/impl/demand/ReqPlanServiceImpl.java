@@ -1480,7 +1480,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     if ("是".equals(demand.getIsApprovalProcess())) {
                         DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(ids.get(i));
                         demandPictureDO.setPicId(null);
-                        demandPictureDO.setPicReqinnerseq(getNextInnerSeq());
+                        demandPictureDO.setPicReqinnerseq(demand.getReqInnerSeq());
                         demandPictureDO.setPicUser(user);
                         demandPictureDO.setPicTime(time);
                         demandPictureDO.setPicMoth(month);
