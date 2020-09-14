@@ -14,8 +14,16 @@ import com.cmpay.lemon.framework.annotation.DataObject;
  */
 @DataObject
 public class SupportWorkloadDO extends BaseDO {
+
     @Excel(name = "实施月份")
     private String reqImplMon;
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    /**
+     * @Fields costdepartment 成本管理部门
+     */
+    @Excel(name = "成本管理部门")
+    private String costdepartment;
     /**
      * @Fields documentnumber 文号
      */
@@ -87,14 +95,8 @@ public class SupportWorkloadDO extends BaseDO {
     @Excel(name = "支撑厂家")
     private String supportingmanufacturers;
     /**
-     * @Fields costdepartment 成本管理部门
-     */
-    @Excel(name = "成本管理部门")
-    private String costdepartment;
-    /**
      * @Fields secondlevelorganization 二级主导团队
      */
-    @Excel(name = "二级主导团队")
     private String secondlevelorganization;
     /**
      * @Fields remark 备注
@@ -104,7 +106,6 @@ public class SupportWorkloadDO extends BaseDO {
     private String startTime;
     private String endTime;
 
-    private String firstLevelOrganization;
 
     public String getFirstLevelOrganization() {
         return firstLevelOrganization;
@@ -276,7 +277,9 @@ public class SupportWorkloadDO extends BaseDO {
     @Override
     public String toString() {
         return "SupportWorkloadDO{" +
-                "reqImplMon='" + reqImplMon + '\'' +
+                "firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", costdepartment='" + costdepartment + '\'' +
+                ", reqImplMon='" + reqImplMon + '\'' +
                 ", documentnumber='" + documentnumber + '\'' +
                 ", processstartdate='" + processstartdate + '\'' +
                 ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
@@ -291,12 +294,10 @@ public class SupportWorkloadDO extends BaseDO {
                 ", supportworkload='" + supportworkload + '\'' +
                 ", finalworkload='" + finalworkload + '\'' +
                 ", supportingmanufacturers='" + supportingmanufacturers + '\'' +
-                ", costdepartment='" + costdepartment + '\'' +
                 ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 ", remark='" + remark + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
-                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
                 '}';
     }
 }

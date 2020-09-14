@@ -114,6 +114,7 @@ public interface OperationProductionService {
      * @return
      */
     List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList2(String date,String dept);
+    List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList3(String date,String dept);
     List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date);
 
     /**
@@ -130,6 +131,7 @@ public interface OperationProductionService {
      * @return
      */
     List<ProductionDO> getProductionVerificationIsNotTimely2(String date,String dept);
+    List<ProductionDO> getProductionVerificationIsNotTimely3(String date,String dept);
     List<ProductionDO> getTheListOfProductionToBeDeployed(String number);
 
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);

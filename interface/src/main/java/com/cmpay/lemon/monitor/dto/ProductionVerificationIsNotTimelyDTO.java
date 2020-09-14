@@ -21,6 +21,15 @@ public class ProductionVerificationIsNotTimelyDTO {
     private String proDate;
     private String identifier;
     private String sumDay;
+    private String department;
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 
     public String getProNumber() {
         return proNumber;
@@ -80,7 +89,7 @@ public class ProductionVerificationIsNotTimelyDTO {
 
     @Override
     public String toString() {
-        return "ProductionVerificationIsNotTimelyBO{" +
+        return "ProductionVerificationIsNotTimelyDTO{" +
                 "proNumber='" + proNumber + '\'' +
                 ", proNeed='" + proNeed + '\'' +
                 ", proType='" + proType + '\'' +
@@ -88,6 +97,7 @@ public class ProductionVerificationIsNotTimelyDTO {
                 ", proDate='" + proDate + '\'' +
                 ", identifier='" + identifier + '\'' +
                 ", sumDay='" + sumDay + '\'' +
+                ", department='" + department + '\'' +
                 '}';
     }
 }

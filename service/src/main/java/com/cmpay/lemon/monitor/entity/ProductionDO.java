@@ -1,6 +1,6 @@
 /*
  * @ClassName CenterDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2019-07-25 11:01:18
  */
@@ -112,6 +112,15 @@ public class ProductionDO extends BaseDO {
      * 是否有回退方案
      */
     private String isFallback;
+    private String proDate2;
+
+    public String getProDate2() {
+        return proDate2;
+    }
+
+    public void setProDate2(String proDate2) {
+        this.proDate2 = proDate2;
+    }
 
     public ProductionDO() {
     }

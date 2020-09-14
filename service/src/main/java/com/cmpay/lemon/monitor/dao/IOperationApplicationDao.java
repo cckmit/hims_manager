@@ -25,4 +25,5 @@ public interface IOperationApplicationDao extends BaseDao<OperationApplicationDO
 
 	List<OperationApplicationDO> getSystemEntryStatusChangeIsNotTimelyList(OperationApplicationDO operationApplicationDO);
 	List<OperationApplicationDO> getSystemEntryStatusChangeIsNotTimelyList2(OperationApplicationDO operationApplicationDO);
+	List<OperationApplicationDO> getSystemEntryStatusChangeIsNotTimelyList3(OperationApplicationDO operationApplicationDO);
 }

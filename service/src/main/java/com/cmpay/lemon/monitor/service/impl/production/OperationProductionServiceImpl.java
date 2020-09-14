@@ -892,6 +892,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //获取系统录入状态变更不及时清单
         return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList2(operationApplicationDO);
     }
+    @Override
+    public List<OperationApplicationDO> getSystemEntryVerificationIsNotTimelyList3(String date,String dept) {
+        OperationApplicationDO operationApplicationDO = new OperationApplicationDO();
+        try {
+            operationApplicationDO.setOperStatus("操作完成");
+            operationApplicationDO.setProposeDate2(date);
+            operationApplicationDO.setApplicationSector(dept);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //获取系统录入状态变更不及时清单
+        return operationApplicationDao.getSystemEntryStatusChangeIsNotTimelyList3(operationApplicationDO);
+    }
 
     @Override
     public List<OperationApplicationDO> getApprovalAndPassTheToDoList(String date) {
@@ -941,6 +954,19 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         //获取状态变更不及时清单
         return operationProductionDao.getListOfUntimelyStatusChanges2(productionDO);
+    }
+    @Override
+    public List<ProductionDO> getProductionVerificationIsNotTimely3(String date,String dept) {
+        ProductionDO productionDO = new ProductionDO();
+        try {
+            productionDO.setProStatus("部署完成待验证");
+            productionDO.setProDate2(date);
+            productionDO.setApplicationDept(dept);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //获取状态变更不及时清单
+        return operationProductionDao.getListOfUntimelyStatusChanges3(productionDO);
     }
     /**
      * @param date 日期

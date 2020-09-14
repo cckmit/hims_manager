@@ -14,6 +14,19 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 public class DemandEaseDevelopmentDO extends BaseDO {
     @Excel(name = "实施月份")
     private String reqImplMon;
+    @Excel(name = "一级主导团队")
+    private String firstLevelOrganization;
+    @Excel(name = "产品管理部门")
+    private String productmanagementdepartment;
+    /**
+     * @Fields costdepartment 成本管理部门
+     */
+    @Excel(name = "成本管理部门")
+    private String costdepartment;
+    /**
+     * @Fields secondlevelorganization 二级主导团队
+     */
+
     /**
      * @Fields documentnumber 文号
      */
@@ -79,16 +92,7 @@ public class DemandEaseDevelopmentDO extends BaseDO {
      */
     @Excel(name = "开发工作量")
     private String developmentworkload;
-    /**
-     * @Fields costdepartment 成本管理部门
-     */
-    @Excel(name = "成本管理部门")
-    private String costdepartment;
-    /**
-     * @Fields secondlevelorganization 二级主导团队
-     */
-    @Excel(name = "二级主导团队")
-    private String secondlevelorganization;
+
     /**
      * @Fields remark 备注
      */
@@ -96,7 +100,7 @@ public class DemandEaseDevelopmentDO extends BaseDO {
     private String remark;
     private String startTime;
     private String endTime;
-    private String firstLevelOrganization;
+    private String secondlevelorganization;
 
     public String getStartTime() {
         return startTime;
@@ -258,10 +262,22 @@ public class DemandEaseDevelopmentDO extends BaseDO {
         this.remark = remark;
     }
 
+    public String getProductmanagementdepartment() {
+        return productmanagementdepartment;
+    }
+
+    public void setProductmanagementdepartment(String productmanagementdepartment) {
+        this.productmanagementdepartment = productmanagementdepartment;
+    }
+
     @Override
     public String toString() {
         return "DemandEaseDevelopmentDO{" +
-                "documentnumber='" + documentnumber + '\'' +
+                "reqImplMon='" + reqImplMon + '\'' +
+                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
+                ", costdepartment='" + costdepartment + '\'' +
+                ", documentnumber='" + documentnumber + '\'' +
                 ", processstartdate='" + processstartdate + '\'' +
                 ", developmentowner='" + developmentowner + '\'' +
                 ", supportingmanufacturers='" + supportingmanufacturers + '\'' +
@@ -274,13 +290,10 @@ public class DemandEaseDevelopmentDO extends BaseDO {
                 ", acceptor='" + acceptor + '\'' +
                 ", developmentworkloadassess='" + developmentworkloadassess + '\'' +
                 ", developmentworkload='" + developmentworkload + '\'' +
-                ", costdepartment='" + costdepartment + '\'' +
-                ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 ", remark='" + remark + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +
-                ", reqImplMon='" + reqImplMon + '\'' +
-                ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", secondlevelorganization='" + secondlevelorganization + '\'' +
                 '}';
     }
 }

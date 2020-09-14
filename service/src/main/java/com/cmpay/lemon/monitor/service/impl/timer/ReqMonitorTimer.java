@@ -232,7 +232,7 @@ public class ReqMonitorTimer {
             return;
         }
         //项目启动日期开始当天计算
-        String date = "2020-07-01";
+        String date = "2020-09-01";
         //获得投产验证不及时清单
         List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
         //获得系统录入验证不及时清单
@@ -420,7 +420,7 @@ public class ReqMonitorTimer {
                     "li_ys@hisuntech.com;lu_zhou@hisuntech.com;yu_zhou@hisuntech.com;liao_jie@hisuntech.com;zhou_xl@hisuntech.com;liao_yk@hisuntech.com;"
                     +
                     "liao_jie@hisuntech.com;huang_yh1@hisuntech.com;yang_chl@hisuntech.com;li_zhen@hisuntech.com;liao_lj@hisuntech.com;li_ms@hisuntech.com;"
-                    + "wang_yw@hisuntech.com;yu_kuan@hisuntech.com;li_fan@hisuntech.com;jiang_qiong@hisuntech.com;peng_cong@hisuntech.com";
+                    + "wang_yw@hisuntech.com;yu_kuan@hisuntech.com;li_fan@hisuntech.com;jiang_qiong@hisuntech.com;peng_cong@hisuntech.com;tu_yi@hisuntech.com";
             String[] mailToAddress = result.split(";");
             mailInfo.setReceivers(mailToAddress);
             //抄送人

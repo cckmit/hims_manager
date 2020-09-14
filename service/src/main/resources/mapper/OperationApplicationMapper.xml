@@ -86,19 +86,37 @@
 		<include refid="Base_Column_List" />
 		from t_operational_application_detail
 		<where >
-			<if test="operStatus != null" >
+			propose_date > '2020-09-01'
+			<if test="operStatus != null and operStatus != ''" >
 				and oper_status = #{operStatus,jdbcType=BIGINT}
 			</if>
 			<if test="proposeDate != null" >
-				and propose_date > #{proposeDate,jdbcType=VARCHAR}
+				and YEARWEEK(date_format(propose_date,'%Y-%m-%d')) = YEARWEEK(#{proposeDate,jdbcType=VARCHAR})
 			</if>
-			<if test="applicationSector != null" >
+			<if test="applicationSector != null and applicationSector != ''" >
 				and application_sector = #{applicationSector,jdbcType=VARCHAR}
 			</if>
 			ORDER BY application_sector,oper_applicant,propose_date desc
 		</where>
 	</select>
-
+	<select id="getSystemEntryStatusChangeIsNotTimelyList3" resultMap="rm"  >
+		select
+		<include refid="Base_Column_List" />
+		from t_operational_application_detail
+		<where >
+			propose_date > '2020-09-01'
+			<if test="operStatus != null  and operStatus != ''" >
+				and oper_status = #{operStatus,jdbcType=BIGINT}
+			</if>
+			<if test="proposeDate2 != null " >
+				and propose_date LIKE CONCAT('%',#{proposeDate2},'%')
+			</if>
+			<if test="applicationSector != null  and applicationSector != ''" >
+				and application_sector = #{applicationSector,jdbcType=VARCHAR}
+			</if>
+			ORDER BY application_sector,oper_applicant,propose_date desc
+		</where>
+	</select>
     <update id="updateAllOperationalApplication" parameterType="com.cmpay.lemon.monitor.entity.OperationApplicationDO">
     	UPDATE t_operational_application_detail
     	<set>

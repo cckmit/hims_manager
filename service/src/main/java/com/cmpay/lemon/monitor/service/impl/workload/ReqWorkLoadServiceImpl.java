@@ -1384,22 +1384,22 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 //                        `remark` varchar(2555) DEFAULT NULL COMMENT '备注',
                 SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
                 supportWorkloadDO.setReqImplMon(map.get(i).get(0).toString().trim());
-                supportWorkloadDO.setDocumentnumber(map.get(i).get(1).toString().trim());
-                supportWorkloadDO.setProcessstartdate(map.get(i).get(2).toString().trim());
-                supportWorkloadDO.setProductmanagementdepartment(map.get(i).get(3).toString().trim());
-                supportWorkloadDO.setProductowner(map.get(i).get(4).toString().trim());
-                supportWorkloadDO.setSupportingmanufacturerproducts(map.get(i).get(5).toString().trim());
-                supportWorkloadDO.setSupportthetopic(map.get(i).get(6).toString().trim());
-                supportWorkloadDO.setContentdescription(map.get(i).get(7).toString().trim());
-                supportWorkloadDO.setFunctionpointsdetail(map.get(i).get(8).toString().trim());
-                supportWorkloadDO.setProposaltime(map.get(i).get(9).toString().trim());
-                supportWorkloadDO.setCompletiontime(map.get(i).get(10).toString().trim());
-                supportWorkloadDO.setSupportmanager(map.get(i).get(11).toString().trim());
-                supportWorkloadDO.setSupportworkload(map.get(i).get(12).toString().trim());
-                supportWorkloadDO.setFinalworkload(map.get(i).get(13).toString().trim());
-                supportWorkloadDO.setSupportingmanufacturers(map.get(i).get(14).toString().trim());
-                supportWorkloadDO.setCostdepartment(map.get(i).get(15).toString().trim());
-                supportWorkloadDO.setSecondlevelorganization(map.get(i).get(16).toString().trim());
+                supportWorkloadDO.setFirstLevelOrganization(map.get(i).get(1).toString().trim());
+                supportWorkloadDO.setCostdepartment(map.get(i).get(2).toString().trim());
+                supportWorkloadDO.setDocumentnumber(map.get(i).get(3).toString().trim());
+                supportWorkloadDO.setProcessstartdate(map.get(i).get(4).toString().trim());
+                supportWorkloadDO.setProductmanagementdepartment(map.get(i).get(5).toString().trim());
+                supportWorkloadDO.setProductowner(map.get(i).get(6).toString().trim());
+                supportWorkloadDO.setSupportingmanufacturerproducts(map.get(i).get(7).toString().trim());
+                supportWorkloadDO.setSupportthetopic(map.get(i).get(8).toString().trim());
+                supportWorkloadDO.setContentdescription(map.get(i).get(9).toString().trim());
+                supportWorkloadDO.setFunctionpointsdetail(map.get(i).get(10).toString().trim());
+                supportWorkloadDO.setProposaltime(map.get(i).get(11).toString().trim());
+                supportWorkloadDO.setCompletiontime(map.get(i).get(12).toString().trim());
+                supportWorkloadDO.setSupportmanager(map.get(i).get(13).toString().trim());
+                supportWorkloadDO.setSupportworkload(map.get(i).get(14).toString().trim());
+                supportWorkloadDO.setFinalworkload(map.get(i).get(15).toString().trim());
+                supportWorkloadDO.setSupportingmanufacturers(map.get(i).get(16).toString().trim());
                 supportWorkloadDO.setRemark(map.get(i).get(17).toString().trim());
                 supportWorkloadDOLinkedList.add(supportWorkloadDO);
                 System.err.println(supportWorkloadDO);
@@ -1459,6 +1459,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
        }
         //获取所有的一级团队
         List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+        firstLevelOrganizationList.add("运维团队");
         List<SupportWorkload2DO> DevpWorkLoadList = new ArrayList<>();
         BigDecimal sum = new BigDecimal("0");
         for(int i=0;i<firstLevelOrganizationList.size();i++){

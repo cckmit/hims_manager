@@ -1189,7 +1189,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getDefectsNumber();
+                    if(impl.get(j).getDefectsNumber()>0){
+                        sum = sum + 1;
+                    }
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -1226,7 +1228,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getProblemNumber();
+                    if(impl.get(j).getProblemNumber()>0){
+                        sum = sum + 1;
+                    }
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -1371,7 +1375,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         int sumx = 0;
         if (impl5 != null && impl5.size() != 0) {
             for (int j = 0; j < impl5.size(); j++) {
-                sumx = sumx + impl5.get(j).getDefectsNumber();
+                if(impl5.get(j).getDefectsNumber()>0){
+                    sumx = sumx + 1;
+                }
             }
             workingHoursBOS.add(sumx + "");
         } else {
@@ -4078,14 +4084,27 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
 
     @Override
-    public List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChanges(String dept) {
+    public List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChanges(String dept,String selectTime1,String selectTime2) {
         List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = new LinkedList<>();
-        //该功能计算起始时间
-        String date = "2020-07-01";
         //获得投产验证不及时清单
-        List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely2(date, dept);
+        List<ProductionDO> productionDOList = new LinkedList<>();
         //获得系统录入验证不及时清单
-        List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList2(date, dept);
+        List<OperationApplicationDO> operationApplicationDOList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            productionDOList = operationProductionService.getProductionVerificationIsNotTimely2(selectTime1, dept);
+            operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList2(selectTime1, dept);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            productionDOList = operationProductionService.getProductionVerificationIsNotTimely3(selectTime2, dept);
+            operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList3(selectTime2, dept);
+        }
         if (JudgeUtils.isEmpty(productionDOList) && JudgeUtils.isEmpty(operationApplicationDOList)) {
             return listOfUntimelyStatusChangesBos;
         }
@@ -4100,6 +4119,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     productionVerificationIsNotTimelyBO.setValidation(productionDOList.get(i).getValidation());
                     productionVerificationIsNotTimelyBO.setProDate(sdf.format(productionDOList.get(i).getProDate()));
                     productionVerificationIsNotTimelyBO.setIdentifier(productionDOList.get(i).getIdentifier());
+                    productionVerificationIsNotTimelyBO.setDepartment(productionDOList.get(i).getApplicationDept());
                     Calendar c1 = Calendar.getInstance();
                     Calendar c2 = Calendar.getInstance();
                     c1.setTime(sdf.parse(sdf.format(new Date())));
@@ -4118,7 +4138,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     productionVerificationIsNotTimelyBO.setValidation("");
                     productionVerificationIsNotTimelyBO.setProDate(sdf.format(operationApplicationDOList.get(i).getProposeDate()));
                     productionVerificationIsNotTimelyBO.setIdentifier(operationApplicationDOList.get(i).getIdentifier());
-
+                    productionVerificationIsNotTimelyBO.setDepartment(operationApplicationDOList.get(i).getApplicationSector());
                     Calendar c1 = Calendar.getInstance();
                     Calendar c2 = Calendar.getInstance();
                     c1.setTime(sdf.parse(sdf.format(new Date())));
@@ -4985,6 +5005,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<ProductLineDefectsBO> impl = null;
         List<String> list = getSixMonth(selectTime2);
         List<String> workingHoursBOS = new LinkedList<>();
+        List<String> listRate = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < list.size(); i++) {
             impl = departmentalDefectRate(list.get(i));
@@ -4999,9 +5020,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 }
                 if(workload==0){
                     workingHoursBOS.add("0");
+                    listRate.add(defectsNumber +"/"+0);
                 }else{
                     String defectRate = String.format("%.2f", defectsNumber / workload * 100);
                     workingHoursBOS.add(defectRate);
+                    listRate.add(defectsNumber +"/"+workload);
                 }
             } else {
                 workingHoursBOS.add("0");
@@ -5010,6 +5033,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setListRate(listRate);
         return demandHoursRspBO;
     }
 
@@ -5078,6 +5102,78 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         issueDetailsRspBO.setIssueDetailsBOList(issueDetailsBOList);
 
         return issueDetailsRspBO;
+    }
+
+    @Override
+    public ProductionDefectsRspBO getProDefectDetails(String selectTime1, String selectTime2,String seriesName,String name){
+        List<ProductionDefectsDO> productionDefectsDOLinkedList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
+        productionDefectsDO.setProblemattributiondept(name);
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            productionDefectsDO.setProcessstartdate(selectTime1);
+            productionDefectsDOLinkedList = productionDefectsExtDao.findWeekList(productionDefectsDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            productionDefectsDO.setProcessstartdate(selectTime2);
+            productionDefectsDOLinkedList = productionDefectsExtDao.findList(productionDefectsDO);
+        }
+        List<ProductionDefectsBO> productionDefectsBOList = new LinkedList<>();
+        productionDefectsBOList = BeanConvertUtils.convertList(productionDefectsDOLinkedList, ProductionDefectsBO.class);
+
+        ProductionDefectsRspBO productionDefectsRspBO = new ProductionDefectsRspBO();
+        productionDefectsRspBO.setProductionDefectsBOList(productionDefectsBOList);
+        return productionDefectsRspBO;
+    }
+
+    @Override
+    public ProUnhandledIssuesRspBO getProUnhandledIssuesDetails(String selectTime1, String selectTime2,String seriesName,String name){
+        List<ProUnhandledIssuesDO> proUnhandledIssuesDOLinkedList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        ProUnhandledIssuesDO proUnhandledIssuesDO = new ProUnhandledIssuesDO();
+        proUnhandledIssuesDO.setDepartment(name);
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            proUnhandledIssuesDO.setProductionDate(selectTime1);
+            proUnhandledIssuesDOLinkedList = proUnhandledIssuesExtDao.findWeek(proUnhandledIssuesDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            proUnhandledIssuesDO.setProductionDate(selectTime2);
+            proUnhandledIssuesDOLinkedList = proUnhandledIssuesExtDao.findMonth(proUnhandledIssuesDO);
+        }
+        List<ProUnhandledIssuesBO> proUnhandledIssuesBOList = new LinkedList<>();
+        proUnhandledIssuesBOList = BeanConvertUtils.convertList(proUnhandledIssuesDOLinkedList, ProUnhandledIssuesBO.class);
+        if(!proUnhandledIssuesBOList.isEmpty()){
+            //iterator遍历
+            Iterator<ProUnhandledIssuesBO> it = proUnhandledIssuesBOList.iterator();
+            while(it.hasNext()){
+                ProUnhandledIssuesBO proUnhandledIssuesBO = it.next();
+                if("评审问题未解决数".equals(seriesName)){
+                    if(proUnhandledIssuesBO.getProblemNumber() == 0){
+                        it.remove();
+                    }
+                }
+                if("缺陷未解决数".equals(seriesName)){
+                    if(proUnhandledIssuesBO.getDefectsNumber() == 0){
+                        it.remove();
+                    }
+                }
+            }
+        }
+        ProUnhandledIssuesRspBO proUnhandledIssuesRspBO = new ProUnhandledIssuesRspBO();
+        proUnhandledIssuesRspBO.setProUnhandledIssuesBOList(proUnhandledIssuesBOList);
+        return proUnhandledIssuesRspBO;
     }
 }
 

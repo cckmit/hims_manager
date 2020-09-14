@@ -568,13 +568,32 @@
         <include refid="Base_Column_List" />
         from t_production_records
         <where >
-            <if test="proStatus != null" >
+            pro_date > '2020-09-01'
+            <if test="proStatus != null and proStatus != ''" >
                 and pro_status = #{proStatus,jdbcType=BIGINT}
             </if>
             <if test="proDate != null" >
-                and pro_date > #{proDate,jdbcType=VARCHAR}
+                and YEARWEEK(date_format(pro_date,'%Y-%m-%d')) = YEARWEEK(#{proDate,jdbcType=VARCHAR})
             </if>
-            <if test="applicationDept != null" >
+            <if test="applicationDept != null and applicationDept != ''" >
+                and application_dept = #{applicationDept,jdbcType=VARCHAR}
+            </if>
+            ORDER BY application_dept,pro_applicant,pro_date desc
+        </where>
+    </select>
+    <select id="getListOfUntimelyStatusChanges3" resultMap="rm"  >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_records
+        <where >
+            pro_date > '2020-09-01'
+            <if test="proStatus != null and proStatus != ''" >
+                and pro_status = #{proStatus,jdbcType=BIGINT}
+            </if>
+            <if test="proDate2 != null " >
+                and pro_date  like CONCAT('%',#{proDate2},'%')
+            </if>
+            <if test="applicationDept != null and applicationDept != ''" >
                 and application_dept = #{applicationDept,jdbcType=VARCHAR}
             </if>
             ORDER BY application_dept,pro_applicant,pro_date desc

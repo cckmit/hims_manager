@@ -897,10 +897,11 @@ public class reportFormController {
 	 * @return
 	 */
 	@RequestMapping("/listOfUntimelyStatusChanges")
-	public GenericRspDTO<ProductionVerificationIsNotTimelyRspDTO> listOfUntimelyStatusChanges(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+	public GenericRspDTO<ProductionVerificationIsNotTimelyRspDTO> listOfUntimelyStatusChanges(@RequestBody DetailsReqDTO workingHoursDTO) {
 		ProductionVerificationIsNotTimelyRspDTO demandHoursRspDTO = new ProductionVerificationIsNotTimelyRspDTO();
-		List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = reqDataCountService.listOfUntimelyStatusChanges(workingHoursDTO.getDevpLeadDept());
+		List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = reqDataCountService.listOfUntimelyStatusChanges(workingHoursDTO.getName(),workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
 		demandHoursRspDTO.setProductionVerificationIsNotTimelyDTOList(BeanConvertUtils.convertList(listOfUntimelyStatusChangesBos, ProductionVerificationIsNotTimelyDTO.class));
+		System.err.println(demandHoursRspDTO.getProductionVerificationIsNotTimelyDTOList());
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
 	}
 
@@ -1034,7 +1035,7 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS,productLineDefectRateRspDTO);
 	}
     /**
-     * 中心缺陷未解决
+     * 中心代码团队代码缺陷率
      *
      * @param workingHoursDTO
      * @return
@@ -1127,8 +1128,6 @@ public class reportFormController {
 		defectDetailsRspBO = reqDataCountService.getDetails(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getSeriesName(),detailsReqDTO.getName());
 		DefectDetailsRspDTO defectDetailsRspDTO = new DefectDetailsRspDTO();
 		defectDetailsRspDTO.setDefectDetailsDTOArrayList(BeanConvertUtils.convertList(defectDetailsRspBO.getDefectDetailsBos(), DefectDetailsDTO.class));
-		System.err.println(defectDetailsRspDTO.getDefectDetailsDTOArrayList().size());
-		System.err.println(defectDetailsRspDTO.getDefectDetailsDTOArrayList().get(0));
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, defectDetailsRspDTO);
 	}
 
@@ -1146,4 +1145,31 @@ public class reportFormController {
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, issueDetailsRspDTO);
 	}
 
+	/**
+	 * 双击生产权限详情
+	 * @param detailsReqDTO
+	 * @return
+	 */
+	@RequestMapping("/getProDefectDetails")
+	public GenericRspDTO<ProductionDefectsRspDTO> getProDefectDetails(@RequestBody DetailsReqDTO detailsReqDTO) {
+		ProductionDefectsRspBO productionDefectsRspBO = new ProductionDefectsRspBO();
+		productionDefectsRspBO = reqDataCountService.getProDefectDetails(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getSeriesName(),detailsReqDTO.getName());
+		ProductionDefectsRspDTO productionDefectsRspDTO = new ProductionDefectsRspDTO();
+		productionDefectsRspDTO.setProductionDefectsDTOList(BeanConvertUtils.convertList(productionDefectsRspBO.getProductionDefectsBOList(), ProductionDefectsDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, productionDefectsRspDTO);
+	}
+
+	/**
+	 * 投产未解决权限，评审问题
+	 * @param detailsReqDTO
+	 * @return
+	 */
+	@RequestMapping("/getProUnhandledIssuesDetails")
+	public GenericRspDTO<ProUnhandledIssuesRspDTO> getProUnhandledIssuesDetails(@RequestBody DetailsReqDTO detailsReqDTO) {
+		ProUnhandledIssuesRspBO proUnhandledIssuesRspBO = new ProUnhandledIssuesRspBO();
+		proUnhandledIssuesRspBO = reqDataCountService.getProUnhandledIssuesDetails(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getSeriesName(),detailsReqDTO.getName());
+		ProUnhandledIssuesRspDTO unhandledIssuesRspDTO = new ProUnhandledIssuesRspDTO();
+		unhandledIssuesRspDTO.setProUnhandledIssuesDTOList(BeanConvertUtils.convertList(proUnhandledIssuesRspBO.getProUnhandledIssuesBOList(), ProUnhandledIssuesDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, unhandledIssuesRspDTO);
+	}
 }

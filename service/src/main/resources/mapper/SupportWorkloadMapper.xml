@@ -18,7 +18,7 @@
         <result column="finalWorkload" property="finalworkload" jdbcType="VARCHAR" />
         <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
-        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstLevelOrganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
         <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
     </resultMap>
@@ -27,7 +27,7 @@
         documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts,
         supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime,
         supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment,
-        secondLevelOrganization, remark,reqImplMon
+        firstLevelOrganization, remark,reqImplMon
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -90,8 +90,8 @@
             <if test="costdepartment != null" >
                 costDepartment,
             </if>
-            <if test="secondlevelorganization != null" >
-                secondLevelOrganization,
+            <if test="firstLevelOrganization != null" >
+                firstLevelOrganization,
             </if>
             <if test="remark != null" >
                 remark,
@@ -146,8 +146,8 @@
             <if test="costdepartment != null" >
                 #{costdepartment,jdbcType=VARCHAR},
             </if>
-            <if test="secondlevelorganization != null" >
-                #{secondlevelorganization,jdbcType=VARCHAR},
+            <if test="firstLevelOrganization != null" >
+                #{firstLevelOrganization,jdbcType=VARCHAR},
             </if>
             <if test="remark != null" >
                 #{remark,jdbcType=VARCHAR},
@@ -203,8 +203,8 @@
             <if test="costdepartment != null" >
                 costDepartment = #{costdepartment,jdbcType=VARCHAR},
             </if>
-            <if test="secondlevelorganization != null" >
-                secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            <if test="firstLevelOrganization != null" >
+                firstLevelOrganization = #{firstLevelOrganization,jdbcType=VARCHAR},
             </if>
             <if test="remark != null" >
                 remark = #{remark,jdbcType=VARCHAR},
@@ -266,8 +266,8 @@
             <if test="costdepartment != null" >
                 and costDepartment = #{costdepartment,jdbcType=VARCHAR}
             </if>
-            <if test="secondlevelorganization != null" >
-                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            <if test="firstLevelOrganization != null" >
+                and firstLevelOrganization = #{firstLevelOrganization,jdbcType=VARCHAR}
             </if>
             <if test="remark != null" >
                 and remark = #{remark,jdbcType=VARCHAR}

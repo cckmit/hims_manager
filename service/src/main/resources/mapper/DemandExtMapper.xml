@@ -1589,4 +1589,61 @@
         group by a.req_nm,a.req_no,req_impl_mon
     </select>
 
+    <update id="updatePlanInput" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
+        UPDATE t_demand_info
+        SET
+        <if test="reqPrdLine != null and reqPrdLine != ''">
+            ,req_prd_line =#{reqPrdLine }
+        </if>
+        <if test="reqSts != null and reqSts != ''">
+            ,req_sts =#{reqSts }
+        </if>
+        <if test="reqNo != null and reqNo != ''">
+            ,req_no =#{reqNo }
+        </if>
+        <if test="reqNm != null and reqNm != ''">
+            ,req_nm =#{reqNm }
+        </if>
+        <if test="prdFinshTm != null and prdFinshTm != ''">
+            ,prd_finsh_tm =#{prdFinshTm }
+        </if>
+        <if test="uatUpdateTm != null and uatUpdateTm != ''">
+            ,uat_update_tm =#{uatUpdateTm }
+        </if>
+        <if test="testFinshTm != null and testFinshTm != ''">
+            ,test_finsh_tm =#{testFinshTm }
+        </if>
+        <if test="expPrdReleaseTm != null and expPrdReleaseTm != ''">
+            ,exp_prd_release_tm =#{expPrdReleaseTm }
+        </if>
+        <if test="curMonTarget != null and curMonTarget != ''">
+            ,cur_mon_target =#{curMonTarget }
+        </if>
+        <if test="devpLeadDept != null and devpLeadDept != ''">
+            ,devp_lead_dept =#{devpLeadDept }
+        </if>
+        <if test="devpCoorDept != null and devpCoorDept != ''">
+            ,devp_coor_dept =#{devpCoorDept}
+        </if>
+        <if test="projectMng != null and projectMng != ''">
+            ,project_mng =#{projectMng }
+        </if>
+        <if test="devpEng != null and devpEng != ''">
+            ,devp_eng =#{devpEng }
+        </if>
+        <if test="frontEng != null and frontEng != ''">
+            ,front_eng =#{frontEng }
+        </if>
+        <if test="testEng != null and testEng != ''">
+            ,test_eng =#{testEng }
+        </if>
+        <if test="productMng != null and productMng != ''">
+            ,product_mng =#{productMng }
+        </if>
+        <if test="preCurPeriod != null and preCurPeriod != ''">
+            ,pre_cur_period =#{preCurPeriod }
+        </if>
+        where req_inner_seq =#{reqInnerSeq }
+    </update>
+
 </mapper>

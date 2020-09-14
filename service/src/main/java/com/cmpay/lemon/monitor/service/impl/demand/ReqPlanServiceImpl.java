@@ -2758,7 +2758,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 m.setInputRes(demandDO.getInputRes());
                 m.setDevCycle(demandDO.getDevCycle());
                 m.setExpInput(demandDO.getExpInput());
-                demandDao.update(m);
+                demandDao.updatePlanInput(m);
             });
 
         } catch (Exception e) {

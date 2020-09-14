@@ -17,21 +17,21 @@
         <result column="developmentWorkloadAssess" property="developmentworkloadassess" jdbcType="VARCHAR" />
         <result column="developmentWorkload" property="developmentworkload" jdbcType="VARCHAR" />
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
-        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstLevelOrganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
         <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="productManagementDepartment" property="productmanagementdepartment" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         documentNumber, processStartDate, developmentOwner, supportingManufacturers, supportingManufacturerProducts,
         cutType, demandTheme, requirementDescription, commissioningDate, acceptanceDate,
-        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, secondLevelOrganization,
-        remark,reqImplMon
+        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, firstLevelOrganization,
+        remark,reqImplMon,productManagementDepartment
     </sql>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
         select
-        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
         <include refid="Base_Column_List" />
         from t_demand_ease_development a
         <where >
@@ -83,22 +83,22 @@
             <if test="costdepartment != null and costdepartment != ''" >
                 and a.costDepartment = #{costdepartment,jdbcType=VARCHAR}
             </if>
-            <if test="secondlevelorganization != null and secondlevelorganization != ''" >
-                and a.secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            <if test="firstLevelOrganization != null and firstLevelOrganization != ''" >
+                and a.firstLevelOrganization = #{firstLevelOrganization,jdbcType=VARCHAR}
             </if>
             <if test="remark != null and remark != ''" >
                 and a.remark = #{remark,jdbcType=VARCHAR}
             </if>
-            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
-                AND  a.secondLevelOrganization in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
+            <if test="productmanagementdepartment != null and productmanagementdepartment != ''" >
+                and a.productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
 
     <select id="easeDevelopmentWorkloadCountForDevp" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandEaseDevelopmentDO" >
         select
-        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
-        sum(a.developmentWorkload) developmentWorkload
+       firstLevelOrganization,
+        sum( cast(a.developmentWorkload AS DECIMAL (5, 2))) developmentWorkload
         from t_demand_ease_development a
         <where >
             <if test="reqImplMon != null and reqImplMon != ''" >

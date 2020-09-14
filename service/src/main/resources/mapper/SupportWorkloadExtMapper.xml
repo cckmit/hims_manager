@@ -17,7 +17,7 @@
         <result column="finalWorkload" property="finalworkload" jdbcType="VARCHAR" />
         <result column="supportingManufacturers" property="supportingmanufacturers" jdbcType="VARCHAR" />
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
-        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstLevelOrganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
         <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
     </resultMap>
@@ -26,12 +26,11 @@
         documentNumber, processStartDate, productManagementDepartment, productOwner, supportingManufacturerProducts,
         supportTheTopic, contentDescription, functionPointsDetail, proposalTime, completionTime,
         supportManager, supportWorkload, finalWorkload, supportingManufacturers, costDepartment,
-        secondLevelOrganization, remark,reqImplMon
+        firstLevelOrganization, remark,reqImplMon
     </sql>
 
     <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
         select
-        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
         <include refid="Base_Column_List" />
         from t_support_workload a
         <where >
@@ -86,21 +85,18 @@
             <if test="costdepartment != null and costdepartment != ''" >
                 and a.costDepartment = #{costdepartment,jdbcType=VARCHAR}
             </if>
-            <if test="secondlevelorganization != null and secondlevelorganization != ''" >
-                and a.secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            <if test="firstLevelOrganization != null and firstLevelOrganization != ''" >
+                and a.firstLevelOrganization = #{firstLevelOrganization,jdbcType=VARCHAR}
             </if>
             <if test="remark != null and remark != ''" >
                 and a.remark = #{remark,jdbcType=VARCHAR}
-            </if>
-            <if test="firstLevelOrganization !=null and firstLevelOrganization != ''">
-                AND  a.secondLevelOrganization in  ( SELECT secondLevelOrganization FROM t_organization_structure  where firstLevelOrganization = #{firstLevelOrganization}   )
             </if>
         </where>
     </select>
     <select id="supportWorkloadCountForDevp" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SupportWorkloadDO" >
         select
-        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = a.secondLevelOrganization) AS firstLevelOrganization,
-        sum(a.finalWorkload) finalWorkload
+        firstLevelOrganization,
+        sum( cast(a.finalWorkload AS DECIMAL (5, 2))) finalWorkload
         from t_support_workload a
         <where >
             <if test="reqImplMon != null and reqImplMon != ''" >

@@ -19,6 +19,7 @@
         <include refid="Base_Column_List" />
         from t_check_timeout_statistics
         <where >
+            registrationDate > '2020-09-01'
             <if test="id != null" >
                 and id = #{id,jdbcType=INTEGER}
             </if>
@@ -39,6 +40,7 @@
         <include refid="Base_Column_List" />
         from t_check_timeout_statistics
         <where >
+             registrationDate > '2020-09-01'
             <if test="id != null" >
                 and id = #{id,jdbcType=INTEGER}
             </if>

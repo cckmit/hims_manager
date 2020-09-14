@@ -78,6 +78,7 @@ public class DemandEaseDevelopmentDTO extends GenericDTO {
     private String endTime;
     private String reqImplMon;
     private String firstLevelOrganization;
+    private String productmanagementdepartment;
     /**
      * 页数
      */
@@ -263,9 +264,17 @@ public class DemandEaseDevelopmentDTO extends GenericDTO {
         this.remark = remark;
     }
 
+    public String getProductmanagementdepartment() {
+        return productmanagementdepartment;
+    }
+
+    public void setProductmanagementdepartment(String productmanagementdepartment) {
+        this.productmanagementdepartment = productmanagementdepartment;
+    }
+
     @Override
     public String toString() {
-        return "DemandEaseDevelopmentBO{" +
+        return "DemandEaseDevelopmentDTO{" +
                 "documentnumber='" + documentnumber + '\'' +
                 ", processstartdate='" + processstartdate + '\'' +
                 ", developmentowner='" + developmentowner + '\'' +
@@ -286,6 +295,7 @@ public class DemandEaseDevelopmentDTO extends GenericDTO {
                 ", endTime='" + endTime + '\'' +
                 ", reqImplMon='" + reqImplMon + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

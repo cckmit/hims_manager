@@ -10,6 +10,7 @@ public class OperationApplicationDO extends AbstractDO{
 	private String operNumber;
 	private String operRequestContent;
 	private Date proposeDate;
+	private String proposeDate2;
 	private String isRefSql;
 	private String sysOperType;
 	private String operStatus;
@@ -309,5 +310,12 @@ public class OperationApplicationDO extends AbstractDO{
 	public Serializable getId() {
 		return null;
 	}
-   
+
+	public String getProposeDate2() {
+		return proposeDate2;
+	}
+
+	public void setProposeDate2(String proposeDate2) {
+		this.proposeDate2 = proposeDate2;
+	}
 }

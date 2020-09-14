@@ -17,6 +17,7 @@ import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -290,6 +291,14 @@ public class MultiMailsender {
     }
 
     public static void main(String[] args) throws Exception{
+        String date = "2020-09";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        Date date1 = sdf.parse(date);
+
+        java.sql.Date date2 = new java.sql.Date(date1.getTime());
+        System.err.println(date1);
+        System.err.println(sdf.format(date1));
+
 
 
     }

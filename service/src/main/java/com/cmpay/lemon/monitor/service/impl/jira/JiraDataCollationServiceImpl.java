@@ -295,6 +295,10 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         });
     }
 
+    /**
+     * 投产提出转待部署时保持未解决的缺陷和评审问题数量
+     * @param reqNo
+     */
     @Override
     @Async
     public void inquiriesAboutRemainingProblems(String reqNo) {

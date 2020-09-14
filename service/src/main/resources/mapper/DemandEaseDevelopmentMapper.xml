@@ -17,16 +17,17 @@
         <result column="developmentWorkloadAssess" property="developmentworkloadassess" jdbcType="VARCHAR" />
         <result column="developmentWorkload" property="developmentworkload" jdbcType="VARCHAR" />
         <result column="costDepartment" property="costdepartment" jdbcType="VARCHAR" />
-        <result column="secondLevelOrganization" property="secondlevelorganization" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstLevelOrganization" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
         <result column="reqImplMon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="productManagementDepartment" property="productmanagementdepartment" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         documentNumber, processStartDate, developmentOwner, supportingManufacturers, supportingManufacturerProducts,
         cutType, demandTheme, requirementDescription, commissioningDate, acceptanceDate,
-        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, secondLevelOrganization,
-        remark,reqImplMon
+        acceptor, developmentWorkloadAssess, developmentWorkload, costDepartment, firstLevelOrganization,
+        remark,reqImplMon,productManagementDepartment
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -86,14 +87,17 @@
             <if test="costdepartment != null" >
                 costDepartment,
             </if>
-            <if test="secondlevelorganization != null" >
-                secondLevelOrganization,
+            <if test="firstLevelOrganization != null" >
+                firstLevelOrganization,
             </if>
             <if test="remark != null" >
                 remark,
             </if>
             <if test="reqImplMon != null" >
                 reqImplMon,
+            </if>
+            <if test="productmanagementdepartment != null" >
+                productManagementDepartment,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -139,14 +143,17 @@
             <if test="costdepartment != null" >
                 #{costdepartment,jdbcType=VARCHAR},
             </if>
-            <if test="secondlevelorganization != null" >
-                #{secondlevelorganization,jdbcType=VARCHAR},
+            <if test="firstLevelOrganization != null" >
+                #{firstLevelOrganization,jdbcType=VARCHAR},
             </if>
             <if test="remark != null" >
                 #{remark,jdbcType=VARCHAR},
             </if>
             <if test="reqImplMon != null" >
                 #{reqImplMon,jdbcType=VARCHAR},
+            </if>
+            <if test="productmanagementdepartment != null" >
+                #{productmanagementdepartment,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -193,14 +200,17 @@
             <if test="costdepartment != null" >
                 costDepartment = #{costdepartment,jdbcType=VARCHAR},
             </if>
-            <if test="secondlevelorganization != null" >
-                secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR},
+            <if test="firstLevelOrganization != null" >
+                firstLevelOrganization = #{firstLevelOrganization,jdbcType=VARCHAR},
             </if>
             <if test="remark != null" >
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
             <if test="reqImplMon != null" >
                 reqImplMon = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="productmanagementdepartment != null" >
+                productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR},
             </if>
         </set>
         where documentNumber = #{documentnumber,jdbcType=VARCHAR}
@@ -253,14 +263,17 @@
             <if test="costdepartment != null" >
                 and costDepartment = #{costdepartment,jdbcType=VARCHAR}
             </if>
-            <if test="secondlevelorganization != null" >
-                and secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+            <if test="firstLevelOrganization != null" >
+                and firstLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
             </if>
             <if test="remark != null" >
                 and remark = #{remark,jdbcType=VARCHAR}
             </if>
             <if test="reqImplMon != null" >
                 and reqImplMon = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="productmanagementdepartment != null" >
+                and productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

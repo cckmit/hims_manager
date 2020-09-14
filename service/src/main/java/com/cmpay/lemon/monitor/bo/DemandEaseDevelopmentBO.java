@@ -68,6 +68,7 @@ public class DemandEaseDevelopmentBO  {
      *  secondlevelorganization 二级主导团队
      */
     private String secondlevelorganization;
+    private String productmanagementdepartment;
     /**
      *  remark 备注
      */
@@ -261,6 +262,14 @@ public class DemandEaseDevelopmentBO  {
         this.remark = remark;
     }
 
+    public String getProductmanagementdepartment() {
+        return productmanagementdepartment;
+    }
+
+    public void setProductmanagementdepartment(String productmanagementdepartment) {
+        this.productmanagementdepartment = productmanagementdepartment;
+    }
+
     @Override
     public String toString() {
         return "DemandEaseDevelopmentBO{" +
@@ -279,6 +288,7 @@ public class DemandEaseDevelopmentBO  {
                 ", developmentworkload='" + developmentworkload + '\'' +
                 ", costdepartment='" + costdepartment + '\'' +
                 ", secondlevelorganization='" + secondlevelorganization + '\'' +
+                ", productmanagementdepartment='" + productmanagementdepartment + '\'' +
                 ", remark='" + remark + '\'' +
                 ", startTime='" + startTime + '\'' +
                 ", endTime='" + endTime + '\'' +

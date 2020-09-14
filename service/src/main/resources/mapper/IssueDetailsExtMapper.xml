@@ -25,7 +25,7 @@
         <include refid="Base_Column_List" />
         from t_issue_details
         <where >
-            issue_status not in ('完成')
+            issue_status not in ('完成','关闭'，'问题冻结')
             <if test="jireKey != null" >
                 and jire_key = #{jireKey,jdbcType=VARCHAR}
             </if>
