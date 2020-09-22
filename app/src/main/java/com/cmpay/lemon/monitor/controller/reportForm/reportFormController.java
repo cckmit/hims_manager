@@ -1172,4 +1172,19 @@ public class reportFormController {
 		unhandledIssuesRspDTO.setProUnhandledIssuesDTOList(BeanConvertUtils.convertList(proUnhandledIssuesRspBO.getProUnhandledIssuesBOList(), ProUnhandledIssuesDTO.class));
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, unhandledIssuesRspDTO);
 	}
+
+	/**
+	 * 投产未解决权限，评审问题
+	 * @param detailsReqDTO
+	 * @return
+	 */
+	@RequestMapping("/getSmokeTestFailedCount2")
+	public GenericRspDTO<SmokeTestFailedCountRspDTO> getSmokeTestFailedCount2(@RequestBody SmokeTestFailedCountReqDTO detailsReqDTO) {
+		SmokeTestFailedCountRspBO proUnhandledIssuesRspBO = new SmokeTestFailedCountRspBO();
+		System.err.println(detailsReqDTO);
+		proUnhandledIssuesRspBO = reqDataCountService.getSmokeTestFailedCount2(detailsReqDTO.getSelectTime1(), detailsReqDTO.getSelectTime2(),detailsReqDTO.getCount());
+		SmokeTestFailedCountRspDTO unhandledIssuesRspDTO = new SmokeTestFailedCountRspDTO();
+		unhandledIssuesRspDTO.setSmokeTestFailedCountDTOList(BeanConvertUtils.convertList(proUnhandledIssuesRspBO.getSmokeTestFailedCountBOList(), SmokeTestFailedCountDTO.class));
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, unhandledIssuesRspDTO);
+	}
 }

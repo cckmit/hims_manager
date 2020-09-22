@@ -38,7 +38,7 @@
                 and a.documentNumber LIKE CONCAT('%',#{documentnumber,jdbcType=VARCHAR},'%')
             </if>
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''  ">
-                and substr(a.processStartDate,1,10) between #{startTime} and #{endTime}
+                and substr(a.completionTime,1,10) between #{startTime} and #{endTime}
             </if>
             <if test="reqImplMon != null and reqImplMon != ''" >
                 and a.reqImplMon = #{reqImplMon,jdbcType=VARCHAR}

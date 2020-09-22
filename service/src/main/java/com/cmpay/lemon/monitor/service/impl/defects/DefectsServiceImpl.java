@@ -39,7 +39,7 @@ public class DefectsServiceImpl  implements DefectsService {
     @Autowired
     IProductionDefectsExtDao productionDefectsDao;
     @Autowired
-    ISmokeTestFailedCountDao smokeTestFailedCountDao;
+    ISmokeTestFailedCountExtDao smokeTestFailedCountDao;
     @Autowired
     ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
     @Autowired

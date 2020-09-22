@@ -237,13 +237,17 @@ public class JiraUtil {
                 //备注
                 String comment = jsonObject1.getString("comment");
                 jiraWorklogBO.setComment(comment);
-                String created = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("created")), 8);
+                // 原来jira版本获取日期时间加了8小时 ，新版时间不需要加
+                //String created = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("created")), 8);
+                String created =   DateUtil.dealDateFormat(jsonObject1.getString("created"));
                 jiraWorklogBO.setCreatedtime(created);
 
-                String started = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("started")), 8);
+                //String started = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("started")), 8);
+                String started = DateUtil.dealDateFormat(jsonObject1.getString("started"));
                 jiraWorklogBO.setStartedtime(started);
 
-                String updated = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("updated")), 8);
+                //String updated = DateUtil.addDateMinut(DateUtil.dealDateFormat(jsonObject1.getString("updated")), 8);
+                String updated = DateUtil.dealDateFormat(jsonObject1.getString("updated"));
                 jiraWorklogBO.setUpdatedtime(updated);
 
                 jiraWorklogBOLinkedList.add(jiraWorklogBO);
@@ -268,7 +272,7 @@ public class JiraUtil {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= updated >= -2d order by created ASC&startAt="+page+"&maxResults=50");
+                .get(GETSEARCH + "?" + "jql= updated >= -3d order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);

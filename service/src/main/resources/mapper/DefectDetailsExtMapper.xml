@@ -29,7 +29,7 @@
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >
-            defect_status not in ('完成','关闭'，'问题冻结')
+            defect_status not in ('完成','关闭','问题冻结')
             <if test="jireKey != null" >
                 and jire_key = #{jireKey,jdbcType=VARCHAR}
             </if>

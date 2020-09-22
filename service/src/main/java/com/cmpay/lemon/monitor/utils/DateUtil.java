@@ -351,4 +351,23 @@ public class DateUtil {
         return sdf.format(dBefore);
     }
 
+    public static boolean isWeekend(String date) {
+        Date bdate =null;
+        DateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        try{
+         bdate = format1.parse(date);
+        }  catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(bdate);
+
+        if(cal.get(Calendar.DAY_OF_WEEK)==Calendar.SATURDAY||cal.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+
 }

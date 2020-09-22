@@ -57,6 +57,12 @@ public class DemandEaseDevelopmentController {
         if((reqDTO.getStartTime() == null|| reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()!=null && !reqDTO.getEndTime().equals(""))){
             reqDTO.setAcceptancedate(reqDTO.getEndTime());
         }
+        if((reqDTO.getStartTime2() != null && !reqDTO.getStartTime2().equals(""))&&(reqDTO.getEndTime2()==null || reqDTO.getEndTime2().equals(""))){
+            reqDTO.setCommissioningdate(reqDTO.getStartTime2());
+        }
+        if((reqDTO.getStartTime2() == null|| reqDTO.getStartTime2().equals(""))&&(reqDTO.getEndTime2()!=null && !reqDTO.getEndTime2().equals(""))){
+            reqDTO.setCommissioningdate(reqDTO.getEndTime2());
+        }
         DemandEaseDevelopmentBO easeDevelopmentBO = BeanUtils.copyPropertiesReturnDest(new DemandEaseDevelopmentBO(), reqDTO);
         DemandEaseDevelopmentRspBO easeDevelopmentRspBO = reqTaskService.easeDevelopmentfindList(easeDevelopmentBO);
         DemandEaseDevelopmentRspDTO rspDTO = new DemandEaseDevelopmentRspDTO();

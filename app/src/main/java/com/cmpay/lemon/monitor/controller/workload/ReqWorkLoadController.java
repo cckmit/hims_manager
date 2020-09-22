@@ -320,10 +320,10 @@ public class ReqWorkLoadController {
     @RequestMapping("/supportWorkloadfindList")
     public GenericRspDTO<SupportWorkloadRspDTO> supportWorkloadfindList(@RequestBody SupportWorkloadReqDTO reqDTO) {
         if((reqDTO.getStartTime() != null && !reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()==null || reqDTO.getEndTime().equals(""))){
-            reqDTO.setProcessstartdate(reqDTO.getStartTime());
+            reqDTO.setCompletiontime(reqDTO.getStartTime());
         }
         if((reqDTO.getStartTime() == null|| reqDTO.getStartTime().equals(""))&&(reqDTO.getEndTime()!=null && !reqDTO.getEndTime().equals(""))){
-            reqDTO.setProcessstartdate(reqDTO.getEndTime());
+            reqDTO.setCompletiontime(reqDTO.getEndTime());
         }
         SupportWorkloadBO supportWorkloadBO = BeanUtils.copyPropertiesReturnDest(new SupportWorkloadBO(), reqDTO);
         SupportWorkloadRspBO supportWorkloadRspBO = reqWorkLoadService.supportWorkloadfindList(supportWorkloadBO);

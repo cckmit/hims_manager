@@ -132,7 +132,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     @Autowired
     ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
     @Autowired
-    ISmokeTestFailedCountDao smokeTestFailedCountDao;
+    ISmokeTestFailedCountExtDao smokeTestFailedCountDao;
     @Autowired
     IWorkingHoursExtDao workingHoursDao;
     @Autowired
@@ -2016,9 +2016,11 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             smokeTestFailedCountDO.setCount(1);
             smokeTestFailedCountDO.setReqNo(smokeTestRegistrationBO.getReqNo());
             smokeTestFailedCountDO.setDepartment(smokeTestRegistrationBO.getDepartment());
+            smokeTestFailedCountDO.setTestDate(smokeTestRegistrationBO.getTestDate());
             smokeTestFailedCountDao.insert(smokeTestFailedCountDO);
         } else {
             smokeTestFailedCountDOS.get(0).setCount(smokeTestFailedCountDOS.get(0).getCount() + 1);
+            smokeTestFailedCountDOS.get(0).setTestDate(smokeTestRegistrationBO.getTestDate());
             smokeTestFailedCountDao.update(smokeTestFailedCountDOS.get(0));
         }
     }

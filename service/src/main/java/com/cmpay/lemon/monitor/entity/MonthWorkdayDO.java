@@ -2,7 +2,7 @@
  * @ClassName MonthWorkdayDO
  * @Description 
  * @version 1.0
- * @Date 2020-07-10 16:02:26
+ * @Date 2020-09-15 11:39:14
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -12,27 +12,51 @@ import com.cmpay.lemon.framework.annotation.DataObject;
 @DataObject
 public class MonthWorkdayDO extends BaseDO {
     /**
-     * @Fields month 月份
+     * @Fields workId 
      */
-    private String month;
+    private Long workId;
     /**
-     * @Fields workday 工作日
+     * @Fields workMonth 
      */
-    private String workday;
+    private String workMonth;
+    /**
+     * @Fields workSumDay 
+     */
+    private Integer workSumDay;
+    /**
+     * @Fields workPastDay 
+     */
+    private Integer workPastDay;
 
-    public String getMonth() {
-        return month;
+    public Long getWorkId() {
+        return workId;
     }
 
-    public void setMonth(String month) {
-        this.month = month;
+    public void setWorkId(Long workId) {
+        this.workId = workId;
     }
 
-    public String getWorkday() {
-        return workday;
+    public String getWorkMonth() {
+        return workMonth;
     }
 
-    public void setWorkday(String workday) {
-        this.workday = workday;
+    public void setWorkMonth(String workMonth) {
+        this.workMonth = workMonth;
+    }
+
+    public Integer getWorkSumDay() {
+        return workSumDay;
+    }
+
+    public void setWorkSumDay(Integer workSumDay) {
+        this.workSumDay = workSumDay;
+    }
+
+    public Integer getWorkPastDay() {
+        return workPastDay;
+    }
+
+    public void setWorkPastDay(Integer workPastDay) {
+        this.workPastDay = workPastDay;
     }
 }

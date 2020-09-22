@@ -2,13 +2,13 @@ package com.cmpay.lemon.monitor.entity.sendemail;
 
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
-import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.TestProgressDetailRspBO;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.impl.reportForm.ReqDataCountServiceImpl;
 import com.cmpay.lemon.monitor.utils.DateUtil;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +17,7 @@ import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -291,14 +292,22 @@ public class MultiMailsender {
     }
 
     public static void main(String[] args) throws Exception{
-        String date = "2020-09";
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-        Date date1 = sdf.parse(date);
-
-        java.sql.Date date2 = new java.sql.Date(date1.getTime());
-        System.err.println(date1);
-        System.err.println(sdf.format(date1));
-
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+            float betweenDate = 0;
+            try {
+                Date d1 = sdf.parse(org.apache.commons.lang.StringUtils.substring("2020-09-14 14:19:05", 0, 10));
+                //登记工时开始时间
+                Date d2 = sdf.parse(StringUtils.substring("2020-09-10 23:10:00", 0, 10));
+                betweenDate = (float) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            //周一时创建时间和工作登记开始时间超过四天则不计算
+        System.err.println(betweenDate);
+            if (betweenDate > 4) {
+                System.err.println("超过四天");
+            }
 
 
     }

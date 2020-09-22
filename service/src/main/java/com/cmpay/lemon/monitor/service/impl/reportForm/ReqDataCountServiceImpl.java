@@ -116,7 +116,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Autowired
     private IBuildFailedCountDao iBuildFailedCountDao;
     @Autowired
-    private ISmokeTestFailedCountDao iSmokeTestFailedCountDao;
+    private ISmokeTestFailedCountExtDao iSmokeTestFailedCountDao;
     @Autowired
     private IOrganizationStructureDao iOrganizationStructureDao;
     @Autowired
@@ -125,6 +125,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IUserExtDao iUserDao;
     @Autowired
     private ITestProgressDetailExtDao testProgressDetailExtDao;
+    @Autowired
+    private IMonthWorkdayDao monthWorkdayDao;
+    @Autowired
+    private  IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
 
 
     /**
@@ -1457,7 +1461,21 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<SmokeTestFailedCountDO> impl = null;
         SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
         smokeTestFailedCountDO.setDepartment(devpLeadDept);
-        impl = iSmokeTestFailedCountDao.find(smokeTestFailedCountDO);
+        if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+            smokeTestFailedCountDO.setTestDate(date1);
+            impl = iSmokeTestFailedCountDao.findWeek(smokeTestFailedCountDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            smokeTestFailedCountDO.setTestDate(date2);
+            impl = iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+        }
         int a = 0;
         int b = 0;
         int c = 0;
@@ -1586,8 +1604,12 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursDOList = iWorkingHoursDao.findDeptView(workingHoursDO);
                 String sum = workingHoursDOList.get(0).getSumDept();
                 // 获取当前月份的天数
-                //int day = DateUtil.getDaysByYearMonth(date2);
-                int sumx = 21 * Integer.parseInt(sum);
+                MonthWorkdayDO monthWorkdayDO = monthWorkdayDao.getMonth(date2);
+                int day = 21;
+                if(JudgeUtils.isNotNull(monthWorkdayDO)){
+                    day = monthWorkdayDao.getMonth(date2).getWorkPastDay();
+                }
+                int sumx = day * Integer.parseInt(sum);
                 double d1 = 0.00;
                 double d2 = 0.00;
                 if(Integer.parseInt(listSum.get(0)) != 0){
@@ -1790,7 +1812,12 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             // 月标准工时 人天
             workingHoursBOS.add("标准工时");
             List<WorkingHoursDO> list = iWorkingHoursDao.findSumPer();
-            int workTime = 21* Integer.parseInt(list.get(0).getSumTime());
+            MonthWorkdayDO monthWorkdayDO = monthWorkdayDao.getMonth(date2);
+            int day = 21;
+            if(JudgeUtils.isNotNull(monthWorkdayDO)){
+                day = monthWorkdayDao.getMonth(date2).getWorkSumDay();
+            }
+            int workTime = day * Integer.parseInt(list.get(0).getSumTime());
             SumBos.add(workTime+"");
             workingHoursDO.setSelectTime(date2);
             impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
@@ -2108,7 +2135,22 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     public DemandHoursRspBO getCentreSmokeTestFailedCount(String date1, String date2) {
         List<SmokeTestFailedCountDO> impl = null;
         SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
-        impl = iSmokeTestFailedCountDao.find(smokeTestFailedCountDO);
+        if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+            smokeTestFailedCountDO.setTestDate(date1);
+            impl = iSmokeTestFailedCountDao.findWeek(smokeTestFailedCountDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            smokeTestFailedCountDO.setTestDate(date2);
+            impl = iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+        }
+
         int a = 0;
         int b = 0;
         int c = 0;
@@ -2265,26 +2307,25 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
      */
     @Override
     public DemandHoursRspBO getCentreProCheckTimeOutStatistics(String date1, String date2) {
-        List<ProCheckTimeOutStatisticsDO> impl = null;
-        ProCheckTimeOutStatisticsDO workingHoursDO = new ProCheckTimeOutStatisticsDO();
+        List<ProductionVerificationIsNotTimelyDO> impl = null;
+        ProductionVerificationIsNotTimelyDO workingHoursDO = new ProductionVerificationIsNotTimelyDO();
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < list.size(); i++) {
-            workingHoursDO.setRegistrationdate(list.get(i));
-            impl = proCheckTimeOutStatisticsExtDao.findMonth(workingHoursDO);
+            workingHoursDO.setProDate(list.get(i));
+            impl = iProductionVerificationIsNotTimelyExtDao.findMonth(workingHoursDO);
             SumBos.add(list.get(i));
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getCount();
+                    sum = sum + Integer.parseInt(impl.get(j).getSumDay());
                 }
                 workingHoursBOS.add(sum + "");
             } else {
                 workingHoursBOS.add("0");
             }
         }
-        System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
@@ -2570,8 +2611,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Override
     public DemandHoursRspBO getCentreProCheckTimeOutStatisticsDept(String date1, String date2) {
         List<OrganizationStructureDO> dos = iOrganizationStructureDao.find(new OrganizationStructureDO());
-        List<ProCheckTimeOutStatisticsDO> impl = null;
-        ProCheckTimeOutStatisticsDO workingHoursDO = new ProCheckTimeOutStatisticsDO();
+        List<ProductionVerificationIsNotTimelyDO> impl = null;
+        ProductionVerificationIsNotTimelyDO workingHoursDO = new ProductionVerificationIsNotTimelyDO();
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
@@ -2588,19 +2629,19 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             workingHoursDO.setDepartment(dos.get(i).getSecondlevelorganization());
             // 查询周
             if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
-                workingHoursDO.setRegistrationdate(date1);
-                impl = proCheckTimeOutStatisticsExtDao.findWeek(workingHoursDO);
+                workingHoursDO.setProDate(date1);
+                impl = iProductionVerificationIsNotTimelyExtDao.findWeek(workingHoursDO);
             }
             // 查询月
             if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
-                workingHoursDO.setRegistrationdate(date2);
-                impl = proCheckTimeOutStatisticsExtDao.findMonth(workingHoursDO);
+                workingHoursDO.setProDate(date2);
+                impl = iProductionVerificationIsNotTimelyExtDao.findMonth(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             int sum = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    sum = sum + impl.get(j).getCount();
+                    sum = sum + Integer.parseInt(impl.get(j).getSumDay());
                 }
                 workingHoursBOS.add(sum + "");
             } else {
@@ -4124,7 +4165,25 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     Calendar c2 = Calendar.getInstance();
                     c1.setTime(sdf.parse(sdf.format(new Date())));
                     c2.setTime(sdf.parse(sdf.format(productionDOList.get(i).getProDate())));
-                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+                    long day = 0;
+                    if("当晚验证".equals(productionDOList.get(i).getValidation())){
+                        day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+                        if(day<=0){
+                            continue;
+                        }
+                    }
+                    if("隔日验证".equals(productionDOList.get(i).getValidation())){
+                        day = ( (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -2;
+                        if(day<=0){
+                            continue;
+                        }
+                    }
+                    if("待业务触发验证".equals(productionDOList.get(i).getValidation())){
+                        day = ((sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -7;
+                        if(day<=0){
+                            continue;
+                        }
+                    }
                     productionVerificationIsNotTimelyBO.setSumDay(day + "");
                     listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
                 }
@@ -5174,6 +5233,34 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         ProUnhandledIssuesRspBO proUnhandledIssuesRspBO = new ProUnhandledIssuesRspBO();
         proUnhandledIssuesRspBO.setProUnhandledIssuesBOList(proUnhandledIssuesBOList);
         return proUnhandledIssuesRspBO;
+    }
+
+    @Override
+    public SmokeTestFailedCountRspBO getSmokeTestFailedCount2(String selectTime1, String selectTime2,int count ){
+        List<SmokeTestFailedCountDO> smokeTestFailedCountDOLinkedList = new LinkedList<>();
+        if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
+        smokeTestFailedCountDO.setCount(count);
+        // 查询周
+        if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
+            smokeTestFailedCountDO.setTestDate(selectTime1);
+            smokeTestFailedCountDOLinkedList = iSmokeTestFailedCountDao.findWeek(smokeTestFailedCountDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
+            smokeTestFailedCountDO.setTestDate(selectTime2);
+            smokeTestFailedCountDOLinkedList = iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+        }
+        List<SmokeTestFailedCountBO> smokeTestFailedCountBOList = new LinkedList<>();
+        smokeTestFailedCountBOList = BeanConvertUtils.convertList(smokeTestFailedCountDOLinkedList, SmokeTestFailedCountBO.class);
+
+        SmokeTestFailedCountRspBO smokeTestFailedCountRspBO = new SmokeTestFailedCountRspBO();
+        smokeTestFailedCountRspBO.setSmokeTestFailedCountBOList(smokeTestFailedCountBOList);
+        return smokeTestFailedCountRspBO;
     }
 }
 

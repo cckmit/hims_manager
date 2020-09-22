@@ -41,6 +41,9 @@
             <if test="startTime != null and startTime != '' and endTime != null and endTime != ''  ">
                 and substr(a.acceptanceDate,1,10) between #{startTime} and #{endTime}
             </if>
+            <if test="startTime2 != null and startTime2 != '' and endTime2 != null and endTime2 != ''  ">
+                and a.commissioningDate between #{startTime2} and #{endTime2}
+            </if>
             <if test="reqImplMon != null and reqImplMon != ''" >
                 and a.reqImplMon = #{reqImplMon,jdbcType=VARCHAR}
             </if>

@@ -48,7 +48,7 @@
             <if test="testDate != null and testDate != ''" >
                 and test_Date like CONCAT('%',#{testDate,jdbcType=VARCHAR},'%')
             </if>
-            <if test="department != null" >
+            <if test="department != null and department != ''" >
                 and department = #{department,jdbcType=VARCHAR}
             </if>
         </where>

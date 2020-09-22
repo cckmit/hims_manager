@@ -1,36 +1,48 @@
 /*
- * @ClassName CenterDO
- * @Description
+ * @ClassName ProductionVerificationIsNotTimelyDO
+ * @Description 
  * @version 1.0
- * @Date 2019-07-25 11:01:18
+ * @Date 2020-09-15 17:49:48
  */
-package com.cmpay.lemon.monitor.bo;
+package com.cmpay.lemon.monitor.entity;
 
-import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
-public class ProductionVerificationIsNotTimelyBO {
+@DataObject
+public class ProductionVerificationIsNotTimelyDO extends BaseDO {
+    /**
+     * @Fields proNumber 
+     */
     private String proNumber;
+    /**
+     * @Fields proNeed 
+     */
     private String proNeed;
+    /**
+     * @Fields proType 
+     */
     private String proType;
+    /**
+     * @Fields validation 
+     */
     private String validation;
+    /**
+     * @Fields proDate 
+     */
     private String proDate;
+    /**
+     * @Fields identifier 
+     */
     private String identifier;
+    /**
+     * @Fields sumDay 
+     */
     private String sumDay;
+    /**
+     * @Fields department 
+     */
     private String department;
-    private String proStatus;
-
-    public String getProStatus() {
-        return proStatus;
-    }
-
-    public void setProStatus(String proStatus) {
-        this.proStatus = proStatus;
-    }
 
     public String getProNumber() {
         return proNumber;
@@ -94,19 +106,5 @@ public class ProductionVerificationIsNotTimelyBO {
 
     public void setDepartment(String department) {
         this.department = department;
-    }
-
-    @Override
-    public String toString() {
-        return "ProductionVerificationIsNotTimelyBO{" +
-                "proNumber='" + proNumber + '\'' +
-                ", proNeed='" + proNeed + '\'' +
-                ", proType='" + proType + '\'' +
-                ", validation='" + validation + '\'' +
-                ", proDate='" + proDate + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", sumDay='" + sumDay + '\'' +
-                ", department='" + department + '\'' +
-                '}';
     }
 }

@@ -1,38 +1,38 @@
 /*
  * @ClassName SmokeTestFailedCountDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-09-16 16:08:58
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.bo;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
-public class SmokeTestFailedCountDO extends BaseDO {
+
+public class SmokeTestFailedCountBO   {
     /**
-     * @Fields id 
+     *  id
      */
     private Integer id;
     /**
-     * @Fields reqNo 
+     *  reqNo
      */
     private String reqNo;
     /**
-     * @Fields jiraKey 
+     *  jiraKey
      */
     private String jiraKey;
     /**
-     * @Fields count 
+     *  count
      */
     private Integer count;
     /**
-     * @Fields department 
+     *  department
      */
     private String department;
     /**
-     * @Fields testDate 
+     *  testDate
      */
     private String testDate;
 
@@ -82,5 +82,17 @@ public class SmokeTestFailedCountDO extends BaseDO {
 
     public void setTestDate(String testDate) {
         this.testDate = testDate;
+    }
+
+    @Override
+    public String toString() {
+        return "SmokeTestFailedCountBO{" +
+                "id=" + id +
+                ", reqNo='" + reqNo + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
+                ", count=" + count +
+                ", department='" + department + '\'' +
+                ", testDate='" + testDate + '\'' +
+                '}';
     }
 }

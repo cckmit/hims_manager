@@ -7,8 +7,10 @@ import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
+import com.cmpay.lemon.monitor.bo.ProductionVerificationIsNotTimelyBO;
 import com.cmpay.lemon.monitor.dao.IMonthWorkdayDao;
 import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao;
+import com.cmpay.lemon.monitor.dao.IProductionVerificationIsNotTimelyExtDao;
 import com.cmpay.lemon.monitor.dao.IUserExtDao;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
@@ -19,6 +21,7 @@ import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
+import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.SendExcelProductionVerificationIsNotTimely;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
@@ -54,6 +57,8 @@ public class ReqMonitorTimer {
     private IMonthWorkdayDao monthWorkdayDao;
     @Autowired
     private IUserExtDao userExtDao;
+    @Autowired
+    private IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -125,23 +130,32 @@ public class ReqMonitorTimer {
         productTimeService.updateProductTime(productionTimeBO);
         boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
     }
-
-    @Scheduled(cron = "0 30 0 1 * ?")
+    // 每月工作日定时任务
+    @Scheduled(cron = "0 0 1 * * ?")
     public void getMonthWorkday() {
+        // 获取当前月份
         String month = DateUtil.date2String(new Date(), "yyyy-MM");
-        int weekday = DateUtil.getWeekday(month);
-        MonthWorkdayDO monthWorkdayDO = new MonthWorkdayDO();
-        MonthWorkdayDO monthWorkdayDO1 = monthWorkdayDao.get(month);
-        if (JudgeUtils.isNotNull(monthWorkdayDO1)) {
-            monthWorkdayDO.setWorkday(String.valueOf(weekday));
-            monthWorkdayDO.setMonth(month);
-            monthWorkdayDao.update(monthWorkdayDO1);
-        } else {
-            monthWorkdayDO.setWorkday(String.valueOf(weekday));
-            monthWorkdayDO.setMonth(month);
-            monthWorkdayDao.insert(monthWorkdayDO);
+        // 获取当前日期
+        String date = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        // 放假日期集合
+        String [] vacation = {"2020-01-01","2020-01-24","2020-01-27","2020-01-28","2020-01-29","2020-01-30","2020-01-31","2020-04-06"
+                ,"2020-05-01","2020-05-04","2020-05-05","2020-06-25","2020-06-26","2020-10-01","2020-10-02","2020-10-05","2020-10-06"
+                ,"2020-10-07","2020-10-08"};
+        // 国家调休日
+        String [] workDay = {"2020-01-19","2020-04-26","2020-05-09","2020-06-28","2020-09-27","2020-10-10"};
+        MonthWorkdayDO monthWorkdayDO = monthWorkdayDao.getMonth(month);
+        int weekday = monthWorkdayDO.getWorkPastDay();
+        //  判断当前日期是否未国家法定放假日期，是，则跳出
+        boolean res = Arrays.asList(vacation).contains(date);
+        if(res){
+            return;
         }
-
+        //当前日期不是周末
+        if(DateUtil.isWeekend(date) == false  || Arrays.asList(workDay).contains(date)){
+            // 判断当前日期是否未国家调休日
+            monthWorkdayDO.setWorkPastDay(weekday+1);
+            monthWorkdayDao.update(monthWorkdayDO);
+        }
     }
 
     /*
@@ -231,22 +245,128 @@ public class ReqMonitorTimer {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
         }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         //项目启动日期开始当天计算
         String date = "2020-09-01";
         //获得投产验证不及时清单
         List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
         //获得系统录入验证不及时清单
         List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList(date);
+
+        List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = new LinkedList<>();
+        if (JudgeUtils.isEmpty(productionDOList) && JudgeUtils.isEmpty(operationApplicationDOList)) {
+            return ;
+        }
+        try {
+            if (productionDOList != null && productionDOList.size() != 0) {
+                for (int i = 0; i < productionDOList.size(); i++) {
+                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
+                    productionVerificationIsNotTimelyBO.setProNumber(productionDOList.get(i).getProNumber());
+                    productionVerificationIsNotTimelyBO.setProNeed(productionDOList.get(i).getProNeed());
+                    productionVerificationIsNotTimelyBO.setProType(productionDOList.get(i).getProType());
+                    productionVerificationIsNotTimelyBO.setValidation(productionDOList.get(i).getValidation());
+                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(productionDOList.get(i).getProDate()));
+                    productionVerificationIsNotTimelyBO.setIdentifier(productionDOList.get(i).getIdentifier());
+                    productionVerificationIsNotTimelyBO.setDepartment(productionDOList.get(i).getApplicationDept());
+                    productionVerificationIsNotTimelyBO.setProStatus(productionDOList.get(i).getProStatus());
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(sdf.parse(sdf.format(new Date())));
+                    c2.setTime(sdf.parse(sdf.format(productionDOList.get(i).getProDate())));
+                    long day = 0;
+                    if("当晚验证".equals(productionDOList.get(i).getValidation())){
+                        day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+                        if(day<=0){
+                            continue;
+                        }
+                    }
+                    if("隔日验证".equals(productionDOList.get(i).getValidation())){
+                        day = ( (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -2;
+                        if(day<=0){
+                            continue;
+                        }
+                    }
+                    if("待业务触发验证".equals(productionDOList.get(i).getValidation())){
+                        day = ((sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -7;
+                        if(day<=0){
+                            continue;
+                        }
+                    }
+                    productionVerificationIsNotTimelyBO.setSumDay(day + "");
+                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
+                }
+            }
+            if (operationApplicationDOList != null && operationApplicationDOList.size() != 0) {
+                for (int i = 0; i < operationApplicationDOList.size(); i++) {
+                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
+                    productionVerificationIsNotTimelyBO.setProNumber(operationApplicationDOList.get(i).getOperNumber());
+                    productionVerificationIsNotTimelyBO.setProNeed(operationApplicationDOList.get(i).getOperRequestContent());
+                    productionVerificationIsNotTimelyBO.setProType(operationApplicationDOList.get(i).getSysOperType());
+                    productionVerificationIsNotTimelyBO.setValidation("");
+                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(operationApplicationDOList.get(i).getProposeDate()));
+                    productionVerificationIsNotTimelyBO.setIdentifier(operationApplicationDOList.get(i).getIdentifier());
+                    productionVerificationIsNotTimelyBO.setDepartment(operationApplicationDOList.get(i).getApplicationSector());
+                    productionVerificationIsNotTimelyBO.setProStatus(operationApplicationDOList.get(i).getOperStatus());
+                    Calendar c1 = Calendar.getInstance();
+                    Calendar c2 = Calendar.getInstance();
+                    c1.setTime(sdf.parse(sdf.format(new Date())));
+                    c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
+                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
+                    productionVerificationIsNotTimelyBO.setSumDay(day + "");
+                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
+                }
+            }
+        } catch (ParseException e) {
+        }
+
+        for (int i =0;i<listOfUntimelyStatusChangesBos.size();i++){
+            ProductionVerificationIsNotTimelyDO productionVerificationIsNotTimelyDO =  new ProductionVerificationIsNotTimelyDO();
+            BeanConvertUtils.convert(productionVerificationIsNotTimelyDO, listOfUntimelyStatusChangesBos.get(i));
+            ProductionVerificationIsNotTimelyDO productionVerificationIsNotTimelyDO1  = iProductionVerificationIsNotTimelyExtDao.get(productionVerificationIsNotTimelyDO.getProNumber());
+            if(JudgeUtils.isNull(productionVerificationIsNotTimelyDO1)){
+                iProductionVerificationIsNotTimelyExtDao.insert(productionVerificationIsNotTimelyDO);
+            }else{
+                iProductionVerificationIsNotTimelyExtDao.update(productionVerificationIsNotTimelyDO);
+            }
+
+        }
+
+
+
         Map<String, Integer> map = new HashMap<>();
-        productionDOList.forEach(m -> {
-            String applicationDept = m.getApplicationDept();
+        for(int i=0;i<productionDOList.size();i++){
+            String applicationDept = productionDOList.get(i).getApplicationDept();
+            Calendar c1 = Calendar.getInstance();
+            Calendar c2 = Calendar.getInstance();
+            c1.setTime(sdf.parse(sdf.format(new Date())));
+            c2.setTime(sdf.parse(sdf.format(productionDOList.get(i).getProDate())));
+            long day = 0;
+            if("当晚验证".equals(productionDOList.get(i).getValidation())){
+                day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
+                if(day<=0){
+                    continue;
+                }
+            }
+            if("隔日验证".equals(productionDOList.get(i).getValidation())){
+                day = ( (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -2;
+                if(day<=0){
+                    continue;
+                }
+            }
+            if("待业务触发验证".equals(productionDOList.get(i).getValidation())){
+                day = ((sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000) ) -7;
+                if(day<=0){
+                    continue;
+                }
+            }
             boolean exist = map.containsKey(applicationDept);
             if (exist) {
                 map.put(applicationDept, map.get(applicationDept) + 1);
             } else {
                 map.put(applicationDept, 1);
             }
-        });
+        }
+
         String body = "投产验证不及时清单汇总" + "\n";
         for (Map.Entry<String, Integer> entry : map.entrySet()) {
             String mapKey = entry.getKey();
@@ -276,7 +396,7 @@ public class ReqMonitorTimer {
         File file = null;
         try {
             String excel = "\\Unverified_List_" + DateUtil.date2String(new Date(), "yyyyMMdd") + ".xls";
-            sendExcelProductionVerificationIsNotTimely.createExcel(excel, productionDOList, null, operationApplicationDOList);
+            sendExcelProductionVerificationIsNotTimely.createExcel(excel, listOfUntimelyStatusChangesBos, null, operationApplicationDOList);
             file = new File(excel);
 
         } catch (Exception e) {
@@ -286,110 +406,17 @@ public class ReqMonitorTimer {
         sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
         sb.append("<tr><th>投产编号/系统操作编号</th><th>投产/操作内容简述</th><th>投产/操作类型</th><th>验证类型</th><th>投产/操作日期</th>");
         sb.append("<th>申请部门</th><th>验证人</th><th>当前状态</th><th>已投产/操作天数</th></tr>");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String dept = "";
-        int count = 0;
         Map<String, Integer> hashMap = new HashMap<>();
-        for (int i = 0; i < productionDOList.size(); i++) {
-            sb.append("<tr><td >" + productionDOList.get(i).getProNumber() + "</td>");//投产编号/系统操作编号
-            sb.append("<td >" + productionDOList.get(i).getProNeed() + "</td>");//投产/操作内容简述
-            sb.append("<td >" + productionDOList.get(i).getProType() + "</td>");//投产/操作类型
-            sb.append("<td >" + productionDOList.get(i).getValidation() + "</td>");//验证方式
-            sb.append("<td >" + sdf.format(productionDOList.get(i).getProDate()) + "</td>");//投产/操作日期
-            sb.append("<td >" + productionDOList.get(i).getApplicationDept() + "</td>");//申请部门
-            sb.append("<td >" + productionDOList.get(i).getIdentifier() + "</td>");//验证人
-            sb.append("<td >" + productionDOList.get(i).getProStatus() + "</td>");//当前状态
-            Calendar c1 = Calendar.getInstance();
-            Calendar c2 = Calendar.getInstance();
-            c1.setTime(sdf.parse(sdf.format(new Date())));
-            c2.setTime(sdf.parse(sdf.format(productionDOList.get(i).getProDate())));
-            long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(productionDOList.get(i).getProDate())).getTime()) / (24 * 60 * 60 * 1000);
-            sb.append("<td >" + day + "</td></tr>");//已投产/操作天数
-            if (i == 0) {
-                dept = productionDOList.get(i).getApplicationDept();
-            }
-            if (dept.equals(productionDOList.get(i).getApplicationDept())) {
-                if (productionDOList.get(i).getValidation().equals("当晚验证") && day >= 1) {
-                    count++;
-                }
-                if (productionDOList.get(i).getValidation().equals("隔日验证") && day >= 2) {
-                    ;
-                    count++;
-                }
-                if (productionDOList.get(i).getValidation().equals("待业务触发验证") && day >= 7) {
-                    count++;
-                }
-            } else {
-                boolean exist = hashMap.containsKey(dept);
-                if (exist) {
-                    hashMap.put(dept, hashMap.get(dept) + count);
-                } else {
-                    hashMap.put(dept, count);
-                }
-                count = 0;
-                if (productionDOList.get(i).getValidation().equals("当晚验证") && day >= 1) {
-                    count++;
-                }
-                if (productionDOList.get(i).getValidation().equals("隔日验证") && day >= 2) {
-                    ;
-                    count++;
-                }
-                if (productionDOList.get(i).getValidation().equals("待业务触发验证") && day >= 7) {
-                    count++;
-                }
-                dept = productionDOList.get(i).getApplicationDept();
-            }
-            if (i == productionDOList.size()) {
-                boolean exist = hashMap.containsKey(dept);
-                if (exist) {
-                    hashMap.put(dept, hashMap.get(dept) + count);
-                } else {
-                    hashMap.put(dept, count);
-                }
-            }
-        }
-        //  计数器初始化
-        dept = "";
-        count = 0;
-        for (int i = 0; i < operationApplicationDOList.size(); i++) {
-            sb.append("<tr><td >" + operationApplicationDOList.get(i).getOperNumber() + "</td>");//投产编号/系统操作编号
-            sb.append("<td >" + operationApplicationDOList.get(i).getOperRequestContent() + "</td>");//投产/操作内容简述
-            sb.append("<td >" + operationApplicationDOList.get(i).getSysOperType() + "</td>");//投产/操作类型
-            sb.append("<td ></td>");//验证方式
-            sb.append("<td >" + sdf.format(operationApplicationDOList.get(i).getProposeDate()) + "</td>");//投产/操作日期
-            sb.append("<td >" + operationApplicationDOList.get(i).getApplicationSector() + "</td>");//申请部门
-            sb.append("<td >" + operationApplicationDOList.get(i).getIdentifier() + "</td>");//验证人
-            sb.append("<td >" + operationApplicationDOList.get(i).getOperStatus() + "</td>");//当前状态
-            Calendar c1 = Calendar.getInstance();
-            Calendar c2 = Calendar.getInstance();
-            c1.setTime(sdf.parse(sdf.format(new Date())));
-            c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
-            long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
-            sb.append("<td >" + day + "</td></tr>");//已投产/操作天数
-            if (i == 0) {
-                dept = operationApplicationDOList.get(i).getApplicationSector();
-            }
-            if (dept.equals(operationApplicationDOList.get(i).getApplicationSector())) {
-                count++;
-            } else {
-                boolean exist = hashMap.containsKey(dept);
-                if (exist) {
-                    hashMap.put(dept, hashMap.get(dept) + count);
-                } else {
-                    hashMap.put(dept, count);
-                }
-                count = 0;
-                count++;
-                dept = operationApplicationDOList.get(i).getApplicationSector();
-            }
-            if (i == operationApplicationDOList.size()) {
-                boolean exist = hashMap.containsKey(dept);
-                if (exist) {
-                    hashMap.put(dept, hashMap.get(dept) + count);
-                } else {
-                    hashMap.put(dept, count);
-                }
-            }
+        for (int i = 0; i < listOfUntimelyStatusChangesBos.size(); i++) {
+            sb.append("<tr><td >" + listOfUntimelyStatusChangesBos.get(i).getProNumber() + "</td>");//投产编号/系统操作编号
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getProNeed() + "</td>");//投产/操作内容简述
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getProType() + "</td>");//投产/操作类型
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getValidation() + "</td>");//验证方式
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getProDate() + "</td>");//投产/操作日期
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getDepartment() + "</td>");//申请部门
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getIdentifier() + "</td>");//验证人
+            sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getProStatus() + "</td>");//当前状态
+           sb.append("<td >" + listOfUntimelyStatusChangesBos.get(i).getSumDay() + "</td></tr>");//已投产/操作天数
         }
         sb.append("</table>");
 
@@ -401,7 +428,6 @@ public class ReqMonitorTimer {
             proCheckTimeOutStatisticsDO.setDepartment(mapKey);
             proCheckTimeOutStatisticsDO.setRegistrationdate(DateUtil.date2String(new Date(), "yyyy-MM-dd"));
             proCheckTimeOutStatisticsDao.insert(proCheckTimeOutStatisticsDO);
-
         }
 
         //如果有内容则调用企业微信应用和邮件发送推送

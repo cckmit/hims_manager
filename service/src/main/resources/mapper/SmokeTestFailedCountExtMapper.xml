@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.ISmokeTestFailedCountExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.SmokeTestFailedCountDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="req_no" property="reqNo" jdbcType="VARCHAR" />
+        <result column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="count" property="count" jdbcType="INTEGER" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="test_Date" property="testDate" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_no, jira_key, count, department, test_Date
+    </sql>
+    <select id="findMonth" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestFailedCountDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_smoke_test_failed_count
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraKey != null" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="count != null" >
+                and count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="testDate != null" >
+                and test_Date like CONCAT('%',#{testDate,jdbcType=VARCHAR},'%')
+            </if>
+        </where>
+    </select>
+    <select id="findWeek" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.SmokeTestFailedCountDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_smoke_test_failed_count
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="jiraKey != null" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="count != null" >
+                and count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+            <if test="testDate != null" >
+                and YEARWEEK(test_Date) = YEARWEEK(#{testDate,jdbcType=VARCHAR})
+            </if>
+        </where>
+    </select>
+</mapper>

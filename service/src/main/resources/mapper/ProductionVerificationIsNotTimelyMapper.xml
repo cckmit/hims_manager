@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionVerificationIsNotTimelyDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProductionVerificationIsNotTimelyDO" >
+        <id column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="pro_need" property="proNeed" jdbcType="VARCHAR" />
+        <result column="pro_type" property="proType" jdbcType="VARCHAR" />
+        <result column="validation" property="validation" jdbcType="VARCHAR" />
+        <result column="pro_date" property="proDate" jdbcType="VARCHAR" />
+        <result column="identifier" property="identifier" jdbcType="VARCHAR" />
+        <result column="sum_day" property="sumDay" jdbcType="VARCHAR" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        pro_number, pro_need, pro_type, validation, pro_date, identifier, sum_day, department
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_verification_isnot_time
+        where pro_number = #{proNumber,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_production_verification_isnot_time
+        where pro_number = #{proNumber,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProductionVerificationIsNotTimelyDO" >
+        insert into t_production_verification_isnot_time
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="proNumber != null" >
+                pro_number,
+            </if>
+            <if test="proNeed != null" >
+                pro_need,
+            </if>
+            <if test="proType != null" >
+                pro_type,
+            </if>
+            <if test="validation != null" >
+                validation,
+            </if>
+            <if test="proDate != null" >
+                pro_date,
+            </if>
+            <if test="identifier != null" >
+                identifier,
+            </if>
+            <if test="sumDay != null" >
+                sum_day,
+            </if>
+            <if test="department != null" >
+                department,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="proNumber != null" >
+                #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="proNeed != null" >
+                #{proNeed,jdbcType=VARCHAR},
+            </if>
+            <if test="proType != null" >
+                #{proType,jdbcType=VARCHAR},
+            </if>
+            <if test="validation != null" >
+                #{validation,jdbcType=VARCHAR},
+            </if>
+            <if test="proDate != null" >
+                #{proDate,jdbcType=VARCHAR},
+            </if>
+            <if test="identifier != null" >
+                #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="sumDay != null" >
+                #{sumDay,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                #{department,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProductionVerificationIsNotTimelyDO" >
+        update t_production_verification_isnot_time
+        <set >
+            <if test="proNeed != null" >
+                pro_need = #{proNeed,jdbcType=VARCHAR},
+            </if>
+            <if test="proType != null" >
+                pro_type = #{proType,jdbcType=VARCHAR},
+            </if>
+            <if test="validation != null" >
+                validation = #{validation,jdbcType=VARCHAR},
+            </if>
+            <if test="proDate != null" >
+                pro_date = #{proDate,jdbcType=VARCHAR},
+            </if>
+            <if test="identifier != null" >
+                identifier = #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="sumDay != null" >
+                sum_day = #{sumDay,jdbcType=VARCHAR},
+            </if>
+            <if test="department != null" >
+                department = #{department,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where pro_number = #{proNumber,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionVerificationIsNotTimelyDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_verification_isnot_time
+        <where >
+            <if test="proNumber != null" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="proNeed != null" >
+                and pro_need = #{proNeed,jdbcType=VARCHAR}
+            </if>
+            <if test="proType != null" >
+                and pro_type = #{proType,jdbcType=VARCHAR}
+            </if>
+            <if test="validation != null" >
+                and validation = #{validation,jdbcType=VARCHAR}
+            </if>
+            <if test="proDate != null" >
+                and pro_date = #{proDate,jdbcType=VARCHAR}
+            </if>
+            <if test="identifier != null" >
+                and identifier = #{identifier,jdbcType=VARCHAR}
+            </if>
+            <if test="sumDay != null" >
+                and sum_day = #{sumDay,jdbcType=VARCHAR}
+            </if>
+            <if test="department != null" >
+                and department = #{department,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

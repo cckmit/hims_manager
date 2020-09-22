@@ -1,40 +1,55 @@
 /*
  * @ClassName SmokeTestFailedCountDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-09-16 16:08:58
  */
-package com.cmpay.lemon.monitor.entity;
+package com.cmpay.lemon.monitor.dto;
 
-import com.cmpay.framework.data.BaseDO;
-import com.cmpay.lemon.framework.annotation.DataObject;
 
-@DataObject
-public class SmokeTestFailedCountDO extends BaseDO {
+public class SmokeTestFailedCountReqDTO {
     /**
-     * @Fields id 
+     *  id
      */
     private Integer id;
     /**
-     * @Fields reqNo 
+     *  reqNo
      */
     private String reqNo;
     /**
-     * @Fields jiraKey 
+     *  jiraKey
      */
     private String jiraKey;
     /**
-     * @Fields count 
+     *  count
      */
     private Integer count;
     /**
-     * @Fields department 
+     *  department
      */
     private String department;
     /**
-     * @Fields testDate 
+     *  testDate
      */
     private String testDate;
+    private String selectTime1;
+    private String selectTime2;
+
+    public String getSelectTime1() {
+        return selectTime1;
+    }
+
+    public void setSelectTime1(String selectTime1) {
+        this.selectTime1 = selectTime1;
+    }
+
+    public String getSelectTime2() {
+        return selectTime2;
+    }
+
+    public void setSelectTime2(String selectTime2) {
+        this.selectTime2 = selectTime2;
+    }
 
     public Integer getId() {
         return id;
@@ -82,5 +97,19 @@ public class SmokeTestFailedCountDO extends BaseDO {
 
     public void setTestDate(String testDate) {
         this.testDate = testDate;
+    }
+
+    @Override
+    public String toString() {
+        return "SmokeTestFailedCountReqDTO{" +
+                "id=" + id +
+                ", reqNo='" + reqNo + '\'' +
+                ", jiraKey='" + jiraKey + '\'' +
+                ", count=" + count +
+                ", department='" + department + '\'' +
+                ", testDate='" + testDate + '\'' +
+                ", selectTime1='" + selectTime1 + '\'' +
+                ", selectTime2='" + selectTime2 + '\'' +
+                '}';
     }
 }

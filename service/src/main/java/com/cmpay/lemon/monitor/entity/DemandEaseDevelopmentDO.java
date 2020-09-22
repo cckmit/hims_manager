@@ -101,6 +101,24 @@ public class DemandEaseDevelopmentDO extends BaseDO {
     private String startTime;
     private String endTime;
     private String secondlevelorganization;
+    private String startTime2;
+    private String endTime2;
+
+    public String getStartTime2() {
+        return startTime2;
+    }
+
+    public void setStartTime2(String startTime2) {
+        this.startTime2 = startTime2;
+    }
+
+    public String getEndTime2() {
+        return endTime2;
+    }
+
+    public void setEndTime2(String endTime2) {
+        this.endTime2 = endTime2;
+    }
 
     public String getStartTime() {
         return startTime;

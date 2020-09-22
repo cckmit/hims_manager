@@ -92,7 +92,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             i = i + 50;
         }
 //        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
-//        jiraTaskBodyBO1.setJiraKey("CMPAY-3675");
+//        jiraTaskBodyBO1.setJiraKey("CMPAY-3772");
 //        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
@@ -288,7 +288,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } else {
                     problemStatisticDao.update(problemStatisticDO);
                 }
-
 
             });
         }
@@ -681,20 +680,58 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
             String week = DateUtil.testDate(selectTime);
-            //如果是星期一则可以重新登记星期五的数据
+            //如果工时信息未被登记 则新登记，t_jira_worklog保存所有工时信息
+            if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
+                jiraWorklogDao.update(jiraWorklogDO);
+            } else {
+                jiraWorklogDao.insert(jiraWorklogDO);
+            }
+            String date1 = StringUtils.substring(LocalDateTime.now().toString().trim(), 0, 10);
+            String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
+
+            boolean flag = true;
+            //如果是星期一则可以重新登记星期五的数据,提前录入的工时不统计
             if(week.equals("星期一")){
-               int betweenDate = 0;
+                int betweenDate = 0;
                 try {
                     Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
                     //登记工时开始时间
                     Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
-                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (3*60 * 60 * 24 * 1000);
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
                 //周一时创建时间和工作登记开始时间超过四天则不计算
-                if (betweenDate > 4) {
-                    continue;
+                if (betweenDate > 4 || betweenDate < 0){
+                    flag = false;
+                }
+            }else if(week.equals("星期六")){
+                int betweenDate = 0;
+                try {
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    //登记工时开始时间
+                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                //周六时创建时间和工作登记开始时间超过2天则不计算
+                if (betweenDate > 2 || betweenDate < 0){
+                    flag = false;
+                }
+            }else if(week.equals("星期日")){
+                int betweenDate = 0;
+                try {
+                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
+                    //登记工时开始时间
+                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
+                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                //周日时创建时间和工作登记开始时间超过3天则不计算
+                if (betweenDate > 3 || betweenDate < 0){
+                    flag = false;
                 }
             }else{
                 int betweenDate = 0;
@@ -705,38 +742,14 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                //非周一  创建时间和工作登记开始时间超过1天则不计算
-                if (betweenDate > 1) {
-                    continue;
+                //非周一  创建时间和工作登记开始时间超过1天则不计算,提前录入的工时不统计
+                if (betweenDate > 1 || betweenDate < 0) {
+                    flag = false;
                 }
             }
-            //如果工时信息未被登记 则新登记，若已登记则需要判断这条信息创建时间和 工作开始时间的差时是否大于2天
-            if (JudgeUtils.isNotNull(jiraWorklogDO1)) {
-                int betweenDate=0;
-                try {
-                    Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
-                    Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
-                    betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                if (betweenDate<2) {
-                    jiraWorklogDao.update(jiraWorklogDO);
-                }
-            } else {
-                jiraWorklogDao.insert(jiraWorklogDO);
-            }
-            String date1 = StringUtils.substring(LocalDateTime.now().toString().trim(), 0, 10);
-            String date2 = StringUtils.substring(jiraWorklogDO.getUpdatedtime().trim(), 0, 10);
-            int betweenDate=0;
-            try {
-                Date d1 = sdf.parse(StringUtils.substring(jiraWorklogDO.getCreatedtime().trim(), 0, 10));
-                Date d2 = sdf.parse(StringUtils.substring(jiraWorklogDO.getStartedtime().trim(), 0, 10));
-                betweenDate = (int) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if (betweenDate<2) {
+            System.err.println(jiraWorklogDO.getJiraworklogkey() +"===="+jiraWorklogDO.getStartedtime()+flag);
+            // 符合条件的则录入工时表  t_working_hours 只保存符合条件的工时信息
+            if (flag) {
                 WorkingHoursDO workingHoursDO = new WorkingHoursDO();
                 workingHoursDO.setJiraworklogkey(jiraWorklogDO.getJiraworklogkey());
                 //需求名

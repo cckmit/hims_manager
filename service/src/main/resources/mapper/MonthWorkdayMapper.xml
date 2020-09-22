@@ -3,42 +3,63 @@
 <mapper namespace="com.cmpay.lemon.monitor.dao.IMonthWorkdayDao" >
 
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
-        <id column="month" property="month" jdbcType="VARCHAR" />
-        <result column="workday" property="workday" jdbcType="VARCHAR" />
+        <id column="work_id" property="workId" jdbcType="BIGINT" />
+        <result column="work_month" property="workMonth" jdbcType="VARCHAR" />
+        <result column="work_sum_day" property="workSumDay" jdbcType="INTEGER" />
+        <result column="work_past_day" property="workPastDay" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        month, workday
+        work_id, work_month, work_sum_day, work_past_day
     </sql>
 
-    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
-        select 
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
         <include refid="Base_Column_List" />
         from t_month_workday
-        where month = #{month,jdbcType=VARCHAR}
+        where work_id = #{workId,jdbcType=BIGINT}
     </select>
 
-    <delete id="delete" parameterType="java.lang.String" >
+    <select id="getMonth" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from t_month_workday
+        where work_month = #{workMonth,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
         delete from t_month_workday
-        where month = #{month,jdbcType=VARCHAR}
+        where work_id = #{workId,jdbcType=BIGINT}
     </delete>
 
     <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
         insert into t_month_workday
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="month != null" >
-                month,
+            <if test="workId != null" >
+                work_id,
             </if>
-            <if test="workday != null" >
-                workday,
+            <if test="workMonth != null" >
+                work_month,
+            </if>
+            <if test="workSumDay != null" >
+                work_sum_day,
+            </if>
+            <if test="workPastDay != null" >
+                work_past_day,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="month != null" >
-                #{month,jdbcType=VARCHAR},
+            <if test="workId != null" >
+                #{workId,jdbcType=BIGINT},
             </if>
-            <if test="workday != null" >
-                #{workday,jdbcType=VARCHAR},
+            <if test="workMonth != null" >
+                #{workMonth,jdbcType=VARCHAR},
+            </if>
+            <if test="workSumDay != null" >
+                #{workSumDay,jdbcType=INTEGER},
+            </if>
+            <if test="workPastDay != null" >
+                #{workPastDay,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -46,23 +67,35 @@
     <update id="update" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
         update t_month_workday
         <set >
-            <if test="workday != null" >
-                workday = #{workday,jdbcType=VARCHAR},
+            <if test="workMonth != null" >
+                work_month = #{workMonth,jdbcType=VARCHAR},
+            </if>
+            <if test="workSumDay != null" >
+                work_sum_day = #{workSumDay,jdbcType=INTEGER},
+            </if>
+            <if test="workPastDay != null" >
+                work_past_day = #{workPastDay,jdbcType=INTEGER},
             </if>
         </set>
-        where month = #{month,jdbcType=VARCHAR}
+        where work_id = #{workId,jdbcType=BIGINT}
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.MonthWorkdayDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_month_workday
         <where >
-            <if test="month != null" >
-                and month = #{month,jdbcType=VARCHAR}
+            <if test="workId != null" >
+                and work_id = #{workId,jdbcType=BIGINT}
             </if>
-            <if test="workday != null" >
-                and workday = #{workday,jdbcType=VARCHAR}
+            <if test="workMonth != null" >
+                and work_month = #{workMonth,jdbcType=VARCHAR}
+            </if>
+            <if test="workSumDay != null" >
+                and work_sum_day = #{workSumDay,jdbcType=INTEGER}
+            </if>
+            <if test="workPastDay != null" >
+                and work_past_day = #{workPastDay,jdbcType=INTEGER}
             </if>
         </where>
     </select>
