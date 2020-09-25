@@ -16,6 +16,8 @@ public interface IDefectDetailsExtDao extends IDefectDetailsDao {
 
    List<DefectDetailsDO> findNotCompleted(DefectDetailsDO defectDetailsDO);
     List<DefectDetailsDO> findList(DefectDetailsDO entity);
+    // 有效的plog数
+    List<DefectDetailsDO> findValidList(DefectDetailsDO entity);
     List<DefectDetailsDO> findWeekList(DefectDetailsDO entity);
     List<DefectDetailsDO> findByTime(DefectDetailsDO entity);
     List<DefectDetailsDO> findUnfinishedDefects(DefectDetailsDO entity);

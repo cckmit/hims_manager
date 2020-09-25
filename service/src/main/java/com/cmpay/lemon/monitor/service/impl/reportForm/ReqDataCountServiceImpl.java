@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -129,6 +130,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IMonthWorkdayDao monthWorkdayDao;
     @Autowired
     private  IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
+    @Resource
+    private IDemandEaseDevelopmentExtDao easeDevelopmentExtDao;
 
 
     /**
@@ -829,6 +832,81 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if (dept.get(0) != null) {
                 workingHoursBOS.add("功能点");
                 DecimalFormat df = new DecimalFormat("0.##");
+                SumBos.add(df.format(dept.get(0)));
+            } else {
+                workingHoursBOS.add("功能点");
+                SumBos.add("0");
+            }
+        }
+
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    public DemandHoursRspBO getDeptWorkHoursAndPoint3(String devpLeadDept, String date1, String date2) {
+        WorkingHoursDO workingHoursDO = new WorkingHoursDO();
+        DecimalFormat df = new DecimalFormat("0.###");
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        List<WorkingHoursDO> impl = null;
+        DemandBO demandBO = new DemandBO();
+        demandBO.setDevpLeadDept(devpLeadDept);
+        if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+            workingHoursDO.setSelectTime(date1);
+            impl = iWorkingHoursDao.findWeekSumB(workingHoursDO);
+            //demandBO.setReqImplMon(date1.substring(0,7));
+            if (impl != null && impl.size() >= 0) {
+                workingHoursBOS.add("工时");
+                if (!"0".equals(impl.get(0).getSumTime())) {
+                    SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+                } else {
+                    SumBos.add("0");
+                }
+            } else {
+                workingHoursBOS.add("工时");
+                SumBos.add("0");
+            }
+//            // 获取当月的功能点
+//            System.err.println(demandBO);
+//            List<Double> dept =reqWorkLoadService.getExportCountForDevp(demandBO);
+//            if(dept.get(0) != null){
+//                workingHoursBOS.add("功能点");
+//                SumBos.add(Double.toString(dept.get(0)));
+//            }else {
+            workingHoursBOS.add("功能点");
+            SumBos.add("0");
+//            }
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            workingHoursDO.setSelectTime(date2);
+            impl = iWorkingHoursDao.findMonthSumB(workingHoursDO);
+            demandBO.setReqImplMon(date2);
+
+            if (impl != null && impl.size() >= 0) {
+                workingHoursBOS.add("工时");
+                if (!"0".equals(impl.get(0).getSumTime())) {
+                    SumBos.add(df.format(getWorkHours(Integer.parseInt(impl.get(0).getSumTime()))));
+                } else {
+                    SumBos.add("0");
+                }
+            } else {
+                workingHoursBOS.add("工时");
+                SumBos.add("0");
+            }
+            // 获取当月的功能点
+            List<Double> dept = reqWorkLoadService.getExportCountForDevp(demandBO);
+            if (dept.get(0) != null) {
+                workingHoursBOS.add("功能点");
                 SumBos.add(df.format(dept.get(0)));
             } else {
                 workingHoursBOS.add("功能点");
@@ -2054,19 +2132,22 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
         workingHoursDO.setStartTime(startTime);
         workingHoursDO.setEndTime(endTime);
-
-        userDOS.forEach(m->{
+        int a1 = 0;
+        int b1 = 0;
+        int c1 = 0;
+        int d1 = 0;
+        for(UserDO m:userDOS) {
             DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
             defectDetailsDO.setDefectRegistrant(m.getFullname());
             workingHoursDO.setDisplayname(m.getFullname());
-            List<WorkingHoursDO> workingHoursDOS=new LinkedList<>();
-            List<DefectDetailsDO> list=new LinkedList<>();
+            List<WorkingHoursDO> workingHoursDOS = new LinkedList<>();
+            List<DefectDetailsDO> list = new LinkedList<>();
             // 查询周
             if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
                 workingHoursDO.setSelectTime(date1);
                 workingHoursDOS = iWorkingHoursDao.queryByTimeCycle(workingHoursDO);
                 defectDetailsDO.setRegistrationDate(date1);
-                list= defectDetailsExtDao.findWeekList(defectDetailsDO);
+                list = defectDetailsExtDao.findWeekList(defectDetailsDO);
             }
             // 查询月
             if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
@@ -2074,24 +2155,32 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursDOS = iWorkingHoursDao.queryByTimeCycle(workingHoursDO);
                 defectDetailsDO.setRegistrationDate(date2);
 
-                list= defectDetailsExtDao.findList(defectDetailsDO);
+                list = defectDetailsExtDao.findList(defectDetailsDO);
             }
             int a = 0;
             int b = 0;
+            int d = 0;
             int c = 0;
-            if(JudgeUtils.isNotEmpty(workingHoursDOS)){
-                for(int i=0;i<workingHoursDOS.size();i++){
-                    a=a+workingHoursDOS.get(i).getCaseWritingNumber();
-                    b=b+workingHoursDOS.get(i).getCaseExecutionNumber();
+            if (JudgeUtils.isNotEmpty(workingHoursDOS)) {
+                for (int i = 0; i < workingHoursDOS.size(); i++) {
+                    a = a + workingHoursDOS.get(i).getCaseWritingNumber();
+                    b = b + workingHoursDOS.get(i).getCaseExecutionNumber();
+                    d = d + workingHoursDOS.get(i).getCaseCompletedNumber();
                 }
             }
-              c= c+list.size();
-
-            String str = "{ product: '" + m.getFullname() + "', 案例编写数: '" + a + "', 案例执行数: '" + b + "', 缺陷数: '" + c + "'}";
+            c = c + list.size();
+            a1 = a1 + a;
+            b1 = b1 + b;
+            c1 = c1 + c;
+            d1 = d1 + d;
+            String str = "{ product: '" + m.getFullname() + "', 案例编写数: '" + a + "', 案例执行数: '" + b + "', 案例完成数: '" + d + "', 缺陷数: '" + c + "'}";
             workingHoursBOS.add(str);
-        });
+
+        }
+        String name = "案例编写数: " + a1 + ", 案例执行数: " + b1 + ", 案例完成数: " + d1 + ", 缺陷数: " + c1 ;
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setSum(name);
         return demandHoursRspBO;
     }
 
@@ -4408,67 +4497,175 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         //二级部门集合
         List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
         LinkedList<ProductLineDefectsBO> productLineDefectsList = new LinkedList();
+        // 先将二级部门的数据统计出来，后面再统计一级团队
         for(int i=0;i<impl.size();i++){
-            // 去掉4个项目组和质量监督、产品测试
-            if("质量监督组".equals(impl.get(i).getSecondlevelorganization())||"产品测试团队".equals(impl.get(i).getSecondlevelorganization())||"资金归集项目组".equals(impl.get(i).getSecondlevelorganization())
-                    ||"设计项目组".equals(impl.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(impl.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(impl.get(i).getSecondlevelorganization())){
-                continue;
-            }
+//            // 去掉4个项目组和质量监督、产品测试
+//            if("质量监督组".equals(impl.get(i).getSecondlevelorganization())||"产品测试团队".equals(impl.get(i).getSecondlevelorganization())||"资金归集项目组".equals(impl.get(i).getSecondlevelorganization())
+//                    ||"设计项目组".equals(impl.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(impl.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(impl.get(i).getSecondlevelorganization())){
+//                continue;
+//            }
             ProductLineDefectsBO productLineDefectsBO = new ProductLineDefectsBO();
             productLineDefectsBO.setProductLine(impl.get(i).getSecondlevelorganization());
             //问题数默认为0
             productLineDefectsBO.setDefectsNumber("0");
 
-            DemandDO demandDO1 = new DemandDO();
-            demandDO1.setReqImplMon(month);
-            demandDO1.setDevpLeadDept(impl.get(i).getSecondlevelorganization());
-            List<DemandDO> demandDOS1 = demandDao.find(demandDO1);
+            // 获取各部门功能点
+            DemandHoursRspBO demandHoursRspBO = getDeptWorkHoursAndPoint3(impl.get(i).getSecondlevelorganization(), null, month);
+            List<String> listSum = demandHoursRspBO.getListSum();
+            // 部门cr功能点
+            double functionPoint =  Double.valueOf(listSum.get(1));
             //工作量和缺陷计数器
-            int workload =0;
             int defectsNumber=0;
-            if(JudgeUtils.isNotEmpty(demandDOS1)){
-                for(int j=0;j<demandDOS1.size();j++){
-                    //月初阶段 ,
-                    int preMonPeriod = 0;
-                    if(JudgeUtils.isNotBlank(demandDOS1.get(j).getPreMonPeriod())){
-                        preMonPeriod= Integer.parseInt(demandDOS1.get(j).getPreMonPeriod());
-                    }
-                    //当前阶段
-                    int preCurPeriod=0;
-                    if(JudgeUtils.isNotBlank(demandDOS1.get(j).getPreMonPeriod())){
-                        preCurPeriod = Integer.parseInt(demandDOS1.get(j).getPreCurPeriod());
-                    }
-                    //月初阶段未到uat测试  当前阶段已经达到完成uat测试的需求 的工作量计算
-                    if(preMonPeriod>=140||preCurPeriod<140){
-                        continue;
-                    }
-                    workload=workload+demandDOS1.get(j).getTotalWorkload();
-                    //从搜索到的需求中  找到对应的jira编号并搜索该需求所创建的缺陷数
-                    DemandJiraDO demandJiraDO = new DemandJiraDO();
-                    demandJiraDO.setReqInnerSeq(demandDOS1.get(j).getReqInnerSeq());
-                    List<DemandJiraDO> demandJiraDOS = demandJiraDao.find(demandJiraDO);
-                    if(JudgeUtils.isEmpty(demandJiraDOS)){
-                        continue;
-                    }
-                    String jiraKey = demandJiraDOS.get(0).getJiraKey();
-                    DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
-                    defectDetailsDO.setEpicKey(jiraKey);
-                    List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.find(defectDetailsDO);
-                    defectsNumber=defectsNumber+defectDetailsDOList.size();
-                }
 
+            // 统计部门的有效plog数
+            DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+            defectDetailsDO.setDefectsDepartment(impl.get(i).getSecondlevelorganization());
+            defectDetailsDO.setRegistrationDate(month);
+            List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+            if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                defectsNumber = defectDetailsDOList.size();
             }
             productLineDefectsBO.setDefectsNumber(String.valueOf(defectsNumber));
-            productLineDefectsBO.setWorkload(String.valueOf(workload));
-            if(workload==0){
-                productLineDefectsBO.setDefectRate("0.00%");
-            }else{
-                String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / (float) Integer.parseInt(productLineDefectsBO.getWorkload()) * 100) + "%";
-                productLineDefectsBO.setDefectRate(defectRate);
-            }
+            productLineDefectsBO.setWorkload(String.valueOf(functionPoint));
+            System.err.println(productLineDefectsBO);
             productLineDefectsList.add(productLineDefectsBO);
         }
-        return productLineDefectsList;
+        LinkedList<ProductLineDefectsBO> productLineDefectsList2 = new LinkedList();
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        easeDevelopmentDO.setReqImplMon(month);
+        //获取所有的一级团队
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+        // 获取一级团队支撑工作量汇总数据
+        List<DemandEaseDevelopmentDO>  mon_input_workload_list = easeDevelopmentExtDao.easeDevelopmentWorkloadCountForDevp(easeDevelopmentDO);
+        for(int i=0;i<firstLevelOrganizationList.size();i++){
+            double work = 0;
+            int defectsNumber = 0;
+            ProductLineDefectsBO productLineDefectsBO2 = new ProductLineDefectsBO();
+            // 一级团队
+            productLineDefectsBO2.setProductLine(firstLevelOrganizationList.get(i));
+            productLineDefectsBO2.setWorkload(0+"");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(firstLevelOrganizationList.get(i).equals(mon_input_workload_list.get(j).getFirstLevelOrganization())){
+                    productLineDefectsBO2.setWorkload(mon_input_workload_list.get(j).getDevelopmentworkload());
+                }
+            }
+            for(int j=0;j<productLineDefectsList.size();j++) {
+                if ("质量监督组".equals(firstLevelOrganizationList.get(i))) {
+                    if ("质量监督组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+
+                }
+                if ("平台架构研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("平台架构研发团队".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("产品测试团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("产品测试团队".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("前端技术研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("前端技术研发团队".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("金融业务研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("信用购机研发组".equals(productLineDefectsList.get(j).getProductLine()) || "号码借研发组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        defectsNumber = defectsNumber + Integer.parseInt(productLineDefectsList.get(j).getDefectsNumber());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(defectsNumber+"");
+                    }
+                }
+                if ("客户业务研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("营销活动研发组".equals(productLineDefectsList.get(j).getProductLine()) || "渠道产品研发组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        defectsNumber = defectsNumber + Integer.parseInt(productLineDefectsList.get(j).getDefectsNumber());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(defectsNumber+"");
+                    }
+                }
+                if ("支付业务研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("聚合支付研发组".equals(productLineDefectsList.get(j).getProductLine()) || "话费充值研发组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        defectsNumber = defectsNumber + Integer.parseInt(productLineDefectsList.get(j).getDefectsNumber());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(defectsNumber+"");
+                    }
+                }
+                if ("商户业务研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("商户业务研发团队".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("智慧食堂研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("智慧食堂研发团队".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("业务中台研发团队".equals(firstLevelOrganizationList.get(i))) {
+                    if ("银行&公共中心研发组".equals(productLineDefectsList.get(j).getProductLine()) || "用户&清算&账务研发组".equals(productLineDefectsList.get(j).getProductLine())
+                            || "支付研发组".equals(productLineDefectsList.get(j).getProductLine())|| "营销研发组".equals(productLineDefectsList.get(j).getProductLine()) ) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        defectsNumber = defectsNumber + Integer.parseInt(productLineDefectsList.get(j).getDefectsNumber());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(defectsNumber+"");
+                    }
+                }
+                if ("资金归集项目组".equals(firstLevelOrganizationList.get(i))) {
+                    if ("资金归集项目组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("设计项目组".equals(firstLevelOrganizationList.get(i))) {
+                    if ("设计项目组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("团体组织交费项目组".equals(firstLevelOrganizationList.get(i))) {
+                    if ("团体组织交费项目组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+                if ("客服中间层项目组".equals(firstLevelOrganizationList.get(i))) {
+                    if ("客服中间层项目组".equals(productLineDefectsList.get(j).getProductLine())) {
+                        work = Double.valueOf(productLineDefectsBO2.getWorkload()) + Double.valueOf(productLineDefectsList.get(j).getWorkload());
+                        productLineDefectsBO2.setWorkload(work+"");
+                        productLineDefectsBO2.setDefectsNumber(productLineDefectsList.get(j).getDefectsNumber());
+                    }
+                }
+            }
+            if(work==0){
+                productLineDefectsBO2.setDefectRate("0.00%");
+            }else{
+                String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO2.getDefectsNumber()) /  Double.valueOf(productLineDefectsBO2.getWorkload()) * 100) + "%";
+                productLineDefectsBO2.setDefectRate(defectRate);
+            }
+            System.err.println(productLineDefectsBO2);
+            productLineDefectsList2.add(productLineDefectsBO2);
+        }
+        return productLineDefectsList2;
     }
 
     @Override
@@ -5066,6 +5263,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> listRate = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
+        // 循环月份 查询每个月的团队代码缺陷率
         for (int i = 0; i < list.size(); i++) {
             impl = departmentalDefectRate(list.get(i));
             SumBos.add(list.get(i));
@@ -5074,7 +5272,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             double workload = 0;
             if (impl != null && impl.size() >= 0) {
                 for (int j = 0; j < impl.size(); j++) {
-                    defectsNumber = defectsNumber + Integer.parseInt(impl.get(j).getDefectsNumber());
+                    defectsNumber = defectsNumber + Double.valueOf(impl.get(j).getDefectsNumber());
                     workload = workload + Double.valueOf(impl.get(j).getWorkload());
                 }
                 if(workload==0){

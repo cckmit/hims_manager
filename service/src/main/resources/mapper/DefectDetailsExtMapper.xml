@@ -115,6 +115,54 @@
             </if>
         </where>
     </select>
+    <select id="findValidList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_defect_details
+        <where >
+            ( defect_type != '无效问题' or defect_type is null )
+            <if test="jireKey != null" >
+                and jire_key = #{jireKey,jdbcType=VARCHAR}
+            </if>
+            <if test="reqNo != null" >
+                and req_no = #{reqNo,jdbcType=VARCHAR}
+            </if>
+            <if test="epicKey != null" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="defectType != null" >
+                and defect_type = #{defectType,jdbcType=VARCHAR}
+            </if>
+            <if test="defectStatus != null" >
+                and defect_status = #{defectStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="defectRegistrant != null" >
+                and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null and defectsDepartment !='产品测试团队'" >
+                and defects_department = #{defectsDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="defectsDepartment != null and defectsDepartment =='产品测试团队'" >
+                and (defects_department = #{defectsDepartment,jdbcType=VARCHAR} or (ISNULL(defects_department) or defects_department = '') )
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date LIKE CONCAT('%',#{registrationDate},'%')
+            </if>
+
+            <if test="defectDetails != null" >
+                and defect_details = #{defectDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+            <if test="testNumber != null" >
+                and test_number = #{testNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="productLine != null" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
     <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
         select
         <include refid="Base_Column_List" />

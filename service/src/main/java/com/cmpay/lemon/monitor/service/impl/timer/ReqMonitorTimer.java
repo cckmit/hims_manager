@@ -194,7 +194,7 @@ public class ReqMonitorTimer {
         String[] mailToAddress = result.split(";");
         mailInfo.setReceivers(mailToAddress);
         //抄送人
-        result = "wang_yw@hisuntech.com";
+        result = "wang_yw@hisuntech.com;wang_gang@hisuntech.com;peng_long@hisuntech.com";
         mailInfo.setCcs(result.split(";"));
         mailInfo.setSubject("【待部署状态变更未及时更新清单】");
         StringBuffer sb = new StringBuffer();

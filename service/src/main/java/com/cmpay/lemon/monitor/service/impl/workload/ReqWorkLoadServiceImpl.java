@@ -655,6 +655,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             }
         }
     }
+    //  研发中心各二级团队月工作量汇总  （二级团队的工作量）
     @Override
     public List<Double> getExportCountForDevp(DemandBO demandBO){
         DemandDO demandDO = new DemandDO();
@@ -674,6 +675,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         list = dealDevpWorkload2(DevpWorkLoadList,demandBO.getDevpLeadDept());// 各部门工作量月统计汇总报表导出  goExportCountForDevp
         return list;
     }
+    //  研发中心团队月工作量汇总  （部门集合汇总）
     @Override
     public List<Double> getExportCountForDevp2(DemandBO demandBO){
         DemandDO demandDO = new DemandDO();
@@ -695,6 +697,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         list = dealDevpWorkload3(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
         return list;
     }
+    // 二级团队月工作量报表汇总
     @Override
     public void goExportCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type){
         DemandDO demandDO = new DemandDO();

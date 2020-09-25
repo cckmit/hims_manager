@@ -46,4 +46,14 @@ public class ProductLineDefectsBO {
     public void setDefectRate(String defectRate) {
         this.defectRate = defectRate;
     }
+
+    @Override
+    public String toString() {
+        return "ProductLineDefectsBO{" +
+                "productLine='" + productLine + '\'' +
+                ", defectsNumber='" + defectsNumber + '\'' +
+                ", workload='" + workload + '\'' +
+                ", defectRate='" + defectRate + '\'' +
+                '}';
+    }
 }
