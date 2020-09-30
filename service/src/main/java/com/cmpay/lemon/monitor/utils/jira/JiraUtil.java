@@ -171,7 +171,7 @@ public class JiraUtil {
         }
         jiraTaskBodyBO.setWorklogs(worklogs);
         //附属子任务
-        String createTime = DateUtil.addDateMinut(DateUtil.dealDateFormat(object.getJSONObject("fields").getString("created")), 8);
+        String createTime = DateUtil.dealDateFormat(object.getJSONObject("fields").getString("created"));
         jiraTaskBodyBO.setCreateTime(createTime);
 
         return jiraTaskBodyBO;

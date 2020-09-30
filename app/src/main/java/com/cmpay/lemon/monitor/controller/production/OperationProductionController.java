@@ -198,10 +198,10 @@ public class OperationProductionController {
      * 问题录入
      */
     @PostMapping("questionInput")
-    public GenericRspDTO<NoBody> questionInput(@RequestBody QuestionInputReqDTO questionInputReqDTO) {
+    public GenericRspDTO<NoBody> questionInput(@RequestBody ProblemReqDTO problemReqDTO) {
 
-        QuestionInputReqBO questionInputReqBO = BeanUtils.copyPropertiesReturnDest(new QuestionInputReqBO(), questionInputReqDTO);
-        operationProductionService.questionInput(questionInputReqBO);
+        ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), problemReqDTO);
+        operationProductionService.questionInput(problemBO);
 
         return GenericRspDTO.newSuccessInstance();
     }
@@ -243,5 +243,18 @@ public class OperationProductionController {
         BeanUtils.copyPropertiesReturnDest(bean,reqDTO);
         operationProductionService.reissueMail(file , bean);
         return GenericRspDTO.newSuccessInstance();
+    }
+
+    @RequestMapping("/productionProblem")
+    public GenericRspDTO<ProblemRspDTO> productionProblem(@RequestBody ProblemReqDTO reqDTO) {
+        ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), reqDTO);
+        ProblemRspBO problemRspBO = operationProductionService.productionProblem(problemBO);
+        ProblemRspDTO rspDTO = new ProblemRspDTO();
+        rspDTO.setProblemDTOList(BeanConvertUtils.convertList(problemRspBO.getProblemBOList(), ProblemDTO.class));
+        rspDTO.setPageNum(problemRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(problemRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(problemRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(problemRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 }

@@ -1,28 +1,51 @@
 /*
- * @ClassName productionPicDO
- * @Description 
+ * @ClassName ProblemDO
+ * @Description
  * @version 1.0
- * @Date 2019-10-20 10:04:37
+ * @Date 2020-09-25 15:17:26
  */
 package com.cmpay.lemon.monitor.entity;
 
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
-
-import java.sql.Date;
+import java.time.LocalDateTime;
 
 @DataObject
 public class ProblemDO extends BaseDO {
-    private int problemSerialNumber;
+    /**
+     * @Fields problemSerialNumber id
+     */
+    private Long problemSerialNumber;
+    /**
+     * @Fields proNumber 投产编号
+     */
     private String proNumber;
+    /**
+     * @Fields problemDetail 问题详情
+     */
     private String problemDetail;
-    private Date problemTime;
+    /**
+     * @Fields problemTime 录入时间
+     */
+    private LocalDateTime problemTime;
+    /**
+     * @Fields issuekey jira编号
+     */
+    private String issuekey;
+    /**
+     * @Fields displayname 问题提出人
+     */
+    private String displayname;
+    /**
+     * @Fields devpLeadDept 归属部门
+     */
+    private String devpLeadDept;
 
-    public int getProblemSerialNumber() {
+    public Long getProblemSerialNumber() {
         return problemSerialNumber;
     }
 
-    public void setProblemSerialNumber(int problemSerialNumber) {
+    public void setProblemSerialNumber(Long problemSerialNumber) {
         this.problemSerialNumber = problemSerialNumber;
     }
 
@@ -42,15 +65,36 @@ public class ProblemDO extends BaseDO {
         this.problemDetail = problemDetail;
     }
 
-    public Date getProblemTime() {
+    public LocalDateTime getProblemTime() {
         return problemTime;
     }
 
-    public void setProblemTime(Date problemTime) {
+    public void setProblemTime(LocalDateTime problemTime) {
         this.problemTime = problemTime;
     }
 
-    public ProblemDO() {
+    public String getIssuekey() {
+        return issuekey;
+    }
+
+    public void setIssuekey(String issuekey) {
+        this.issuekey = issuekey;
+    }
+
+    public String getDisplayname() {
+        return displayname;
+    }
+
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
+    }
+
+    public String getDevpLeadDept() {
+        return devpLeadDept;
+    }
+
+    public void setDevpLeadDept(String devpLeadDept) {
+        this.devpLeadDept = devpLeadDept;
     }
 
     @Override
@@ -60,6 +104,9 @@ public class ProblemDO extends BaseDO {
                 ", proNumber='" + proNumber + '\'' +
                 ", problemDetail='" + problemDetail + '\'' +
                 ", problemTime=" + problemTime +
+                ", issuekey='" + issuekey + '\'' +
+                ", displayname='" + displayname + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
                 '}';
     }
 }

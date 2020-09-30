@@ -91,6 +91,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private SystemRoleService systemRoleService;
     @Autowired
     private SystemUserService systemUserService;
+    @Autowired
+    private IProblemExtDao iProblemDao;
 
 
     // 180 完成产品发布
@@ -2489,82 +2491,25 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     /**
      * 问题录入
-     * 按照老系统照搬写下来的，设计的有点不合理 后期可以考虑把参数改成链表
      *
-     * @param questionInputReqBO
+     * @param problemBO
      */
     @Override
-    public void questionInput(QuestionInputReqBO questionInputReqBO) {
-        //问题一
-        if (questionInputReqBO.getProNumber1() != null && !questionInputReqBO.getProNumber1().equals("")) {
-            if (questionInputReqBO.getQuestionOne() != null && !questionInputReqBO.getQuestionOne().equals("")) {
-                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber1()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
-                this.updateProblem(proBean);
-            } else {
-                this.deleteProblemInfo(questionInputReqBO.getProNumber1());
-            }
-        } else {
-            if (questionInputReqBO.getQuestionOne() != null && !questionInputReqBO.getQuestionOne().equals("")) {
-                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionOne());
-                this.insertProblemInfo(proBean);
-            }
-        }
-        //问题二
-        if (questionInputReqBO.getProNumber2() != null && !questionInputReqBO.getProNumber2().equals("")) {
-            if (questionInputReqBO.getQuestionTwo() != null && !questionInputReqBO.getQuestionTwo().equals("")) {
-                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber2()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
-                this.updateProblem(proBean);
-            } else {
-                this.deleteProblemInfo(questionInputReqBO.getProNumber2());
-            }
-        } else {
-            if (questionInputReqBO.getQuestionTwo() != null && !questionInputReqBO.getQuestionTwo().equals("")) {
-                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionTwo());
-                this.insertProblemInfo(proBean);
-            }
-        }
-        //问题三
-        if (questionInputReqBO.getProNumber3() != null && !questionInputReqBO.getProNumber3().equals("")) {
-            if (questionInputReqBO.getQuestionThree() != null && !questionInputReqBO.getQuestionThree().equals("")) {
-                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber3()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
-                this.updateProblem(proBean);
-            } else {
-                this.deleteProblemInfo(questionInputReqBO.getProNumber3());
-            }
-        } else {
-            if (questionInputReqBO.getQuestionThree() != null && !questionInputReqBO.getQuestionThree().equals("")) {
-                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionThree());
-                this.insertProblemInfo(proBean);
-            }
-        }
-        //问题四
-        if (questionInputReqBO.getProNumber4() != null && !questionInputReqBO.getProNumber4().equals("")) {
-            if (questionInputReqBO.getQuestionFour() != null && !questionInputReqBO.getQuestionFour().equals("")) {
-                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber4()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
-                this.updateProblem(proBean);
-            } else {
-                this.deleteProblemInfo(questionInputReqBO.getProNumber4());
-            }
-        } else {
-            if (questionInputReqBO.getQuestionFour() != null && !questionInputReqBO.getQuestionFour().equals("")) {
-                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFour());
-                this.insertProblemInfo(proBean);
-            }
-        }
-        //问题五
-        if (questionInputReqBO.getProNumber5() != null && !questionInputReqBO.getProNumber5().equals("")) {
-            if (questionInputReqBO.getQuestionFive() != null && !questionInputReqBO.getQuestionFive().equals("")) {
-                ProblemBO proBean = new ProblemBO(Integer.parseInt(questionInputReqBO.getProNumber5()), questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
-                this.updateProblem(proBean);
-            } else {
-                this.deleteProblemInfo(questionInputReqBO.getProNumber5());
-            }
-        } else {
-            if (questionInputReqBO.getQuestionFive() != null && !questionInputReqBO.getQuestionFive().equals("")) {
-                ProblemBO proBean = new ProblemBO(questionInputReqBO.getProNumber(), questionInputReqBO.getQuestionFive());
-                this.insertProblemInfo(proBean);
-            }
-        }
+    public void questionInput(ProblemBO problemBO) {
+        //问题录入
+        //1 获取当前操作人
+       String user =  userService.getFullname(SecurityUtils.getLoginName());
+        problemBO.setDisplayname(user);
+        // 获取当前操作时间
+        problemBO.setProblemTime(LocalDateTime.now());
+        //BO转DO
+        ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
+       // 异步新建jira任务
+
+        //新增问题
+        iProblemDao.insert(problemDO);
+
+
     }
 
     //投产包下载
@@ -2717,5 +2662,21 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         this.productionInput(file, false, productionBO);
     }
 
+    @Override
+    public ProblemRspBO productionProblem(ProblemBO problemBO){
+        PageInfo<ProblemBO> pageInfo = getproductionProblemPageInfo(problemBO);
+        List<ProblemBO> productionDefectsBOList = BeanConvertUtils.convertList(pageInfo.getList(), ProblemBO.class);
+        ProblemRspBO problemRspBO = new ProblemRspBO();
+        problemRspBO.setProblemBOList(productionDefectsBOList);
+        problemRspBO.setPageInfo(pageInfo);
+        return problemRspBO;
+    }
 
+    private PageInfo<ProblemBO> getproductionProblemPageInfo(ProblemBO problemBO) {
+        ProblemDO problemDO = new ProblemDO();
+        BeanConvertUtils.convert(problemDO, problemBO);
+        PageInfo<ProblemBO> pageInfo = PageUtils.pageQueryWithCount(problemBO.getPageNum(), problemBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(iProblemDao.findList(problemDO), ProblemBO.class));
+        return pageInfo;
+    }
 }

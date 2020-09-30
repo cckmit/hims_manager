@@ -4,14 +4,16 @@
  * @version 1.0
  * @Date 2020-09-25 15:17:26
  */
-package com.cmpay.lemon.monitor.bo;
+package com.cmpay.lemon.monitor.dto;
 
 
+
+import com.cmpay.framework.data.response.PageableRspDTO;
 
 import java.time.LocalDateTime;
 
 
-public class ProblemBO  {
+public class ProblemReqDTO  extends PageableRspDTO {
     /**
      *  problemSerialNumber id
      */
@@ -105,25 +107,29 @@ public class ProblemBO  {
         this.devpLeadDept = devpLeadDept;
     }
 
+    @Override
     public int getPageNum() {
         return pageNum;
     }
 
+    @Override
     public void setPageNum(int pageNum) {
         this.pageNum = pageNum;
     }
 
+    @Override
     public int getPageSize() {
         return pageSize;
     }
 
+    @Override
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
 
     @Override
     public String toString() {
-        return "ProblemBO{" +
+        return "ProblemReqDTO{" +
                 "problemSerialNumber=" + problemSerialNumber +
                 ", proNumber='" + proNumber + '\'' +
                 ", problemDetail='" + problemDetail + '\'' +

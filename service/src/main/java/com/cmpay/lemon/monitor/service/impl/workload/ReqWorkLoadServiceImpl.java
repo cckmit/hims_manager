@@ -493,7 +493,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         if(StringUtils.isNotBlank(coorDept)){
             String[] coorDeptArr=coorDept.split(",");
             for (int i = 0; i < coorDeptArr.length; i++) {
-                if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])) {
+                if ("产品研究部".equals(coorDeptArr[i]) || "产品测试部".equals(coorDeptArr[i])|| "产品测试团队".equals(coorDeptArr[i])) {
                     continue;
                 }
                 if (!coorDeptName.contains(coorDeptArr[i])) {

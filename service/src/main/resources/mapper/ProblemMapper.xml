@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProblemDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        <id column="problem_serial_number" property="problemSerialNumber" jdbcType="BIGINT" />
+        <result column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="problem_detail" property="problemDetail" jdbcType="VARCHAR" />
+        <result column="problem_time" property="problemTime" jdbcType="TIMESTAMP" />
+        <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
+        <result column="displayName" property="displayname" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName, 
+        devp_lead_dept
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_problem
+        where problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_production_problem
+        where problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        insert into t_production_problem
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="problemSerialNumber != null" >
+                problem_serial_number,
+            </if>
+            <if test="proNumber != null" >
+                pro_number,
+            </if>
+            <if test="problemDetail != null" >
+                problem_detail,
+            </if>
+            <if test="problemTime != null" >
+                problem_time,
+            </if>
+            <if test="issuekey != null" >
+                issuekey,
+            </if>
+            <if test="displayname != null" >
+                displayName,
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="problemSerialNumber != null" >
+                #{problemSerialNumber,jdbcType=BIGINT},
+            </if>
+            <if test="proNumber != null" >
+                #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="problemDetail != null" >
+                #{problemDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="problemTime != null" >
+                #{problemTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="issuekey != null" >
+                #{issuekey,jdbcType=VARCHAR},
+            </if>
+            <if test="displayname != null" >
+                #{displayname,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        update t_production_problem
+        <set >
+            <if test="proNumber != null" >
+                pro_number = #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="problemDetail != null" >
+                problem_detail = #{problemDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="problemTime != null" >
+                problem_time = #{problemTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="issuekey != null" >
+                issuekey = #{issuekey,jdbcType=VARCHAR},
+            </if>
+            <if test="displayname != null" >
+                displayName = #{displayname,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_problem
+        <where >
+            <if test="problemSerialNumber != null" >
+                and problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+            </if>
+            <if test="proNumber != null" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="problemDetail != null" >
+                and problem_detail = #{problemDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="problemTime != null" >
+                and problem_time = #{problemTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="issuekey != null" >
+                and issuekey = #{issuekey,jdbcType=VARCHAR}
+            </if>
+            <if test="displayname != null" >
+                and displayName = #{displayname,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

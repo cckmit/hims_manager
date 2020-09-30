@@ -86,7 +86,7 @@ public interface OperationProductionService {
     //新增投产问题
     void insertProblemInfo(ProblemBO proBean);
 
-    void questionInput(QuestionInputReqBO questionInputReqBO);
+    void questionInput(ProblemBO problemBO);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 
@@ -135,4 +135,6 @@ public interface OperationProductionService {
     List<ProductionDO> getTheListOfProductionToBeDeployed(String number);
 
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
+
+    ProblemRspBO productionProblem(ProblemBO problemBO);
 }
