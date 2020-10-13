@@ -214,25 +214,25 @@ public class ErrorServiceImpl implements ErrorService {
             iErcdmgErorDao.insertPubtmsg(errorComditionDO);
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
-//        try {
-//            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-//            URL sit_url = new URL(sit_url_str);
-//            //得到connection对象。
-//            HttpURLConnection sit_connection = (HttpURLConnection) sit_url.openConnection();
-//            //设置请求方式
-//            sit_connection.setRequestMethod("GET");
-//            //连接
-//            sit_connection.connect();
-//            int sit_responseCode = sit_connection.getResponseCode();
-//            if(sit_responseCode != HttpURLConnection.HTTP_OK){
-//                return "SIT";
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT数控库失败,请删除错误码后重新录入");
-//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//        }
+        try {
+            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+            URL sit_url = new URL(sit_url_str);
+            //得到connection对象。
+            HttpURLConnection sit_connection = (HttpURLConnection) sit_url.openConnection();
+            //设置请求方式
+            sit_connection.setRequestMethod("GET");
+            //连接
+            sit_connection.connect();
+            int sit_responseCode = sit_connection.getResponseCode();
+            if(sit_responseCode != HttpURLConnection.HTTP_OK){
+                return "SIT";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作SIT-redis数控库失败,请删除错误码后重新录入");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         return "";
     }
     /**
@@ -260,26 +260,26 @@ public class ErrorServiceImpl implements ErrorService {
             iErcdmgErorDao.insertPubtmsg(errorComditionDO);
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
-//        try {
-//            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
-//
-//            URL uat_url = new URL(uat_url_str);
-//            //得到connection对象。
-//            HttpURLConnection uat_connection = (HttpURLConnection) uat_url.openConnection();
-//            //设置请求方式
-//            uat_connection.setRequestMethod("GET");
-//            //连接
-//            uat_connection.connect();
-//            int uat_responseCode = uat_connection.getResponseCode();
-//            if(uat_responseCode != HttpURLConnection.HTTP_OK){
-//                return "UAT";
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-//            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT数控库失败,请删除错误码后重新录入");
-//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-//        }
+        try {
+            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+
+            URL uat_url = new URL(uat_url_str);
+            //得到connection对象。
+            HttpURLConnection uat_connection = (HttpURLConnection) uat_url.openConnection();
+            //设置请求方式
+            uat_connection.setRequestMethod("GET");
+            //连接
+            uat_connection.connect();
+            int uat_responseCode = uat_connection.getResponseCode();
+            if(uat_responseCode != HttpURLConnection.HTTP_OK){
+                return "UAT";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("操作UAT-redis数控库失败,请删除错误码后重新录入");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         return "";
     }
     @Override

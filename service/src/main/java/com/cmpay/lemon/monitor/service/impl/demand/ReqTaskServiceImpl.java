@@ -821,7 +821,15 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 }
                 demandDO.setIsCut(map.get(i).get(8).toString().trim());
                 demandDO.setMonRemark(map.get(i).get(9).toString().trim());
-                demandDO.setExpPrdReleaseTm(map.get(i).get(10).toString().trim());
+                if (map.get(i).get(10) instanceof String) {
+                    demandDO.setExpPrdReleaseTm(map.get(i).get(10).toString().trim());
+                }
+                if (map.get(i).get(10) instanceof Date) {
+                    Date date = (Date)map.get(i).get(10);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String dt = simpleDateFormat.format(date);
+                    demandDO.setExpPrdReleaseTm(dt.trim());
+                }
                 demandDO.setPreMonPeriod(map.get(i).get(11).toString().trim());
                 demandDO.setCurMonTarget(map.get(i).get(12).toString().trim());
                 demandDO.setReqInnerSeq(map.get(i).get(13).toString().trim());
@@ -834,8 +842,24 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandDO.setDevpLeadDept(map.get(i).get(20).toString().trim());
                 demandDO.setDevpCoorDept(map.get(i).get(21).toString().trim());
                 demandDO.setProductMng(map.get(i).get(22).toString().trim());
-                demandDO.setReqStartMon(map.get(i).get(23).toString().trim());
-                demandDO.setReqImplMon(map.get(i).get(24).toString().trim());
+                if (map.get(i).get(23) instanceof String) {
+                    demandDO.setReqStartMon(map.get(i).get(23).toString().trim());
+                }
+                if (map.get(i).get(23) instanceof Date) {
+                    Date date = (Date)map.get(i).get(23);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String dt = simpleDateFormat.format(date);
+                    demandDO.setReqStartMon(dt.trim());
+                }
+                if (map.get(i).get(24) instanceof String) {
+                    demandDO.setReqImplMon(map.get(i).get(24).toString().trim());
+                }
+                if (map.get(i).get(24) instanceof Date) {
+                    Date date = (Date)map.get(i).get(24);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String dt = simpleDateFormat.format(date);
+                    demandDO.setReqImplMon(dt.trim());
+                }
                 demandDOS.add(demandDO);
             }
         } catch (FileNotFoundException e) {

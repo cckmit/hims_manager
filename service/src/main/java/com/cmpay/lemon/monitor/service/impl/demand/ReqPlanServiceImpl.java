@@ -1848,8 +1848,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                                 map.put("message", msg);
                                 return map;
                             }
+                            String newfileName = "";
+                            if(fileName.contains("原子功能点评估表(内部考核)") ){
+                                newfileName = fileName.replaceAll("原子功能点评估表(内部考核)", "原子功能点评估表(电子工单)");
+
+                            }else{
+                                newfileName = fileName.replaceAll("原子功能点评估表（内部考核）", "原子功能点评估表(电子工单)");
+                            }
                             //转换成基地对应的功能点
-                            String newfileName = fileName.replaceAll("原子功能点评估表(内部考核)", "原子功能点评估表(电子工单)").replaceAll("原子功能点评估表（内部考核）", "原子功能点评估表(电子工单)");
+                            //String newfileName = fileName.replaceAll("原子功能点评估表(内部考核)", "原子功能点评估表(电子工单)").replaceAll("原子功能点评估表（内部考核）", "原子功能点评估表(电子工单)");
                             msg = copyWorLoadFile(importFilePath, request, loacalpath + newfileName);
                             if (StringUtils.isNotEmpty(msg)) {
                                 map.put("message", msg);

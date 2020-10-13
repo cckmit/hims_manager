@@ -92,7 +92,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             i = i + 50;
         }
 //        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
-//        jiraTaskBodyBO1.setJiraKey("CMPAY-3772");
+//        jiraTaskBodyBO1.setJiraKey("CMPAY-6014");
 //        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
@@ -550,6 +550,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         //若是内部缺陷或者评审问题则需要登记内部权限或者评审问题表
         if (JudgeUtils.isNotBlank(jiraTaskBodyBO.getJiraType())) {
             if (jiraTaskBodyBO.getJiraType().equals("内部缺陷")) {
+                System.err.println(jiraTaskBodyBO.getAssignee());
+                System.err.println(jiraTaskBodyBO.getProblemHandler());
                 DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
                 defectDetailsDO.setJireKey(jiraTaskBodyBO.getJiraKey());
                 defectDetailsDO.setEpicKey(jiraTaskBodyBO.getEpicKey());

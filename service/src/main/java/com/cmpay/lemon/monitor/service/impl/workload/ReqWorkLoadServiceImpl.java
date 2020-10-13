@@ -1388,10 +1388,10 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
                 supportWorkloadDO.setReqImplMon(map.get(i).get(0).toString().trim());
                 supportWorkloadDO.setFirstLevelOrganization(map.get(i).get(1).toString().trim());
-                supportWorkloadDO.setCostdepartment(map.get(i).get(2).toString().trim());
-                supportWorkloadDO.setDocumentnumber(map.get(i).get(3).toString().trim());
-                supportWorkloadDO.setProcessstartdate(map.get(i).get(4).toString().trim());
-                supportWorkloadDO.setProductmanagementdepartment(map.get(i).get(5).toString().trim());
+                supportWorkloadDO.setProductmanagementdepartment(map.get(i).get(2).toString().trim());
+                supportWorkloadDO.setCostdepartment(map.get(i).get(3).toString().trim());
+                supportWorkloadDO.setDocumentnumber(map.get(i).get(4).toString().trim());
+                supportWorkloadDO.setProcessstartdate(map.get(i).get(5).toString().trim());
                 supportWorkloadDO.setProductowner(map.get(i).get(6).toString().trim());
                 supportWorkloadDO.setSupportingmanufacturerproducts(map.get(i).get(7).toString().trim());
                 supportWorkloadDO.setSupportthetopic(map.get(i).get(8).toString().trim());

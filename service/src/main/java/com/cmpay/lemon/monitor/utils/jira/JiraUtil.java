@@ -272,7 +272,7 @@ public class JiraUtil {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= updated >= -3d order by created ASC&startAt="+page+"&maxResults=50");
+                .get(GETSEARCH + "?" + "jql= updated >= -2d order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
@@ -288,6 +288,29 @@ public class JiraUtil {
         }
         return jiraTaskBodyBOlist;
     }
+
+    //依据jql获取和包下项目指定epic下未完成的内部缺陷数据
+    public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinEpic(String epic) {
+        Response response = given()
+                .header(AUTHORIZATION, AUTHORIZATIONVALUE)
+                .header(CONTENTTYPE, CONTENTTYPEVALUE)
+                .get(GETSEARCH + "?" + "jql= project = CMPAY AND issuetype = 内部缺陷 AND status in (处理中, 待处理, 待更新, 待重测) AND 史诗链接 = "+ epic);
+        ResponseBody body = response.getBody();
+        String json = body.print();
+        JSONObject object = JSONObject.parseObject(json);
+        JSONArray issueJsonArray = JSONArray.parseArray( object.getString("issues"));
+        List<JiraTaskBodyBO> jiraTaskBodyBOlist = new LinkedList<>();
+        if (issueJsonArray != null) {
+            for (int i = 0; i < issueJsonArray.size(); i++) {
+                JSONObject jsonObject1 =JSONObject.parseObject(issueJsonArray.get(i).toString());
+                JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                jiraTaskBodyBO.setJiraKey(jsonObject1.getString("key"));
+                jiraTaskBodyBOlist.add(jiraTaskBodyBO);
+            }
+        }
+        return jiraTaskBodyBOlist;
+    }
+
     //依据jql批量获取一天内的jira数据
     public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay2(int page) {
         Response response = given()

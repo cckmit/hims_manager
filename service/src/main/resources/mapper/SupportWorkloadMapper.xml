@@ -210,7 +210,7 @@
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
             <if test="reqImplMon != null" >
-                reqImplMon = #{remark,jdbcType=VARCHAR},
+                reqImplMon = #{reqImplMon,jdbcType=VARCHAR},
             </if>
         </set>
         where documentNumber = #{documentnumber,jdbcType=VARCHAR}

@@ -12,6 +12,7 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
@@ -25,6 +26,7 @@ import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.*;
+import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import com.jcraft.jsch.*;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -93,6 +95,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private SystemUserService systemUserService;
     @Autowired
     private IProblemExtDao iProblemDao;
+    @Autowired
+    private IDemandJiraDao demandJiraDao;
 
 
     // 180 完成产品发布
@@ -2054,6 +2058,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         //非投产日正常投产
         if (bean.getIsOperationProduction() != null && bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("否")) {
+            bean.setProStatus("投产待部署");
             List<ProductionBO> unusuaList = new ArrayList<ProductionBO>();
             unusuaList.add(bean);
             File unusualFile = this.exportUnusualExcel(unusuaList);
@@ -2679,4 +2684,170 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 () -> BeanConvertUtils.convertList(iProblemDao.findList(problemDO), ProblemBO.class));
         return pageInfo;
     }
+    @Override
+    public void checkJiraDefect(String proNumber){
+        // 投产编号为需求编号时
+        DemandDO demandDO = new DemandDO();
+        if (proNumber.startsWith("REQ") && !proNumber.startsWith("REQS")) {
+            demandDO.setReqNo(proNumber);
+            List<DemandDO> demandDOList = demandDao.find(demandDO);
+            if (demandDOList.isEmpty()) {
+                return;
+            } else {
+                demandDO = demandDOList.get(0);
+                DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
+                if (!JudgeUtils.isNull(demandJiraDO)) {
+                    List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinEpic(demandJiraDO.getJiraKey());
+                    if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
+                        return ;
+                    }else{
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("此需求JIRA中还有未完成的内部缺陷，请在JIRA中走完流程后再重新录入!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
+                }
+
+            }
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public String updateAllProductionDtc(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //生成流水记录
+        ScheduleDO scheduleBean = new ScheduleDO(currentUser);
+        String[] pro_number_list = taskIdStr.split("~");
+
+        if(pro_number_list[0].equals("1")){
+            //return ajaxDoneError("请填写进行此操作原因");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+
+        String pro_status_after = "";
+        String pro_status_before = "";
+        if (pro_number_list[0].equals("dtc")) {
+            if (pro_number_list.length == 1) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择投产进行操作");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            pro_status_before = "投产提出";
+            pro_status_after = "投产待部署";
+            scheduleBean.setOperationReason("通过");
+        }
+
+        scheduleBean.setPreOperation(pro_status_before);
+        scheduleBean.setAfterOperation(pro_status_after);
+        scheduleBean.setOperationType(pro_status_after);
+        for (int i = 2; i < pro_number_list.length; ++i) {
+            String status = operationProductionDao.findProductionBean(pro_number_list[i]).getProStatus();
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("投产打回") && (status.equals("投产待部署")) ) || (pro_status_after.equals("投产回退") && status.equals("投产验证完成")) ||(pro_status_after.equals("投产取消") && (status.equals("投产提出")|| status.equals("投产待部署"))))){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        int unfinished  = 0;
+        int finished  = 0;
+        for (int j = 2; j < pro_number_list.length; ++j) {
+            String status = operationProductionDao.findProductionBean(pro_number_list[j]).getProStatus();
+            SimpleDateFormat sdfmonth =new SimpleDateFormat("yyyy-MM");
+            String month = sdfmonth.format(operationProductionDao.findProductionBean(pro_number_list[j]).getProDate());
+            scheduleBean.setProNumber(pro_number_list[j]);
+            scheduleBean.setPreOperation(status);
+            try {
+                //转待投产时，需要登记投产时未完成任务统计表，统计未完成缺陷和问题
+                if (pro_number_list[0].equals("dtc")) {
+                    jiraDataCollationService.inquiriesAboutRemainingProblems(pro_number_list[j]);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            // 投产编号为需求编号时
+            DemandDO demandDO = new DemandDO();
+            if (pro_number_list[j].startsWith("REQ") && !pro_number_list[j].startsWith("REQS")) {
+                demandDO.setReqNo(pro_number_list[j]);
+                List<DemandDO> demandDOList = demandDao.find(demandDO);
+                if (!demandDOList.isEmpty()) {
+                    demandDO = demandDOList.get(0);
+                    DemandJiraDO demandJiraDO = demandJiraDao.get(demandDO.getReqInnerSeq());
+                    if (!JudgeUtils.isNull(demandJiraDO)) {
+                        List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinEpic(demandJiraDO.getJiraKey());
+                        if (JudgeUtils.isEmpty(jiraTaskBodyBOS)) {
+                            // 完成数加1
+                            finished = finished+1;
+                        }else{
+                            // 存在内部缺陷未完成，未完成数加1
+                            unfinished = unfinished+1;
+                            // 存在内部缺陷未完成,则状态不变更跳过
+                            continue;
+                        }
+                    }
+                }else{
+                    // 完成数加1
+                    finished = finished+1;
+                }
+            }else{
+                // 完成数加1
+                finished = finished+1;
+            }
+            operationProductionDao.insertSchedule(scheduleBean);
+            operationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
+
+            // 根据编号查询需求信息
+            DemandDO demanddo = new DemandDO();
+            demanddo.setReqNo(pro_number_list[j]);
+            List<DemandDO> demandBOList = demandDao.find(demanddo);
+            if(!demandBOList.isEmpty()){
+                DemandDO demand = demandBOList.get(0);
+                if (!JudgeUtils.isNull(demand)) {
+                    //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
+                    if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
+                        demand.setPreCurPeriod("170");
+                        DemandBO demandBO = new DemandBO();
+                        BeanConvertUtils.convert(demandBO, demand);
+                        //登记需求阶段记录表
+                        String remarks="投产状态自动修改";
+                        reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+                        demand.setReqSts("20");
+                        if(pro_status_after.equals("投产回退")){
+                            // 登记需求变更明细表
+                            DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
+                            demandStateHistoryDO.setReqInnerSeq(demand.getReqInnerSeq());
+                            demandStateHistoryDO.setReqNo(demand.getReqNo());
+                            demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck(demand.getReqSts()));
+                            demandStateHistoryDO.setReqSts("进行中");
+                            demandStateHistoryDO.setRemarks("投产回退");
+                            demandStateHistoryDO.setReqNm(demand.getReqNm());
+                            //依据内部需求编号查唯一标识
+                            String identificationByReqInnerSeq = demandChangeDetailsDao.getIdentificationByReqInnerSeq(demand.getReqInnerSeq());
+                            if(identificationByReqInnerSeq==null){
+                                identificationByReqInnerSeq=demand.getReqInnerSeq();
+                            }
+                            demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
+                            //登记需求状态历史表
+                            //获取当前操作员
+                            demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+                            demandStateHistoryDO.setCreatTime(LocalDateTime.now());
+                            demandStateHistoryDao.insert(demandStateHistoryDO);
+                        }
+                        demandDao.updateOperation(demand);
+                    }
+                }
+            }
+        }
+//        //投产状态未待部署，异步批量拉取jira数据
+//        if("投产待部署".equals(pro_status_after)){
+//            jiraDataCollationService.getDefectAndProblem();
+//        }
+        int sum = unfinished+finished;
+        String str ="本次投产转投产待部署总计:"+sum+"个," + "<br/>" +
+                "投产流程正常共:"+finished+"个," + "<br/>" +
+                "jira缺陷流程未完成共:"+unfinished+"个";
+        return str;
+    }
+
 }

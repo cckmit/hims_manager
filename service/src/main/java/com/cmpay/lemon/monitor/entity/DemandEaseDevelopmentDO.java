@@ -68,21 +68,6 @@ public class DemandEaseDevelopmentDO extends BaseDO {
     @Excel(name = "需求描述")
     private String requirementdescription;
     /**
-     * @Fields commissioningdate 投产日期
-     */
-    @Excel(name = "投产日期")
-    private String commissioningdate;
-    /**
-     * @Fields acceptancedate 验收日期
-     */
-    @Excel(name = "验收日期")
-    private String acceptancedate;
-    /**
-     * @Fields acceptor 验收人
-     */
-    @Excel(name = "验收人")
-    private String acceptor;
-    /**
      * @Fields developmentworkloadassess 开发工作量评估
      */
     @Excel(name = "开发工作量评估")
@@ -92,6 +77,21 @@ public class DemandEaseDevelopmentDO extends BaseDO {
      */
     @Excel(name = "开发工作量")
     private String developmentworkload;
+    /**
+     * @Fields commissioningdate 投产日期
+     */
+    @Excel(name = "投产日期")
+    private String commissioningdate;
+    /**
+     * @Fields acceptor 验收人
+     */
+    @Excel(name = "验收人")
+    private String acceptor;
+    /**
+     * @Fields acceptancedate 验收日期
+     */
+    @Excel(name = "验收日期")
+    private String acceptancedate;
 
     /**
      * @Fields remark 备注

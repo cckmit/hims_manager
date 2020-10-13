@@ -207,7 +207,7 @@
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
             <if test="reqImplMon != null" >
-                reqImplMon = #{remark,jdbcType=VARCHAR},
+                reqImplMon = #{reqImplMon,jdbcType=VARCHAR},
             </if>
             <if test="productmanagementdepartment != null" >
                 productManagementDepartment = #{productmanagementdepartment,jdbcType=VARCHAR},

@@ -80,20 +80,20 @@ public class ErrorController {
         String sit = errorService.selectSitMsg(errorComditionBO);
         // 查询uat错误码数据库并新增
         String uat = errorService.selectUatMsg(errorComditionBO);
-//        // 记录错误码导入记录
-//        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");//设置日期格式
-//        ErrorRecordBeanDO errorRecordBean = new ErrorRecordBeanDO();
-//        errorRecordBean.setErrorCode(errorComditionBO.getErrorCd());
-//        if("SIT" == sit){
-//            errorRecordBean.setTimeStmp(df.format(new Date()));
-//            errorRecordBean.setEnvirCode("SIT");
-//            errorService.insertErrorRecordBean(errorRecordBean);
-//        }
-//        if("UAT" == uat){
-//            errorRecordBean.setTimeStmp(df.format(new Date()));
-//            errorRecordBean.setEnvirCode("UAT");
-//            errorService.insertErrorRecordBean(errorRecordBean);
-//        }
+        // 记录错误码导入记录
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmm");//设置日期格式
+        ErrorRecordBeanDO errorRecordBean = new ErrorRecordBeanDO();
+        errorRecordBean.setErrorCode(errorComditionBO.getErrorCd());
+        if("SIT" == sit){
+            errorRecordBean.setTimeStmp(df.format(new Date()));
+            errorRecordBean.setEnvirCode("SIT");
+            errorService.insertErrorRecordBean(errorRecordBean);
+        }
+        if("UAT" == uat){
+            errorRecordBean.setTimeStmp(df.format(new Date()));
+            errorRecordBean.setEnvirCode("UAT");
+            errorService.insertErrorRecordBean(errorRecordBean);
+        }
     }
     /**
      * 新增

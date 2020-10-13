@@ -20,6 +20,11 @@ public class SupportWorkloadDO extends BaseDO {
     @Excel(name = "一级主导团队")
     private String firstLevelOrganization;
     /**
+     * @Fields productmanagementdepartment 产品管理部门
+     */
+    @Excel(name = "产品管理部门")
+    private String productmanagementdepartment;
+    /**
      * @Fields costdepartment 成本管理部门
      */
     @Excel(name = "成本管理部门")
@@ -34,11 +39,6 @@ public class SupportWorkloadDO extends BaseDO {
      */
     @Excel(name = "流程开始日期")
     private String processstartdate;
-    /**
-     * @Fields productmanagementdepartment 产品管理部门
-     */
-    @Excel(name = "产品管理部门")
-    private String productmanagementdepartment;
     /**
      * @Fields productowner 产品负责人
      */

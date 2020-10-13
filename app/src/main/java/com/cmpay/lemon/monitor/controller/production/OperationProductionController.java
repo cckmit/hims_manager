@@ -257,4 +257,19 @@ public class OperationProductionController {
         rspDTO.setPageSize(problemRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+
+
+    @RequestMapping("/checkJiraDefect")
+    public GenericRspDTO checkJiraDefect(@RequestParam("pro_number") String proNumber){
+        operationProductionService.checkJiraDefect(proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    @RequestMapping("/updateAllProductionDtc")
+    public GenericRspDTO updateAllProductionDtc(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
+        String result = operationProductionService.updateAllProductionDtc(request,response,taskIdStr);
+        MsgEnum.SUCCESS.setMsgInfo("");
+        MsgEnum.SUCCESS.setMsgInfo(result);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
 }

@@ -34,6 +34,7 @@ public interface OperationProductionService {
     void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO);
 
     void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
+    String updateAllProductionDtc(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExport(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoITExportResult(HttpServletRequest request, HttpServletResponse response, ITProductionBO str);
@@ -137,4 +138,6 @@ public interface OperationProductionService {
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
 
     ProblemRspBO productionProblem(ProblemBO problemBO);
+
+    void checkJiraDefect(String proNumber);
 }
