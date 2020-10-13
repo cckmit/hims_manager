@@ -2839,10 +2839,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 }
             }
         }
-//        //投产状态未待部署，异步批量拉取jira数据
-//        if("投产待部署".equals(pro_status_after)){
-//            jiraDataCollationService.getDefectAndProblem();
-//        }
+        //投产状态未待部署，异步批量拉取jira数据
+        if("投产待部署".equals(pro_status_after)){
+            jiraDataCollationService.getDefectAndProblem();
+        }
         int sum = unfinished+finished;
         String str ="本次投产转投产待部署总计:"+sum+"个," + "<br/>" +
                 "投产流程正常共:"+finished+"个," + "<br/>" +
