@@ -78,6 +78,11 @@ public interface ReqPlanService {
      * 根据编号获取邮箱
      */
     Map<String,String> getMailbox(String req_inner_seq);
+
+    /**
+     * 根据编号获取邮箱2
+     */
+    Map<String,String> getMailbox2(String req_inner_seq);
     /**
      * 项目启动
      *

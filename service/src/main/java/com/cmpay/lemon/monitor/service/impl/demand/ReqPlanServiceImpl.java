@@ -844,6 +844,114 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         resMap.put("jdEmail", jdEmail);
         return resMap;
     }
+    /**
+     * 获取邮箱
+     */
+    @Override
+    public Map<String, String> getMailbox2(String reqInnerSeq) {
+        Map<String, String> resMap = new HashMap<>();
+        DemandDO demandDO = new DemandDO();
+        //发送的邮箱
+        String proMemberEmail = "";
+        //所有部门主管邮箱
+        String devpEmail = "";
+        //根据内部编号查询所有相关人员
+        DemandDO bean = demandDao.get(reqInnerSeq);
+        //后台开发工程师
+        String[] devp_eng = StringUtils.isBlank(bean.getDevpEng()) ? null : bean.getDevpEng().split("、");
+        String devp_eng_email = "";
+        //前端开发工程师
+        String[] front_eng = StringUtils.isBlank(bean.getFrontEng()) ? null : bean.getFrontEng().split("、");
+        String front_eng_email = "";
+        //测试工程师
+        String[] test_eng = StringUtils.isBlank(bean.getTestEng()) ? null : bean.getTestEng().split("、");
+        String test_eng_email = "";
+        //查询项目成员邮箱(后台开发工程师、项目经理、产品经理、前端开发工程师、测试工程师)
+        if (devp_eng != null) {
+            if (devp_eng.length >= 2) {
+                for (int i = 0; i < devp_eng.length; i++) {
+                    demandDO = planDao.searchUserEmail(devp_eng[i]);
+                    if (demandDO != null) {
+                        devp_eng_email += demandDO.getMonRemark() + ";";
+                    }
+                }
+            } else {
+                demandDO = planDao.searchUserEmail(bean.getDevpEng());
+                if (demandDO != null) {
+                    devp_eng_email += demandDO.getMonRemark() + ";";
+                }
+            }
+        }
+
+        if (front_eng != null) {
+            if (front_eng.length >= 2) {
+                for (int i = 0; i < front_eng.length; i++) {
+                    demandDO = planDao.searchUserEmail(front_eng[i]);
+                    if (demandDO != null) {
+                        front_eng_email += demandDO.getMonRemark() + ";";
+                    }
+                }
+            } else {
+                demandDO = planDao.searchUserEmail(bean.getFrontEng());
+                if (demandDO != null) {
+                    front_eng_email += demandDO.getMonRemark() + ";";
+                }
+            }
+        }
+
+        if (test_eng != null) {
+            if (test_eng.length >= 2) {
+                for (int i = 0; i < test_eng.length; i++) {
+                    demandDO = planDao.searchUserEmail(test_eng[i]);
+                    if (demandDO != null) {
+                        test_eng_email += demandDO.getMonRemark() + ";";
+                    }
+                }
+            } else {
+                demandDO = planDao.searchUserEmail(bean.getTestEng());
+                if (demandDO != null) {
+                    test_eng_email += demandDO.getMonRemark() + ";";
+                }
+            }
+        }
+
+        demandDO = planDao.searchOtherUserEmail(reqInnerSeq);
+        if (demandDO != null) {
+            String proMemberEmailAll = devp_eng_email + front_eng_email + test_eng_email  + demandDO.getMonRemark() + ";";
+            String[] proMemberEmailSplit = proMemberEmailAll.split(";");
+            //去除重复的字符串
+            List<String> list = new ArrayList<>();
+            for (int i = 0; i < proMemberEmailSplit.length; i++) {
+                // 去掉liu_gj@hisuntech.com
+                if("liu_gj@hisuntech.com".equals(proMemberEmailSplit[i])){
+                    continue;
+                }
+                if (!list.contains(proMemberEmailSplit[i])) {
+                    list.add(proMemberEmailSplit[i]);
+                }
+            }
+            for (int i = 0; i < list.size(); i++) {
+                proMemberEmail += list.get(i) + ";";
+            }
+        }
+
+        String[] devpCoorDepts = null;
+        if (StringUtils.isNotEmpty(bean.getDevpCoorDept())) {
+            devpCoorDepts = new String[1];
+        } else {
+            devpCoorDepts = new String[1];
+        }
+        //查询部门邮箱(主导部门和配合部门，去除配合部门测试部)
+        demandDO = planDao.findDevpEmail(devpCoorDepts, reqInnerSeq);
+        if (demandDO != null) {
+            devpEmail = demandDO.getMonRemark() + ";";
+        }
+        //部门主管添加田群
+        devpEmail = devpEmail + "tian_qun@hisuntech.com;";
+        resMap.put("proMemberEmail", proMemberEmail);
+        resMap.put("devpEmail", devpEmail);
+        return resMap;
+    }
 
     /**
      * 项目启动

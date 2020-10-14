@@ -17,6 +17,9 @@ import com.cmpay.lemon.monitor.bo.jira.CreateIssueTestSubtaskRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -2047,7 +2050,46 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             smokeTestFailedCountDOS.get(0).setTestDate(smokeTestRegistrationBO.getTestDate());
             smokeTestFailedCountDao.update(smokeTestFailedCountDOS.get(0));
         }
+        // 发送邮件通知
+        // 根据内部编号获取需求信息
+        // 获取部门经理邮箱 ，开发负责人，产品经理，前端。后台开发，测试人员 田群的邮箱
+        Map<String, String> resMap = new HashMap<>();
+        resMap = reqPlanService.getMailbox2(smokeTestRegistrationBO.getReqInnerSeq());
+        String proMemberEmail = resMap.get("proMemberEmail");
+        String devpEmail = resMap.get("devpEmail");
+        //发送邮件
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+        String[] mailToAddress  = proMemberEmail.split(";");
+        mailInfo.setReceivers(mailToAddress);
+        String[] mailToCss = devpEmail.split(";");
+        mailInfo.setCcs(mailToCss);
+        mailInfo.setSubject("【冒烟测试不通过通知】");
+        StringBuffer sb = new StringBuffer();
+        sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+        sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>冒烟测试不通过信息</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>需求名</td><td>" + smokeTestRegistrationBO.getReqNm() + "</td><td style='font-weight: bold;'>需求编号</td><td>" + smokeTestRegistrationBO.getReqNo() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>测试日期</td><td>" + smokeTestRegistrationBO.getTestDate() + "</td><td style='font-weight: bold;'>测试负责人</td><td>" + smokeTestRegistrationBO.getTesters() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>归属部门</td><td>" + smokeTestRegistrationBO.getDepartment() + "</td><td style='font-weight: bold;'>jira编号</td><td>" + smokeTestRegistrationBO.getJiraKey() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>冒烟测试不通过描述</td><td colspan='5'>" + smokeTestRegistrationBO.getTestdescription() + "</td></tr></table>");
+
+        mailInfo.setContent("各位好:<br/>【" + smokeTestRegistrationBO.getReqNo() +"_"+smokeTestRegistrationBO.getReqNm()+ "】需求存在冒烟测试不通过，请及时关注。<br/>" + sb.toString());
+        // 这个类主要来发送邮件
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        if (!(isSend)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("审批邮件发送失败!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
     }
+
+
 
     /**
      * 需求累计投入资源
