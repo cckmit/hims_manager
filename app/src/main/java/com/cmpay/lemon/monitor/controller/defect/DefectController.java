@@ -70,6 +70,19 @@ public class DefectController {
         return GenericRspDTO.newSuccessInstance();
     }
 
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/downloadTest")
+    public GenericRspDTO<NoBody> downloadTest(@RequestBody SmokeTestRegistrationReqDTO smokeTestRegistrationReqDTO, HttpServletResponse response) {
+        SmokeTestRegistrationBO smokeTestRegistrationBO = BeanUtils.copyPropertiesReturnDest(new SmokeTestRegistrationBO(), smokeTestRegistrationReqDTO);
+        defectsService.getDownloadTest(response, smokeTestRegistrationBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
 
     @RequestMapping(value = "/zenQuestiontFindList", method = RequestMethod.POST)
     public GenericRspDTO<ZenQuestiontRspDTO> zenQuestiontFindList(@RequestBody ZenQuestiontReqDTO zenQuestiontReqDTO) {

@@ -13,6 +13,7 @@ public  interface DefectsService {
     SmokeTestRegistrationRspBO smokeTestFailedQuery(SmokeTestRegistrationBO smokeTestRegistrationBO);
 
     void getDownload(HttpServletResponse response,ProductionDefectsBO productionDefectsBO);
+    void getDownloadTest(HttpServletResponse response,SmokeTestRegistrationBO smokeTestRegistrationBO);
     void downloadZenQuestiont(HttpServletResponse response,ZenQuestiontBO zenQuestiontBO);
     void zennDataImport(MultipartFile file);
     ZenQuestiontRspBO zenQuestiontFindList(ZenQuestiontBO zenQuestiontBO);

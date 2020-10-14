@@ -1,11 +1,12 @@
 /*
  * @ClassName SmokeTestRegistrationDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2020-07-08 11:33:25
  */
 package com.cmpay.lemon.monitor.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
@@ -16,37 +17,46 @@ public class SmokeTestRegistrationDO extends BaseDO {
      */
     private Integer id;
     /**
-     * @Fields reqNm 
+     * @Fields jiraKey
      */
-    private String reqNm;
-    /**
-     * @Fields reqNo 
-     */
-    private String reqNo;
-    /**
-     * @Fields reqInnerSeq 
-     */
-    private String reqInnerSeq;
-    /**
-     * @Fields jiraKey 
-     */
+    @Excel(name = "jiraKey")
     private String jiraKey;
     /**
-     * @Fields testers 
+     * @Fields department
      */
+    @Excel(name = "归属部门")
+    private String department;
+    /**
+     * @Fields reqInnerSeq
+     */
+    @Excel(name = "内部需求编号")
+    private String reqInnerSeq;
+    /**
+     * @Fields reqNo
+     */
+    @Excel(name = "需求编号")
+    private String reqNo;
+    /**
+     * @Fields reqNm
+     */
+    @Excel(name = "需求名称")
+    private String reqNm;
+    /**
+     * @Fields testers
+     */
+    @Excel(name = "测试人员")
     private String testers;
     /**
-     * @Fields testdescription 
+     * @Fields testDate
      */
-    private String testdescription;
-    /**
-     * @Fields testDate 
-     */
+    @Excel(name = "测试日期")
     private String testDate;
     /**
-     * @Fields department 
+     * @Fields testdescription
      */
-    private String department;
+    @Excel(name = "冒烟不通过描述")
+    private String testdescription;
+
 
     public Integer getId() {
         return id;

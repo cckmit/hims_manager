@@ -13,6 +13,7 @@ import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.Constant;
 import com.cmpay.lemon.monitor.entity.*;
@@ -27,6 +28,7 @@ import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.dic.DictionaryService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.utils.*;
+import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -1720,6 +1722,25 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：需求编号不能为空!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
+        // 如果当前是uat更新转预投产，则新增判断需求jira内部缺陷流程是否全部关闭
+        // 30	需求定稿
+        //50	技术方案定稿
+        //110	完成SIT测试
+        //140	完成UAT测试
+        //160	完成预投产
+        //180	完成产品发布
+        if (uploadPeriod.equals("140")) {
+            DemandJiraDO demandJiraDO = demandJiraDao.get(innerReqSeq);
+            if (!JudgeUtils.isNull(demandJiraDO)) {
+                List<JiraTaskBodyBO> jiraTaskBodyBOS = JiraUtil.batchQueryIssuesModifiedWithinEpic(demandJiraDO.getJiraKey());
+                if (JudgeUtils.isNotEmpty(jiraTaskBodyBOS)) {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("此需求JIRA中还有未完成的内部缺陷，请在JIRA中走完流程后再重新上传文档!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+        }
+
         int start = reqNo.indexOf("-") + 1;
         String reqMonth = reqNo.substring(start, start + 6);
         String monthDir = "";

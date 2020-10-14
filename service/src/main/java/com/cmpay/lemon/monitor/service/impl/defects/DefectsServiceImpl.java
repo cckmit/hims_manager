@@ -89,6 +89,29 @@ public class DefectsServiceImpl  implements DefectsService {
 
     //导出
     @Override
+    public void getDownloadTest(HttpServletResponse response, SmokeTestRegistrationBO smokeTestRegistrationBO) {
+        SmokeTestRegistrationDO smokeTestRegistrationDO = new SmokeTestRegistrationDO();
+        BeanConvertUtils.convert(smokeTestRegistrationDO, smokeTestRegistrationBO);
+        List<SmokeTestRegistrationDO> demandDOList = smokeTestRegistrationDao.findList(smokeTestRegistrationDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), SmokeTestRegistrationDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "productionDefectsDO_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    //导出
+    @Override
     public void getDownload(HttpServletResponse response, ProductionDefectsBO productionDefectsBO) {
         ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
         BeanConvertUtils.convert(productionDefectsDO, productionDefectsBO);
