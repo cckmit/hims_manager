@@ -7,6 +7,15 @@ public class UpdateReqStsDTO {
     String reqSts;
     String reqNm;
     String reqNo;
+    String stateCauseClassification;
+
+    public String getStateCauseClassification() {
+        return stateCauseClassification;
+    }
+
+    public void setStateCauseClassification(String stateCauseClassification) {
+        this.stateCauseClassification = stateCauseClassification;
+    }
 
     public String getReqStsRemarks() {
         return reqStsRemarks;
@@ -46,5 +55,17 @@ public class UpdateReqStsDTO {
 
     public void setReqNo(String reqNo) {
         this.reqNo = reqNo;
+    }
+
+    @Override
+    public String toString() {
+        return "UpdateReqStsDTO{" +
+                "reqStsRemarks='" + reqStsRemarks + '\'' +
+                ", reqInnerSeq='" + reqInnerSeq + '\'' +
+                ", reqSts='" + reqSts + '\'' +
+                ", reqNm='" + reqNm + '\'' +
+                ", reqNo='" + reqNo + '\'' +
+                ", stateCauseClassification='" + stateCauseClassification + '\'' +
+                '}';
     }
 }

@@ -98,6 +98,13 @@ public class DemandBO {
     private String remarks;
     private int projectedWorkload;
 
+    // 状态修改原因分类
+    private String stateCauseClassification;
+    //未达到月初目标原因分类
+    private String targetCauseClassification;
+    //投产时间
+    private String productionTime;
+
     public int getProjectedWorkload() {
         return projectedWorkload;
     }
@@ -795,6 +802,30 @@ public class DemandBO {
         this.firstLevelOrganization = firstLevelOrganization;
     }
 
+    public String getStateCauseClassification() {
+        return stateCauseClassification;
+    }
+
+    public void setStateCauseClassification(String stateCauseClassification) {
+        this.stateCauseClassification = stateCauseClassification;
+    }
+
+    public String getTargetCauseClassification() {
+        return targetCauseClassification;
+    }
+
+    public void setTargetCauseClassification(String targetCauseClassification) {
+        this.targetCauseClassification = targetCauseClassification;
+    }
+
+    public String getProductionTime() {
+        return productionTime;
+    }
+
+    public void setProductionTime(String productionTime) {
+        this.productionTime = productionTime;
+    }
+
     @Override
     public String toString() {
         return "DemandBO{" +
@@ -872,6 +903,9 @@ public class DemandBO {
                 ", site='" + site + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", projectedWorkload=" + projectedWorkload +
+                ", stateCauseClassification='" + stateCauseClassification + '\'' +
+                ", targetCauseClassification='" + targetCauseClassification + '\'' +
+                ", productionTime='" + productionTime + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +

@@ -13,11 +13,12 @@
         <result column="identification" property="identification" jdbcType="VARCHAR" />
         <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
         <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+        <result column="state_cause_classification" property="stateCauseClassification" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         id, req_inner_seq, req_no, req_nm, old_req_sts, req_sts, remarks, identification, 
-        creat_user, creat_time
+        creat_user, creat_time, state_cause_classification
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -65,6 +66,9 @@
             <if test="creatTime != null" >
                 creat_time,
             </if>
+            <if test="stateCauseClassification != null" >
+                state_cause_classification,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="id != null" >
@@ -96,6 +100,9 @@
             </if>
             <if test="creatTime != null" >
                 #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="stateCauseClassification != null" >
+                #{stateCauseClassification,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -129,6 +136,9 @@
             </if>
             <if test="creatTime != null" >
                 creat_time = #{creatTime,jdbcType=VARCHAR},
+            </if>
+            <if test="stateCauseClassification != null" >
+                state_cause_classification = #{stateCauseClassification,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
@@ -168,6 +178,9 @@
             </if>
             <if test="creatTime != null" >
                 and creat_time = #{creatTime,jdbcType=VARCHAR}
+            </if>
+            <if test="stateCauseClassification != null" >
+                and state_cause_classification = #{stateCauseClassification,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

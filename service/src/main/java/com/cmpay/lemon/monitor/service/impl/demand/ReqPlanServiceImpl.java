@@ -432,13 +432,13 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         demandTimeFrameHistoryDO.setReqNm(demandDO.getReqNm());
         demandTimeFrameHistoryDO.setReqNm(demandDO.getReqNm());
         demandTimeFrameHistoryDO.setOldPrdFinshTm(demandDO.getPrdFinshTm());
-        demandTimeFrameHistoryDO.setOldExpPrdReleaseTm(demandDO.getExpPrdReleaseTm());
+        demandTimeFrameHistoryDO.setOldExpPrdReleaseTm(demandDO.getProductionTime());
         demandTimeFrameHistoryDO.setOldUatUpdateTm(demandDO.getUatUpdateTm());
         demandTimeFrameHistoryDO.setOldTestFinshTm(demandDO.getTestFinshTm());
         demandTimeFrameHistoryDO.setOldPreTm(demandDO.getPreTm());
 
         demandTimeFrameHistoryDO.setPrdFinshTm(demandBO.getPrdFinshTm());
-        demandTimeFrameHistoryDO.setExpPrdReleaseTm(demandBO.getExpPrdReleaseTm());
+        demandTimeFrameHistoryDO.setExpPrdReleaseTm(demandBO.getProductionTime());
         demandTimeFrameHistoryDO.setUatUpdateTm(demandBO.getUatUpdateTm());
         demandTimeFrameHistoryDO.setTestFinshTm(demandBO.getTestFinshTm());
         demandTimeFrameHistoryDO.setPreTm(demandBO.getPreTm());
@@ -1143,7 +1143,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[]{"yyyy-MM-dd"}));
             String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[]{"yyyy-MM-dd"}));
             String oprFisnTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[]{"yyyy-MM-dd"}));
+                    .format(DateUtils.parseDate(reqTask.getProductionTime(), new String[]{"yyyy-MM-dd"}));
             content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
             content.append("<br/>");
             content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
@@ -1204,7 +1204,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     .format(DateUtils.parseDate(reqTask.getTestFinshTm(), new String[]{"yyyy-MM-dd"}));
             String preTm = sdf.format(DateUtils.parseDate(reqTask.getPreTm(), new String[]{"yyyy-MM-dd"}));
             String oprFisnTm = sdf
-                    .format(DateUtils.parseDate(reqTask.getExpPrdReleaseTm(), new String[]{"yyyy-MM-dd"}));
+                    .format(DateUtils.parseDate(reqTask.getProductionTime(), new String[]{"yyyy-MM-dd"}));
             content.append("&nbsp;&nbsp;1、需求定稿时间：" + prdFinshTm);
             content.append("<br/>");
             content.append("&nbsp;&nbsp;2、UAT更新测试：" + uatUpdateTm);
@@ -2732,7 +2732,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demandDO.setPrdFinshTm(map.get(i).get(6).toString().trim());
                 demandDO.setUatUpdateTm(map.get(i).get(7).toString().trim());
                 demandDO.setTestFinshTm(map.get(i).get(8).toString().trim());
-                demandDO.setExpPrdReleaseTm(map.get(i).get(9).toString().trim());
+                demandDO.setProductionTime(map.get(i).get(9).toString().trim());
                 demandDO.setCurMonTarget(map.get(i).get(10).toString().trim());
                 demandDO.setDevpLeadDept(map.get(i).get(12).toString().trim());
                 demandDO.setDevpCoorDept(map.get(i).get(13).toString().trim());

@@ -1,8 +1,8 @@
 /*
  * @ClassName DemandStateHistoryDO
- * @Description 
+ * @Description
  * @version 1.0
- * @Date 2019-11-28 14:23:21
+ * @Date 2020-10-15 16:54:07
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -53,6 +53,10 @@ public class DemandStateHistoryDO extends BaseDO {
      * @Fields creatTime 操作时间
      */
     private LocalDateTime creatTime;
+    /**
+     * @Fields stateCauseClassification 状态修改原因分类
+     */
+    private String stateCauseClassification;
 
     public Integer getId() {
         return id;
@@ -132,5 +136,13 @@ public class DemandStateHistoryDO extends BaseDO {
 
     public void setCreatTime(LocalDateTime creatTime) {
         this.creatTime = creatTime;
+    }
+
+    public String getStateCauseClassification() {
+        return stateCauseClassification;
+    }
+
+    public void setStateCauseClassification(String stateCauseClassification) {
+        this.stateCauseClassification = stateCauseClassification;
     }
 }

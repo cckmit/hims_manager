@@ -73,6 +73,7 @@
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >
+            ( defect_type != '无效问题' or defect_type is null )
             <if test="jireKey != null" >
                 and jire_key = #{jireKey,jdbcType=VARCHAR}
             </if>
@@ -168,6 +169,7 @@
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >
+            ( defect_type != '无效问题' or defect_type is null )
             <if test="jireKey != null" >
                 and jire_key = #{jireKey,jdbcType=VARCHAR}
             </if>
@@ -215,6 +217,7 @@
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >
+            ( defect_type != '无效问题' or defect_type is null )
             <if test="jireKey != null" >
                 and jire_key = #{jireKey,jdbcType=VARCHAR}
             </if>

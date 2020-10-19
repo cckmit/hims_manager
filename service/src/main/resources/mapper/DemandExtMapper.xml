@@ -71,6 +71,9 @@
         <result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
         <result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
         <result property="projectedWorkload" jdbcType="INTEGER" column="projectedWorkload" />
+        <result property="stateCauseClassification" jdbcType="VARCHAR" column="state_cause_classification" />
+        <result property="targetCauseClassification" jdbcType="VARCHAR" column="target_cause_classification" />
+        <result property="productionTime" jdbcType="INTEGER" column="production_time" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -131,7 +134,10 @@
 		update_time ,
 		creat_user ,
 		update_user,
-		projectedWorkload
+		projectedWorkload,
+		state_cause_classification,
+		target_cause_classification,
+		production_time
     </sql>
 
     <sql id="Base_Column_List1">
@@ -163,7 +169,10 @@
 		devp_res_mng,
 		is_svn_build,
 		req_abnor_type,
-		projectedWorkload
+		projectedWorkload,
+		state_cause_classification,
+		target_cause_classification,
+		production_time
 	</sql>
 
     <update id="updateReqPlanJsp" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
@@ -182,7 +191,7 @@
 		,uat_update_tm =#{ uatUpdateTm }
 		,test_finsh_tm =#{ testFinshTm }
 		,pre_tm=#{preTm}
-		,exp_prd_release_tm=#{expPrdReleaseTm}
+		,production_time=#{productionTime}
 		,devp_res_mng =#{ devpResMng}
 		,req_sts =#{reqSts}
 		,update_time =#{ updateTime }
@@ -266,6 +275,9 @@
         update_time ,
         creat_user ,
         projectedWorkload,
+        state_cause_classification,
+		target_cause_classification,
+		production_time,
         update_user)
         values(
         #{reqInnerSeq },
@@ -325,10 +337,14 @@
         #{updateTime },
         #{creatUser},
         #{projectedWorkload},
+        #{stateCauseClassification},
+        #{targetCauseClassification},
+        #{productionTime},
         #{updateUser})
+
     </insert>
     <update id="updateReqSts" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
-        update t_demand_info set req_sts =#{reqSts }  where req_inner_seq =#{reqInnerSeq }
+        update t_demand_info set req_sts =#{reqSts } ,state_cause_classification =#{stateCauseClassification } where req_inner_seq =#{reqInnerSeq }
     </update>
     <!--逻辑删除-->
     <update id="logicDelete" parameterType="java.lang.String" >
@@ -510,6 +526,15 @@
         </if>
         <if test="devpCoorDept != null and devpCoorDept != ''">
             ,devp_coor_dept =#{devpCoorDept}
+        </if>
+        <if test="stateCauseClassification != null and stateCauseClassification != ''">
+            ,state_cause_classification =#{stateCauseClassification}
+        </if>
+        <if test="targetCauseClassification != null and targetCauseClassification != ''">
+            ,target_cause_classification =#{targetCauseClassification}
+        </if>
+        <if test="productionTime != null and productionTime != ''">
+            ,production_time =#{productionTime}
         </if>
         where req_inner_seq =#{reqInnerSeq }
     </update>
@@ -1042,6 +1067,9 @@
 		creat_time ,
 		update_time ,
 		creat_user ,
+		state_cause_classification,
+		target_cause_classification,
+		production_time,
 		update_user)
 		values(
 		#{reqInnerSeq },
@@ -1100,6 +1128,9 @@
 		#{creatTime },
 		#{updateTime },
 		#{creatUser},
+		#{stateCauseClassification},
+        #{targetCauseClassification},
+        #{productionTime})
 		#{updateUser})
 	</insert>
 
@@ -1274,6 +1305,15 @@
         </if>
         <if test="updateUser != null and updateUser != ''">
             ,update_user =#{updateUser}
+        </if>
+        <if test="stateCauseClassification != null and stateCauseClassification != ''">
+            ,state_cause_classification =#{stateCauseClassification}
+        </if>
+        <if test="targetCauseClassification != null and targetCauseClassification != ''">
+            ,target_cause_classification =#{targetCauseClassification}
+        </if>
+        <if test="productionTime != null and productionTime != ''">
+            ,production_time =#{productionTime}
         </if>
         where req_inner_seq =#{reqInnerSeq }
     </update>
@@ -1516,6 +1556,15 @@
         <if test="endFeedbackTm != null and endFeedbackTm != ''">
             ,end_feedback_tm =#{endFeedbackTm }
         </if>
+        <if test="stateCauseClassification != null and stateCauseClassification != ''">
+            ,state_cause_classification =#{stateCauseClassification}
+        </if>
+        <if test="targetCauseClassification != null and targetCauseClassification != ''">
+            ,target_cause_classification =#{targetCauseClassification}
+        </if>
+        <if test="productionTime != null and productionTime != ''">
+            ,production_time =#{productionTime}
+        </if>
         WHERE req_inner_seq = #{reqInnerSeq}
 	</update>
 
@@ -1591,58 +1640,68 @@
 
     <update id="updatePlanInput" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         UPDATE t_demand_info
-        SET
-        <if test="reqPrdLine != null and reqPrdLine != ''">
-            ,req_prd_line =#{reqPrdLine }
-        </if>
-        <if test="reqSts != null and reqSts != ''">
-            ,req_sts =#{reqSts }
-        </if>
-        <if test="reqNo != null and reqNo != ''">
-            ,req_no =#{reqNo }
-        </if>
-        <if test="reqNm != null and reqNm != ''">
-            ,req_nm =#{reqNm }
-        </if>
-        <if test="prdFinshTm != null and prdFinshTm != ''">
-            ,prd_finsh_tm =#{prdFinshTm }
-        </if>
-        <if test="uatUpdateTm != null and uatUpdateTm != ''">
-            ,uat_update_tm =#{uatUpdateTm }
-        </if>
-        <if test="testFinshTm != null and testFinshTm != ''">
-            ,test_finsh_tm =#{testFinshTm }
-        </if>
-        <if test="expPrdReleaseTm != null and expPrdReleaseTm != ''">
-            ,exp_prd_release_tm =#{expPrdReleaseTm }
-        </if>
-        <if test="curMonTarget != null and curMonTarget != ''">
-            ,cur_mon_target =#{curMonTarget }
-        </if>
-        <if test="devpLeadDept != null and devpLeadDept != ''">
-            ,devp_lead_dept =#{devpLeadDept }
-        </if>
-        <if test="devpCoorDept != null and devpCoorDept != ''">
-            ,devp_coor_dept =#{devpCoorDept}
-        </if>
-        <if test="projectMng != null and projectMng != ''">
-            ,project_mng =#{projectMng }
-        </if>
-        <if test="devpEng != null and devpEng != ''">
-            ,devp_eng =#{devpEng }
-        </if>
-        <if test="frontEng != null and frontEng != ''">
-            ,front_eng =#{frontEng }
-        </if>
-        <if test="testEng != null and testEng != ''">
-            ,test_eng =#{testEng }
-        </if>
-        <if test="productMng != null and productMng != ''">
-            ,product_mng =#{productMng }
-        </if>
-        <if test="preCurPeriod != null and preCurPeriod != ''">
-            ,pre_cur_period =#{preCurPeriod }
-        </if>
+        <set >
+            <if test="reqPrdLine != null and reqPrdLine != ''">
+                req_prd_line =#{reqPrdLine },
+            </if>
+            <if test="reqSts != null and reqSts != ''">
+                req_sts =#{reqSts },
+            </if>
+            <if test="reqNo != null and reqNo != ''">
+                req_no =#{reqNo },
+            </if>
+            <if test="reqNm != null and reqNm != ''">
+                req_nm =#{reqNm },
+            </if>
+            <if test="prdFinshTm != null and prdFinshTm != ''">
+                prd_finsh_tm =#{prdFinshTm },
+            </if>
+            <if test="uatUpdateTm != null and uatUpdateTm != ''">
+                uat_update_tm =#{uatUpdateTm },
+            </if>
+            <if test="testFinshTm != null and testFinshTm != ''">
+                test_finsh_tm =#{testFinshTm },
+            </if>
+            <if test="expPrdReleaseTm != null and expPrdReleaseTm != ''">
+                exp_prd_release_tm =#{expPrdReleaseTm },
+            </if>
+            <if test="curMonTarget != null and curMonTarget != ''">
+                cur_mon_target =#{curMonTarget },
+            </if>
+            <if test="devpLeadDept != null and devpLeadDept != ''">
+                devp_lead_dept =#{devpLeadDept },
+            </if>
+            <if test="devpCoorDept != null and devpCoorDept != ''">
+                devp_coor_dept =#{devpCoorDept},
+            </if>
+            <if test="projectMng != null and projectMng != ''">
+                project_mng =#{projectMng },
+            </if>
+            <if test="devpEng != null and devpEng != ''">
+                devp_eng =#{devpEng },
+            </if>
+            <if test="frontEng != null and frontEng != ''">
+                front_eng =#{frontEng },
+            </if>
+            <if test="testEng != null and testEng != ''">
+                test_eng =#{testEng },
+            </if>
+            <if test="productMng != null and productMng != ''">
+                product_mng =#{productMng },
+            </if>
+            <if test="preCurPeriod != null and preCurPeriod != ''">
+                pre_cur_period =#{preCurPeriod },
+            </if>
+            <if test="stateCauseClassification != null and stateCauseClassification != ''">
+                state_cause_classification =#{stateCauseClassification},
+            </if>
+            <if test="targetCauseClassification != null and targetCauseClassification != ''">
+                target_cause_classification =#{targetCauseClassification},
+            </if>
+            <if test="productionTime != null and productionTime != ''">
+                production_time =#{productionTime},
+            </if>
+        </set >
         where req_inner_seq =#{reqInnerSeq }
     </update>
 

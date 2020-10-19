@@ -13,11 +13,12 @@
         <result column="identification" property="identification" jdbcType="VARCHAR" />
         <result column="creat_user" property="creatUser" jdbcType="VARCHAR" />
         <result column="creat_time" property="creatTime" jdbcType="VARCHAR" />
+        <result column="state_cause_classification" property="stateCauseClassification" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, req_inner_seq, req_no, req_nm, old_req_sts, req_sts, remarks, identification, 
-        creat_user, creat_time
+        id, req_inner_seq, req_no, req_nm, old_req_sts, req_sts, remarks, identification,
+        creat_user, creat_time, state_cause_classification
     </sql>
 
 

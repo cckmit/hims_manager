@@ -143,6 +143,15 @@ public class DemandDO extends BaseDO {
 
     private String preCurPeriod2;
 
+    // 状态修改原因分类
+    @Excel(name = "状态修改原因分类")
+    private String stateCauseClassification;
+    //未达到月初目标原因分类
+    @Excel(name = "未达到月初目标原因分类")
+    private String targetCauseClassification;
+    //投产时间
+    private String productionTime;
+
     public int getProjectedWorkload() {
         return projectedWorkload;
     }
@@ -826,6 +835,30 @@ public class DemandDO extends BaseDO {
         this.requirementStatusModificationNotes = requirementStatusModificationNotes;
     }
 
+    public String getStateCauseClassification() {
+        return stateCauseClassification;
+    }
+
+    public void setStateCauseClassification(String stateCauseClassification) {
+        this.stateCauseClassification = stateCauseClassification;
+    }
+
+    public String getTargetCauseClassification() {
+        return targetCauseClassification;
+    }
+
+    public void setTargetCauseClassification(String targetCauseClassification) {
+        this.targetCauseClassification = targetCauseClassification;
+    }
+
+    public String getProductionTime() {
+        return productionTime;
+    }
+
+    public void setProductionTime(String productionTime) {
+        this.productionTime = productionTime;
+    }
+
     @Override
     public String toString() {
         return "DemandDO{" +
@@ -836,6 +869,7 @@ public class DemandDO extends BaseDO {
                 ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
                 ", expInput=" + expInput +
+                ", projectedWorkload=" + projectedWorkload +
                 ", isCut='" + isCut + '\'' +
                 ", monRemark='" + monRemark + '\'' +
                 ", expPrdReleaseTm='" + expPrdReleaseTm + '\'' +
@@ -903,7 +937,9 @@ public class DemandDO extends BaseDO {
                 ", planStartTime='" + planStartTime + '\'' +
                 ", planEndTime='" + planEndTime + '\'' +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +
-                ", projectedWorkload=" + projectedWorkload +
+                ", stateCauseClassification='" + stateCauseClassification + '\'' +
+                ", targetCauseClassification='" + targetCauseClassification + '\'' +
+                ", productionTime='" + productionTime + '\'' +
                 '}';
     }
 }

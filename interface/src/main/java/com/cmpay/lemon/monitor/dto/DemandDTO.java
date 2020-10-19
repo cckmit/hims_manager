@@ -121,6 +121,13 @@ public class DemandDTO extends GenericDTO {
     private String remarks;
     private int projectedWorkload;
 
+    // 状态修改原因分类
+    private String stateCauseClassification;
+    //未达到月初目标原因分类
+    private String targetCauseClassification;
+    //投产时间
+    private String productionTime;
+
     public int getProjectedWorkload() {
         return projectedWorkload;
     }
@@ -808,6 +815,30 @@ public class DemandDTO extends GenericDTO {
         this.firstLevelOrganization = firstLevelOrganization;
     }
 
+    public String getStateCauseClassification() {
+        return stateCauseClassification;
+    }
+
+    public void setStateCauseClassification(String stateCauseClassification) {
+        this.stateCauseClassification = stateCauseClassification;
+    }
+
+    public String getTargetCauseClassification() {
+        return targetCauseClassification;
+    }
+
+    public void setTargetCauseClassification(String targetCauseClassification) {
+        this.targetCauseClassification = targetCauseClassification;
+    }
+
+    public String getProductionTime() {
+        return productionTime;
+    }
+
+    public void setProductionTime(String productionTime) {
+        this.productionTime = productionTime;
+    }
+
     @Override
     public String toString() {
         return "DemandDTO{" +
@@ -887,6 +918,9 @@ public class DemandDTO extends GenericDTO {
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", projectedWorkload=" + projectedWorkload +
+                ", stateCauseClassification='" + stateCauseClassification + '\'' +
+                ", targetCauseClassification='" + targetCauseClassification + '\'' +
+                ", productionTime='" + productionTime + '\'' +
                 ", noUpload=" + noUpload +
                 '}';
     }

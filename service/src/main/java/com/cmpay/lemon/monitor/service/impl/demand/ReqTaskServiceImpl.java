@@ -826,12 +826,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 demandDO.setMonRemark(map.get(i).get(9).toString().trim());
                 if (map.get(i).get(10) instanceof String) {
                     demandDO.setExpPrdReleaseTm(map.get(i).get(10).toString().trim());
+                    demandDO.setProductionTime(map.get(i).get(10).toString().trim());
                 }
                 if (map.get(i).get(10) instanceof Date) {
                     Date date = (Date)map.get(i).get(10);
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     String dt = simpleDateFormat.format(date);
                     demandDO.setExpPrdReleaseTm(dt.trim());
+                    demandDO.setProductionTime(dt.trim());
                 }
                 demandDO.setPreMonPeriod(map.get(i).get(11).toString().trim());
                 demandDO.setCurMonTarget(map.get(i).get(12).toString().trim());
@@ -1367,7 +1369,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public void updateReqSts(String reqInnerSeq, String reqNo, String reqSts, String reqStsRemarks, String reqNm) {
+    public void updateReqSts(String reqInnerSeq, String reqNo, String reqSts, String reqStsRemarks, String reqNm,String stateCauseClassification) {
         if (!permissionCheck(reqInnerSeq)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只有该需求产品经理和开发主导部门部门经理才能进行操作");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1395,6 +1397,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         DemandDO demandDO = new DemandDO();
         demandDO.setReqInnerSeq(reqInnerSeq);
         demandDO.setReqSts(reqSts);
+        demandDO.setStateCauseClassification(stateCauseClassification);
         demandDao.updateReqSts(demandDO);
         DemandStateHistoryDO demandStateHistoryDO = new DemandStateHistoryDO();
         demandStateHistoryDO.setReqNm(reqNm);
@@ -1413,6 +1416,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandStateHistoryDO.setIdentification(identificationByReqInnerSeq);
         //获取当前操作员
         demandStateHistoryDO.setCreatUser(userService.getFullname(SecurityUtils.getLoginName()));
+        demandStateHistoryDO.setStateCauseClassification(stateCauseClassification);
         demandStateHistoryDao.insert(demandStateHistoryDO);
     }
 
@@ -2171,7 +2175,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         //预投产时间
         timeAxisDataBO.setPreTm(demandBO.getPreTm());
         //投产时间
-        timeAxisDataBO.setExpPrdReleaseTm(demandBO.getExpPrdReleaseTm());
+        timeAxisDataBO.setExpPrdReleaseTm(demandBO.getProductionTime());
         //查询时间
         String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
 
