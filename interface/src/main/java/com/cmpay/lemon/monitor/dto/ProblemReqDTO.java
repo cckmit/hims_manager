@@ -63,6 +63,24 @@ public class ProblemReqDTO  extends PageableRspDTO {
      */
     private int pageSize;
 
+    private String isJira;
+    private String reqStartMon;
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
+    public String getIsJira() {
+        return isJira;
+    }
+
+    public void setIsJira(String isJira) {
+        this.isJira = isJira;
+    }
+
     public String getProType() {
         return proType;
     }
@@ -178,6 +196,8 @@ public class ProblemReqDTO  extends PageableRspDTO {
                 ", proNeed='" + proNeed + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", isJira='" + isJira + '\'' +
+                ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
     }
 }

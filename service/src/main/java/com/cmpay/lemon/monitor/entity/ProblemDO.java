@@ -2,7 +2,7 @@
  * @ClassName ProblemDO
  * @Description
  * @version 1.0
- * @Date 2020-09-25 15:17:26
+ * @Date 2020-10-27 16:19:42
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -40,6 +40,20 @@ public class ProblemDO extends BaseDO {
      * @Fields devpLeadDept 归属部门
      */
     private String devpLeadDept;
+    /**
+     * @Fields isJira 是否新建jira任务
+     */
+    private String isJira;
+
+    private String reqStartMon;
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
 
     public Long getProblemSerialNumber() {
         return problemSerialNumber;
@@ -97,6 +111,14 @@ public class ProblemDO extends BaseDO {
         this.devpLeadDept = devpLeadDept;
     }
 
+    public String getIsJira() {
+        return isJira;
+    }
+
+    public void setIsJira(String isJira) {
+        this.isJira = isJira;
+    }
+
     @Override
     public String toString() {
         return "ProblemDO{" +
@@ -107,6 +129,8 @@ public class ProblemDO extends BaseDO {
                 ", issuekey='" + issuekey + '\'' +
                 ", displayname='" + displayname + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", isJira='" + isJira + '\'' +
+                ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
     }
 }

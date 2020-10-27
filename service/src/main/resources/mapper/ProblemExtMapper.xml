@@ -10,11 +10,12 @@
         <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
         <result column="displayName" property="displayname" jdbcType="VARCHAR" />
         <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="is_jira" property="isJira" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName,
-        devp_lead_dept
+        devp_lead_dept, is_jira
     </sql>
 
 
@@ -32,17 +33,20 @@
             <if test="problemDetail != null  and problemDetail != ''" >
                 and problem_detail = #{problemDetail,jdbcType=VARCHAR}
             </if>
-            <if test="problemTime != null " >
-                and problem_time = #{problemTime,jdbcType=TIMESTAMP}
+            <if test="reqStartMon != null and reqStartMon != ''" >
+                and problem_time LIKE CONCAT('%',#{reqStartMon},'%')
             </if>
             <if test="issuekey != null  and issuekey != ''" >
                 and issuekey = #{issuekey,jdbcType=VARCHAR}
             </if>
             <if test="displayname != null  and displayname != ''" >
-                and displayName = #{displayname,jdbcType=VARCHAR}
+                and displayName LIKE CONCAT('%',#{displayname},'%')
             </if>
             <if test="devpLeadDept != null  and devpLeadDept != ''" >
                 and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="isJira != null and isJira != ''" >
+                and is_jira = #{isJira,jdbcType=VARCHAR}
             </if>
         </where>
         ORDER BY problem_serial_number DESC

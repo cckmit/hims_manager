@@ -2505,6 +2505,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     public void questionInput(ProblemBO problemBO) {
         //问题录入
+        if (JudgeUtils.isNull(problemBO.getIsJira()) || JudgeUtils.isNull(problemBO.getProblemDetail())) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("是否跟进jira投产问题不能为空,请选择后后再试！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (JudgeUtils.isNull(problemBO.getProblemDetail())) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("问题描述不能为空,请输入投产问题描述后再试！");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
         //1 获取当前操作人
        String user =  userService.getFullname(SecurityUtils.getLoginName());
         problemBO.setDisplayname(user);
@@ -2521,8 +2531,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         }
         //新增问题
         iProblemDao.insert(problemDO);
+        // 判断 isJira ，如果isJira = 是 ，则同步新建jira投产问题
         // 异步jira
-        jiraOperationService.createProduction(problemBO);
+        if("是".equals(problemDO.getIsJira())){
+            jiraOperationService.createProduction(problemBO);
+        }
+
 
 
     }

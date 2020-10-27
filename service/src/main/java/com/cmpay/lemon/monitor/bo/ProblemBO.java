@@ -61,6 +61,16 @@ public class ProblemBO  {
      */
     private String  proNeed;
 
+    private String isJira;
+    private String reqStartMon;
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
     public Long getProblemSerialNumber() {
         return problemSerialNumber;
     }
@@ -157,6 +167,14 @@ public class ProblemBO  {
         this.proNeed = proNeed;
     }
 
+    public String getIsJira() {
+        return isJira;
+    }
+
+    public void setIsJira(String isJira) {
+        this.isJira = isJira;
+    }
+
     @Override
     public String toString() {
         return "ProblemBO{" +
@@ -172,6 +190,8 @@ public class ProblemBO  {
                 ", proType='" + proType + '\'' +
                 ", proDate='" + proDate + '\'' +
                 ", proNeed='" + proNeed + '\'' +
+                ", isJira='" + isJira + '\'' +
+                ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
     }
 }

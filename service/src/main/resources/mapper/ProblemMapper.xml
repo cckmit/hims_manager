@@ -10,11 +10,12 @@
         <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
         <result column="displayName" property="displayname" jdbcType="VARCHAR" />
         <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="is_jira" property="isJira" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName, 
-        devp_lead_dept
+        devp_lead_dept, is_jira
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -53,6 +54,9 @@
             <if test="devpLeadDept != null" >
                 devp_lead_dept,
             </if>
+            <if test="isJira != null" >
+                is_jira,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="problemSerialNumber != null" >
@@ -75,6 +79,9 @@
             </if>
             <if test="devpLeadDept != null" >
                 #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="isJira != null" >
+                #{isJira,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -99,6 +106,9 @@
             </if>
             <if test="devpLeadDept != null" >
                 devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="isJira != null" >
+                is_jira = #{isJira,jdbcType=VARCHAR},
             </if>
         </set>
         where problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
@@ -129,6 +139,9 @@
             </if>
             <if test="devpLeadDept != null" >
                 and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="isJira != null" >
+                and is_jira = #{isJira,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
