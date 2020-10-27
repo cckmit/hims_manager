@@ -49,7 +49,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
     JiraOperationService jiraOperationService;
     @Autowired
     IJiraWorklogDao jiraWorklogDao;
-
+    @Autowired
+    private IOrganizationStructureDao iOrganizationStructureDao;
     @Autowired
     private IWorkingHoursExtDao iWorkingHoursDao;
     @Autowired
@@ -77,6 +78,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
     @Autowired
     private IProUnhandledIssuesExtDao proUnhandledIssuesDao;
+
+    @Autowired
+    private IProductionIssueDetailsDao productionIssueDetailsDao;
     @Async
     @Override
     public void getIssueModifiedWithinOneDay() {
@@ -100,9 +104,9 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 try {
                     //依据jiraKey查找jira详情数据
                         JiraTaskBodyBO jiraTaskBodyBO = JiraUtil.GetIssue(m.getJiraKey());
-                        //登记jira基础表，缺陷任务和问题登记
+//                        //登记jira基础表，缺陷任务和问题登记
                         this.registerJiraBasicInfo(jiraTaskBodyBO);
-                        //工时处理
+//                        //工时处理
                         this.registerWorklogs(jiraTaskBodyBO);
                         epicList.add(jiraTaskBodyBO.getEpicKey());
                 } catch (Exception e) {
@@ -550,44 +554,69 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
         //若是内部缺陷或者评审问题则需要登记内部权限或者评审问题表
         if (JudgeUtils.isNotBlank(jiraTaskBodyBO.getJiraType())) {
             if (jiraTaskBodyBO.getJiraType().equals("内部缺陷")) {
-                System.err.println(jiraTaskBodyBO.getAssignee());
-                System.err.println(jiraTaskBodyBO.getProblemHandler());
                 DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
                 defectDetailsDO.setJireKey(jiraTaskBodyBO.getJiraKey());
                 defectDetailsDO.setEpicKey(jiraTaskBodyBO.getEpicKey());
                 defectDetailsDO.setDefectType(jiraTaskBodyBO.getProblemType());
                 defectDetailsDO.setDefectStatus(jiraTaskBodyBO.getStatus());
+                //解决结果
+                defectDetailsDO.setSolution(jiraTaskBodyBO.getSolution());
+                // 更新流程的问题处理人
                 if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getProblemHandler())){
                     defectDetailsDO.setAssignee(jiraTaskBodyBO.getProblemHandler());
                 }else{
                     defectDetailsDO.setAssignee(jiraTaskBodyBO.getAssignee());
                 }
+                // 填写的问题处理人
+                defectDetailsDO.setProblemHandler(jiraTaskBodyBO.getProblemHandlers());
+                // 根据处理人得到的部门
+                defectDetailsDO.setProblemHandlerDepartment(jiraTaskBodyBO.getProblemHandlerDepartment());
+                // 填写的归属部门
+                defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
 
                 defectDetailsDO.setDefectRegistrant(jiraTaskBodyBO.getCreator());
                 defectDetailsDO.setSecurityLevel(jiraTaskBodyBO.getSecurityLevel());
-                defectDetailsDO.setDefectsDepartment(jiraTaskBodyBO.getDefectsDepartment());
+
                 // 逻辑更新，归属部门可以为空
-                if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getDefectsDepartment())){
-                    //如果归属部门填的是测试部，则根据经办人获取部门
-                    if("产品测试团队".equals(jiraTaskBodyBO.getDefectsDepartment())){
-                        // 经办人不为空，则根据姓名查询部门
+//                if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getDefectsDepartment())){
+//                    //如果归属部门填的是测试部，则根据经办人获取部门
+//                    if("产品测试团队".equals(jiraTaskBodyBO.getDefectsDepartment())){
+                        // 处理人不为空，则根据姓名查询部门 ，赋值归属部门
                         if(JudgeUtils.isNotBlank(defectDetailsDO.getAssignee())){
                             UserDO userDO = new UserDO();
                             userDO.setFullname(defectDetailsDO.getAssignee());
                             List<UserDO> userDOS = iUserDao.find(userDO);
                             if(!userDOS.isEmpty()){
-                                defectDetailsDO.setDefectsDepartment(userDOS.get(0).getDepartment());
-                            }else{
-                                defectDetailsDO.setDefectsDepartment("产品测试团队");
+                                defectDetailsDO.setProblemHandlerDepartment(userDOS.get(0).getDepartment());
                             }
+//                            else{
+//                                // 因为历史数据更新，所有找不到人，先获取填写的归属部门，如果填写的也是空，就为空
+//                                if(JudgeUtils.isNotBlank(jiraTaskBodyBO.getDefectsDepartment())){
+//                                    if("产品测试团队".equals(jiraTaskBodyBO.getDefectsDepartment())){
+//                                        defectDetailsDO.setProblemHandlerDepartment("产品测试团队");
+//                                    }else{
+//                                        defectDetailsDO.setProblemHandlerDepartment(jiraTaskBodyBO.getDefectsDepartment());
+//                                    }
+//                                }
+//                            }
                         }
+//                    }
+//                }
+                // 一级主导部门
+                if(JudgeUtils.isNotBlank(defectDetailsDO.getProblemHandlerDepartment())){
+                    OrganizationStructureDO organizationStructureDO = new OrganizationStructureDO();
+                    organizationStructureDO.setSecondlevelorganization(defectDetailsDO.getProblemHandlerDepartment());
+                    List<OrganizationStructureDO> organizationStructureDOList =  iOrganizationStructureDao.find(organizationStructureDO);
+                    if (organizationStructureDOList!=null && organizationStructureDOList.size()>0){
+                        // 一级主导团队
+                        defectDetailsDO.setFirstlevelorganization(organizationStructureDOList.get(0).getFirstlevelorganization());
                     }
                 }
                 defectDetailsDO.setRegistrationDate(jiraTaskBodyBO.getCreateTime());
                 defectDetailsDO.setDefectDetails(jiraTaskBodyBO.getDefectDetails());
                 defectDetailsDO.setTestNumber(jiraTaskBodyBO.getRetestTimes());
                 defectDetailsDO.setDefectName(jiraTaskBodyBO.getDefectName());
-                //缺陷归属产品线
+                //缺陷归属产品线  需求编号
                 if(JudgeUtils.isNotBlank(defectDetailsDO.getEpicKey())){
                     DemandJiraDO demandJiraDO = new DemandJiraDO();
                     demandJiraDO.setJiraKey(defectDetailsDO.getEpicKey());
@@ -595,7 +624,10 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     List<DemandJiraDO> demandJiraDos = demandJiraDao.find(demandJiraDO);
                     if(JudgeUtils.isNotEmpty(demandJiraDos)){
                         DemandDO demandDO = demandDao.get(demandJiraDos.get(demandJiraDos.size()-1).getReqInnerSeq());
+                        //产品线
                         defectDetailsDO.setProductLine(demandDO.getReqPrdLine());
+                        //对应需求名称
+                        defectDetailsDO.setReqNo(demandDO.getReqNo());
                     }
                 }
 
@@ -621,6 +653,30 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                     issueDetailsDao.insert(issueDetailsDO);
                 } else {
                     issueDetailsDao.update(issueDetailsDO);
+                }
+            }else if (jiraTaskBodyBO.getJiraType().equals("投产问题")) {
+                ProductionIssueDetailsDO issueDetailsDO = new ProductionIssueDetailsDO();
+                //jira编号
+                issueDetailsDO.setJiraKey(jiraTaskBodyBO.getJiraKey());
+                // 投产问题状态
+                issueDetailsDO.setProductionIssueStatus(jiraTaskBodyBO.getStatus());
+                // 经办人
+                issueDetailsDO.setAssignee(jiraTaskBodyBO.getAssignee());
+                // 投产问题 （概要）
+                issueDetailsDO.setProductionIssueDetails(jiraTaskBodyBO.getIssueName());
+                // 登记日期
+                issueDetailsDO.setRegistrationDate(jiraTaskBodyBO.getCreateTime());
+                // 投产问题登记人
+                issueDetailsDO.setProductionIssueRegistrant(jiraTaskBodyBO.getProductionIssueRegistrant());
+                // 投产编号
+                issueDetailsDO.setProNumber(jiraTaskBodyBO.getProNumber());
+                //归属部门
+                issueDetailsDO.setProductionIssueDepartment(systemUserService.getDepartmentByUser(jiraTaskBodyBO.getAssignee()));
+                ProductionIssueDetailsDO issueDetailsDO1 = productionIssueDetailsDao.get(issueDetailsDO.getJiraKey());
+                if (JudgeUtils.isNull(issueDetailsDO1)) {
+                    productionIssueDetailsDao.insert(issueDetailsDO);
+                } else {
+                    productionIssueDetailsDao.update(issueDetailsDO);
                 }
             }
         }

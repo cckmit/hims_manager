@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IOnlineDefectExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="req_impl_mon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstlevelorganization" jdbcType="VARCHAR" />
+        <result column="document_number" property="documentNumber" jdbcType="VARCHAR" />
+        <result column="process_status" property="processStatus" jdbcType="VARCHAR" />
+        <result column="process_start_date" property="processStartDate" jdbcType="VARCHAR" />
+        <result column="defect_proposer" property="defectProposer" jdbcType="VARCHAR" />
+        <result column="defect_theme" property="defectTheme" jdbcType="VARCHAR" />
+        <result column="defrct_description" property="defrctDescription" jdbcType="VARCHAR" />
+        <result column="development_leader" property="developmentLeader" jdbcType="VARCHAR" />
+        <result column="product_leader" property="productLeader" jdbcType="VARCHAR" />
+        <result column="manufacturers" property="manufacturers" jdbcType="VARCHAR" />
+        <result column="manufacturers_product" property="manufacturersProduct" jdbcType="VARCHAR" />
+        <result column="question_cause" property="questionCause" jdbcType="VARCHAR" />
+        <result column="question_type" property="questionType" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="is_assess" property="isAssess" jdbcType="VARCHAR" />
+        <result column="not_assess_cause" property="notAssessCause" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, req_impl_mon, firstLevelOrganization, document_number, process_status, process_start_date,
+        defect_proposer, defect_theme, defrct_description, development_leader, product_leader,
+        manufacturers, manufacturers_product, question_cause, question_type, solution, is_assess,
+        not_assess_cause
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select
+        <include refid="Base_Column_List" />
+        from t_online_defects
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_online_defects
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        insert into t_online_defects
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="reqImplMon != null" >
+                req_impl_mon,
+            </if>
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization,
+            </if>
+            <if test="documentNumber != null" >
+                document_number,
+            </if>
+            <if test="processStatus != null" >
+                process_status,
+            </if>
+            <if test="processStartDate != null" >
+                process_start_date,
+            </if>
+            <if test="defectProposer != null" >
+                defect_proposer,
+            </if>
+            <if test="defectTheme != null" >
+                defect_theme,
+            </if>
+            <if test="defrctDescription != null" >
+                defrct_description,
+            </if>
+            <if test="developmentLeader != null" >
+                development_leader,
+            </if>
+            <if test="productLeader != null" >
+                product_leader,
+            </if>
+            <if test="manufacturers != null" >
+                manufacturers,
+            </if>
+            <if test="manufacturersProduct != null" >
+                manufacturers_product,
+            </if>
+            <if test="questionCause != null" >
+                question_cause,
+            </if>
+            <if test="questionType != null" >
+                question_type,
+            </if>
+            <if test="solution != null" >
+                solution,
+            </if>
+            <if test="isAssess != null" >
+                is_assess,
+            </if>
+            <if test="notAssessCause != null" >
+                not_assess_cause,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="reqImplMon != null" >
+                #{reqImplMon,jdbcType=VARCHAR},
+            </if>
+            <if test="firstlevelorganization != null" >
+                #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="documentNumber != null" >
+                #{documentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processStatus != null" >
+                #{processStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="processStartDate != null" >
+                #{processStartDate,jdbcType=VARCHAR},
+            </if>
+            <if test="defectProposer != null" >
+                #{defectProposer,jdbcType=VARCHAR},
+            </if>
+            <if test="defectTheme != null" >
+                #{defectTheme,jdbcType=VARCHAR},
+            </if>
+            <if test="defrctDescription != null" >
+                #{defrctDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentLeader != null" >
+                #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="productLeader != null" >
+                #{productLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturers != null" >
+                #{manufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturersProduct != null" >
+                #{manufacturersProduct,jdbcType=VARCHAR},
+            </if>
+            <if test="questionCause != null" >
+                #{questionCause,jdbcType=VARCHAR},
+            </if>
+            <if test="questionType != null" >
+                #{questionType,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="isAssess != null" >
+                #{isAssess,jdbcType=VARCHAR},
+            </if>
+            <if test="notAssessCause != null" >
+                #{notAssessCause,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        update t_online_defects
+        <set >
+            <if test="reqImplMon != null" >
+                req_impl_mon = #{reqImplMon,jdbcType=VARCHAR},
+            </if>
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="documentNumber != null" >
+                document_number = #{documentNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="processStatus != null" >
+                process_status = #{processStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="processStartDate != null" >
+                process_start_date = #{processStartDate,jdbcType=VARCHAR},
+            </if>
+            <if test="defectProposer != null" >
+                defect_proposer = #{defectProposer,jdbcType=VARCHAR},
+            </if>
+            <if test="defectTheme != null" >
+                defect_theme = #{defectTheme,jdbcType=VARCHAR},
+            </if>
+            <if test="defrctDescription != null" >
+                defrct_description = #{defrctDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="developmentLeader != null" >
+                development_leader = #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="productLeader != null" >
+                product_leader = #{productLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturers != null" >
+                manufacturers = #{manufacturers,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturersProduct != null" >
+                manufacturers_product = #{manufacturersProduct,jdbcType=VARCHAR},
+            </if>
+            <if test="questionCause != null" >
+                question_cause = #{questionCause,jdbcType=VARCHAR},
+            </if>
+            <if test="questionType != null" >
+                question_type = #{questionType,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                solution = #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="isAssess != null" >
+                is_assess = #{isAssess,jdbcType=VARCHAR},
+            </if>
+            <if test="notAssessCause != null" >
+                not_assess_cause = #{notAssessCause,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_online_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="reqImplMon != null" >
+                and req_impl_mon = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="documentNumber != null" >
+                and document_number = #{documentNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="processStatus != null" >
+                and process_status = #{processStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processStartDate != null" >
+                and process_start_date = #{processStartDate,jdbcType=VARCHAR}
+            </if>
+            <if test="defectProposer != null" >
+                and defect_proposer = #{defectProposer,jdbcType=VARCHAR}
+            </if>
+            <if test="defectTheme != null" >
+                and defect_theme = #{defectTheme,jdbcType=VARCHAR}
+            </if>
+            <if test="defrctDescription != null" >
+                and defrct_description = #{defrctDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentLeader != null" >
+                and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="productLeader != null" >
+                and product_leader = #{productLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturers != null" >
+                and manufacturers = #{manufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturersProduct != null" >
+                and manufacturers_product = #{manufacturersProduct,jdbcType=VARCHAR}
+            </if>
+            <if test="questionCause != null" >
+                and question_cause = #{questionCause,jdbcType=VARCHAR}
+            </if>
+            <if test="questionType != null" >
+                and question_type = #{questionType,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="isAssess != null" >
+                and is_assess = #{isAssess,jdbcType=VARCHAR}
+            </if>
+            <if test="notAssessCause != null" >
+                and not_assess_cause = #{notAssessCause,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_online_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and req_impl_mon LIKE CONCAT('%',#{reqImplMon,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="firstlevelorganization != null and firstlevelorganization != ''" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="documentNumber != null and documentNumber != ''" >
+                and document_number LIKE CONCAT('%',#{documentNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="processStatus != null and processStatus != ''" >
+                and process_status = #{processStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processStartDate != null and processStartDate != ''" >
+                and process_start_date = #{processStartDate,jdbcType=VARCHAR}
+            </if>
+            <if test="defectProposer != null and defectProposer != ''" >
+                and defect_proposer = #{defectProposer,jdbcType=VARCHAR}
+            </if>
+            <if test="defectTheme != null and defectTheme != ''" >
+                and defect_theme LIKE CONCAT('%',#{defectTheme,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="defrctDescription != null and defrctDescription != ''" >
+                and defrct_description = #{defrctDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentLeader != null and developmentLeader != ''" >
+                and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="productLeader != null and productLeader != ''" >
+                and product_leader = #{productLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturers != null and manufacturers != ''" >
+                and manufacturers = #{manufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturersProduct != null and manufacturersProduct != ''" >
+                and manufacturers_product = #{manufacturersProduct,jdbcType=VARCHAR}
+            </if>
+            <if test="questionCause != null and questionCause != ''" >
+                and question_cause = #{questionCause,jdbcType=VARCHAR}
+            </if>
+            <if test="questionType != null and questionType != ''" >
+                and question_type = #{questionType,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="isAssess != null" >
+                and is_assess = #{isAssess,jdbcType=VARCHAR}
+            </if>
+            <if test="notAssessCause != null" >
+                and not_assess_cause = #{notAssessCause,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

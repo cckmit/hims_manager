@@ -1130,7 +1130,7 @@
 		#{creatUser},
 		#{stateCauseClassification},
         #{targetCauseClassification},
-        #{productionTime})
+        #{productionTime},
 		#{updateUser})
 	</insert>
 

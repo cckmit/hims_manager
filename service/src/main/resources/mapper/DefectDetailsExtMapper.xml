@@ -17,11 +17,21 @@
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
         <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
         <result column="product_line" property="productLine" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstlevelorganization" jdbcType="VARCHAR" />
+        <result column="problem_handler" property="problemHandler" jdbcType="VARCHAR" />
+        <result column="problem_handler_department" property="problemHandlerDepartment" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
-        defects_department, registration_date, defect_details, assignee, test_number, security_level, product_line
+        defects_department, registration_date, defect_details, assignee, test_number, security_level,
+        product_line, solution, firstLevelOrganization, problem_handler, problem_handler_department
+    </sql>
+    <sql id="Base_Column_List1" >
+        jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
+        defects_department, registration_date, defect_details, assignee, test_number, security_level,
+        solution, firstLevelOrganization, problem_handler, problem_handler_department
     </sql>
 
     <select id="findNotCompleted" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -65,6 +75,18 @@
             </if>
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
@@ -114,6 +136,21 @@
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment !='产品测试团队'" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment =='产品测试团队'" >
+                and (problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR} or (ISNULL(problem_handler_department) or problem_handler_department = '') )
+            </if>
         </where>
     </select>
     <select id="findValidList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -162,6 +199,21 @@
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment !='产品测试团队'" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment =='产品测试团队'" >
+                and (problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR} or (ISNULL(problem_handler_department) or problem_handler_department = '') )
+            </if>
         </where>
     </select>
     <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
@@ -208,6 +260,21 @@
             </if>
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment !='产品测试团队'" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment =='产品测试团队'" >
+                and (problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR} or (ISNULL(problem_handler_department) or problem_handler_department = '') )
             </if>
         </where>
     </select>
@@ -257,6 +324,18 @@
             <if test="startTime != null and endTime != null" >
                 and registration_date between #{startTime,jdbcType=DATE} and #{endTime,jdbcType=DATE}
             </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
         </where>
     </select>
 
@@ -302,7 +381,83 @@
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
             </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
         </where>
     </select>
 
+    <select id="findDefect" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
+        select
+        (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =
+        product_line AND
+        t.DIC_ID='PRD_LINE') AS product_line,
+        <include refid="Base_Column_List1" />
+        from t_defect_details
+        <where >
+            ( defect_type != '无效问题' or defect_type is null )
+            <if test="jireKey != null and jireKey !=''" >
+                and jire_key  LIKE CONCAT('%',#{jireKey},'%')
+            </if>
+            <if test="reqNo != null and reqNo !=''" >
+                and req_no LIKE CONCAT('%',#{reqNo},'%')
+            </if>
+            <if test="epicKey != null and epicKey !=''" >
+                and epic_key = #{epicKey,jdbcType=VARCHAR}
+            </if>
+            <if test="defectType != null and defectType !=''" >
+                and defect_type = #{defectType,jdbcType=VARCHAR}
+            </if>
+            <if test="defectStatus != null and defectStatus !=''" >
+                and defect_status = #{defectStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="defectRegistrant != null and defectRegistrant !=''" >
+                and defect_registrant = #{defectRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null and registrationDate !=''" >
+                and registration_date LIKE CONCAT('%',#{registrationDate},'%')
+            </if>
+
+            <if test="defectDetails != null and defectDetails !=''" >
+                and defect_details = #{defectDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="testNumber != null and testNumber !=''" >
+                and test_number = #{testNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="productLine != null and productLine !=''" >
+                and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution !=''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null and firstlevelorganization !=''" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null and problemHandler !=''" >
+                and problem_handler LIKE CONCAT('%',#{problemHandler},'%')
+            </if>
+            <if test="problemHandlerDepartment != null  and problemHandlerDepartment !='' and problemHandlerDepartment !='产品测试团队'" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null and problemHandlerDepartment !='' and problemHandlerDepartment =='产品测试团队'" >
+                and (problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR} or (ISNULL(problem_handler_department) or problem_handler_department = '') )
+            </if>
+            <if test="defectsDepartment != null and defectsDepartment !=''" >
+                and defects_department LIKE CONCAT('%',#{defectsDepartment},'%')
+            </if>
+            <if test="assignee != null and assignee !=''" >
+                and assignee LIKE CONCAT('%',#{assignee},'%')
+            </if>
+        </where>
+        ORDER BY registration_date desc
+    </select>
 </mapper>

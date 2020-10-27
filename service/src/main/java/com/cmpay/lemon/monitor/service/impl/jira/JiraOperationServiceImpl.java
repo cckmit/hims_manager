@@ -4,8 +4,10 @@ import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
+import com.cmpay.lemon.monitor.bo.ProblemBO;
 import com.cmpay.lemon.monitor.bo.jira.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
@@ -42,6 +44,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     IDemandJiraDevelopMasterTaskDao demandJiraDevelopMasterTaskDao;
     @Autowired
     IDemandJiraSubtaskDao demandJiraSubtaskDao;
+    @Autowired
+    IProductionProblemJiraDao  productionProblemJiraDao;
+    @Autowired
+    private IProblemExtDao iProblemDao;
     //jira项目类型 和包项目 jira编号10106(测试环境)
     final static Integer PROJECTTYPE_CMPAY_dev = 10106;
     //jira项目类型 和包项目 jira编号10100
@@ -60,6 +66,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     final static Integer ISSUETYPE_TESTMAINTASK = 10102;
     //测试子任务 jira编号
     final static Integer ISSUETYPE_TESTSUBTASK = 10103;
+    // 10300 投产问题
+    final static Integer ISSUETYPE_PRODUCTIONTASK = 10300;
 
 
     //Epic任务
@@ -80,6 +88,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     //jira返回业务成功时状态码 201
     final static int JIRA_SUCCESS = 201;
 
+    /**
+     * jira创建epic任务
+     * @param demandBO
+     */
     @Async
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -96,6 +108,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        // 比较时间，5月及五月前的需求不新建jira任务
         if(date1.getTime()<=date2.getTime()){
             return;
         }
@@ -103,6 +116,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         //jira关联表中已有，并且状态为成功,则不再生成jira任务
         DemandJiraDO demandJiraDO1 = demandJiraDao.get(demandBO.getReqInnerSeq());
         if (JudgeUtils.isNotNull(demandJiraDO1) && demandJiraDO1.getCreateState().equals(SUCCESS)) {
+            // 不创建epic任务，但创建主任务
             this.createMasterTask(demandBO, demandJiraDO1);
             return;
         }
@@ -185,8 +199,98 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     }
 
     @Async
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void createProduction(ProblemBO problemBO){
+
+        //jira关联表中已有，并且状态为成功,则不再生成jira任务
+        ProductionProblemJiraDO demandJiraDO1 = productionProblemJiraDao.get(problemBO.getProblemSerialNumber()+"");
+        if (JudgeUtils.isNotNull(demandJiraDO1) && demandJiraDO1.getCreateState().equals(SUCCESS)) {
+            return;
+        }
+        CreateIssueProductionRequestBO createIssueProductionRequestBO = new CreateIssueProductionRequestBO();
+        createIssueProductionRequestBO.setSummary(problemBO.getProNeed());
+        //设置项目类型，不为以下三种则为和包项目。
+        if ("资金归集项目组".equals(problemBO.getDevpLeadDept())) {
+            createIssueProductionRequestBO.setProject(PROJECTTYPE_FCPT);
+        } else if ("团体组织交费项目组".equals(problemBO.getDevpLeadDept())) {
+            createIssueProductionRequestBO.setProject(PROJECTTYPE_GPPT);
+        } else if ("客服中间层项目组".equals(problemBO.getDevpLeadDept())) {
+            createIssueProductionRequestBO.setProject(PROJECTTYPE_CSPT);
+        } else {
+            if (LemonUtils.getEnv().equals(Env.SIT)) {
+                createIssueProductionRequestBO.setProject(PROJECTTYPE_CMPAY);
+            } else {
+                createIssueProductionRequestBO.setProject(PROJECTTYPE_CMPAY_dev);
+            }
+        }
+        createIssueProductionRequestBO.setIssuetype(ISSUETYPE_PRODUCTIONTASK);
+        //投产编号
+        createIssueProductionRequestBO.setCustomfield_10400(problemBO.getProNumber());
+        //投产编号
+        createIssueProductionRequestBO.setCustomfield_10403(problemBO.getProblemDetail());
+        // 根据中文名字获取英文名
+        UserDO userDO = iUserDao.getUserByUserFullName(problemBO.getDisplayname());
+        // 提出人
+        createIssueProductionRequestBO.setCustomfield_10207(userDO.getUsername());
+        // 经办人
+        createIssueProductionRequestBO.setAssignee(userDO.getUsername());
+
+        Response response = JiraUtil.CreateIssue(createIssueProductionRequestBO);
+        //如果返回状态码是成功则登记jira关联表
+        if (response.getStatusCode() == JIRA_SUCCESS) {
+            CreateIssueResponseBO createIssueResponseBO = response.getBody().as(CreateIssueResponseBO.class);
+            ProductionProblemJiraDO demandJiraDO = new ProductionProblemJiraDO();
+            demandJiraDO.setCreatTime(LocalDateTime.now());
+            demandJiraDO.setJiraId(createIssueResponseBO.getId());
+            demandJiraDO.setJiraKey(createIssueResponseBO.getKey());
+            demandJiraDO.setIssueType("投产问题");
+            demandJiraDO.setCreateState(SUCCESS);
+            demandJiraDO.setRemarks("");
+            demandJiraDO.setProblemSerialNumber(problemBO.getProblemSerialNumber()+"");
+            demandJiraDO.setProNumber(problemBO.getProNumber());
+            demandJiraDO.setProNeed(problemBO.getProNeed());
+            //若是jira关联表已存在该项目，则更新
+            ProductionProblemJiraDO demandJiraDO2 = productionProblemJiraDao.get(problemBO.getProblemSerialNumber()+"");
+            if (JudgeUtils.isNull(demandJiraDO2)) {
+                productionProblemJiraDao.insert(demandJiraDO);
+            } else {
+                productionProblemJiraDao.update(demandJiraDO);
+            }
+            // 将jira id保存到投产问题表
+            ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
+            problemDO.setIssuekey(createIssueResponseBO.getKey());
+            iProblemDao.update(problemDO);
+
+        } else {
+            ProductionProblemJiraDO demandJiraDO = new ProductionProblemJiraDO();
+            demandJiraDO.setCreatTime(LocalDateTime.now());
+            demandJiraDO.setCreateState(FAIL);
+            demandJiraDO.setRemarks(response.getBody().print());
+            demandJiraDO.setIssueType("投产问题");
+            demandJiraDO.setProblemSerialNumber(problemBO.getProblemSerialNumber()+"");
+            demandJiraDO.setProNumber(problemBO.getProNumber());
+            demandJiraDO.setProNeed(problemBO.getProNeed());
+            ProductionProblemJiraDO demandJiraDO2 = productionProblemJiraDao.get(problemBO.getProblemSerialNumber()+"");
+            if (JudgeUtils.isNull(demandJiraDO2)) {
+                productionProblemJiraDao.insert(demandJiraDO);
+            } else {
+                productionProblemJiraDao.update(demandJiraDO);
+            }
+        }
+
+    }
+
+    /**创建开发主任务
+     * @param devpCoorDept
+     * @param demandBO
+     * @param epicDemandJiraDO
+     * @param taskType
+     */
+    @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void CreateJiraMasterTask(String devpCoorDept, DemandBO demandBO, DemandJiraDO epicDemandJiraDO, String taskType) {
+        //判断开发主任务是否存在
         DemandJiraDevelopMasterTaskDO demandJiraDevelopMasterTaskDO1 = demandJiraDevelopMasterTaskDao.get(epicDemandJiraDO.getJiraKey() + "_" + devpCoorDept + "_" + taskType);
         if (JudgeUtils.isNotNull(demandJiraDevelopMasterTaskDO1) && demandJiraDevelopMasterTaskDO1.getCreateState().equals(SUCCESS)) {
             return;

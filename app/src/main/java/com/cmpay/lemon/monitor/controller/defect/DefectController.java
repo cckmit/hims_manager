@@ -128,4 +128,69 @@ public class DefectController {
         defectsService.downloadZenQuestiont(response, zenQuestiontBO);
         return GenericRspDTO.newSuccessInstance();
     }
+
+    @RequestMapping(value = "/onlineDefectFindList", method = RequestMethod.POST)
+    public GenericRspDTO<OnlineDefectRspDTO> onlineDefectFindList(@RequestBody OnlineDefectReqDTO onlineDefectReqDTO) {
+
+        OnlineDefectBO onlineDefectBO = BeanUtils.copyPropertiesReturnDest(new OnlineDefectBO(), onlineDefectReqDTO);
+
+        OnlineDefectRspBO onlineDefectRspBO = defectsService.onlineDefectFindList(onlineDefectBO);
+
+        OnlineDefectRspDTO rspDTO = new OnlineDefectRspDTO();
+        rspDTO.setOnlineDefectDTOList(BeanConvertUtils.convertList(onlineDefectRspBO.getOnlineDefectBOList(), OnlineDefectDTO.class));
+        rspDTO.setPageNum(onlineDefectRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(onlineDefectRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(onlineDefectRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(onlineDefectRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+    /**
+     * 禅道数据导入
+     *
+     * @return
+     */
+    @PostMapping("/onlineDefectImport")
+    public GenericRspDTO<NoBody> onlineDefectImport (HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        defectsService.onlineDefectImport(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/onlineDefectDownloadt")
+    public GenericRspDTO<NoBody> onlineDefectDownloadt(@RequestBody OnlineDefectReqDTO zenQuestiontReqDTO, HttpServletResponse response) {
+        OnlineDefectBO zenQuestiontBO = BeanUtils.copyPropertiesReturnDest(new OnlineDefectBO(), zenQuestiontReqDTO);
+        defectsService.onlineDefectDownloadt(response, zenQuestiontBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    @RequestMapping(value = "/internalDefectInquiry", method = RequestMethod.POST)
+    public GenericRspDTO<DefectDetailsRspDTO> internalDefectInquiry(@RequestBody DefectDetailsReqDTO defectDetailsReqDTO) {
+
+        DefectDetailsBO defectDetailsBO = BeanUtils.copyPropertiesReturnDest(new DefectDetailsBO(), defectDetailsReqDTO);
+
+        DefectDetailsRspBO defectDetailsRspBO = defectsService.internalDefectInquiry(defectDetailsBO);
+
+        DefectDetailsRspDTO rspDTO = new DefectDetailsRspDTO();
+        rspDTO.setDefectDetailsDTOArrayList(BeanConvertUtils.convertList(defectDetailsRspBO.getDefectDetailsBos(), DefectDetailsDTO.class));
+        rspDTO.setPageNum(defectDetailsRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(defectDetailsRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(defectDetailsRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(defectDetailsRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
+
+
+    @RequestMapping("/internalDefectDownload")
+    public GenericRspDTO<NoBody> internalDefectDownload(@RequestBody DefectDetailsReqDTO defectDetailsReqDTO, HttpServletResponse response) {
+        DefectDetailsBO defectDetailsBO = BeanUtils.copyPropertiesReturnDest(new DefectDetailsBO(), defectDetailsReqDTO);
+        defectsService.internalDefectDownload(response, defectDetailsBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

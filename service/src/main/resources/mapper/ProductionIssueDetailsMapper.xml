@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionIssueDetailsDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProductionIssueDetailsDO" >
+        <id column="jira_key" property="jiraKey" jdbcType="VARCHAR" />
+        <result column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="production_issue_status" property="productionIssueStatus" jdbcType="VARCHAR" />
+        <result column="production_issue_registrant" property="productionIssueRegistrant" jdbcType="VARCHAR" />
+        <result column="production_issue_department" property="productionIssueDepartment" jdbcType="VARCHAR" />
+        <result column="registration_date" property="registrationDate" jdbcType="VARCHAR" />
+        <result column="production_issue_details" property="productionIssueDetails" jdbcType="VARCHAR" />
+        <result column="assignee" property="assignee" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        jira_key, pro_number, production_issue_status, production_issue_registrant, production_issue_department, 
+        registration_date, production_issue_details, assignee
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_issue_details
+        where jira_key = #{jiraKey,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_production_issue_details
+        where jira_key = #{jiraKey,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProductionIssueDetailsDO" >
+        insert into t_production_issue_details
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="jiraKey != null" >
+                jira_key,
+            </if>
+            <if test="proNumber != null" >
+                pro_number,
+            </if>
+            <if test="productionIssueStatus != null" >
+                production_issue_status,
+            </if>
+            <if test="productionIssueRegistrant != null" >
+                production_issue_registrant,
+            </if>
+            <if test="productionIssueDepartment != null" >
+                production_issue_department,
+            </if>
+            <if test="registrationDate != null" >
+                registration_date,
+            </if>
+            <if test="productionIssueDetails != null" >
+                production_issue_details,
+            </if>
+            <if test="assignee != null" >
+                assignee,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="jiraKey != null" >
+                #{jiraKey,jdbcType=VARCHAR},
+            </if>
+            <if test="proNumber != null" >
+                #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueStatus != null" >
+                #{productionIssueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueRegistrant != null" >
+                #{productionIssueRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueDepartment != null" >
+                #{productionIssueDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueDetails != null" >
+                #{productionIssueDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                #{assignee,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProductionIssueDetailsDO" >
+        update t_production_issue_details
+        <set >
+            <if test="proNumber != null" >
+                pro_number = #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueStatus != null" >
+                production_issue_status = #{productionIssueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueRegistrant != null" >
+                production_issue_registrant = #{productionIssueRegistrant,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueDepartment != null" >
+                production_issue_department = #{productionIssueDepartment,jdbcType=VARCHAR},
+            </if>
+            <if test="registrationDate != null" >
+                registration_date = #{registrationDate,jdbcType=VARCHAR},
+            </if>
+            <if test="productionIssueDetails != null" >
+                production_issue_details = #{productionIssueDetails,jdbcType=VARCHAR},
+            </if>
+            <if test="assignee != null" >
+                assignee = #{assignee,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where jira_key = #{jiraKey,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionIssueDetailsDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_issue_details
+        <where >
+            <if test="jiraKey != null" >
+                and jira_key = #{jiraKey,jdbcType=VARCHAR}
+            </if>
+            <if test="proNumber != null" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="productionIssueStatus != null" >
+                and production_issue_status = #{productionIssueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="productionIssueRegistrant != null" >
+                and production_issue_registrant = #{productionIssueRegistrant,jdbcType=VARCHAR}
+            </if>
+            <if test="productionIssueDepartment != null" >
+                and production_issue_department = #{productionIssueDepartment,jdbcType=VARCHAR}
+            </if>
+            <if test="registrationDate != null" >
+                and registration_date = #{registrationDate,jdbcType=VARCHAR}
+            </if>
+            <if test="productionIssueDetails != null" >
+                and production_issue_details = #{productionIssueDetails,jdbcType=VARCHAR}
+            </if>
+            <if test="assignee != null" >
+                and assignee = #{assignee,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

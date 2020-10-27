@@ -17,16 +17,20 @@
         <result column="test_number" property="testNumber" jdbcType="INTEGER" />
         <result column="security_level" property="securityLevel" jdbcType="VARCHAR" />
         <result column="product_line" property="productLine" jdbcType="VARCHAR" />
+        <result column="solution" property="solution" jdbcType="VARCHAR" />
+        <result column="firstLevelOrganization" property="firstlevelorganization" jdbcType="VARCHAR" />
+        <result column="problem_handler" property="problemHandler" jdbcType="VARCHAR" />
+        <result column="problem_handler_department" property="problemHandlerDepartment" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant, 
-        defects_department, registration_date, defect_details, assignee, test_number, security_level, 
-        product_line
+        jire_key, req_no, defect_name, epic_key, defect_type, defect_status, defect_registrant,
+        defects_department, registration_date, defect_details, assignee, test_number, security_level,
+        product_line, solution, firstLevelOrganization, problem_handler, problem_handler_department
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_defect_details
         where jire_key = #{jireKey,jdbcType=VARCHAR}
@@ -82,6 +86,18 @@
             <if test="productLine != null" >
                 product_line,
             </if>
+            <if test="solution != null" >
+                solution,
+            </if>
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization,
+            </if>
+            <if test="problemHandler != null" >
+                problem_handler,
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                problem_handler_department,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="jireKey != null" >
@@ -125,6 +141,18 @@
             </if>
             <if test="productLine != null" >
                 #{productLine,jdbcType=VARCHAR},
+            </if>
+            <if test="solution != null" >
+                #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="firstlevelorganization != null" >
+                #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="problemHandler != null" >
+                #{problemHandler,jdbcType=VARCHAR},
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                #{problemHandlerDepartment,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -171,12 +199,24 @@
             <if test="productLine != null" >
                 product_line = #{productLine,jdbcType=VARCHAR},
             </if>
+            <if test="solution != null" >
+                solution = #{solution,jdbcType=VARCHAR},
+            </if>
+            <if test="firstlevelorganization != null" >
+                firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR},
+            </if>
+            <if test="problemHandler != null" >
+                problem_handler = #{problemHandler,jdbcType=VARCHAR},
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR},
+            </if>
         </set>
         where jire_key = #{jireKey,jdbcType=VARCHAR}
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >
@@ -221,6 +261,18 @@
             </if>
             <if test="productLine != null" >
                 and product_line = #{productLine,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="firstlevelorganization != null" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandler != null" >
+                and problem_handler = #{problemHandler,jdbcType=VARCHAR}
+            </if>
+            <if test="problemHandlerDepartment != null" >
+                and problem_handler_department = #{problemHandlerDepartment,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

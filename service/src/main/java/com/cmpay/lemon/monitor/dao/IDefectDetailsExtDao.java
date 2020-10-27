@@ -15,7 +15,8 @@ import java.util.List;
 public interface IDefectDetailsExtDao extends IDefectDetailsDao {
 
    List<DefectDetailsDO> findNotCompleted(DefectDetailsDO defectDetailsDO);
-    List<DefectDetailsDO> findList(DefectDetailsDO entity);
+   List<DefectDetailsDO> findList(DefectDetailsDO entity);
+   List<DefectDetailsDO> findDefect(DefectDetailsDO entity);
     // 有效的plog数
     List<DefectDetailsDO> findValidList(DefectDetailsDO entity);
     List<DefectDetailsDO> findWeekList(DefectDetailsDO entity);

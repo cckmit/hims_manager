@@ -2068,6 +2068,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqTask.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
             reqTask.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
             reqTask.setRemainWorkload(Integer.parseInt(result.get("remainWordkLoad")));
+            // 上传原子功能点文件时同步更新预计总工作量
+            reqTask.setExpInput(totWork);
             //已录入总量 新增的时候默认为0
 //            reqTask.setInputWorkload(0);
 //            reqTask.setLastInputWorkload(0);
@@ -2082,13 +2084,15 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 for (int i = 0; i < demandBOList.size(); i++) {
                     DemandDO demand = demandBOList.get(i);
                     if (!JudgeUtils.isNull(demand)) {
-                        demand.setTotalWorkload(totWork);
-                        demand.setLeadDeptPro(result.get("leadDeptRate"));
-                        demand.setCoorDeptPro(result.get("coorDeptRate"));
-                        demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
-                        demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
-                        demand.setRemainWorkload(totWork - demand.getInputWorkload());
-                        planDao.updateReqWorkLoad(demand);
+                        if(!reqTask.getReqInnerSeq().equals(demand.getReqInnerSeq())){
+                            demand.setTotalWorkload(totWork);
+                            demand.setLeadDeptPro(result.get("leadDeptRate"));
+                            demand.setCoorDeptPro(result.get("coorDeptRate"));
+                            demand.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
+                            demand.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
+                            demand.setRemainWorkload(totWork - demand.getInputWorkload());
+                            planDao.updateReqWorkLoad(demand);
+                        }
                     }
                 }
             }

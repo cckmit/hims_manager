@@ -48,6 +48,18 @@ public class ProblemBO  {
      * 页面大小
      */
     private int pageSize;
+    /**
+     * 类型
+     */
+    private String  proType;
+    /**
+     * 投产日期
+     */
+    private String  proDate;
+    /**
+     * 需求名称
+     */
+    private String  proNeed;
 
     public Long getProblemSerialNumber() {
         return problemSerialNumber;
@@ -121,6 +133,30 @@ public class ProblemBO  {
         this.pageSize = pageSize;
     }
 
+    public String getProType() {
+        return proType;
+    }
+
+    public void setProType(String proType) {
+        this.proType = proType;
+    }
+
+    public String getProDate() {
+        return proDate;
+    }
+
+    public void setProDate(String proDate) {
+        this.proDate = proDate;
+    }
+
+    public String getProNeed() {
+        return proNeed;
+    }
+
+    public void setProNeed(String proNeed) {
+        this.proNeed = proNeed;
+    }
+
     @Override
     public String toString() {
         return "ProblemBO{" +
@@ -133,6 +169,9 @@ public class ProblemBO  {
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", proType='" + proType + '\'' +
+                ", proDate='" + proDate + '\'' +
+                ", proNeed='" + proNeed + '\'' +
                 '}';
     }
 }

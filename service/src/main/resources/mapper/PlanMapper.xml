@@ -589,6 +589,9 @@
         <if test="updateUser != null and updateUser != ''">
             ,update_user =#{ updateUser }
         </if>
+        <if test="expInput != null and expInput != ''">
+            ,exp_input =#{expInput }
+        </if>
         WHERE req_inner_seq = #{reqInnerSeq}
     </update>
 </mapper>

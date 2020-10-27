@@ -2,11 +2,13 @@ package com.cmpay.lemon.monitor.utils.jira;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
 import com.cmpay.lemon.monitor.bo.jira.CreateIssueRequestBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraSubtasksBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraTaskBodyBO;
 import com.cmpay.lemon.monitor.bo.jira.JiraWorklogBO;
+import com.cmpay.lemon.monitor.entity.UserDO;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
@@ -50,7 +52,7 @@ public class JiraUtil {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(CREATEISSUEURL + "/" + jirakey);
+                .get(CREATEISSUEURL + "/" + jirakey+"?expand=changelog");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);
@@ -61,6 +63,33 @@ public class JiraUtil {
     //解析jira  返回json
     private static JiraTaskBodyBO getJiraTaskBodyBO(JSONObject object) {
         JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+        //缺陷实际处理人
+        boolean flag = false;
+        if(object.getJSONObject("changelog").getJSONArray("histories").size() != 0){
+            JSONArray jsonArray = JSONArray.parseArray(object.getJSONObject("changelog").getString("histories"));
+            for(int i=jsonArray.size() -1;i>= 0 && !flag ;i--){
+                JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(i).toString());
+                if(jsonObject1.getJSONArray("items").size() !=0){
+                    for(int j =0;j<jsonObject1.getJSONArray("items").size();j++){
+                        JSONObject jsonObject2 =JSONObject.parseObject(jsonObject1.getJSONArray("items").get(j).toString());
+                        if(jsonObject2.getString("field").equals("status")){
+                            if(jsonObject2.getString("fromString").equals("处理中")){
+                                jiraTaskBodyBO.setProblemHandler(jsonObject1.getJSONObject("author").getString("displayName"));
+                                flag = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 解决结果
+        if(object.getJSONObject("fields").getString("resolution")!=null) {
+            String problemType = object.getJSONObject("fields").getJSONObject("resolution").getString("name");
+            jiraTaskBodyBO.setSolution(problemType);
+
+        }
         //获取jirakey
         jiraTaskBodyBO.setJiraKey(object.getString("key"));
         //获取获取jira任务类型
@@ -81,15 +110,22 @@ public class JiraUtil {
         //问题处理人
         if(object.getJSONObject("fields").getString("customfield_10222")!=null) {
             JSONArray jsonArray = JSONArray.parseArray(object.getJSONObject("fields").getString("customfield_10222"));
-            JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(jsonArray.size()-1).toString());
-            jiraTaskBodyBO.setProblemHandler(jsonObject1.getString("displayName"));
+            String value = "";
+            for(int i= 0;i<jsonArray.size();i++){
+                JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(i).toString());
+                value += jsonObject1.getString("displayName")+";";
+            }
+            jiraTaskBodyBO.setProblemHandlers(value);
         }
 
         //问题归属部门
         if(object.getJSONObject("fields").getString("customfield_10208")!=null) {
             JSONArray jsonArray = JSONArray.parseArray(object.getJSONObject("fields").getString("customfield_10208"));
-            JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(jsonArray.size()-1).toString());
-            String value = jsonObject1.getString("value");
+            String value = "";
+            for(int i= 0;i<jsonArray.size();i++){
+                JSONObject jsonObject1 =JSONObject.parseObject(jsonArray.get(i).toString());
+                 value += jsonObject1.getString("value")+";";
+            }
             jiraTaskBodyBO.setDefectsDepartment(value);
         }
         String defectName = object.getJSONObject("fields").getString("customfield_10203");
@@ -173,7 +209,12 @@ public class JiraUtil {
         //附属子任务
         String createTime = DateUtil.dealDateFormat(object.getJSONObject("fields").getString("created"));
         jiraTaskBodyBO.setCreateTime(createTime);
-
+        // 投产问题提出人
+        String productionIssueRegistrant = object.getJSONObject("fields").getJSONObject("customfield_10207").getString("displayName");
+        jiraTaskBodyBO.setProductionIssueRegistrant(productionIssueRegistrant);
+        // 投产问题编号
+        String proNumber = object.getJSONObject("fields").getString("customfield_10400");
+        jiraTaskBodyBO.setProNumber(proNumber);
         return jiraTaskBodyBO;
     }
 

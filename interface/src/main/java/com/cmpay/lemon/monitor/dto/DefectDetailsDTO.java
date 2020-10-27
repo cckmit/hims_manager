@@ -6,10 +6,12 @@
  */
 package com.cmpay.lemon.monitor.dto;
 
+import com.cmpay.framework.data.request.GenericDTO;
+
 /**
  * @author wlr
  */
-public class DefectDetailsDTO {
+public class DefectDetailsDTO extends GenericDTO {
     /**
      * @Fields jireKey 缺陷jira编号
      */
@@ -51,13 +53,81 @@ public class DefectDetailsDTO {
      */
     private String defectDetails;
     /**
-     * @Fields assignee 问题处理人
+     * @Fields assignee 问题处理经办人
      */
     private String assignee;
     /**
      * @Fields testNumber 缺陷重测次数
      */
     private Integer testNumber;
+    /**
+     * @Fields securityLevel 缺陷严重级别（致命 严重 一般 轻微）
+     */
+    private String securityLevel;
+    /**
+     * @Fields productLine 缺陷归属产品线
+     */
+    private String productLine;
+    /**
+     * @Fields solution 解决结果
+     */
+    private String solution;
+    /**
+     * @Fields firstlevelorganization 一级主导团队
+     */
+    private String firstlevelorganization;
+    /**
+     * @Fields problemHandler 问题处理人
+     */
+    private String problemHandler;
+    /**
+     * @Fields problemHandlerDepartment 经办人归属部门
+     */
+    private String problemHandlerDepartment;
+
+    private String startTime;
+
+    private String endTime;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
     public String getJireKey() {
         return jireKey;
@@ -155,11 +225,60 @@ public class DefectDetailsDTO {
         this.testNumber = testNumber;
     }
 
+    public String getSecurityLevel() {
+        return securityLevel;
+    }
+
+    public void setSecurityLevel(String securityLevel) {
+        this.securityLevel = securityLevel;
+    }
+
+    public String getProductLine() {
+        return productLine;
+    }
+
+    public void setProductLine(String productLine) {
+        this.productLine = productLine;
+    }
+
+    public String getSolution() {
+        return solution;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
+    }
+
+    public String getFirstlevelorganization() {
+        return firstlevelorganization;
+    }
+
+    public void setFirstlevelorganization(String firstlevelorganization) {
+        this.firstlevelorganization = firstlevelorganization;
+    }
+
+    public String getProblemHandler() {
+        return problemHandler;
+    }
+
+    public void setProblemHandler(String problemHandler) {
+        this.problemHandler = problemHandler;
+    }
+
+    public String getProblemHandlerDepartment() {
+        return problemHandlerDepartment;
+    }
+
+    public void setProblemHandlerDepartment(String problemHandlerDepartment) {
+        this.problemHandlerDepartment = problemHandlerDepartment;
+    }
+
     @Override
     public String toString() {
-        return "DefectDetailsDO{" +
+        return "DefectDetailsDTO{" +
                 "jireKey='" + jireKey + '\'' +
                 ", reqNo='" + reqNo + '\'' +
+                ", defectName='" + defectName + '\'' +
                 ", epicKey='" + epicKey + '\'' +
                 ", defectType='" + defectType + '\'' +
                 ", defectStatus='" + defectStatus + '\'' +
@@ -168,7 +287,17 @@ public class DefectDetailsDTO {
                 ", registrationDate='" + registrationDate + '\'' +
                 ", defectDetails='" + defectDetails + '\'' +
                 ", assignee='" + assignee + '\'' +
-                ", testNumber='" + testNumber + '\'' +
+                ", testNumber=" + testNumber +
+                ", securityLevel='" + securityLevel + '\'' +
+                ", productLine='" + productLine + '\'' +
+                ", solution='" + solution + '\'' +
+                ", firstlevelorganization='" + firstlevelorganization + '\'' +
+                ", problemHandler='" + problemHandler + '\'' +
+                ", problemHandlerDepartment='" + problemHandlerDepartment + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
                 '}';
     }
 }

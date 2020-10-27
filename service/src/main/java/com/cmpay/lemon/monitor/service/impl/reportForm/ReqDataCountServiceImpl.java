@@ -1123,7 +1123,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<DefectDetailsDO> impl = null;
         DefectDetailsDO workingHoursDO = new DefectDetailsDO();
         if(!"产品测试团队".equals(devpLeadDept)){
-            workingHoursDO.setDefectsDepartment(devpLeadDept);
+            workingHoursDO.setProblemHandlerDepartment(devpLeadDept);
         }
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
@@ -1396,7 +1396,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         List<String> SumBos = new LinkedList<>();
         // 缺陷问题
         DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
-        defectDetailsDO.setDefectsDepartment(devpLeadDept);
+        defectDetailsDO.setProblemHandlerDepartment(devpLeadDept);
         defectDetailsDO.setRegistrationDate(date1);
         List<DefectDetailsDO> impl1 = null;
         impl1 = defectDetailsExtDao.findWeekList(defectDetailsDO);
@@ -2295,7 +2295,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
 
         }
-        System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
@@ -2522,7 +2521,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            workingHoursDO.setDefectsDepartment(dos.get(i).getSecondlevelorganization());
+            workingHoursDO.setProblemHandlerDepartment(dos.get(i).getSecondlevelorganization());
             // 查询周
             if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
                 workingHoursDO.setRegistrationDate(date1);
@@ -4519,7 +4518,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
             // 统计部门的有效plog数
             DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
-            defectDetailsDO.setDefectsDepartment(impl.get(i).getSecondlevelorganization());
+            defectDetailsDO.setProblemHandlerDepartment(impl.get(i).getSecondlevelorganization());
             defectDetailsDO.setRegistrationDate(month);
             List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
             if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
@@ -4527,7 +4526,6 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
             productLineDefectsBO.setDefectsNumber(String.valueOf(defectsNumber));
             productLineDefectsBO.setWorkload(String.valueOf(functionPoint));
-            System.err.println(productLineDefectsBO);
             productLineDefectsList.add(productLineDefectsBO);
         }
         LinkedList<ProductLineDefectsBO> productLineDefectsList2 = new LinkedList();
@@ -5311,7 +5309,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
-        defectDetailsDO.setDefectsDepartment(name);
+        defectDetailsDO.setProblemHandlerDepartment(name);
         // 查询周
         if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
             defectDetailsDO.setRegistrationDate(selectTime1);

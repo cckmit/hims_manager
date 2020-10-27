@@ -23,6 +23,7 @@ import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
+import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.*;
@@ -72,6 +73,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private ReqTaskService reqTaskService;
     @Autowired
     JiraDataCollationService jiraDataCollationService;
+    @Autowired
+    JiraOperationService jiraOperationService;
     @Autowired
     IPermiUserDao permiUserDao;
     @Autowired
@@ -2509,10 +2512,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         problemBO.setProblemTime(LocalDateTime.now());
         //BO转DO
         ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
-       // 异步新建jira任务
-
+        // 先查询id最大值
+        List<ProblemDO> list = iProblemDao.findList(new ProblemDO());
+        if(JudgeUtils.isNotEmpty(list)){
+            Long id = list.get(0).getProblemSerialNumber();
+            problemBO.setProblemSerialNumber(id+1);
+            problemDO.setProblemSerialNumber(id+1);
+        }
         //新增问题
         iProblemDao.insert(problemDO);
+        // 异步jira
+        jiraOperationService.createProduction(problemBO);
 
 
     }

@@ -37,17 +37,21 @@ import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 @Service
 public class DefectsServiceImpl  implements DefectsService {
     @Autowired
-    IProductionDefectsExtDao productionDefectsDao;
+    private IProductionDefectsExtDao productionDefectsDao;
     @Autowired
-    ISmokeTestFailedCountExtDao smokeTestFailedCountDao;
+    private ISmokeTestFailedCountExtDao smokeTestFailedCountDao;
     @Autowired
-    ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
+    private ISmokeTestRegistrationExtDao smokeTestRegistrationDao;
     @Autowired
-    IZenQuestiontExtDao zenQuestiontExtDao;
+    private IZenQuestiontExtDao zenQuestiontExtDao;
+    @Autowired
+    private IOnlineDefectExtDao onlineDefectExtDao;
     @Autowired
     private IUserExtDao iUserDao;
     @Autowired
-    IDefectDetailsExtDao defectDetailsDao;
+    private IDefectDetailsExtDao defectDetailsDao;
+    @Autowired
+    private IOrganizationStructureDao iOrganizationStructureDao;
 
     @Override
     public ProductionDefectsRspBO findDefectAll(ProductionDefectsBO productionDefectsBO) {
@@ -305,8 +309,16 @@ public class DefectsServiceImpl  implements DefectsService {
                     List<UserDO> userDOS = iUserDao.find(userDO);
                     if(!userDOS.isEmpty()){
                         zenQuestiontDO.setSecondlevelorganization(userDOS.get(0).getDepartment());
+                        OrganizationStructureDO organizationStructureDO = new OrganizationStructureDO();
+                        organizationStructureDO.setSecondlevelorganization(userDOS.get(0).getDepartment());
+                        List<OrganizationStructureDO> organizationStructureDOList =  iOrganizationStructureDao.find(organizationStructureDO);
+                        if (organizationStructureDOList!=null && organizationStructureDOList.size()>0){
+                            // 一级主导团队
+                            zenQuestiontDO.setFirstLevelOrganization(organizationStructureDOList.get(0).getFirstlevelorganization());
+                        }
                     }else{
                         zenQuestiontDO.setSecondlevelorganization("");
+                        zenQuestiontDO.setFirstLevelOrganization(null);
                     }
                 }
                 zenQuestiontDOLinkedList.add(zenQuestiontDO);
@@ -345,6 +357,10 @@ public class DefectsServiceImpl  implements DefectsService {
                     defectDetailsDO.setDefectDetails(m.getRepeatsteps());
                     defectDetailsDO.setDefectRegistrant(m.getCreator());
                     defectDetailsDO.setAssignee(m.getSolver());
+                    defectDetailsDO.setSolution(m.getSolution());
+                    defectDetailsDO.setFirstlevelorganization(m.getFirstLevelOrganization());
+                    defectDetailsDO.setProblemHandler(m.getSolver());
+                    defectDetailsDO.setProblemHandlerDepartment(m.getSecondlevelorganization());
                     if("已解决".equals(m.getBugstatus()) || "已关闭".equals(m.getBugstatus()) ){
                         defectDetailsDO.setDefectStatus("关闭");
                     }else{
@@ -400,5 +416,159 @@ public class DefectsServiceImpl  implements DefectsService {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
     }
+    @Override
+    public OnlineDefectRspBO onlineDefectFindList(OnlineDefectBO onlineDefectBO){
+        PageInfo<OnlineDefectBO> pageInfo = getOnlineDefectPageInfo(onlineDefectBO);
+        List<OnlineDefectBO> zenQuestiontBOList = BeanConvertUtils.convertList(pageInfo.getList(), OnlineDefectBO.class);
+        OnlineDefectRspBO onlineDefectRspBO = new OnlineDefectRspBO();
+        onlineDefectRspBO.setOnlineDefectBOList(zenQuestiontBOList);
+        onlineDefectRspBO.setPageInfo(pageInfo);
+        return onlineDefectRspBO;
+    }
+    private PageInfo<OnlineDefectBO>  getOnlineDefectPageInfo(OnlineDefectBO onlineDefectBO) {
+        OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
+        BeanConvertUtils.convert(onlineDefectDO, onlineDefectBO);
+        PageInfo<OnlineDefectBO> pageInfo = PageUtils.pageQueryWithCount(onlineDefectBO.getPageNum(), onlineDefectBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(onlineDefectExtDao.findList(onlineDefectDO), OnlineDefectBO.class));
+        return pageInfo;
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void onlineDefectImport(MultipartFile file){
+        File f = null;
+        LinkedList<OnlineDefectDO> onlineDefectDOLinkedList = new LinkedList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f = File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
+                //因为纯数字的导入会变成double 多个.0
+                if (!JudgeUtils.isEmpty(map.get(i).get(0).toString().trim())) {
+                    onlineDefectDO.setReqImplMon((int)Double.parseDouble(map.get(i).get(0).toString().trim())+"");
+                }
+                onlineDefectDO.setFirstlevelorganization(map.get(i).get(1).toString().trim());
+                onlineDefectDO.setIsAssess(map.get(i).get(2).toString().trim());
+                onlineDefectDO.setNotAssessCause(map.get(i).get(3).toString().trim());
+                onlineDefectDO.setDocumentNumber(map.get(i).get(4).toString().trim());
+                onlineDefectDO.setProcessStatus(map.get(i).get(5).toString().trim());
+                //截至日期
+                if (map.get(i).get(6) instanceof String) {
+                    onlineDefectDO.setProcessStartDate(map.get(i).get(6).toString().trim());
+                }
+                if (map.get(i).get(6) instanceof Date) {
+                    Date date = (Date)map.get(i).get(6);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    String dt = simpleDateFormat.format(date);
+                    onlineDefectDO.setProcessStartDate(dt.trim());
+                }
+                onlineDefectDO.setDefectProposer(map.get(i).get(7).toString().trim());
+                onlineDefectDO.setDefectTheme(map.get(i).get(8).toString().trim());
+                onlineDefectDO.setDefrctDescription(map.get(i).get(9).toString().trim());
+                onlineDefectDO.setDevelopmentLeader(map.get(i).get(10).toString().trim());
+                onlineDefectDO.setProductLeader(map.get(i).get(11).toString().trim());
+                onlineDefectDO.setManufacturers(map.get(i).get(12).toString().trim());
+                onlineDefectDO.setManufacturersProduct(map.get(i).get(13).toString().trim());
+                onlineDefectDO.setQuestionCause(map.get(i).get(14).toString().trim());
+                onlineDefectDO.setQuestionType(map.get(i).get(15).toString().trim());
+                onlineDefectDO.setSolution(map.get(i).get(16).toString().trim());
+                onlineDefectDOLinkedList.add(onlineDefectDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } finally {
+            f.delete();
+        }
+        onlineDefectDOLinkedList.forEach(m -> {
+            OnlineDefectDO zenQuestiontDO1 = new OnlineDefectDO();
+            //根据文号查询是否存在
+            zenQuestiontDO1.setDocumentNumber(m.getDocumentNumber());
+            List<OnlineDefectDO> zenQuestiontDOList = onlineDefectExtDao.find(zenQuestiontDO1);
+            if (JudgeUtils.isEmpty(zenQuestiontDOList)) {
+                onlineDefectExtDao.insert(m);
+            } else {
+                onlineDefectExtDao.update(m);
+            }
+        });
+    }
+    @Override
+    public void onlineDefectDownloadt(HttpServletResponse response,OnlineDefectBO onlineDefectBO){
+        OnlineDefectDO zenQuestiontDO = new OnlineDefectDO();
+        BeanConvertUtils.convert(zenQuestiontDO, onlineDefectBO);
+        List<OnlineDefectDO> demandDOList = onlineDefectExtDao.findList(zenQuestiontDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), OnlineDefectDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "productionDefectsDO_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
 
+    @Override
+    public void internalDefectDownload(HttpServletResponse response,DefectDetailsBO defectDetailsBO){
+        DefectDetailsDO zenQuestiontDO = new DefectDetailsDO();
+        BeanConvertUtils.convert(zenQuestiontDO, defectDetailsBO);
+        List<DefectDetailsDO> demandDOList = defectDetailsDao.findDefect(zenQuestiontDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), DefectDetailsDO.class, demandDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "productionDefectsDO_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    @Override
+    public DefectDetailsRspBO internalDefectInquiry(DefectDetailsBO defectDetailsBO){
+        PageInfo<DefectDetailsBO> pageInfo = getinternalDefectPageInfo(defectDetailsBO);
+        List<DefectDetailsBO> defectDetailsBOList = BeanConvertUtils.convertList(pageInfo.getList(), DefectDetailsBO.class);
+        DefectDetailsRspBO onlineDefectRspBO = new DefectDetailsRspBO();
+        onlineDefectRspBO.setDefectDetailsBos(defectDetailsBOList);
+        onlineDefectRspBO.setPageInfo(pageInfo);
+        return onlineDefectRspBO;
+    }
+    private PageInfo<DefectDetailsBO>  getinternalDefectPageInfo(DefectDetailsBO defectDetailsBO) {
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        BeanConvertUtils.convert(defectDetailsDO, defectDetailsBO);
+        PageInfo<DefectDetailsBO> pageInfo = PageUtils.pageQueryWithCount(defectDetailsBO.getPageNum(), defectDetailsBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(defectDetailsDao.findDefect(defectDetailsDO), DefectDetailsBO.class));
+        return pageInfo;
+    }
 }

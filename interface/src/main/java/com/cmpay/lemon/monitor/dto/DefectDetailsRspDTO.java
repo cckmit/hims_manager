@@ -6,13 +6,15 @@
  */
 package com.cmpay.lemon.monitor.dto;
 
+import com.cmpay.framework.data.response.PageableRspDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author wlr 缺陷问题
  */
-public class DefectDetailsRspDTO {
+public class DefectDetailsRspDTO extends PageableRspDTO {
     private List<DefectDetailsDTO> defectDetailsDTOArrayList ;
 
     public List<DefectDetailsDTO> getDefectDetailsDTOArrayList() {

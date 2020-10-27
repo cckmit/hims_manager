@@ -63,63 +63,97 @@ public class JiraTaskBodyBO {
     /*
      *经办人
      */
-    String assignee;
+    private String assignee;
 
     /*
      *工作日志流水
      */
-    String worklogs;
+    private String worklogs;
 
     /*
      *工作日志流水
      */
-    String subtasks;
+    private String subtasks;
 
     /*
      *计划开始时间
      */
-    String planStartTime;
+    private String planStartTime;
     /*
      *计划完成时间
      */
-    String planEndTime;
+    private String planEndTime;
     /*
      *问题处理人
      */
-    String problemHandler;
+    private String problemHandlers;
     /*
      *重测次数
      */
-    int retestTimes;
+    private int retestTimes;
     /*
      *问题定位
      */
-    String problemType;
+    private String problemType;
     /*
      *缺陷归属部门
      */
-    String defectsDepartment;
+    private String defectsDepartment;
     /*
      *缺陷名称
      */
-    String defectName;
+    private String defectName;
     /*
      *缺陷详情
      */
-    String defectDetails;
+    private String defectDetails;
 
     /*
      *评审问题类型
      */
-    String reviewQuestionType;
+    private String reviewQuestionType;
     /*
      *安全级别
      */
-    String securityLevel;
+    private String securityLevel;
     /*
      *测试案例总数
      */
-    String testCaseNumber;
+    private String testCaseNumber;
+    /**
+     * 解决结果
+     */
+    private String solution;
+    /**
+     * @Fields problemHandler 问题处理经办人
+     */
+    private String problemHandler;
+    /**
+     * @Fields problemHandlerDepartment 经办人归属部门
+     */
+    private String problemHandlerDepartment;
+
+    // 投产问题提出人
+    private String productionIssueRegistrant;
+
+    //投产问题编号
+    private String proNumber;
+
+    public String getProductionIssueRegistrant() {
+        return productionIssueRegistrant;
+    }
+
+    public void setProductionIssueRegistrant(String productionIssueRegistrant) {
+        this.productionIssueRegistrant = productionIssueRegistrant;
+    }
+
+    public String getProNumber() {
+        return proNumber;
+    }
+
+    public void setProNumber(String proNumber) {
+        this.proNumber = proNumber;
+    }
 
     public String getTestCaseNumber() {
         return testCaseNumber;
@@ -367,14 +401,42 @@ public class JiraTaskBodyBO {
         this.status = status;
     }
 
+    public String getProblemHandlers() {
+        return problemHandlers;
+    }
+
+    public void setProblemHandlers(String problemHandlers) {
+        this.problemHandlers = problemHandlers;
+    }
+
+    public String getSolution() {
+        return solution;
+    }
+
+    public void setSolution(String solution) {
+        this.solution = solution;
+    }
+
+    public String getProblemHandlerDepartment() {
+        return problemHandlerDepartment;
+    }
+
+    public void setProblemHandlerDepartment(String problemHandlerDepartment) {
+        this.problemHandlerDepartment = problemHandlerDepartment;
+    }
+
     @Override
     public String toString() {
         return "JiraTaskBodyBO{" +
                 "jiraKey='" + jiraKey + '\'' +
+                ", creator='" + creator + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", epicCreator='" + epicCreator + '\'' +
                 ", parentTaskKey='" + parentTaskKey + '\'' +
                 ", epicKey='" + epicKey + '\'' +
                 ", department='" + department + '\'' +
                 ", jiraType='" + jiraType + '\'' +
+                ", status='" + status + '\'' +
                 ", issueName='" + issueName + '\'' +
                 ", aggregatetimespent='" + aggregatetimespent + '\'' +
                 ", timespent='" + timespent + '\'' +
@@ -384,6 +446,20 @@ public class JiraTaskBodyBO {
                 ", subtasks='" + subtasks + '\'' +
                 ", planStartTime='" + planStartTime + '\'' +
                 ", planEndTime='" + planEndTime + '\'' +
+                ", problemHandlers='" + problemHandlers + '\'' +
+                ", retestTimes=" + retestTimes +
+                ", problemType='" + problemType + '\'' +
+                ", defectsDepartment='" + defectsDepartment + '\'' +
+                ", defectName='" + defectName + '\'' +
+                ", defectDetails='" + defectDetails + '\'' +
+                ", reviewQuestionType='" + reviewQuestionType + '\'' +
+                ", securityLevel='" + securityLevel + '\'' +
+                ", testCaseNumber='" + testCaseNumber + '\'' +
+                ", solution='" + solution + '\'' +
+                ", problemHandler='" + problemHandler + '\'' +
+                ", problemHandlerDepartment='" + problemHandlerDepartment + '\'' +
+                ", productionIssueRegistrant='" + productionIssueRegistrant + '\'' +
+                ", proNumber='" + proNumber + '\'' +
                 '}';
     }
 }
