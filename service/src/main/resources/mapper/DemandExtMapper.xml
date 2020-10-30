@@ -437,7 +437,7 @@
         <if test="configMng != null and configMng != ''">
             ,config_mng =#{configMng }
         </if>
-        <if test="monRemark != null and monRemark != ''">
+        <if test="monRemark != null">
             ,mon_remark =#{monRemark }
         </if>
         <if test="devpEng != null and devpEng != ''">
@@ -470,7 +470,7 @@
         <if test="riskFeedbackTm != null and riskFeedbackTm != ''">
             ,risk_feedback_tm =#{riskFeedbackTm }
         </if>
-        <if test="endMonRemark != null and endMonRemark != ''">
+        <if test="endMonRemark != null">
             ,end_mon_remark =#{endMonRemark }
         </if>
         <if test="endFeedbackTm != null and endFeedbackTm != ''">
@@ -530,7 +530,7 @@
         <if test="stateCauseClassification != null and stateCauseClassification != ''">
             ,state_cause_classification =#{stateCauseClassification}
         </if>
-        <if test="targetCauseClassification != null and targetCauseClassification != ''">
+        <if test="targetCauseClassification != null">
             ,target_cause_classification =#{targetCauseClassification}
         </if>
         <if test="productionTime != null and productionTime != ''">
