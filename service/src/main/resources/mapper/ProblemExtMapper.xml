@@ -52,4 +52,77 @@
         ORDER BY problem_serial_number DESC
     </select>
 
+    <select id="findMonthList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_problem
+        <where >
+            <if test="problemSerialNumber != null  and problemSerialNumber != ''" >
+                and problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+            </if>
+            <if test="proNumber != null  and proNumber != ''" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="problemDetail != null  and problemDetail != ''" >
+                and problem_detail = #{problemDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''" >
+                and problem_time LIKE CONCAT('%',#{reqStartMon},'%')
+            </if>
+            <if test="issuekey != null  and issuekey != ''" >
+                and issuekey = #{issuekey,jdbcType=VARCHAR}
+            </if>
+            <if test="displayname != null  and displayname != ''" >
+                and displayName LIKE CONCAT('%',#{displayname},'%')
+            </if>
+            <if test="devpLeadDept != null  and devpLeadDept != ''" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="isJira != null and isJira != ''" >
+                and is_jira = #{isJira,jdbcType=VARCHAR}
+            </if>
+            <if test="problemTime != null" >
+                and problem_time = #{problemTime,jdbcType=TIMESTAMP}
+            </if>
+        </where>
+        ORDER BY problem_serial_number DESC
+    </select>
+
+    <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_problem
+        <where >
+            <if test="problemSerialNumber != null  and problemSerialNumber != ''" >
+                and problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
+            </if>
+            <if test="proNumber != null  and proNumber != ''" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="problemDetail != null  and problemDetail != ''" >
+                and problem_detail = #{problemDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''" >
+                and YEARWEEK(date_format(problem_time,'%Y-%m-%d')) = YEARWEEK(#{reqStartMon,jdbcType=VARCHAR})
+            </if>
+            <if test="issuekey != null  and issuekey != ''" >
+                and issuekey = #{issuekey,jdbcType=VARCHAR}
+            </if>
+            <if test="displayname != null  and displayname != ''" >
+                and displayName LIKE CONCAT('%',#{displayname},'%')
+            </if>
+            <if test="devpLeadDept != null  and devpLeadDept != ''" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="isJira != null and isJira != ''" >
+                and is_jira = #{isJira,jdbcType=VARCHAR}
+            </if>
+            <if test="problemTime != null" >
+                and problem_time = #{problemTime,jdbcType=TIMESTAMP}
+            </if>
+
+        </where>
+        ORDER BY problem_serial_number DESC
+    </select>
+
 </mapper>

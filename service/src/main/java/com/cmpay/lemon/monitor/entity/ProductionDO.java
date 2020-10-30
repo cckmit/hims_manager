@@ -113,6 +113,32 @@ public class ProductionDO extends BaseDO {
      */
     private String isFallback;
     private String proDate2;
+    /**
+     * 是否是考核问题
+     */
+    @Excel(name = "是否是考核问题")
+    private String isAccessQuestion;
+    /**
+     * 考核问题备注
+     */
+    @Excel(name = "考核问题备注")
+    private String accessRemark;
+
+    public String getIsAccessQuestion() {
+        return isAccessQuestion;
+    }
+
+    public void setIsAccessQuestion(String isAccessQuestion) {
+        this.isAccessQuestion = isAccessQuestion;
+    }
+
+    public String getAccessRemark() {
+        return accessRemark;
+    }
+
+    public void setAccessRemark(String accessRemark) {
+        this.accessRemark = accessRemark;
+    }
 
     public String getProDate2() {
         return proDate2;
@@ -570,7 +596,6 @@ public class ProductionDO extends BaseDO {
                 ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
                 ", notAdvanceReason='" + notAdvanceReason + '\'' +
                 ", proAdvanceResult='" + proAdvanceResult + '\'' +
-                ", notProductionImpact='" + notProductionImpact + '\'' +
                 ", identifier='" + identifier + '\'' +
                 ", identifierTel='" + identifierTel + '\'' +
                 ", proChecker='" + proChecker + '\'' +
@@ -581,6 +606,7 @@ public class ProductionDO extends BaseDO {
                 ", updateOperator='" + updateOperator + '\'' +
                 ", remark='" + remark + '\'' +
                 ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
+                ", notProductionImpact='" + notProductionImpact + '\'' +
                 ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
                 ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
                 ", isOperationProduction='" + isOperationProduction + '\'' +
@@ -601,6 +627,9 @@ public class ProductionDO extends BaseDO {
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +
                 ", isFallback='" + isFallback + '\'' +
+                ", proDate2='" + proDate2 + '\'' +
+                ", isAccessQuestion='" + isAccessQuestion + '\'' +
+                ", accessRemark='" + accessRemark + '\'' +
                 '}';
     }
 }

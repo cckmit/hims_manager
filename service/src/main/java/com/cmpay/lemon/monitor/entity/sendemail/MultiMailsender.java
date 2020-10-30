@@ -290,24 +290,9 @@ public class MultiMailsender {
             }
         }
     }
-
+    //邮件发送
     public static void main(String[] args) throws Exception{
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
-            float betweenDate = 0;
-            try {
-                Date d1 = sdf.parse(org.apache.commons.lang.StringUtils.substring("2020-09-14 14:19:05", 0, 10));
-                //登记工时开始时间
-                Date d2 = sdf.parse(StringUtils.substring("2020-09-10 23:10:00", 0, 10));
-                betweenDate = (float) (d1.getTime() - d2.getTime()) / (60 * 60 * 24 * 1000);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            //周一时创建时间和工作登记开始时间超过四天则不计算
-        System.err.println(betweenDate);
-            if (betweenDate > 4) {
-                System.err.println("超过四天");
-            }
+        System.err.println("(!(~+[])+{})[--[~+\"\"][+[]]*[~+[]]+~~!+[]]+({}+[])[[~!+[]]*~+[]]");
 
 
     }

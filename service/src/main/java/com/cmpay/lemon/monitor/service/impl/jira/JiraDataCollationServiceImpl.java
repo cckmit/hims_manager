@@ -295,7 +295,6 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
             });
         }
-
         //获得投产需求 未完成的问题，//需要在统计完缺陷后执行
         getproductedsRemainingQuestions();
     }

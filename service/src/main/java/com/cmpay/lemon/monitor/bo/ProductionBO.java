@@ -78,6 +78,14 @@ public class ProductionBO {
      * 是否有回退方案
      */
     private String isFallback;
+    /**
+     * 是否是考核问题
+     */
+    private String isAccessQuestion;
+    /**
+     * 考核问题备注
+     */
+    private String accessRemark;
 
     /**
      * 页数
@@ -91,10 +99,27 @@ public class ProductionBO {
     public ProductionBO() {
     }
 
+    public String getIsAccessQuestion() {
+        return isAccessQuestion;
+    }
+
+    public void setIsAccessQuestion(String isAccessQuestion) {
+        this.isAccessQuestion = isAccessQuestion;
+    }
+
+    public String getAccessRemark() {
+        return accessRemark;
+    }
+
+    public void setAccessRemark(String accessRemark) {
+        this.accessRemark = accessRemark;
+    }
+
     @Override
     public String toString() {
         return "ProductionBO{" +
-                "proNumber='" + proNumber + '\'' +
+                "crMore='" + crMore + '\'' +
+                ", proNumber='" + proNumber + '\'' +
                 ", proNeed='" + proNeed + '\'' +
                 ", proType='" + proType + '\'' +
                 ", proDateStart=" + proDateStart +
@@ -145,7 +170,10 @@ public class ProductionBO {
                 ", proPkgStatus='" + proPkgStatus + '\'' +
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +
+                ", dayNumber='" + dayNumber + '\'' +
                 ", isFallback='" + isFallback + '\'' +
+                ", isAccessQuestion='" + isAccessQuestion + '\'' +
+                ", accessRemark='" + accessRemark + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

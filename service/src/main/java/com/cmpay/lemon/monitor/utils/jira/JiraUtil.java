@@ -210,11 +210,15 @@ public class JiraUtil {
         String createTime = DateUtil.dealDateFormat(object.getJSONObject("fields").getString("created"));
         jiraTaskBodyBO.setCreateTime(createTime);
         // 投产问题提出人
-        String productionIssueRegistrant = object.getJSONObject("fields").getJSONObject("customfield_10207").getString("displayName");
-        jiraTaskBodyBO.setProductionIssueRegistrant(productionIssueRegistrant);
+        if(object.getJSONObject("fields").getString("customfield_10207")!=null) {
+            String productionIssueRegistrant = object.getJSONObject("fields").getJSONObject("customfield_10207").getString("displayName");
+            jiraTaskBodyBO.setProductionIssueRegistrant(productionIssueRegistrant);
+        }
         // 投产问题编号
-        String proNumber = object.getJSONObject("fields").getString("customfield_10400");
-        jiraTaskBodyBO.setProNumber(proNumber);
+        if(object.getJSONObject("fields").getString("customfield_10400")!=null) {
+            String proNumber = object.getJSONObject("fields").getString("customfield_10400");
+            jiraTaskBodyBO.setProNumber(proNumber);
+        }
         return jiraTaskBodyBO;
     }
 
@@ -352,12 +356,12 @@ public class JiraUtil {
         return jiraTaskBodyBOlist;
     }
 
-    //依据jql批量获取一天内的jira数据
+    //依据jql批量获取一天内的jira数据 内部缺陷, 评审问题
     public static List<JiraTaskBodyBO>  batchQueryIssuesModifiedWithinOneDay2(int page) {
         Response response = given()
                 .header(AUTHORIZATION, AUTHORIZATIONVALUE)
                 .header(CONTENTTYPE, CONTENTTYPEVALUE)
-                .get(GETSEARCH + "?" + "jql= updated >= -1d order by created ASC&startAt="+page+"&maxResults=50");
+                .get(GETSEARCH + "?" + "jql= updated >= -1d AND issuetype in (内部缺陷, 评审问题) order by created ASC&startAt="+page+"&maxResults=50");
         ResponseBody body = response.getBody();
         String json = body.print();
         JSONObject object = JSONObject.parseObject(json);

@@ -132,6 +132,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private  IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
     @Resource
     private IDemandEaseDevelopmentExtDao easeDevelopmentExtDao;
+    @Autowired
+    private IProblemExtDao iProblemDao;
 
 
     /**
@@ -2357,7 +2359,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
 
     /**
-     * 团队生产问题
+     * 团队投产问题
      *
      * @param date1
      * @param date2
@@ -2365,14 +2367,14 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
      */
     @Override
     public DemandHoursRspBO getCentreProductionDefects(String date1, String date2) {
-        List<ProductionDefectsDO> impl = null;
-        ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        List<ProblemDO> impl = null;
+        ProblemDO workingHoursDO = new ProblemDO();
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < list.size(); i++) {
-            workingHoursDO.setProcessstartdate(list.get(i));
-            impl = productionDefectsExtDao.findMonthList(workingHoursDO);
+            workingHoursDO.setReqStartMon(list.get(i));
+            impl = iProblemDao.findMonthList(workingHoursDO);
             SumBos.add(list.get(i));
             if (impl != null && impl.size() >= 0) {
                 workingHoursBOS.add(impl.size() + "");
@@ -2650,8 +2652,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Override
     public DemandHoursRspBO getCentreProductionDefectsDept(String date1, String date2) {
         List<OrganizationStructureDO> dos = iOrganizationStructureDao.find(new OrganizationStructureDO());
-        List<ProductionDefectsDO> impl = null;
-        ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        List<ProblemDO> impl = null;
+        ProblemDO workingHoursDO = new ProblemDO();
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < dos.size(); i++) {
@@ -2665,16 +2667,16 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            workingHoursDO.setProblemattributiondept(dos.get(i).getSecondlevelorganization());
+            workingHoursDO.setDevpLeadDept(dos.get(i).getSecondlevelorganization());
             // 查询周
             if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
-                workingHoursDO.setProcessstartdate(date1);
-                impl = productionDefectsExtDao.findWeekList(workingHoursDO);
+                workingHoursDO.setReqStartMon(date1);
+                impl = iProblemDao.findWeekList(workingHoursDO);
             }
             // 查询月
             if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
-                workingHoursDO.setProcessstartdate(date2);
-                impl = productionDefectsExtDao.findMonthList(workingHoursDO);
+                workingHoursDO.setReqStartMon(date2);
+                impl = iProblemDao.findMonthList(workingHoursDO);
             }
             SumBos.add(dos.get(i).getSecondlevelorganization());
             if (impl != null && impl.size() >= 0) {

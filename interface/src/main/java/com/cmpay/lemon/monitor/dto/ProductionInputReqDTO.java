@@ -77,65 +77,94 @@ public class ProductionInputReqDTO {
          * 是否有回退方案
          */
         private String isFallback;
+    /**
+     * 是否是考核问题
+     */
+    private String isAccessQuestion;
+    /**
+     * 考核问题备注
+     */
+    private String accessRemark;
 
-        @Override
-        public String toString() {
-            return "ProductionDTO{" +
-                    "proNumber='" + proNumber + '\'' +
-                    ", proNeed='" + proNeed + '\'' +
-                    ", proType='" + proType + '\'' +
-                    ", proDateStart=" + proDateStart +
-                    ", proDateEnd=" + proDateEnd +
-                    ", proDate=" + proDate +
-                    ", applicationDept='" + applicationDept + '\'' +
-                    ", proApplicant='" + proApplicant + '\'' +
-                    ", applicantTel='" + applicantTel + '\'' +
-                    ", proModule='" + proModule + '\'' +
-                    ", businessPrincipal='" + businessPrincipal + '\'' +
-                    ", basePrincipal='" + basePrincipal + '\'' +
-                    ", proManager='" + proManager + '\'' +
-                    ", proStatus='" + proStatus + '\'' +
-                    ", isUpDatabase='" + isUpDatabase + '\'' +
-                    ", isUpStructure='" + isUpStructure + '\'' +
-                    ", proOperation='" + proOperation + '\'' +
-                    ", isRefCerificate='" + isRefCerificate + '\'' +
-                    ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
-                    ", notAdvanceReason='" + notAdvanceReason + '\'' +
-                    ", proAdvanceResult='" + proAdvanceResult + '\'' +
-                    ", notProductionImpact='" + notProductionImpact + '\'' +
-                    ", identifier='" + identifier + '\'' +
-                    ", identifierTel='" + identifierTel + '\'' +
-                    ", proChecker='" + proChecker + '\'' +
-                    ", checkerTel='" + checkerTel + '\'' +
-                    ", validation='" + validation + '\'' +
-                    ", developmentLeader='" + developmentLeader + '\'' +
-                    ", approver='" + approver + '\'' +
-                    ", updateOperator='" + updateOperator + '\'' +
-                    ", remark='" + remark + '\'' +
-                    ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
-                    ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
-                    ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
-                    ", isOperationProduction='" + isOperationProduction + '\'' +
-                    ", mailLeader='" + mailLeader + '\'' +
-                    ", svntabName='" + svntabName + '\'' +
-                    ", completionUpdate='" + completionUpdate + '\'' +
-                    ", earlyImplementation='" + earlyImplementation + '\'' +
-                    ", influenceUse='" + influenceUse + '\'' +
-                    ", influenceUseReason='" + influenceUseReason + '\'' +
-                    ", influenceUseInf='" + influenceUseInf + '\'' +
-                    ", operatingTime='" + operatingTime + '\'' +
-                    ", mailRecipient='" + mailRecipient + '\'' +
-                    ", mailCopyPerson='" + mailCopyPerson + '\'' +
-                    ", deptName='" + deptName + '\'' +
-                    ", deptManagerName='" + deptManagerName + '\'' +
-                    ", developmentDept='" + developmentDept + '\'' +
-                    ", proPkgStatus='" + proPkgStatus + '\'' +
-                    ", proPkgTime=" + proPkgTime +
-                    ", proPkgName='" + proPkgName + '\'' +
-                    ", isFallback='" + isFallback + '\'' +
-                    '}';
-        }
-        public String getProNumber() {
+    public String getIsAccessQuestion() {
+        return isAccessQuestion;
+    }
+
+    public void setIsAccessQuestion(String isAccessQuestion) {
+        this.isAccessQuestion = isAccessQuestion;
+    }
+
+    public String getAccessRemark() {
+        return accessRemark;
+    }
+
+    public void setAccessRemark(String accessRemark) {
+        this.accessRemark = accessRemark;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductionInputReqDTO{" +
+                "crMore='" + crMore + '\'' +
+                ", attachment=" + attachment +
+                ", proNumber='" + proNumber + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", proType='" + proType + '\'' +
+                ", proDateStart=" + proDateStart +
+                ", proDateEnd=" + proDateEnd +
+                ", proDate=" + proDate +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", proApplicant='" + proApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", proModule='" + proModule + '\'' +
+                ", businessPrincipal='" + businessPrincipal + '\'' +
+                ", basePrincipal='" + basePrincipal + '\'' +
+                ", proManager='" + proManager + '\'' +
+                ", proStatus='" + proStatus + '\'' +
+                ", isUpDatabase='" + isUpDatabase + '\'' +
+                ", isUpStructure='" + isUpStructure + '\'' +
+                ", proOperation='" + proOperation + '\'' +
+                ", isRefCerificate='" + isRefCerificate + '\'' +
+                ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
+                ", notAdvanceReason='" + notAdvanceReason + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", notProductionImpact='" + notProductionImpact + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", proChecker='" + proChecker + '\'' +
+                ", checkerTel='" + checkerTel + '\'' +
+                ", validation='" + validation + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", approver='" + approver + '\'' +
+                ", updateOperator='" + updateOperator + '\'' +
+                ", remark='" + remark + '\'' +
+                ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
+                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
+                ", isOperationProduction='" + isOperationProduction + '\'' +
+                ", mailLeader='" + mailLeader + '\'' +
+                ", svntabName='" + svntabName + '\'' +
+                ", completionUpdate='" + completionUpdate + '\'' +
+                ", earlyImplementation='" + earlyImplementation + '\'' +
+                ", influenceUse='" + influenceUse + '\'' +
+                ", influenceUseReason='" + influenceUseReason + '\'' +
+                ", influenceUseInf='" + influenceUseInf + '\'' +
+                ", operatingTime='" + operatingTime + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", deptName='" + deptName + '\'' +
+                ", deptManagerName='" + deptManagerName + '\'' +
+                ", developmentDept='" + developmentDept + '\'' +
+                ", proPkgStatus='" + proPkgStatus + '\'' +
+                ", proPkgTime=" + proPkgTime +
+                ", proPkgName='" + proPkgName + '\'' +
+                ", isFallback='" + isFallback + '\'' +
+                ", isAccessQuestion='" + isAccessQuestion + '\'' +
+                ", accessRemark='" + accessRemark + '\'' +
+                '}';
+    }
+
+    public String getProNumber() {
             return proNumber;
         }
 

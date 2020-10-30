@@ -104,6 +104,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     // 180 完成产品发布
     private static final String FINISHPRD = "180";
+    // 1
+    private static final String NO = "否";
 
     public static final long configurationAdministratorRoleID = 5003;
 
@@ -842,6 +844,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProductionBO productionBO = null;
         ProductionDO productionBean = operationProductionDao.findProductionBean(proNumber);
         if (productionBean != null) {
+
             productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionBean);
         }
         return productionBO;
@@ -1873,6 +1876,16 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         if (bean.getProType().equals("救火更新")) {
             if (bean.getOperatingTime() == null || bean.getOperatingTime().equals("") || bean.getOperatingTime().equals("undefined")) {
                 MsgEnum.ERROR_IMPORT.setMsgInfo(" 更新预计操作时长不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            //救火更新是否是考核问题不能为空
+            if (bean.getIsAccessQuestion() == null || bean.getIsAccessQuestion().equals("") || bean.getIsAccessQuestion().equals("undefined")) {
+                MsgEnum.ERROR_IMPORT.setMsgInfo(" 是否是考核问题不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+            }
+            // 不是是考核问题时,备注不能为空
+            if (NO.equals(bean.getIsAccessQuestion())&&(bean.getAccessRemark() == null || bean.getAccessRemark().equals("") || bean.getAccessRemark().equals("undefined"))) {
+                MsgEnum.ERROR_IMPORT.setMsgInfo(" 非考核问题备注不能为空，请说明不是考核问题的原因");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
             }
         }

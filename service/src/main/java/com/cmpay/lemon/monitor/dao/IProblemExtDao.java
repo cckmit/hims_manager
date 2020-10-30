@@ -15,4 +15,6 @@ import java.util.List;
 @Mapper
 public interface IProblemExtDao extends IProblemDao {
     List<ProblemDO> findList(ProblemDO entity);
+    List<ProblemDO> findMonthList(ProblemDO entity);
+    List<ProblemDO> findWeekList(ProblemDO entity);
 }
