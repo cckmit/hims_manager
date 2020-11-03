@@ -144,10 +144,8 @@ public class DemandDO extends BaseDO {
     private String preCurPeriod2;
 
     // 状态修改原因分类
-    @Excel(name = "状态修改原因分类")
     private String stateCauseClassification;
     //未达到月初目标原因分类
-    @Excel(name = "未达到月初目标原因分类")
     private String targetCauseClassification;
     //投产时间
     private String productionTime;

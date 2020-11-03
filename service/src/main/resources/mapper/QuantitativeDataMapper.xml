@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IQuantitativeDataDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.QuantitativeDataDO" >
+        <id column="quantitative_id" property="quantitativeId" jdbcType="BIGINT" />
+        <result column="firstLevel_organization" property="firstlevelOrganization" jdbcType="VARCHAR" />
+        <result column="req_impl_mon" property="reqImplMon" jdbcType="VARCHAR" />
+        <result column="function_points_assess_workload" property="functionPointsAssessWorkload" jdbcType="VARCHAR" />
+        <result column="cost_coefficients_sum" property="costCoefficientsSum" jdbcType="VARCHAR" />
+        <result column="input-output_ratio" property="inputOutputRatio" jdbcType="VARCHAR" />
+        <result column="target_completion_rate" property="targetCompletionRate" jdbcType="VARCHAR" />
+        <result column="product_release_rate" property="productReleaseRate" jdbcType="VARCHAR" />
+        <result column="documents_output_number" property="documentsOutputNumber" jdbcType="INTEGER" />
+        <result column="projects_not_completed_number" property="projectsNotCompletedNumber" jdbcType="INTEGER" />
+        <result column="work_not_completed_number" property="workNotCompletedNumber" jdbcType="INTEGER" />
+        <result column="unstandardized_feedback_works_number" property="unstandardizedFeedbackWorksNumber" jdbcType="INTEGER" />
+        <result column="not_timely_input_production_number" property="notTimelyInputProductionNumber" jdbcType="INTEGER" />
+        <result column="defect_rate" property="defectRate" jdbcType="VARCHAR" />
+        <result column="data_change_problems_number" property="dataChangeProblemsNumber" jdbcType="INTEGER" />
+        <result column="production_problems_number" property="productionProblemsNumber" jdbcType="INTEGER" />
+        <result column="smoke_test_failed" property="smokeTestFailed" jdbcType="INTEGER" />
+        <result column="version_update_issues" property="versionUpdateIssues" jdbcType="INTEGER" />
+        <result column="base_awarded_marks" property="baseAwardedMarks" jdbcType="INTEGER" />
+        <result column="praise_awarded_marks" property="praiseAwardedMarks" jdbcType="INTEGER" />
+        <result column="quality_awarded_marks" property="qualityAwardedMarks" jdbcType="INTEGER" />
+        <result column="innovate_awarded_marks" property="innovateAwardedMarks" jdbcType="INTEGER" />
+        <result column="base_deduct_marks" property="baseDeductMarks" jdbcType="INTEGER" />
+        <result column="criticism_deduct_marks" property="criticismDeductMarks" jdbcType="INTEGER" />
+        <result column="fund_loss" property="fundLoss" jdbcType="INTEGER" />
+        <result column="working_attitude" property="workingAttitude" jdbcType="INTEGER" />
+        <result column="remark" property="remark" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        quantitative_id, firstLevel_organization, req_impl_mon, function_points_assess_workload, 
+        cost_coefficients_sum, input-output_ratio, target_completion_rate, product_release_rate, 
+        documents_output_number, projects_not_completed_number, work_not_completed_number, 
+        unstandardized_feedback_works_number, not_timely_input_production_number, defect_rate, 
+        data_change_problems_number, production_problems_number, smoke_test_failed, version_update_issues, 
+        base_awarded_marks, praise_awarded_marks, quality_awarded_marks, innovate_awarded_marks, 
+        base_deduct_marks, criticism_deduct_marks, fund_loss, working_attitude, remark
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_quantitative_data
+        where quantitative_id = #{quantitativeId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_quantitative_data
+        where quantitative_id = #{quantitativeId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.QuantitativeDataDO" >
+        insert into t_quantitative_data
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="quantitativeId != null" >
+                quantitative_id,
+            </if>
+            <if test="firstlevelOrganization != null" >
+                firstLevel_organization,
+            </if>
+            <if test="reqImplMon != null" >
+                req_impl_mon,
+            </if>
+            <if test="functionPointsAssessWorkload != null" >
+                function_points_assess_workload,
+            </if>
+            <if test="costCoefficientsSum != null" >
+                cost_coefficients_sum,
+            </if>
+            <if test="inputOutputRatio != null" >
+                input-output_ratio,
+            </if>
+            <if test="targetCompletionRate != null" >
+                target_completion_rate,
+            </if>
+            <if test="productReleaseRate != null" >
+                product_release_rate,
+            </if>
+            <if test="documentsOutputNumber != null" >
+                documents_output_number,
+            </if>
+            <if test="projectsNotCompletedNumber != null" >
+                projects_not_completed_number,
+            </if>
+            <if test="workNotCompletedNumber != null" >
+                work_not_completed_number,
+            </if>
+            <if test="unstandardizedFeedbackWorksNumber != null" >
+                unstandardized_feedback_works_number,
+            </if>
+            <if test="notTimelyInputProductionNumber != null" >
+                not_timely_input_production_number,
+            </if>
+            <if test="defectRate != null" >
+                defect_rate,
+            </if>
+            <if test="dataChangeProblemsNumber != null" >
+                data_change_problems_number,
+            </if>
+            <if test="productionProblemsNumber != null" >
+                production_problems_number,
+            </if>
+            <if test="smokeTestFailed != null" >
+                smoke_test_failed,
+            </if>
+            <if test="versionUpdateIssues != null" >
+                version_update_issues,
+            </if>
+            <if test="baseAwardedMarks != null" >
+                base_awarded_marks,
+            </if>
+            <if test="praiseAwardedMarks != null" >
+                praise_awarded_marks,
+            </if>
+            <if test="qualityAwardedMarks != null" >
+                quality_awarded_marks,
+            </if>
+            <if test="innovateAwardedMarks != null" >
+                innovate_awarded_marks,
+            </if>
+            <if test="baseDeductMarks != null" >
+                base_deduct_marks,
+            </if>
+            <if test="criticismDeductMarks != null" >
+                criticism_deduct_marks,
+            </if>
+            <if test="fundLoss != null" >
+                fund_loss,
+            </if>
+            <if test="workingAttitude != null" >
+                working_attitude,
+            </if>
+            <if test="remark != null" >
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="quantitativeId != null" >
+                #{quantitativeId,jdbcType=BIGINT},
+            </if>
+            <if test="firstlevelOrganization != null" >
+                #{firstlevelOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="reqImplMon != null" >
+                #{reqImplMon,jdbcType=VARCHAR},
+            </if>
+            <if test="functionPointsAssessWorkload != null" >
+                #{functionPointsAssessWorkload,jdbcType=VARCHAR},
+            </if>
+            <if test="costCoefficientsSum != null" >
+                #{costCoefficientsSum,jdbcType=VARCHAR},
+            </if>
+            <if test="inputOutputRatio != null" >
+                #{inputOutputRatio,jdbcType=VARCHAR},
+            </if>
+            <if test="targetCompletionRate != null" >
+                #{targetCompletionRate,jdbcType=VARCHAR},
+            </if>
+            <if test="productReleaseRate != null" >
+                #{productReleaseRate,jdbcType=VARCHAR},
+            </if>
+            <if test="documentsOutputNumber != null" >
+                #{documentsOutputNumber,jdbcType=INTEGER},
+            </if>
+            <if test="projectsNotCompletedNumber != null" >
+                #{projectsNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="workNotCompletedNumber != null" >
+                #{workNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="unstandardizedFeedbackWorksNumber != null" >
+                #{unstandardizedFeedbackWorksNumber,jdbcType=INTEGER},
+            </if>
+            <if test="notTimelyInputProductionNumber != null" >
+                #{notTimelyInputProductionNumber,jdbcType=INTEGER},
+            </if>
+            <if test="defectRate != null" >
+                #{defectRate,jdbcType=VARCHAR},
+            </if>
+            <if test="dataChangeProblemsNumber != null" >
+                #{dataChangeProblemsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="productionProblemsNumber != null" >
+                #{productionProblemsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="smokeTestFailed != null" >
+                #{smokeTestFailed,jdbcType=INTEGER},
+            </if>
+            <if test="versionUpdateIssues != null" >
+                #{versionUpdateIssues,jdbcType=INTEGER},
+            </if>
+            <if test="baseAwardedMarks != null" >
+                #{baseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="praiseAwardedMarks != null" >
+                #{praiseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="qualityAwardedMarks != null" >
+                #{qualityAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="innovateAwardedMarks != null" >
+                #{innovateAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="baseDeductMarks != null" >
+                #{baseDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="criticismDeductMarks != null" >
+                #{criticismDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="fundLoss != null" >
+                #{fundLoss,jdbcType=INTEGER},
+            </if>
+            <if test="workingAttitude != null" >
+                #{workingAttitude,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null" >
+                #{remark,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.QuantitativeDataDO" >
+        update t_quantitative_data
+        <set >
+            <if test="firstlevelOrganization != null" >
+                firstLevel_organization = #{firstlevelOrganization,jdbcType=VARCHAR},
+            </if>
+            <if test="reqImplMon != null" >
+                req_impl_mon = #{reqImplMon,jdbcType=VARCHAR},
+            </if>
+            <if test="functionPointsAssessWorkload != null" >
+                function_points_assess_workload = #{functionPointsAssessWorkload,jdbcType=VARCHAR},
+            </if>
+            <if test="costCoefficientsSum != null" >
+                cost_coefficients_sum = #{costCoefficientsSum,jdbcType=VARCHAR},
+            </if>
+            <if test="inputOutputRatio != null" >
+                input-output_ratio = #{inputOutputRatio,jdbcType=VARCHAR},
+            </if>
+            <if test="targetCompletionRate != null" >
+                target_completion_rate = #{targetCompletionRate,jdbcType=VARCHAR},
+            </if>
+            <if test="productReleaseRate != null" >
+                product_release_rate = #{productReleaseRate,jdbcType=VARCHAR},
+            </if>
+            <if test="documentsOutputNumber != null" >
+                documents_output_number = #{documentsOutputNumber,jdbcType=INTEGER},
+            </if>
+            <if test="projectsNotCompletedNumber != null" >
+                projects_not_completed_number = #{projectsNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="workNotCompletedNumber != null" >
+                work_not_completed_number = #{workNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="unstandardizedFeedbackWorksNumber != null" >
+                unstandardized_feedback_works_number = #{unstandardizedFeedbackWorksNumber,jdbcType=INTEGER},
+            </if>
+            <if test="notTimelyInputProductionNumber != null" >
+                not_timely_input_production_number = #{notTimelyInputProductionNumber,jdbcType=INTEGER},
+            </if>
+            <if test="defectRate != null" >
+                defect_rate = #{defectRate,jdbcType=VARCHAR},
+            </if>
+            <if test="dataChangeProblemsNumber != null" >
+                data_change_problems_number = #{dataChangeProblemsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="productionProblemsNumber != null" >
+                production_problems_number = #{productionProblemsNumber,jdbcType=INTEGER},
+            </if>
+            <if test="smokeTestFailed != null" >
+                smoke_test_failed = #{smokeTestFailed,jdbcType=INTEGER},
+            </if>
+            <if test="versionUpdateIssues != null" >
+                version_update_issues = #{versionUpdateIssues,jdbcType=INTEGER},
+            </if>
+            <if test="baseAwardedMarks != null" >
+                base_awarded_marks = #{baseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="praiseAwardedMarks != null" >
+                praise_awarded_marks = #{praiseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="qualityAwardedMarks != null" >
+                quality_awarded_marks = #{qualityAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="innovateAwardedMarks != null" >
+                innovate_awarded_marks = #{innovateAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="baseDeductMarks != null" >
+                base_deduct_marks = #{baseDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="criticismDeductMarks != null" >
+                criticism_deduct_marks = #{criticismDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="fundLoss != null" >
+                fund_loss = #{fundLoss,jdbcType=INTEGER},
+            </if>
+            <if test="workingAttitude != null" >
+                working_attitude = #{workingAttitude,jdbcType=INTEGER},
+            </if>
+            <if test="remark != null" >
+                remark = #{remark,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where quantitative_id = #{quantitativeId,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.QuantitativeDataDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_quantitative_data
+        <where >
+            <if test="quantitativeId != null" >
+                and quantitative_id = #{quantitativeId,jdbcType=BIGINT}
+            </if>
+            <if test="firstlevelOrganization != null" >
+                and firstLevel_organization = #{firstlevelOrganization,jdbcType=VARCHAR}
+            </if>
+            <if test="reqImplMon != null" >
+                and req_impl_mon = #{reqImplMon,jdbcType=VARCHAR}
+            </if>
+            <if test="functionPointsAssessWorkload != null" >
+                and function_points_assess_workload = #{functionPointsAssessWorkload,jdbcType=VARCHAR}
+            </if>
+            <if test="costCoefficientsSum != null" >
+                and cost_coefficients_sum = #{costCoefficientsSum,jdbcType=VARCHAR}
+            </if>
+            <if test="inputOutputRatio != null" >
+                and input-output_ratio = #{inputOutputRatio,jdbcType=VARCHAR}
+            </if>
+            <if test="targetCompletionRate != null" >
+                and target_completion_rate = #{targetCompletionRate,jdbcType=VARCHAR}
+            </if>
+            <if test="productReleaseRate != null" >
+                and product_release_rate = #{productReleaseRate,jdbcType=VARCHAR}
+            </if>
+            <if test="documentsOutputNumber != null" >
+                and documents_output_number = #{documentsOutputNumber,jdbcType=INTEGER}
+            </if>
+            <if test="projectsNotCompletedNumber != null" >
+                and projects_not_completed_number = #{projectsNotCompletedNumber,jdbcType=INTEGER}
+            </if>
+            <if test="workNotCompletedNumber != null" >
+                and work_not_completed_number = #{workNotCompletedNumber,jdbcType=INTEGER}
+            </if>
+            <if test="unstandardizedFeedbackWorksNumber != null" >
+                and unstandardized_feedback_works_number = #{unstandardizedFeedbackWorksNumber,jdbcType=INTEGER}
+            </if>
+            <if test="notTimelyInputProductionNumber != null" >
+                and not_timely_input_production_number = #{notTimelyInputProductionNumber,jdbcType=INTEGER}
+            </if>
+            <if test="defectRate != null" >
+                and defect_rate = #{defectRate,jdbcType=VARCHAR}
+            </if>
+            <if test="dataChangeProblemsNumber != null" >
+                and data_change_problems_number = #{dataChangeProblemsNumber,jdbcType=INTEGER}
+            </if>
+            <if test="productionProblemsNumber != null" >
+                and production_problems_number = #{productionProblemsNumber,jdbcType=INTEGER}
+            </if>
+            <if test="smokeTestFailed != null" >
+                and smoke_test_failed = #{smokeTestFailed,jdbcType=INTEGER}
+            </if>
+            <if test="versionUpdateIssues != null" >
+                and version_update_issues = #{versionUpdateIssues,jdbcType=INTEGER}
+            </if>
+            <if test="baseAwardedMarks != null" >
+                and base_awarded_marks = #{baseAwardedMarks,jdbcType=INTEGER}
+            </if>
+            <if test="praiseAwardedMarks != null" >
+                and praise_awarded_marks = #{praiseAwardedMarks,jdbcType=INTEGER}
+            </if>
+            <if test="qualityAwardedMarks != null" >
+                and quality_awarded_marks = #{qualityAwardedMarks,jdbcType=INTEGER}
+            </if>
+            <if test="innovateAwardedMarks != null" >
+                and innovate_awarded_marks = #{innovateAwardedMarks,jdbcType=INTEGER}
+            </if>
+            <if test="baseDeductMarks != null" >
+                and base_deduct_marks = #{baseDeductMarks,jdbcType=INTEGER}
+            </if>
+            <if test="criticismDeductMarks != null" >
+                and criticism_deduct_marks = #{criticismDeductMarks,jdbcType=INTEGER}
+            </if>
+            <if test="fundLoss != null" >
+                and fund_loss = #{fundLoss,jdbcType=INTEGER}
+            </if>
+            <if test="workingAttitude != null" >
+                and working_attitude = #{workingAttitude,jdbcType=INTEGER}
+            </if>
+            <if test="remark != null" >
+                and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>
