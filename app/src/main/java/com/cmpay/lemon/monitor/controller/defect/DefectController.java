@@ -145,7 +145,7 @@ public class DefectController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
     /**
-     * 禅道数据导入
+     * 线上数据导入
      *
      * @return
      */

@@ -51,6 +51,7 @@ public interface ReqWorkLoadService {
 
     List<Double> getExportCountForDevp(DemandBO demandBO);
     List<Double> getExportCountForDevp2(DemandBO demandBO);
+    List<Double> getExportCountForDevp3(DemandBO demandBO);
     /**
      * 工作量文档下载
      * @param response
@@ -72,4 +73,5 @@ public interface ReqWorkLoadService {
     WorkloadLockedStateBO getFeedbackEntryStatus(WorkloadLockedStateBO workloadLockedStateBO);
     void supportWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO );
     void supportWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO);
+    List<Double> supportWorkloadCountForDevp3(SupportWorkloadBO supportWorkloadBO);
 }

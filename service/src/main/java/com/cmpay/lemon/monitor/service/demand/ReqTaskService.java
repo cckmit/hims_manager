@@ -174,4 +174,6 @@ public interface ReqTaskService {
     void getDownload(HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO);
     void easeDevelopmentWorkloadCountForDevp(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO );
     void easeDevelopmentWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO);
+
+    List<Double> easeDevelopmentWorkloadCountForDevp3( DemandEaseDevelopmentBO demandEaseDevelopmentBO );
 }

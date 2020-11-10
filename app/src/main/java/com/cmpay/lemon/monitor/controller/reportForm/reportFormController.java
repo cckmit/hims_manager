@@ -1146,7 +1146,7 @@ public class reportFormController {
 	}
 
 	/**
-	 * 双击生产权限详情
+	 * 双击查看生产缺陷详情
 	 * @param detailsReqDTO
 	 * @return
 	 */

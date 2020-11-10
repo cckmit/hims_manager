@@ -450,6 +450,50 @@
 		and schedule_time LIKE CONCAT('%',#{0},'%')
 	</select>
 
+	<select id="getTestFinished" resultType="string">
+		select
+		concat(round( ( a.req_test_wc / (  a.req_total - a.cur_mon_uat - a.pre_mon_uat1 - a.req_suspend1 -a.req_cancel1 - a.pre_cur_uat_front1 ) )* 100 , 2 ), '%' )   -- 已完成测试需求/本月实际测试总需求
+		from (
+		SELECT
+		sum( CASE WHEN   req_sts != '60' THEN 1 ELSE 0 END ) req_total,
+		sum( CASE WHEN cur_mon_target 	&lt; 130 and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) cur_mon_uat,
+		sum( CASE WHEN  pre_mon_period > 130  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_mon_uat,
+		sum( CASE WHEN pre_cur_period > 130  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_cur_uat_rear,
+		sum( CASE WHEN pre_cur_period 	&lt; 120  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_cur_uat_front,
+		sum( CASE WHEN  cur_mon_target >= 130  and pre_mon_period > 130 and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_mon_uat1,
+		sum( CASE WHEN  pre_mon_period > 140  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_mon_uat2,
+		sum( CASE WHEN cur_mon_target >= 130  and pre_mon_period 	&lt;= 130  and pre_cur_period > 130  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_cur_uat_rear1,
+		sum( CASE WHEN cur_mon_target >= 130  and pre_cur_period 	&lt; 120 and pre_cur_period 	&lt; 120  and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) pre_cur_uat_front1,
+		sum( CASE WHEN pre_cur_period = 130 or pre_cur_period = 120 and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60') THEN 1 ELSE 0 END ) pre_test_uat,
+		sum( CASE WHEN pre_cur_period > 130 and (pre_mon_period 	&lt;= 140 or pre_mon_period is NULL ) and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60')  THEN 1 ELSE 0 END ) req_test_wc,
+		sum( CASE WHEN req_sts = '40'   THEN 1 ELSE 0 END ) req_suspend1,
+		sum( CASE WHEN req_sts = '30'  THEN 1 ELSE 0 END ) req_cancel1,
+		sum( CASE WHEN req_abnor_type like '%05%' and ( req_sts != '30'  and  req_sts != '40' and  req_sts != '60') THEN 1 ELSE 0 END ) req_abnormal
+		FROM
+		t_demand_info
+		WHERE req_impl_mon = #{0}
+		)a
+	</select>
+
+
+	<select  id="getProduction2" resultType="int">
+		 select count(1) from (
+ 		  SELECT
+		(SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = application_dept) AS  firstLevelOrganization,
+			t.pro_number 'pro_number' ,
+			 p.pro_need 'pro_need' ,
+			 p.application_dept 'application_dept',
+			 t.pro_operator 'pro_operator',
+			 t.schedule_time 'schedule_time'
+		FROM
+			t_production_schedule t ,t_production_records p
+		where after_operation ='投产待审批'
+		 and operation_type = '录入'
+		and t.pro_number = p.pro_number
+		and schedule_time LIKE CONCAT('%',#{reqImplMon},'%')
+		) a where firstLevelOrganization = #{firstLevelOrganization}
+	</select>
+
 	<select id="getReportForm6" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ReqDateCountDO">
 		select  b.req_no 'req_no',
 		b.req_nm 'req_nm',

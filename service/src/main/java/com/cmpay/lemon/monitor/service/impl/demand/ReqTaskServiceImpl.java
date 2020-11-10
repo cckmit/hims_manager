@@ -1117,7 +1117,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     // 登记表，先查询有无历史记录
                     List<DemandNameChangeDO> nameChangeDO = iDemandNameChangeExtDao.findOne(demandNameChangeDO);
                     // 如果nameChangeDO为空
-                    if (JudgeUtils.isNull(nameChangeDO)) {
+                    if (JudgeUtils.isEmpty(nameChangeDO)) {
                         // 新内部编号
                         demandNameChangeDO.setNewReqInnerSeq(m.getReqInnerSeq());
                         // 新名称
@@ -2741,6 +2741,38 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         } catch (IOException e) {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
+    }
+
+    @Override
+    public List<Double> easeDevelopmentWorkloadCountForDevp3( DemandEaseDevelopmentBO demandEaseDevelopmentBO ){
+        List<Double> DevpWorkLoadList = Arrays.asList(new Double[14]);
+        //初始化
+        for(int i =0;i<DevpWorkLoadList.size();i++){
+            DevpWorkLoadList.set(i,new Double(0));
+        }
+        DemandEaseDevelopmentDO easeDevelopmentDO = new DemandEaseDevelopmentDO();
+        BeanConvertUtils.convert(easeDevelopmentDO, demandEaseDevelopmentBO);
+        // 获取一级团队支撑工作量汇总数据
+        List<DemandEaseDevelopmentDO>  mon_input_workload_list = easeDevelopmentExtDao.easeDevelopmentWorkloadCountForDevp(easeDevelopmentDO);
+        if( JudgeUtils.isEmpty(mon_input_workload_list)){
+            return  DevpWorkLoadList;
+        }
+        //获取所有的一级团队
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+        for(int i=0;i<firstLevelOrganizationList.size();i++){
+            DemandEaseDevelopment2DO demandEaseDevelopment2DO = new DemandEaseDevelopment2DO();
+            // 一级团队赋值
+            demandEaseDevelopment2DO.setSecondlevelorganization(firstLevelOrganizationList.get(i));
+            demandEaseDevelopment2DO.setDevelopmentworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(firstLevelOrganizationList.get(i).equals(mon_input_workload_list.get(j).getFirstLevelOrganization())){
+                    demandEaseDevelopment2DO.setDevelopmentworkload(mon_input_workload_list.get(j).getDevelopmentworkload());
+                }
+            }
+            DevpWorkLoadList.set(i,Double.valueOf(demandEaseDevelopment2DO.getDevelopmentworkload()));
+        }
+        return  DevpWorkLoadList;
     }
     @Override
     public void easeDevelopmentWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO){

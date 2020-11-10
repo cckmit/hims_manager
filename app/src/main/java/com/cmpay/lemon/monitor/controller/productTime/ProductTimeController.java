@@ -12,6 +12,7 @@ import com.cmpay.lemon.monitor.dto.ProductionTimeRspDTO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.impl.timer.ReqMonitorTimer;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
+import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,7 +58,7 @@ public class ProductTimeController {
         cal.add(Calendar.DATE, 7 - cal.get(Calendar.DAY_OF_WEEK));
         // 设置投产日最大值
         productionTimeRspDTO.setMaxProDate(sdf.format(cal.getTime()));
-       //reqMonitorTimer.getIssueModifiedWithinOneDay();
+       //reqMonitorTimer.getQuantitativeDataMonth();
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, productionTimeRspDTO);
     }
 

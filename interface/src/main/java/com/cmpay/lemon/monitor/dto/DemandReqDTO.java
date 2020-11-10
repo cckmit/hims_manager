@@ -102,6 +102,24 @@ public class DemandReqDTO extends PageableRspDTO {
     private int pageSize;
     private String orderDirection;
     private String isApprovalProcess;
+    private String reqStartDate;
+    private String reqEndDate;
+
+    public String getReqStartDate() {
+        return reqStartDate;
+    }
+
+    public void setReqStartDate(String reqStartDate) {
+        this.reqStartDate = reqStartDate;
+    }
+
+    public String getReqEndDate() {
+        return reqEndDate;
+    }
+
+    public void setReqEndDate(String reqEndDate) {
+        this.reqEndDate = reqEndDate;
+    }
 
     public String getIsApprovalProcess() {
         return isApprovalProcess;

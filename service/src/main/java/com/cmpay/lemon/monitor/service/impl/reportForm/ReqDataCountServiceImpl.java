@@ -12,6 +12,7 @@ import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
+import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.impl.demand.ReqPlanServiceImpl;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -134,6 +136,12 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IDemandEaseDevelopmentExtDao easeDevelopmentExtDao;
     @Autowired
     private IProblemExtDao iProblemDao;
+    @Autowired
+    private ReqTaskService reqTaskService;
+    @Autowired
+    private IOnlineDefectExtDao onlineDefectExtDao;
+    @Autowired
+    private IQuantitativeDataExtDao quantitativeDataExtDao;
 
 
     /**
@@ -598,6 +606,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
 
     @Override
     public WorkingHoursBO getReportForm10(String devpLeadDept, String date1, String date2) {
+        OrganizationStructureDO organizationStructureDO = new OrganizationStructureDO();
+        organizationStructureDO.setSecondlevelorganization(devpLeadDept);
+        List<OrganizationStructureDO> organizationStructureDOList = iOrganizationStructureDao.find(organizationStructureDO);
         WorkingHoursBO workingHoursBO = new WorkingHoursBO();
         List<WorkingHoursDO> impl = null;
         WorkingHoursDO workingHoursDO = new WorkingHoursDO();
@@ -642,7 +653,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 workingHoursBO.setMeanDefect(meanDefect);
             }
         }
-        System.err.println(workingHoursBO);
+        workingHoursBO.setComment(organizationStructureDOList.get(0).getFirstlevelorganization());
         return workingHoursBO;
     }
 
@@ -1190,21 +1201,42 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
      */
     @Override
     public DemandHoursRspBO getDeptProductionDefects(String devpLeadDept, String date1, String date2) {
+        OrganizationStructureDO  organizationStructureDO = new OrganizationStructureDO();
+        organizationStructureDO.setSecondlevelorganization(devpLeadDept);
+        List<OrganizationStructureDO> organizationStructureDOList = iOrganizationStructureDao.find(organizationStructureDO);
+
         List<ProductionDefectsDO> impl = null;
+        List<OnlineDefectDO> impl2 = null;
         ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
+        onlineDefectDO.setFirstlevelorganization(organizationStructureDOList.get(0).getFirstlevelorganization());
         workingHoursDO.setProblemattributiondept(devpLeadDept);
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < list.size(); i++) {
-            workingHoursDO.setProcessstartdate(list.get(i));
-            impl = productionDefectsExtDao.findMonthList(workingHoursDO);
-            SumBos.add(list.get(i));
-            if (impl != null && impl.size() >= 0) {
-                workingHoursBOS.add(impl.size() + "");
-            } else {
-                workingHoursBOS.add("0");
+            // 2020-09 之前查询生产缺陷
+            if(list.get(i).compareTo("2020-09")<0){
+                workingHoursDO.setProcessstartdate(list.get(i));
+                impl = productionDefectsExtDao.findList(workingHoursDO);
+                SumBos.add(list.get(i));
+                if (impl != null && impl.size() >= 0) {
+                    workingHoursBOS.add(impl.size() + "");
+                } else {
+                    workingHoursBOS.add("0");
+                }
+            }else{
+                // 2020-09即之后生产缺陷为线上缺陷
+                onlineDefectDO.setProcessStartDate(list.get(i));
+                impl2 = onlineDefectExtDao.findList(onlineDefectDO);
+                SumBos.add(list.get(i));
+                if (impl2 != null && impl2.size() >= 0) {
+                    workingHoursBOS.add(impl2.size() + "");
+                } else {
+                    workingHoursBOS.add("0");
+                }
             }
+
         }
         System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
@@ -2302,25 +2334,47 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         demandHoursRspBO.setListSum(SumBos);
         return demandHoursRspBO;
     }
+
+    /**
+     * 查询生产缺陷
+     * @param date1
+     * @param date2
+     * @return
+     */
     @Override
     public DemandHoursRspBO getCentreFlawNumberA(String date1, String date2) {
         List<ProductionDefectsDO> impl = null;
+        List<OnlineDefectDO> impl2 = null;
         ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
         List<String> list = getSixMonth(date2);
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
         for (int i = 0; i < list.size(); i++) {
-            workingHoursDO.setProcessstartdate(list.get(i));
-            impl = productionDefectsExtDao.findList(workingHoursDO);
-            SumBos.add(list.get(i));
-            if (impl != null && impl.size() >= 0) {
-                workingHoursBOS.add(impl.size() + "");
-            } else {
-                workingHoursBOS.add("0");
+            // 2020-09 之前查询生产缺陷
+            if(list.get(i).compareTo("2020-09")<0){
+                workingHoursDO.setProcessstartdate(list.get(i));
+                impl = productionDefectsExtDao.findList(workingHoursDO);
+                SumBos.add(list.get(i));
+                if (impl != null && impl.size() >= 0) {
+                    workingHoursBOS.add(impl.size() + "");
+                } else {
+                    workingHoursBOS.add("0");
+                }
+            }else{
+                // 2020-09即之后生产缺陷为线上缺陷
+                onlineDefectDO.setProcessStartDate(list.get(i));
+                impl2 = onlineDefectExtDao.findList(onlineDefectDO);
+                SumBos.add(list.get(i));
+                if (impl2 != null && impl2.size() >= 0) {
+                    workingHoursBOS.add(impl2.size() + "");
+                } else {
+                    workingHoursBOS.add("0");
+                }
             }
 
+
         }
-        System.err.println(impl);
         DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
         demandHoursRspBO.setStringList(workingHoursBOS);
         demandHoursRspBO.setListSum(SumBos);
@@ -2551,43 +2605,95 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     public DemandHoursRspBO getCentreFlawNumberDeptA(String date1, String date2) {
         // 查询各个部门集合
         List<OrganizationStructureDO> dos = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        // 一级团队集合
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
         List<ProductionDefectsDO> impl = null;
+        List<OnlineDefectDO> impl2 = null;
         ProductionDefectsDO workingHoursDO = new ProductionDefectsDO();
+        OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
         List<String> workingHoursBOS = new LinkedList<>();
         List<String> SumBos = new LinkedList<>();
-        for (int i = 0; i < dos.size(); i++) {
-            // 去掉4个项目组和质量监督、产品测试
-            if("质量监督组".equals(dos.get(i).getSecondlevelorganization())||"产品测试团队".equals(dos.get(i).getSecondlevelorganization())||"资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
-                    ||"设计项目组".equals(dos.get(i).getSecondlevelorganization()) ||"团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) ||"客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())){
-                continue;
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        //判断日期，九月后生产缺陷为线上缺陷
+        if(StringUtils.isNotBlank(date1)&& StringUtils.isBlank(date2)){
+            if(date1.substring(0,7).compareTo("2020-09")>=0){
+                for (int i = 0; i < firstLevelOrganizationList.size(); i++) {
+                    onlineDefectDO.setFirstlevelorganization(firstLevelOrganizationList.get(i));
+                    onlineDefectDO.setProcessStartDate(date1);
+                    impl2 = onlineDefectExtDao.findWeekList(onlineDefectDO);
+                    SumBos.add(firstLevelOrganizationList.get(i));
+                    if (impl2 != null && impl2.size() >= 0) {
+                        workingHoursBOS.add(impl2.size() + "");
+                    } else {
+                        workingHoursBOS.add("0");
+                    }
+                }
+                demandHoursRspBO.setStringList(workingHoursBOS);
+                demandHoursRspBO.setListSum(SumBos);
+                return demandHoursRspBO;
+            }else{
+                for (int i = 0; i < dos.size(); i++) {
+                    // 去掉4个项目组和质量监督、产品测试
+                    if ("质量监督组".equals(dos.get(i).getSecondlevelorganization()) || "产品测试团队".equals(dos.get(i).getSecondlevelorganization()) || "资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                            || "设计项目组".equals(dos.get(i).getSecondlevelorganization()) || "团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) || "客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())) {
+                        continue;
+                    }
+                    workingHoursDO.setProblemattributiondept(dos.get(i).getSecondlevelorganization());
+                    // 查询周
+                    workingHoursDO.setProcessstartdate(date1);
+                    impl = productionDefectsExtDao.findWeekList(workingHoursDO);
+                    SumBos.add(dos.get(i).getSecondlevelorganization());
+                    if (impl != null && impl.size() >= 0) {
+                        workingHoursBOS.add(impl.size() + "");
+                    } else {
+                        workingHoursBOS.add("0");
+                    }
+                }
+                demandHoursRspBO.setStringList(workingHoursBOS);
+                demandHoursRspBO.setListSum(SumBos);
+                return demandHoursRspBO;
             }
-            System.err.println(date1 + "=====" + date2);
-            if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-            workingHoursDO.setProblemattributiondept(dos.get(i).getSecondlevelorganization());
-            // 查询周
-            if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
-                workingHoursDO.setProcessstartdate(date1);
-                impl = productionDefectsExtDao.findWeekList(workingHoursDO);
-            }
-            // 查询月
-            if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
-                workingHoursDO.setProcessstartdate(date2);
-                impl = productionDefectsExtDao.findList(workingHoursDO);
-            }
-            SumBos.add(dos.get(i).getSecondlevelorganization());
-            if (impl != null && impl.size() >= 0) {
-                workingHoursBOS.add(impl.size() + "");
-            } else {
-                workingHoursBOS.add("0");
+
+        }
+        if(StringUtils.isNotBlank(date2)&& StringUtils.isBlank(date1)){
+            if(date2.compareTo("2020-09")>=0){
+                for (int i = 0; i < firstLevelOrganizationList.size(); i++) {
+                    onlineDefectDO.setFirstlevelorganization(firstLevelOrganizationList.get(i));
+                    onlineDefectDO.setProcessStartDate(date2);
+                    impl2 = onlineDefectExtDao.findMonthList(onlineDefectDO);
+                    SumBos.add(firstLevelOrganizationList.get(i));
+                    if (impl2 != null && impl2.size() >= 0) {
+                        workingHoursBOS.add(impl2.size() + "");
+                    } else {
+                        workingHoursBOS.add("0");
+                    }
+                }
+                demandHoursRspBO.setStringList(workingHoursBOS);
+                demandHoursRspBO.setListSum(SumBos);
+                return demandHoursRspBO;
+
+            }else{
+                for (int i = 0; i < dos.size(); i++) {
+                    // 去掉4个项目组和质量监督、产品测试
+                    if ("质量监督组".equals(dos.get(i).getSecondlevelorganization()) || "产品测试团队".equals(dos.get(i).getSecondlevelorganization()) || "资金归集项目组".equals(dos.get(i).getSecondlevelorganization())
+                            || "设计项目组".equals(dos.get(i).getSecondlevelorganization()) || "团体组织交费项目组".equals(dos.get(i).getSecondlevelorganization()) || "客服中间层项目组".equals(dos.get(i).getSecondlevelorganization())) {
+                        continue;
+                    }
+                    workingHoursDO.setProblemattributiondept(dos.get(i).getSecondlevelorganization());
+                    workingHoursDO.setProcessstartdate(date2);
+                    impl = productionDefectsExtDao.findList(workingHoursDO);
+                    SumBos.add(dos.get(i).getSecondlevelorganization());
+                    if (impl != null && impl.size() >= 0) {
+                        workingHoursBOS.add(impl.size() + "");
+                    } else {
+                        workingHoursBOS.add("0");
+                    }
+                }
+                demandHoursRspBO.setStringList(workingHoursBOS);
+                demandHoursRspBO.setListSum(SumBos);
+                return demandHoursRspBO;
             }
         }
-        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
-        demandHoursRspBO.setStringList(workingHoursBOS);
-        demandHoursRspBO.setListSum(SumBos);
         return demandHoursRspBO;
     }
 
@@ -5364,6 +5470,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     @Override
     public ProductionDefectsRspBO getProDefectDetails(String selectTime1, String selectTime2,String seriesName,String name){
         List<ProductionDefectsDO> productionDefectsDOLinkedList = new LinkedList<>();
+        List<OnlineDefectDO> onlineDefectDOList = new LinkedList<>();
         if (StringUtils.isBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
@@ -5371,15 +5478,63 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         }
         ProductionDefectsDO productionDefectsDO = new ProductionDefectsDO();
         productionDefectsDO.setProblemattributiondept(name);
+        OnlineDefectDO onlineDefectDO = new OnlineDefectDO();
+        onlineDefectDO.setFirstlevelorganization(name);
         // 查询周
         if (StringUtils.isNotBlank(selectTime1) && StringUtils.isBlank(selectTime2)) {
-            productionDefectsDO.setProcessstartdate(selectTime1);
-            productionDefectsDOLinkedList = productionDefectsExtDao.findWeekList(productionDefectsDO);
+            if(selectTime1.substring(0,7).compareTo("2020-09")<0){
+                productionDefectsDO.setProcessstartdate(selectTime1);
+                productionDefectsDOLinkedList = productionDefectsExtDao.findWeekList(productionDefectsDO);
+            }else{
+                onlineDefectDO.setProcessStartDate(selectTime1);
+                onlineDefectDOList = onlineDefectExtDao.findWeekList(onlineDefectDO);
+                if(JudgeUtils.isNotEmpty(onlineDefectDOList)){
+                    for (OnlineDefectDO m : onlineDefectDOList) {
+                        ProductionDefectsDO productionDefectsDO1 = new ProductionDefectsDO();
+                        productionDefectsDO1.setQuestionnumber(m.getDocumentNumber());
+                        productionDefectsDO1.setQuestiontitle(m.getDefectTheme());
+                        productionDefectsDO1.setProcessstatus(m.getProcessStatus());
+                        productionDefectsDO1.setProcessstartdate(m.getProcessStartDate());
+                        productionDefectsDO1.setCurrentsession("");
+                        productionDefectsDO1.setProblemraiser(m.getDefectProposer());
+                        productionDefectsDO1.setPersonincharge(m.getDevelopmentLeader());
+                        productionDefectsDO1.setQuestiontype(m.getQuestionType());
+                        productionDefectsDO1.setIdentifytheproblem("");
+                        productionDefectsDO1.setProblemattributiondept(m.getFirstlevelorganization());
+                        productionDefectsDOLinkedList.add(productionDefectsDO1);
+                    }
+                }
+
+            }
+
         }
         // 查询月
         if (StringUtils.isNotBlank(selectTime2) && StringUtils.isBlank(selectTime1)) {
-            productionDefectsDO.setProcessstartdate(selectTime2);
-            productionDefectsDOLinkedList = productionDefectsExtDao.findList(productionDefectsDO);
+            if(selectTime2.compareTo("2020-09")<0){
+                productionDefectsDO.setProcessstartdate(selectTime2);
+                productionDefectsDOLinkedList = productionDefectsExtDao.findList(productionDefectsDO);
+            }else{
+                onlineDefectDO.setProcessStartDate(selectTime2);
+                onlineDefectDOList = onlineDefectExtDao.findMonthList(onlineDefectDO);
+                if(JudgeUtils.isNotEmpty(onlineDefectDOList)){
+                    for (OnlineDefectDO m : onlineDefectDOList) {
+                        ProductionDefectsDO productionDefectsDO1 = new ProductionDefectsDO();
+                        productionDefectsDO1.setQuestionnumber(m.getDocumentNumber());
+                        productionDefectsDO1.setQuestiontitle(m.getDefectTheme());
+                        productionDefectsDO1.setProcessstatus(m.getProcessStatus());
+                        productionDefectsDO1.setProcessstartdate(m.getProcessStartDate());
+                        productionDefectsDO1.setCurrentsession("");
+                        productionDefectsDO1.setProblemraiser(m.getDefectProposer());
+                        productionDefectsDO1.setPersonincharge(m.getDevelopmentLeader());
+                        productionDefectsDO1.setQuestiontype(m.getQuestionType());
+                        productionDefectsDO1.setIdentifytheproblem("");
+                        productionDefectsDO1.setProblemattributiondept(m.getFirstlevelorganization());
+                        productionDefectsDOLinkedList.add(productionDefectsDO1);
+                    }
+                }
+
+            }
+
         }
         List<ProductionDefectsBO> productionDefectsBOList = new LinkedList<>();
         productionDefectsBOList = BeanConvertUtils.convertList(productionDefectsDOLinkedList, ProductionDefectsBO.class);
@@ -5459,6 +5614,738 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         SmokeTestFailedCountRspBO smokeTestFailedCountRspBO = new SmokeTestFailedCountRspBO();
         smokeTestFailedCountRspBO.setSmokeTestFailedCountBOList(smokeTestFailedCountBOList);
         return smokeTestFailedCountRspBO;
+    }
+
+    @Override
+    public void test(){
+        //获取当月的功能点评估工作量：  SUM（需求开发工作量+简易需求开发工作量+支撑需求工作量）
+        BigDecimal sum = new BigDecimal("0");
+        DemandBO demandBO = new DemandBO();
+        //获取当前月份
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
+        SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("yyyyMM");
+        String month = simpleDateFormat.format(date);
+        String month2 = simpleDateFormat2.format(date);
+        demandBO.setReqImplMon(month);
+        //  需求开发功能点
+        List<Double> dept = reqWorkLoadService.getExportCountForDevp3(demandBO);
+        System.err.println("需求开发工作量"+dept);
+//        支付业务研发团队 dept.get(6) 客户业务研发团队 dept.get(5)金融业务研发团队 dept.get(4)  商户业务研发团队 dept.get(7)
+//        业务中台研发团队 dept.get(9) 智慧食堂研发团队 dept.get(8)平台架构研发团队 dept.get(1)  前端技术研发团队 dept.get(3)
+//        产品测试团队 dept.get(2)
+// 简易需求开发工作量
+        DemandEaseDevelopmentBO demandEaseDevelopmentBO = new DemandEaseDevelopmentBO();
+        demandEaseDevelopmentBO.setReqImplMon(month);
+        List<Double> dept2 =reqTaskService.easeDevelopmentWorkloadCountForDevp3(demandEaseDevelopmentBO);
+        System.err.println("简易需求开发工作量"+dept2);
+        //支撑需求工作量
+        //[质量监督组, 平台架构研发团队, 产品测试团队, 前端技术研发团队, 金融业务研发团队, 客户业务研发团队, 支付业务研发团队, 商户业务研发团队, 智慧食堂研发团队, 业务中台研发团队, 资金归集项目组, 设计项目组, 团体组织交费项目组, 客服中间层项目组]
+        SupportWorkloadBO supportWorkloadBO = new SupportWorkloadBO();
+        supportWorkloadBO.setReqImplMon(month);
+        List<Double> dept3 =reqWorkLoadService.supportWorkloadCountForDevp3(supportWorkloadBO);
+        System.err.println("支撑需求工作量"+dept3);
+        // 工作量汇总
+        sum = new BigDecimal(dept.get(6)+dept2.get(6)+dept3.get(6));
+        System.err.println(sum);
+        //保留两位小数
+        DecimalFormat df = new DecimalFormat("0.00");
+        System.err.println(df.format(sum));
+        //2、部门成本系数总和：固定值
+        //3、投入产出比：功能点评估工作量/部门成本系数总和 （比值保留两位小数）
+        //目标完成率，产品发布率：同需求完成报表中对应的值一致 reqFinishRate
+        List<ReqDataCountBO> reportListb  = this.getCompByDept2(month);
+        for(int i = 0;i<reportListb.size();i++){
+            System.err.println(reportListb.get(i).getFirstLevelOrganization()+"--"+reportListb.get(i).getReqFinishRate()+"--"+reportListb.get(i).getTotal());
+        }
+        //5、文档未及时输出数：默认都是0
+        //6、未及时完成项目启动数：“需求文档上传情况报表”中，项目启动日期为空的需求之和
+        //7、未及时提供项目文档数：“需求文档上传情况报表”中，需求未及时上传文档数之和
+        List<DemandBO> reportList6 =  this.getReportForm6(month,"","","客户业务研发团队");
+        int sumA = 0;
+        int sumB = 0;
+        for(int i = 0;i<reportList6.size();i++){
+            if(JudgeUtils.isNull(reportList6.get(i).getProjectStartTm())){
+                sumA = sumA+1;
+            }
+            sumB = sumB +reportList6.get(i).getNoUpload();
+        }
+        System.err.println("未及时完成项目启动数=="+sumA);
+        System.err.println("未及时提供项目文档数=="+sumB);
+        //未及时录入投产数： 按照“ 投产录入不及时报表”中的数据汇总
+        int bjs = reqDataCountDao.getProduction2(month,"客户业务研发团队");
+        System.err.println("未及时录入投产数=="+bjs);
+        //工作量和缺陷计数器
+        int defectsNumber=0;
+
+        // 统计部门的有效plog数
+        DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+        defectDetailsDO.setFirstlevelorganization("客户业务研发团队");
+        defectDetailsDO.setRegistrationDate("2020-10");
+        List<DefectDetailsDO> defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+        if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+            defectsNumber = defectDetailsDOList.size();
+        }
+        System.err.println("部门的有效plog数=="+defectsNumber);
+        //数据变更问题数：统计“救火更新”中，反馈是考核问题的投产数之和
+        int jiuhu = iOperationProductionDao.findCount("2020-10","客户业务研发团队");
+        System.err.println("数据变更问题数=="+jiuhu);
+        //冒烟测试不通过数
+        int smokeNunber = 0;
+        SmokeTestFailedCountDO smokeTestFailedCountDO = new SmokeTestFailedCountDO();
+        smokeTestFailedCountDO.setDepartment("客户业务研发团队");
+        smokeTestFailedCountDO.setTestDate("2020-10");
+        List<SmokeTestFailedCountDO> smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+        if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+            smokeNunber = smokeTestFailedCountDOList.size();
+        }
+        System.err.println("冒烟测试不通过数=="+smokeNunber);
+        //15、版本更新问题数：给个入口，导入数据
+        //16、基地加分、通报表扬、质量加分、创新加分、基地扣分、通报批评、资金损失：给个入口，导入数据
+        //17、工作态度及制度遵守：默认都是5
+
+
+        String  [] deftList= {"支付业务研发团队","客户业务研发团队","金融业务研发团队","商户业务研发团队","业务中台研发团队","智慧食堂研发团队","平台架构研发团队","前端技术研发团队","产品测试团队"};
+        for (int i=0;i<deftList.length;i++){
+            System.err.println(deftList[i]);
+            QuantitativeDataDO quantitativeDataDO = new QuantitativeDataDO();
+            if(deftList[i].equals("支付业务研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(6)+dept2.get(6)+dept3.get(6))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("605");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(6)+dept2.get(6)+dept3.get(6))/605));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                 reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(6)+dept2.get(6)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(6)+dept2.get(6))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("客户业务研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(5)+dept2.get(5)+dept3.get(5))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("909");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(5)+dept2.get(5)+dept3.get(5))/909));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(5)+dept2.get(5)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(5)+dept2.get(5))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("金融业务研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(4)+dept2.get(4)+dept3.get(4))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("1071");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(4)+dept2.get(4)+dept3.get(4))/1071));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(4)+dept2.get(4)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(4)+dept2.get(4))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("商户业务研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(7)+dept2.get(7)+dept3.get(7))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("483");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(7)+dept2.get(7)+dept3.get(7))/483));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(7)+dept2.get(7))))+"%");
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("业务中台研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(9)+dept2.get(9)+dept3.get(9))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("1785");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(9)+dept2.get(9)+dept3.get(9))/1785));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(9)+dept2.get(9)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(9)+dept2.get(9))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("智慧食堂研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(8)+dept2.get(8)+dept3.get(8))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("187");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(8)+dept2.get(8)+dept3.get(8))/187));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(8)+dept2.get(8)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(8)+dept2.get(8))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("平台架构研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(1)+dept2.get(1)+dept3.get(1))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("250");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio(df.format((dept.get(1)+dept2.get(1)+dept3.get(1))/250));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(1)+dept2.get(1)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(1)+dept2.get(1))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("前端技术研发团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(3)+dept2.get(3)+dept3.get(3))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("675");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio( df.format(((dept.get(3)+dept2.get(3)+dept3.get(3)) / 675 )));
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                if(JudgeUtils.isNotEmpty(reportListb)){
+                    for(int j = 0;j<reportListb.size();j++){
+                        if(deftList[i].equals(reportListb.get(j).getFirstLevelOrganization())){
+                            quantitativeDataDO.setTargetCompletionRate(reportListb.get(j).getReqFinishRate());
+                            quantitativeDataDO.setProductReleaseRate(reportListb.get(j).getTotal());
+                        }
+                    }
+                }
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                defectsNumber=0;
+                // 统计部门的有效plog数
+                defectDetailsDO.setFirstlevelorganization(deftList[i]);
+                defectDetailsDO.setRegistrationDate(month);
+                defectDetailsDOList = defectDetailsExtDao.findValidList(defectDetailsDO);
+                if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                    defectsNumber = defectDetailsDOList.size();
+                }
+                if((dept.get(3)+dept2.get(3)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(3)+dept2.get(3))))+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            if(deftList[i].equals("产品测试团队")){
+                //部门
+                quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+                //月份
+                quantitativeDataDO.setReqImplMon(month);
+                //功能点评估工作量
+                quantitativeDataDO.setFunctionPointsAssessWorkload(df.format(new BigDecimal(dept.get(2)+dept2.get(2)+dept3.get(2))));
+                //部门成本系数总和
+                quantitativeDataDO.setCostCoefficientsSum("-");
+                //inputOutputRatio 投入产出比
+                quantitativeDataDO.setInputOutputRatio("-");
+                //targetCompletionRate 目标完成率
+                //productReleaseRate 产品发布率
+                quantitativeDataDO.setTargetCompletionRate(reqDataCountDao.getTestFinished(month));
+                quantitativeDataDO.setProductReleaseRate("-");
+                //documentsOutputNumber 文档未及时输出数
+                quantitativeDataDO.setDocumentsOutputNumber(0);
+                //projectsNotCompletedNumber 未及时完成项目启动数
+                //projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+                reportList6 =  this.getReportForm6(month,"","",deftList[i]);
+                sumA = 0;
+                sumB =0;
+                if(JudgeUtils.isNotEmpty(reportList6)){
+                    for(int j = 0;j<reportList6.size();j++){
+                        if(JudgeUtils.isNull(reportList6.get(j).getProjectStartTm())){
+                            sumA = sumA+1;
+                        }
+                        sumB = sumB +reportList6.get(j).getNoUpload();
+                    }
+                }
+                quantitativeDataDO.setProjectsNotCompletedNumber(sumA);
+                quantitativeDataDO.setProjectsDocumentsNotCompletedNumber(sumB);
+                //notTimelyInputProductionNumber 未及时录入投产数
+                quantitativeDataDO.setNotTimelyInputProductionNumber(reqDataCountDao.getProduction2(month,deftList[i]));
+                //defectRate 缺陷率  测试部缺陷率=总漏出数/（每月总PLOG有效数+有效生产问题总数）
+
+                quantitativeDataDO.setDefectRate("手动处理");
+                //dataChangeProblemsNumber 数据变更问题数
+                quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
+                //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
+                quantitativeDataDO.setProductionProblemsNumber(onlineDefectExtDao.findCount(month2,deftList[i]));
+                //smokeTestFailed 冒烟测试不通过数
+                smokeNunber = 0;
+                smokeTestFailedCountDO.setDepartment(deftList[i]);
+                smokeTestFailedCountDO.setTestDate(month);
+                smokeTestFailedCountDOList =iSmokeTestFailedCountDao.findMonth(smokeTestFailedCountDO);
+                if(JudgeUtils.isNotEmpty(smokeTestFailedCountDOList)){
+                    smokeNunber = smokeTestFailedCountDOList.size();
+                }
+                quantitativeDataDO.setSmokeTestFailed(smokeNunber);
+                //workingAttitude 工作态度及制度遵守
+                quantitativeDataDO.setWorkingAttitude(5);
+                System.err.println(quantitativeDataDO);
+
+            }
+            List<QuantitativeDataDO> quantitativeDataDOList =  quantitativeDataExtDao.findOne(quantitativeDataDO);
+            if(JudgeUtils.isEmpty(quantitativeDataDOList)){
+                quantitativeDataExtDao.insert(quantitativeDataDO);
+            }else{
+                quantitativeDataDO.setQuantitativeId(quantitativeDataDOList.get(0).getQuantitativeId());
+                quantitativeDataExtDao.update(quantitativeDataDO);
+            }
+        }
+
     }
 }
 

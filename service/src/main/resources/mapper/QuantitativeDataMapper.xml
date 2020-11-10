@@ -8,11 +8,12 @@
         <result column="req_impl_mon" property="reqImplMon" jdbcType="VARCHAR" />
         <result column="function_points_assess_workload" property="functionPointsAssessWorkload" jdbcType="VARCHAR" />
         <result column="cost_coefficients_sum" property="costCoefficientsSum" jdbcType="VARCHAR" />
-        <result column="input-output_ratio" property="inputOutputRatio" jdbcType="VARCHAR" />
+        <result column="input_output_ratio" property="inputOutputRatio" jdbcType="VARCHAR" />
         <result column="target_completion_rate" property="targetCompletionRate" jdbcType="VARCHAR" />
         <result column="product_release_rate" property="productReleaseRate" jdbcType="VARCHAR" />
         <result column="documents_output_number" property="documentsOutputNumber" jdbcType="INTEGER" />
         <result column="projects_not_completed_number" property="projectsNotCompletedNumber" jdbcType="INTEGER" />
+        <result column="projects_documents_not_completed_number" property="projectsDocumentsNotCompletedNumber" jdbcType="INTEGER" />
         <result column="work_not_completed_number" property="workNotCompletedNumber" jdbcType="INTEGER" />
         <result column="unstandardized_feedback_works_number" property="unstandardizedFeedbackWorksNumber" jdbcType="INTEGER" />
         <result column="not_timely_input_production_number" property="notTimelyInputProductionNumber" jdbcType="INTEGER" />
@@ -34,12 +35,13 @@
 
     <sql id="Base_Column_List" >
         quantitative_id, firstLevel_organization, req_impl_mon, function_points_assess_workload, 
-        cost_coefficients_sum, input-output_ratio, target_completion_rate, product_release_rate, 
-        documents_output_number, projects_not_completed_number, work_not_completed_number, 
-        unstandardized_feedback_works_number, not_timely_input_production_number, defect_rate, 
-        data_change_problems_number, production_problems_number, smoke_test_failed, version_update_issues, 
-        base_awarded_marks, praise_awarded_marks, quality_awarded_marks, innovate_awarded_marks, 
-        base_deduct_marks, criticism_deduct_marks, fund_loss, working_attitude, remark
+        cost_coefficients_sum, input_output_ratio, target_completion_rate, product_release_rate, 
+        documents_output_number, projects_not_completed_number, projects_documents_not_completed_number, 
+        work_not_completed_number, unstandardized_feedback_works_number, not_timely_input_production_number, 
+        defect_rate, data_change_problems_number, production_problems_number, smoke_test_failed, 
+        version_update_issues, base_awarded_marks, praise_awarded_marks, quality_awarded_marks, 
+        innovate_awarded_marks, base_deduct_marks, criticism_deduct_marks, fund_loss, working_attitude, 
+        remark
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -73,7 +75,7 @@
                 cost_coefficients_sum,
             </if>
             <if test="inputOutputRatio != null" >
-                input-output_ratio,
+                input_output_ratio,
             </if>
             <if test="targetCompletionRate != null" >
                 target_completion_rate,
@@ -86,6 +88,9 @@
             </if>
             <if test="projectsNotCompletedNumber != null" >
                 projects_not_completed_number,
+            </if>
+            <if test="projectsDocumentsNotCompletedNumber != null" >
+                projects_documents_not_completed_number,
             </if>
             <if test="workNotCompletedNumber != null" >
                 work_not_completed_number,
@@ -170,6 +175,9 @@
             <if test="projectsNotCompletedNumber != null" >
                 #{projectsNotCompletedNumber,jdbcType=INTEGER},
             </if>
+            <if test="projectsDocumentsNotCompletedNumber != null" >
+                #{projectsDocumentsNotCompletedNumber,jdbcType=INTEGER},
+            </if>
             <if test="workNotCompletedNumber != null" >
                 #{workNotCompletedNumber,jdbcType=INTEGER},
             </if>
@@ -240,7 +248,7 @@
                 cost_coefficients_sum = #{costCoefficientsSum,jdbcType=VARCHAR},
             </if>
             <if test="inputOutputRatio != null" >
-                input-output_ratio = #{inputOutputRatio,jdbcType=VARCHAR},
+                input_output_ratio = #{inputOutputRatio,jdbcType=VARCHAR},
             </if>
             <if test="targetCompletionRate != null" >
                 target_completion_rate = #{targetCompletionRate,jdbcType=VARCHAR},
@@ -253,6 +261,9 @@
             </if>
             <if test="projectsNotCompletedNumber != null" >
                 projects_not_completed_number = #{projectsNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="projectsDocumentsNotCompletedNumber != null" >
+                projects_documents_not_completed_number = #{projectsDocumentsNotCompletedNumber,jdbcType=INTEGER},
             </if>
             <if test="workNotCompletedNumber != null" >
                 work_not_completed_number = #{workNotCompletedNumber,jdbcType=INTEGER},
@@ -330,7 +341,7 @@
                 and cost_coefficients_sum = #{costCoefficientsSum,jdbcType=VARCHAR}
             </if>
             <if test="inputOutputRatio != null" >
-                and input-output_ratio = #{inputOutputRatio,jdbcType=VARCHAR}
+                and input_output_ratio = #{inputOutputRatio,jdbcType=VARCHAR}
             </if>
             <if test="targetCompletionRate != null" >
                 and target_completion_rate = #{targetCompletionRate,jdbcType=VARCHAR}
@@ -343,6 +354,9 @@
             </if>
             <if test="projectsNotCompletedNumber != null" >
                 and projects_not_completed_number = #{projectsNotCompletedNumber,jdbcType=INTEGER}
+            </if>
+            <if test="projectsDocumentsNotCompletedNumber != null" >
+                and projects_documents_not_completed_number = #{projectsDocumentsNotCompletedNumber,jdbcType=INTEGER}
             </if>
             <if test="workNotCompletedNumber != null" >
                 and work_not_completed_number = #{workNotCompletedNumber,jdbcType=INTEGER}

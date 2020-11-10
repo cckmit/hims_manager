@@ -379,7 +379,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
             }
-            if(!(pro_status_before.equals(status) || (pro_status_after.equals("投产打回") && (status.equals("投产待部署")) ) || (pro_status_after.equals("投产回退") && status.equals("投产验证完成")) ||(pro_status_after.equals("投产取消") && (status.equals("投产提出")|| status.equals("投产待部署"))))){
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("投产打回") && (status.equals("投产待部署")) ) || (pro_status_after.equals("投产回退") && status.equals("投产验证完成")) ||(pro_status_after.equals("投产取消") && (status.equals("投产提出")|| status.equals("投产待部署")|| status.equals("投产待审批"))))){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -394,7 +394,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
             boolean isSend = true;
 
-            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("投产打回")) && (status.equals("投产待部署"))) || ((pro_status_after.equals("投产回退")) && (status.equals("投产验证完成"))) || ((pro_status_after.equals("投产取消")) && (((status.equals("投产提出")) || (status.equals("投产待部署"))))))) && ((
+            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("投产打回")) && (status.equals("投产待部署"))) || ((pro_status_after.equals("投产回退")) && (status.equals("投产验证完成"))) || ((pro_status_after.equals("投产取消")) && (((status.equals("投产提出")) || (status.equals("投产待审批"))))))) && ((
                     (pro_status_after.equals("投产打回")) || (pro_status_after.equals("投产回退")) || (pro_status_after.equals("投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();

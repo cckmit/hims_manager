@@ -1,8 +1,8 @@
 /*
  * @ClassName QuantitativeDataDO
- * @Description 
+ * @Description
  * @version 1.0
- * @Date 2020-11-02 16:52:35
+ * @Date 2020-11-06 15:57:13
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -51,6 +51,10 @@ public class QuantitativeDataDO extends BaseDO {
      * @Fields projectsNotCompletedNumber 未及时完成项目启动数
      */
     private Integer projectsNotCompletedNumber;
+    /**
+     * @Fields projectsDocumentsNotCompletedNumber 未及时提供项目文档数
+     */
+    private Integer projectsDocumentsNotCompletedNumber;
     /**
      * @Fields workNotCompletedNumber 未及时完成工作量延期天数
      */
@@ -200,6 +204,14 @@ public class QuantitativeDataDO extends BaseDO {
         this.projectsNotCompletedNumber = projectsNotCompletedNumber;
     }
 
+    public Integer getProjectsDocumentsNotCompletedNumber() {
+        return projectsDocumentsNotCompletedNumber;
+    }
+
+    public void setProjectsDocumentsNotCompletedNumber(Integer projectsDocumentsNotCompletedNumber) {
+        this.projectsDocumentsNotCompletedNumber = projectsDocumentsNotCompletedNumber;
+    }
+
     public Integer getWorkNotCompletedNumber() {
         return workNotCompletedNumber;
     }
@@ -334,5 +346,39 @@ public class QuantitativeDataDO extends BaseDO {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "QuantitativeDataDO{" +
+                "quantitativeId=" + quantitativeId +
+                ", firstlevelOrganization='" + firstlevelOrganization + '\'' +
+                ", reqImplMon='" + reqImplMon + '\'' +
+                ", functionPointsAssessWorkload='" + functionPointsAssessWorkload + '\'' +
+                ", costCoefficientsSum='" + costCoefficientsSum + '\'' +
+                ", inputOutputRatio='" + inputOutputRatio + '\'' +
+                ", targetCompletionRate='" + targetCompletionRate + '\'' +
+                ", productReleaseRate='" + productReleaseRate + '\'' +
+                ", documentsOutputNumber=" + documentsOutputNumber +
+                ", projectsNotCompletedNumber=" + projectsNotCompletedNumber +
+                ", projectsDocumentsNotCompletedNumber=" + projectsDocumentsNotCompletedNumber +
+                ", workNotCompletedNumber=" + workNotCompletedNumber +
+                ", unstandardizedFeedbackWorksNumber=" + unstandardizedFeedbackWorksNumber +
+                ", notTimelyInputProductionNumber=" + notTimelyInputProductionNumber +
+                ", defectRate='" + defectRate + '\'' +
+                ", dataChangeProblemsNumber=" + dataChangeProblemsNumber +
+                ", productionProblemsNumber=" + productionProblemsNumber +
+                ", smokeTestFailed=" + smokeTestFailed +
+                ", versionUpdateIssues=" + versionUpdateIssues +
+                ", baseAwardedMarks=" + baseAwardedMarks +
+                ", praiseAwardedMarks=" + praiseAwardedMarks +
+                ", qualityAwardedMarks=" + qualityAwardedMarks +
+                ", innovateAwardedMarks=" + innovateAwardedMarks +
+                ", baseDeductMarks=" + baseDeductMarks +
+                ", criticismDeductMarks=" + criticismDeductMarks +
+                ", fundLoss=" + fundLoss +
+                ", workingAttitude=" + workingAttitude +
+                ", remark='" + remark + '\'' +
+                '}';
     }
 }

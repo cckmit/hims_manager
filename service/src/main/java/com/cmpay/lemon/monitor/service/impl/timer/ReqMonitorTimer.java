@@ -59,6 +59,8 @@ public class ReqMonitorTimer {
     private IUserExtDao userExtDao;
     @Autowired
     private IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
+    @Autowired
+    private ReqDataCountService reqDataCountService;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -82,6 +84,17 @@ public class ReqMonitorTimer {
             return;
         }
         jiraDataCollationService.getIssueModifiedWithinOneDay();
+    }
+    /**
+     * 每天晚上11点30定时处理统计
+     */
+    @Scheduled(cron = "0 30 23 * * ?")
+    public void getQuantitativeDataMonth() {
+        //如果是dev环境则不处理
+        if (LemonUtils.getEnv().equals(Env.DEV)) {
+            return;
+        }
+       // reqDataCountService.test();
     }
     /**
      * 每天凌晨1点定时处理统计前一天测试部需求测试进度表

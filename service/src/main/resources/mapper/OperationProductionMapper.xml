@@ -902,7 +902,7 @@
         <include refid="Base_Column_List"/>
         from  t_production_records t1
         WHERE 1=1
-        <if test="startedtime != null||startedtime != ''" >
+        <if test="startedtime != null and startedtime != ''" >
             and YEARWEEK(pro_date) = YEARWEEK(#{selectTime,jdbcType=VARCHAR})
         </if>
         <if test="devpLeadDept != null and devpLeadDept != ''" >
@@ -915,7 +915,7 @@
     <include refid="Base_Column_List"/>
     from  t_production_records t1
     WHERE 1=1
-     <if test="startedtime != null||startedtime != ''" >
+     <if test="startedtime != null and startedtime != ''" >
         and pro_date like CONCAT('%',#{selectTime,jdbcType=VARCHAR},'%')
     </if>
     <if test="devpLeadDept != null and devpLeadDept != ''" >
@@ -923,5 +923,15 @@
     </if>
     order by pro_date desc
 </select>
+
+    <select id="findCount" resultType="int">
+        select count(1) from (
+        SELECT
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = application_dept) AS  firstLevelOrganization,
+        <include refid="Base_Column_List"/>
+        from  t_production_records t1
+        WHERE  pro_date like CONCAT('%',#{reqImplMon},'%')  and pro_type = '救火更新' and is_access_question = '是'
+        ) a where firstLevelOrganization = #{firstLevelOrganization}
+    </select>
 
 </mapper>

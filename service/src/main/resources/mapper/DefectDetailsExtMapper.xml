@@ -155,6 +155,7 @@
     </select>
     <select id="findValidList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DefectDetailsDO" >
         select
+        (SELECT firstLevelOrganization FROM t_organization_structure t WHERE t.secondLevelOrganization = problem_handler_department) AS  firstLevelOrganization,
         <include refid="Base_Column_List" />
         from t_defect_details
         <where >

@@ -506,6 +506,7 @@ public class DefectsServiceImpl  implements DefectsService {
             if (JudgeUtils.isEmpty(zenQuestiontDOList)) {
                 onlineDefectExtDao.insert(m);
             } else {
+                m.setId(zenQuestiontDOList.get(0).getId());
                 onlineDefectExtDao.update(m);
             }
         });

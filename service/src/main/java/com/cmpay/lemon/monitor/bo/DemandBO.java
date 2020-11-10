@@ -145,6 +145,24 @@ public class DemandBO {
      */
     private int pageSize;
     private String preCurPeriod2;
+    private String reqStartDate;
+    private String reqEndDate;
+
+    public String getReqStartDate() {
+        return reqStartDate;
+    }
+
+    public void setReqStartDate(String reqStartDate) {
+        this.reqStartDate = reqStartDate;
+    }
+
+    public String getReqEndDate() {
+        return reqEndDate;
+    }
+
+    public void setReqEndDate(String reqEndDate) {
+        this.reqEndDate = reqEndDate;
+    }
 
     public String getPreCurPeriod2() {
         return preCurPeriod2;

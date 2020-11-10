@@ -5,6 +5,7 @@ package com.cmpay.lemon.monitor.dao;
 import com.cmpay.lemon.framework.dao.BaseDao;
 import com.cmpay.lemon.monitor.entity.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -36,12 +37,14 @@ public interface IReqDataCountDao extends BaseDao<DemandDO,String> {
 	List<ReqDataCountDO> getCompByDept(String reqImplMon);
 	//需求完成情况统计
 	List<ReqDataCountDO> getCompByDept2(String reqImplMon);
-
 	//需求类型统计
 	List<ReqDataCountDO> getReqSts(String reqImplMon);
 
 	//投产录入不及时
 	List<ScheduleDO> getProduction(String reqImplMon);
+	String getTestFinished(String reqImplMon);
+	//一级团队投产录入不及时数
+	Integer getProduction2(@Param("reqImplMon") String reqImplMon, @Param("firstLevelOrganization")String firstLevelOrganization);
 
 	//需求文档上传情况
 	List<DemandDO> getReportForm6(ReqDateCountDO reqDateCountDO);

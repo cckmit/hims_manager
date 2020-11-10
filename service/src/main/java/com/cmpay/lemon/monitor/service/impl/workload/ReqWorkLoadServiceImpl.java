@@ -697,6 +697,26 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         list = dealDevpWorkload3(DevpWorkLoadList);// 各部门工作量月统计汇总报表导出  goExportCountForDevp
         return list;
     }
+    //  研发中心团队月工作量汇总  （一级团队集合汇总）
+    @Override
+    public List<Double> getExportCountForDevp3(DemandBO demandBO){
+        DemandDO demandDO = new DemandDO();
+        BeanConvertUtils.convert(demandDO, demandBO);
+        List list = null;
+        String[] headerNames =null;
+        List<DemandDO>  mon_input_workload_list = workLoadDao.goExportCountForDevp(demandDO);
+        List<DemandBO> DevpWorkLoadList = new ArrayList<>();
+        for (int i = 0; i < mon_input_workload_list.size(); i++){
+            DemandDO demand = mon_input_workload_list.get(i);
+            DemandBO demandBO1 = new DemandBO();
+            BeanConvertUtils.convert(demandBO1, demand);
+            DemandBO devpDemand = getWorkLoad2(demandBO1);
+            devpDemand.setCoorDeptWorkload(devpDemand.getLeadDeptWorkload()+devpDemand.getCoorDeptWorkload());
+            DevpWorkLoadList.add(devpDemand);
+        }
+        list = dealDevpWorkload4(DevpWorkLoadList);// 各一级团队工作量月统计汇总报表导出  goExportCountForDevp
+        return list;
+    }
     // 二级团队月工作量报表汇总
     @Override
     public void goExportCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandBO demandBO, String type){
@@ -893,6 +913,24 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
 
     private List<Double> dealDevpWorkload(List<DemandBO> rowList){
         List<Double> list = Arrays.asList(new Double[14]);
+        for (int i = 0; i < rowList.size(); i++) {
+            //配合部门工作量
+            String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
+            if (StringUtils.isNotBlank(coorList[0])){
+                for (int j = 0; j < coorList.length; j++) {
+                    list = addWorkload(list,coorList[j]);
+                }
+            }
+        }
+
+        return list;
+    }
+    private List<Double> dealDevpWorkload4(List<DemandBO> rowList){
+        List<Double> list = Arrays.asList(new Double[14]);
+        //初始化
+        for(int i =0;i<list.size();i++){
+            list.set(i,new Double(0));
+        }
         for (int i = 0; i < rowList.size(); i++) {
             //配合部门工作量
             String[] coorList = rowList.get(i).getCoorDeptWorkload().split(";");
@@ -1501,6 +1539,39 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
 
+    }
+    @Override
+    public List<Double> supportWorkloadCountForDevp3(SupportWorkloadBO supportWorkloadBO){
+        List<Double> DevpWorkLoadList = Arrays.asList(new Double[14]);
+        //初始化
+        for(int i =0;i<DevpWorkLoadList.size();i++){
+            DevpWorkLoadList.set(i,new Double(0));
+        }
+        SupportWorkloadDO supportWorkloadDO = new SupportWorkloadDO();
+        BeanConvertUtils.convert(supportWorkloadDO, supportWorkloadBO);
+        // 获取一级团队支撑工作量汇总数据
+        List<SupportWorkloadDO>  mon_input_workload_list = iSupportWorkloadExtDao.supportWorkloadCountForDevp(supportWorkloadDO);
+        if(JudgeUtils.isEmpty(mon_input_workload_list)){
+            return DevpWorkLoadList;
+        }
+        //获取所有的一级团队
+        List<String> firstLevelOrganizationList = iOrganizationStructureDao.findFirstLevelOrganization(new OrganizationStructureDO());
+
+        System.err.println(firstLevelOrganizationList);
+        for(int i=0;i<firstLevelOrganizationList.size();i++){
+            SupportWorkload2DO supportWorkload2DO = new SupportWorkload2DO();
+            // 一级团队赋值
+            supportWorkload2DO.setSecondlevelorganization(firstLevelOrganizationList.get(i));
+            supportWorkload2DO.setFinalworkload("0");
+            // 判断一级团队是否存在支撑工作量
+            for(int j=0;j<mon_input_workload_list.size();j++){
+                if(firstLevelOrganizationList.get(i).equals(mon_input_workload_list.get(j).getFirstLevelOrganization())){
+                    supportWorkload2DO.setFinalworkload(mon_input_workload_list.get(j).getFinalworkload());
+                }
+            }
+            DevpWorkLoadList.set(i,Double.valueOf(supportWorkload2DO.getFinalworkload()));
+        }
+        return DevpWorkLoadList;
     }
     @Override
     public void supportWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, SupportWorkloadBO supportWorkloadBO){

@@ -149,6 +149,24 @@ public class DemandDO extends BaseDO {
     private String targetCauseClassification;
     //投产时间
     private String productionTime;
+    private String reqStartDate;
+    private String reqEndDate;
+
+    public String getReqStartDate() {
+        return reqStartDate;
+    }
+
+    public void setReqStartDate(String reqStartDate) {
+        this.reqStartDate = reqStartDate;
+    }
+
+    public String getReqEndDate() {
+        return reqEndDate;
+    }
+
+    public void setReqEndDate(String reqEndDate) {
+        this.reqEndDate = reqEndDate;
+    }
 
     public int getProjectedWorkload() {
         return projectedWorkload;

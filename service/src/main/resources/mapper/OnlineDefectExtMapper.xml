@@ -299,7 +299,7 @@
                 and process_status = #{processStatus,jdbcType=VARCHAR}
             </if>
             <if test="processStartDate != null and processStartDate != ''" >
-                and process_start_date = #{processStartDate,jdbcType=VARCHAR}
+                and process_start_date LIKE CONCAT('%',#{processStartDate,jdbcType=VARCHAR},'%')
             </if>
             <if test="defectProposer != null and defectProposer != ''" >
                 and defect_proposer = #{defectProposer,jdbcType=VARCHAR}
@@ -339,4 +339,138 @@
             </if>
         </where>
     </select>
+
+    <select id="findWeekList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_online_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and req_impl_mon LIKE CONCAT('%',#{reqImplMon,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="firstlevelorganization != null and firstlevelorganization != ''" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="documentNumber != null and documentNumber != ''" >
+                and document_number LIKE CONCAT('%',#{documentNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="processStatus != null and processStatus != ''" >
+                and process_status = #{processStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processStartDate != null and processStartDate != ''" >
+                and YEARWEEK(date_format(process_start_date,'%Y-%m-%d')) = YEARWEEK(#{processStartDate,jdbcType=VARCHAR})
+            </if>
+            <if test="defectProposer != null and defectProposer != ''" >
+                and defect_proposer = #{defectProposer,jdbcType=VARCHAR}
+            </if>
+            <if test="defectTheme != null and defectTheme != ''" >
+                and defect_theme LIKE CONCAT('%',#{defectTheme,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="defrctDescription != null and defrctDescription != ''" >
+                and defrct_description = #{defrctDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentLeader != null and developmentLeader != ''" >
+                and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="productLeader != null and productLeader != ''" >
+                and product_leader = #{productLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturers != null and manufacturers != ''" >
+                and manufacturers = #{manufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturersProduct != null and manufacturersProduct != ''" >
+                and manufacturers_product = #{manufacturersProduct,jdbcType=VARCHAR}
+            </if>
+            <if test="questionCause != null and questionCause != ''" >
+                and question_cause = #{questionCause,jdbcType=VARCHAR}
+            </if>
+            <if test="questionType != null and questionType != ''" >
+                and question_type = #{questionType,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="isAssess != null" >
+                and is_assess = #{isAssess,jdbcType=VARCHAR}
+            </if>
+            <if test="notAssessCause != null" >
+                and not_assess_cause = #{notAssessCause,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findMonthList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.OnlineDefectDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_online_defects
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="reqImplMon != null and reqImplMon != ''" >
+                and req_impl_mon LIKE CONCAT('%',#{reqImplMon,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="firstlevelorganization != null and firstlevelorganization != ''" >
+                and firstLevelOrganization = #{firstlevelorganization,jdbcType=VARCHAR}
+            </if>
+            <if test="documentNumber != null and documentNumber != ''" >
+                and document_number LIKE CONCAT('%',#{documentNumber,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="processStatus != null and processStatus != ''" >
+                and process_status = #{processStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="processStartDate != null and processStartDate != ''" >
+                and process_start_date LIKE CONCAT('%',#{processStartDate,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="defectProposer != null and defectProposer != ''" >
+                and defect_proposer = #{defectProposer,jdbcType=VARCHAR}
+            </if>
+            <if test="defectTheme != null and defectTheme != ''" >
+                and defect_theme LIKE CONCAT('%',#{defectTheme,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="defrctDescription != null and defrctDescription != ''" >
+                and defrct_description = #{defrctDescription,jdbcType=VARCHAR}
+            </if>
+            <if test="developmentLeader != null and developmentLeader != ''" >
+                and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="productLeader != null and productLeader != ''" >
+                and product_leader = #{productLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturers != null and manufacturers != ''" >
+                and manufacturers = #{manufacturers,jdbcType=VARCHAR}
+            </if>
+            <if test="manufacturersProduct != null and manufacturersProduct != ''" >
+                and manufacturers_product = #{manufacturersProduct,jdbcType=VARCHAR}
+            </if>
+            <if test="questionCause != null and questionCause != ''" >
+                and question_cause = #{questionCause,jdbcType=VARCHAR}
+            </if>
+            <if test="questionType != null and questionType != ''" >
+                and question_type = #{questionType,jdbcType=VARCHAR}
+            </if>
+            <if test="solution != null and solution != ''" >
+                and solution = #{solution,jdbcType=VARCHAR}
+            </if>
+            <if test="isAssess != null" >
+                and is_assess = #{isAssess,jdbcType=VARCHAR}
+            </if>
+            <if test="notAssessCause != null" >
+                and not_assess_cause = #{notAssessCause,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findCount" resultType="int">
+        select count(1) from (
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  t_online_defects t1
+        WHERE  req_impl_mon like CONCAT('%',#{reqImplMon},'%')  and is_assess = '是'
+        ) a where firstLevelOrganization = #{firstLevelOrganization}
+    </select>
+
 </mapper>

@@ -28,8 +28,11 @@
             <if test="jiraKey != null" >
                 and jira_key = #{jiraKey,jdbcType=VARCHAR}
             </if>
-            <if test="count != null" >
+            <if test="count != null and count != 3" >
                 and count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="count != null and count == 3" >
+                and count >= #{count,jdbcType=INTEGER}
             </if>
             <if test="department != null" >
                 and department = #{department,jdbcType=VARCHAR}
@@ -53,8 +56,11 @@
             <if test="jiraKey != null" >
                 and jira_key = #{jiraKey,jdbcType=VARCHAR}
             </if>
-            <if test="count != null" >
+            <if test="count != null and count != 3" >
                 and count = #{count,jdbcType=INTEGER}
+            </if>
+            <if test="count != null and count == 3" >
+                and count >= #{count,jdbcType=INTEGER}
             </if>
             <if test="department != null" >
                 and department = #{department,jdbcType=VARCHAR}

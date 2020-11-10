@@ -461,6 +461,9 @@
             <if test="reqImplMon != null and reqImplMon != ''">
                 AND a.req_impl_mon = #{reqImplMon}
             </if>
+            <if test="reqStartDate != null and reqStartDate != '' and reqEndDate != null and reqEndDate != ''">
+                AND a.req_impl_mon between #{reqStartDate} and #{reqEndDate}
+            </if>
             <if test="reqPrdLine !=null and reqPrdLine != ''">
                 AND a.req_prd_line = #{reqPrdLine}
             </if>
@@ -646,6 +649,9 @@
             </if>
             <if test="reqImplMon != null and reqImplMon != ''">
                 AND a.req_impl_mon LIKE CONCAT('%',#{reqImplMon},'%')
+            </if>
+            <if test="reqStartDate != null and reqStartDate != '' and reqEndDate != null and reqEndDate != ''">
+                AND a.req_impl_mon between #{reqStartDate} and #{reqEndDate}
             </if>
         </where>
         ORDER BY a.req_inner_seq asc
