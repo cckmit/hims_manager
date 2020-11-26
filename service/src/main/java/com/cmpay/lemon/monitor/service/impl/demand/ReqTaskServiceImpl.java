@@ -46,7 +46,9 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -92,6 +94,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private static final String OLDPRDLINE = "老产品线";
     //  无效问题
     private static final String WUXIAOWENTI = "无效问题";
+    private static final String TESTDEVP = "产品测试团队";
     private static final Logger LOGGER = LoggerFactory.getLogger(ReqTaskServiceImpl.class);
     @Autowired
     private IDemandExtDao demandDao;
@@ -161,6 +164,8 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private JiraOperationService jiraOperationService;
     @Autowired
     private IOrganizationStructureDao iOrganizationStructureDao;
+    @Autowired
+    private IQuantitativeDataExtDao quantitativeDataExtDao;
 
     @Override
     public DemandBO findById(String req_inner_seq) {
@@ -2605,6 +2610,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         return pageInfo;
     }
     @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void easeDevelopmentDown(MultipartFile file){
         File f = null;
         LinkedList<DemandEaseDevelopmentDO> easeDevelopmentDOLinkedList = new LinkedList<>();
@@ -2823,5 +2829,172 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         } catch (IOException e) {
             BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
         }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void uploadDataExcel(MultipartFile file){
+        File f = null;
+        LinkedList<QuantitativeDataDO> quantitativeDataDOLinkedList = new LinkedList<>();
+        try {
+            //MultipartFile转file
+            String originalFilename = file.getOriginalFilename();
+            //获取后缀名
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+            if (suffix.equals("xls")) {
+                suffix = ".xls";
+            } else if (suffix.equals("xlsm") || suffix.equals("xlsx")) {
+                suffix = ".xlsx";
+            } else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文件类型错误!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            f = File.createTempFile("tmp", suffix);
+            file.transferTo(f);
+            String filepath = f.getPath();
+            //excel转java类
+            ReadExcelUtils excelReader = new ReadExcelUtils(filepath);
+            Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
+            for (int i = 1; i <= map.size(); i++) {
+                QuantitativeDataDO quantitativeDataDO = new QuantitativeDataDO();
+                quantitativeDataDO.setReqImplMon(map.get(i).get(0).toString().trim());
+                quantitativeDataDO.setFirstlevelOrganization(map.get(i).get(1).toString().trim());
+                //开发工作量调整	支撑工作量调整
+                quantitativeDataDO.setDevelopWork(Double.valueOf(map.get(i).get(2).toString().trim()));
+                quantitativeDataDO.setSupportWork(Double.valueOf(map.get(i).get(3).toString().trim()));
+                // 未及时完成工作量延期天数
+                quantitativeDataDO.setWorkNotCompletedNumber(Double.valueOf(map.get(i).get(4).toString().trim()).intValue());
+                // 未规范反馈工作量条数
+                quantitativeDataDO.setUnstandardizedFeedbackWorksNumber(Double.valueOf(map.get(i).get(5).toString().trim()).intValue());
+                // 版本更新问题数
+                quantitativeDataDO.setVersionUpdateIssues(Double.valueOf(map.get(i).get(6).toString().trim()).intValue());
+                // 基地加分
+                quantitativeDataDO.setBaseAwardedMarks(Double.valueOf(map.get(i).get(7).toString().trim()).intValue());
+                // 通报表扬
+                quantitativeDataDO.setPraiseAwardedMarks(Double.valueOf(map.get(i).get(8).toString().trim()).intValue());
+                // 质量加分
+                quantitativeDataDO.setQualityAwardedMarks(Double.valueOf(map.get(i).get(9).toString().trim()).intValue());
+                // 创新加分
+                quantitativeDataDO.setInnovateAwardedMarks(Double.valueOf(map.get(i).get(10).toString().trim()).intValue());
+                // 基地扣分
+                quantitativeDataDO.setBaseDeductMarks(Double.valueOf(map.get(i).get(11).toString().trim()).intValue());
+                // 	通报批评
+                quantitativeDataDO.setCriticismDeductMarks(Double.valueOf(map.get(i).get(12).toString().trim()).intValue());
+                // 资金损失
+                quantitativeDataDO.setFundLoss(Double.valueOf(map.get(i).get(13).toString().trim()).intValue());
+                quantitativeDataDOLinkedList.add(quantitativeDataDO);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        } finally {
+            f.delete();
+        }
+        quantitativeDataDOLinkedList.forEach(m -> {
+            List<QuantitativeDataDO> quantitativeDataDOList = quantitativeDataExtDao.findOne(m);
+            if (JudgeUtils.isNotEmpty(quantitativeDataDOList)) {
+                m.setQuantitativeId(quantitativeDataDOList.get(0).getQuantitativeId());
+                DecimalFormat df = new DecimalFormat("0.00");
+                // 功能点评估工作量
+                double work = quantitativeDataDOList.get(0).getDevelopWorkSum()+quantitativeDataDOList.get(0).getEasyWorkSum()+quantitativeDataDOList.get(0).getSupportWorkSum()+m.getDevelopWork()+m.getSupportWork();
+                m.setFunctionPointsAssessWorkload(work+"");
+                //defectRate 缺陷率  有效PLOG数/(需求开发工作量+简易需求开发工作量)，
+                if(!m.getFirstlevelOrganization().equals("产品测试团队")){
+                    //inputOutputRatio 投入产出比
+                    m.setInputOutputRatio( df.format(( work/ Double.parseDouble(quantitativeDataDOList.get(0).getCostCoefficientsSum()) )));
+
+                    int defectsNumber=0;
+                    // 统计部门的有效plog数
+                    DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+                    defectDetailsDO.setFirstlevelorganization(m.getFirstlevelOrganization());
+                    defectDetailsDO.setRegistrationDate(m.getReqImplMon());
+                    List<DefectDetailsDO> defectDetailsDOList = defectDetailsDao.findValidList(defectDetailsDO);
+                    if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
+                        defectsNumber = defectDetailsDOList.size();
+                    }
+                    if((quantitativeDataDOList.get(0).getDevelopWorkSum()+quantitativeDataDOList.get(0).getEasyWorkSum()) != 0){
+                        m.setDefectRate(df.format((defectsNumber/(quantitativeDataDOList.get(0).getDevelopWorkSum()+quantitativeDataDOList.get(0).getEasyWorkSum()+m.getDevelopWork()))*100)+"%");
+                    }else{
+                        m.setDefectRate("0.00%");
+                    }
+                }
+                quantitativeDataExtDao.updateDataExcel(m);
+            } else {
+                //报错
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("根据月份和团队找不到数据，请确认数据是否正确");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        });
+    }
+
+    @Override
+    public void doDownloadData(HttpServletResponse response,DemandBO demandBO){
+        // 判断是否选择月份
+        if(JudgeUtils.isEmpty(demandBO.getReqImplMon())){
+            //报错
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请先选择导出报表的月份");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        QuantitativeDataDO quantitativeDataDO = new QuantitativeDataDO();
+        quantitativeDataDO.setReqImplMon(demandBO.getReqImplMon());
+        List<QuantitativeDataDO> quantitativeDataDOList = quantitativeDataExtDao.findOne(quantitativeDataDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), QuantitativeDataDO.class, quantitativeDataDOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "reqTask_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+
+    }
+    @Override
+    public void doDownloadData2(HttpServletResponse response,DemandBO demandBO){
+        // 判断是否选择月份
+        if(JudgeUtils.isEmpty(demandBO.getReqImplMon())){
+            //报错
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请先选择导出报表的月份");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        QuantitativeDataDO quantitativeDataDO = new QuantitativeDataDO();
+        quantitativeDataDO.setReqImplMon(demandBO.getReqImplMon());
+        List<QuantitativeDataDO> quantitativeDataDOList = quantitativeDataExtDao.findOne(quantitativeDataDO);
+        double centreOutput = 0;
+        // 获取中心平均投入产出
+        for (int i=0;i<quantitativeDataDOList.size();i++){
+            if(!TESTDEVP.equals(quantitativeDataDOList.get(i).getFirstlevelOrganization())){
+                centreOutput += Double.parseDouble(quantitativeDataDOList.get(i).getInputOutputRatio());
+            }
+        }
+        centreOutput = centreOutput / 8;
+        String  [] deftList= {"支付业务研发团队","客户业务研发团队","金融业务研发团队","商户业务研发团队","业务中台研发团队","智慧食堂研发团队","平台架构研发团队","前端技术研发团队","产品测试团队"};
+        DecimalFormat df = new DecimalFormat("0.00");
+        List<QuantitativeScoreDO> quantitativeScoreDOList = new ArrayList<>();
+        for (int i=0;i<deftList.length;i++){
+            quantitativeDataDO.setFirstlevelOrganization(deftList[i]);
+            quantitativeDataDOList = quantitativeDataExtDao.findOne(quantitativeDataDO);
+            QuantitativeScoreDO  quantitativeScoreDO = new QuantitativeScoreDO();
+            if(deftList[i].equals("支付业务研发团队")){
+                //部门投入产出比得分：上限为20
+                //部门投入产出比得分=（部门投入产出比/中心平均投入产出）*85*0.2，
+                double inputOutput = (Double.parseDouble(quantitativeDataDOList.get(0).getInputOutputRatio())/ centreOutput) * 85 * 0.2;
+//                if(){
+//
+//                }
+//                quantitativeScoreDO.setInputOutputRatioMarks();
+            }
+
+        }
+
     }
 }

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IGitlabDataDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        <id column="gitlab_id" property="gitlabId" jdbcType="VARCHAR" />
+        <result column="committer_name" property="committerName" jdbcType="VARCHAR" />
+        <result column="committed_date" property="committedDate" jdbcType="VARCHAR" />
+        <result column="committer_email" property="committerEmail" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="message" property="message" jdbcType="VARCHAR" />
+        <result column="stats_total" property="statsTotal" jdbcType="INTEGER" />
+        <result column="stats_additions" property="statsAdditions" jdbcType="INTEGER" />
+        <result column="stats_deletions" property="statsDeletions" jdbcType="INTEGER" />
+        <result column="branch_name" property="branchName" jdbcType="VARCHAR" />
+        <result column="http_url_to_repo" property="httpUrlToRepo" jdbcType="VARCHAR" />
+        <result column="project_id" property="projectId" jdbcType="VARCHAR" />
+        <result column="name_with_namespace" property="nameWithNamespace" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="display_name" property="displayName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        gitlab_id, committer_name, committed_date, committer_email, title, message, stats_total, 
+        stats_additions, stats_deletions, branch_name, http_url_to_repo, project_id, name_with_namespace, 
+        description, devp_lead_dept, display_name
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_gitlab_submit_code_data
+        where gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String" >
+        delete from t_gitlab_submit_code_data
+        where gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        insert into t_gitlab_submit_code_data
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="gitlabId != null" >
+                gitlab_id,
+            </if>
+            <if test="committerName != null" >
+                committer_name,
+            </if>
+            <if test="committedDate != null" >
+                committed_date,
+            </if>
+            <if test="committerEmail != null" >
+                committer_email,
+            </if>
+            <if test="title != null" >
+                title,
+            </if>
+            <if test="message != null" >
+                message,
+            </if>
+            <if test="statsTotal != null" >
+                stats_total,
+            </if>
+            <if test="statsAdditions != null" >
+                stats_additions,
+            </if>
+            <if test="statsDeletions != null" >
+                stats_deletions,
+            </if>
+            <if test="branchName != null" >
+                branch_name,
+            </if>
+            <if test="httpUrlToRepo != null" >
+                http_url_to_repo,
+            </if>
+            <if test="projectId != null" >
+                project_id,
+            </if>
+            <if test="nameWithNamespace != null" >
+                name_with_namespace,
+            </if>
+            <if test="description != null" >
+                description,
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept,
+            </if>
+            <if test="displayName != null" >
+                display_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="gitlabId != null" >
+                #{gitlabId,jdbcType=VARCHAR},
+            </if>
+            <if test="committerName != null" >
+                #{committerName,jdbcType=VARCHAR},
+            </if>
+            <if test="committedDate != null" >
+                #{committedDate,jdbcType=VARCHAR},
+            </if>
+            <if test="committerEmail != null" >
+                #{committerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="message != null" >
+                #{message,jdbcType=VARCHAR},
+            </if>
+            <if test="statsTotal != null" >
+                #{statsTotal,jdbcType=INTEGER},
+            </if>
+            <if test="statsAdditions != null" >
+                #{statsAdditions,jdbcType=INTEGER},
+            </if>
+            <if test="statsDeletions != null" >
+                #{statsDeletions,jdbcType=INTEGER},
+            </if>
+            <if test="branchName != null" >
+                #{branchName,jdbcType=VARCHAR},
+            </if>
+            <if test="httpUrlToRepo != null" >
+                #{httpUrlToRepo,jdbcType=VARCHAR},
+            </if>
+            <if test="projectId != null" >
+                #{projectId,jdbcType=VARCHAR},
+            </if>
+            <if test="nameWithNamespace != null" >
+                #{nameWithNamespace,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="displayName != null" >
+                #{displayName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        update t_gitlab_submit_code_data
+        <set >
+            <if test="committerName != null" >
+                committer_name = #{committerName,jdbcType=VARCHAR},
+            </if>
+            <if test="committedDate != null" >
+                committed_date = #{committedDate,jdbcType=VARCHAR},
+            </if>
+            <if test="committerEmail != null" >
+                committer_email = #{committerEmail,jdbcType=VARCHAR},
+            </if>
+            <if test="title != null" >
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="message != null" >
+                message = #{message,jdbcType=VARCHAR},
+            </if>
+            <if test="statsTotal != null" >
+                stats_total = #{statsTotal,jdbcType=INTEGER},
+            </if>
+            <if test="statsAdditions != null" >
+                stats_additions = #{statsAdditions,jdbcType=INTEGER},
+            </if>
+            <if test="statsDeletions != null" >
+                stats_deletions = #{statsDeletions,jdbcType=INTEGER},
+            </if>
+            <if test="branchName != null" >
+                branch_name = #{branchName,jdbcType=VARCHAR},
+            </if>
+            <if test="httpUrlToRepo != null" >
+                http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR},
+            </if>
+            <if test="projectId != null" >
+                project_id = #{projectId,jdbcType=VARCHAR},
+            </if>
+            <if test="nameWithNamespace != null" >
+                name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null" >
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="displayName != null" >
+                display_name = #{displayName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and committed_date = #{committedDate,jdbcType=VARCHAR}
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

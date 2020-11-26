@@ -142,6 +142,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     private IOnlineDefectExtDao onlineDefectExtDao;
     @Autowired
     private IQuantitativeDataExtDao quantitativeDataExtDao;
+    @Autowired
+    private IGitlabDataExtDao gitlabDataDao;
 
 
     /**
@@ -3146,6 +3148,54 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
     }
 
     /**
+     * 个人视图 代码提交情况
+     * @param displayname
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public List<GitlabDataBO> getGetLabDateView(String displayname, String date1, String date2){
+        List<GitlabDataBO> gitlabDataBOLinkedList = new LinkedList<>();
+        List<GitlabDataDO> impl = null;
+        List<GitlabDataDO> impl2 = null;
+        GitlabDataDO workingHoursDO = new GitlabDataDO();
+        // 根据姓名获得邮箱
+        UserDO userDO =iUserDao.getUserByUserFullName(displayname);
+        if(JudgeUtils.isNull(userDO)){
+            // 根据姓名查询不到人员，返回空
+            return gitlabDataBOLinkedList;
+        }
+        workingHoursDO.setCommitterEmail(userDO.getEmail());
+        System.err.println(date1 + "=====" + date2);
+        if (StringUtils.isBlank(date1) && StringUtils.isBlank(date2)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择日期查询条件：如周、月!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 查询周
+        if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+            workingHoursDO.setCommittedDate(date1);
+            impl = gitlabDataDao.findListWeekView(workingHoursDO);
+            impl2 = gitlabDataDao.findWeekGitLabSum(workingHoursDO);
+        }
+        // 查询月
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            workingHoursDO.setCommittedDate(date2);
+            impl = gitlabDataDao.findListMonthView(workingHoursDO);
+            impl2 = gitlabDataDao.findMonthGitLabSum(workingHoursDO);
+        }
+        impl.forEach(m ->
+                gitlabDataBOLinkedList.add(BeanUtils.copyPropertiesReturnDest(new GitlabDataBO(), m))
+        );
+        GitlabDataBO gitlabDataBO = BeanUtils.copyPropertiesReturnDest(new GitlabDataBO(),impl2.get(0));
+        gitlabDataBO.setNameWithNamespace("汇总");
+        gitlabDataBO.setCommittedDate("-");
+        gitlabDataBOLinkedList.add(gitlabDataBO);
+        return gitlabDataBOLinkedList;
+    }
+
+    /**
      * 团队需求情况
      *
      * @param devpLeadDept
@@ -5625,8 +5675,8 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM");
         SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("yyyyMM");
-        String month = simpleDateFormat.format(date);
-        String month2 = simpleDateFormat2.format(date);
+        String month = "2020-10";//simpleDateFormat.format(date);
+        String month2 = "202010";//simpleDateFormat2.format(date);
         demandBO.setReqImplMon(month);
         //  需求开发功能点
         List<Double> dept = reqWorkLoadService.getExportCountForDevp3(demandBO);
@@ -5759,11 +5809,10 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(6)+dept2.get(6)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(6)+dept2.get(6))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(6)+dept2.get(6)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
-
                 //dataChangeProblemsNumber 数据变更问题数
                 quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
                 //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
@@ -5779,6 +5828,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(6))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(6))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(6))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -5832,7 +5884,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(5)+dept2.get(5)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(5)+dept2.get(5))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(5)+dept2.get(5)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -5851,6 +5903,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(5))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(5))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(5))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -5904,7 +5959,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(4)+dept2.get(4)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(4)+dept2.get(4))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(4)+dept2.get(4)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -5923,6 +5978,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(4))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(4))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(4))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -5975,7 +6033,11 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 if(JudgeUtils.isNotEmpty(defectDetailsDOList)){
                     defectsNumber = defectDetailsDOList.size();
                 }
-                quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(7)+dept2.get(7))))+"%");
+                if((dept.get(7)+dept2.get(7)) != 0){
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(7)+dept2.get(7)))*100)+"%");
+                }else{
+                    quantitativeDataDO.setDefectRate("0.00%");
+                }
                 //dataChangeProblemsNumber 数据变更问题数
                 quantitativeDataDO.setDataChangeProblemsNumber(iOperationProductionDao.findCount(month,deftList[i]));
                 //productionProblemsNumber 生产问题个数 根据每月的线上缺陷数据，按照是否为考核问题统计
@@ -5991,6 +6053,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(7))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(7))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(7))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6044,7 +6109,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(9)+dept2.get(9)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(9)+dept2.get(9))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(9)+dept2.get(9)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -6063,6 +6128,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(9))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(9))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(9))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6116,7 +6184,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(8)+dept2.get(8)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(8)+dept2.get(8))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(8)+dept2.get(8)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -6135,6 +6203,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(8))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(8))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(8))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6188,7 +6259,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(1)+dept2.get(1)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(1)+dept2.get(1))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(1)+dept2.get(1)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -6207,6 +6278,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(1))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(1))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(1))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6260,7 +6334,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                     defectsNumber = defectDetailsDOList.size();
                 }
                 if((dept.get(3)+dept2.get(3)) != 0){
-                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(3)+dept2.get(3))))+"%");
+                    quantitativeDataDO.setDefectRate(df.format((defectsNumber/(dept.get(3)+dept2.get(3)))*100)+"%");
                 }else{
                     quantitativeDataDO.setDefectRate("0.00%");
                 }
@@ -6279,6 +6353,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(3))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(3))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(3))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6334,6 +6411,9 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
                 quantitativeDataDO.setSmokeTestFailed(smokeNunber);
                 //workingAttitude 工作态度及制度遵守
                 quantitativeDataDO.setWorkingAttitude(5);
+                quantitativeDataDO.setDevelopWorkSum(Double.parseDouble(df.format(dept.get(2))));
+                quantitativeDataDO.setEasyWorkSum(Double.parseDouble(df.format(dept2.get(2))));
+                quantitativeDataDO.setSupportWorkSum(Double.parseDouble(df.format(dept3.get(2))));
                 System.err.println(quantitativeDataDO);
 
             }
@@ -6346,6 +6426,122 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             }
         }
 
+    }
+
+    /**
+     * 中心体检视图，部门git代码提交量
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getCentreGitLab(String date1, String date2) {
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        List<GitlabDataDO> gitlabDataDOList = null;
+        List<OrganizationStructureDO> impl = iOrganizationStructureDao.find(new OrganizationStructureDO());
+        // 二级团队集合
+        List<String> deptName = new LinkedList<>();
+        for (int i = 0; i < impl.size(); i++) {
+            deptName.add(impl.get(i).getSecondlevelorganization());
+            // 查询周
+            if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+                GitlabDataDO gitlabDataDO = new GitlabDataDO();
+                gitlabDataDO.setDevpLeadDept(impl.get(i).getSecondlevelorganization());
+                gitlabDataDO.setCommittedDate(date1);
+                gitlabDataDOList = gitlabDataDao.findWeekGit(gitlabDataDO);
+                String rate = "更新代码总量："+gitlabDataDOList.get(0).getStatsTotal()+"</br>新增代码量："+gitlabDataDOList.get(0).getStatsAdditions()+"</br>删除代码量：" +gitlabDataDOList.get(0).getStatsDeletions();
+                String str = "{ products: '" + impl.get(i).getSecondlevelorganization() + "', 代码提交量: '" + gitlabDataDOList.get(0).getStatsTotal()  + "', rate: '" + rate + "'}";
+                workingHoursBOS.add(str);
+            }
+            //查询月
+            if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+                GitlabDataDO gitlabDataDO = new GitlabDataDO();
+                gitlabDataDO.setDevpLeadDept(impl.get(i).getSecondlevelorganization());
+                gitlabDataDO.setCommittedDate(date2);
+                gitlabDataDOList = gitlabDataDao.findMonthGit(gitlabDataDO);
+                String rate = "更新代码总量："+gitlabDataDOList.get(0).getStatsTotal()+"</br>新增代码量："+gitlabDataDOList.get(0).getStatsAdditions()+"</br>删除代码量：" +gitlabDataDOList.get(0).getStatsDeletions();
+                String str = "{ products: '" + impl.get(i).getSecondlevelorganization() + "', 代码提交量: '" + gitlabDataDOList.get(0).getStatsTotal()  + "', rate: '" + rate + "'}";
+                workingHoursBOS.add(str);
+            }
+
+        }
+        SumBos.add("product");
+        SumBos.add("代码提交量");
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    /**
+     * 查询团队体检视图代码提交量
+     * @param devpLeadDept
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getCentreGitLabDept(String devpLeadDept,String date1, String date2) {
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        List<String> listRate = new LinkedList<>();
+        List<GitlabDataDO> gitlabDataDOList = null;
+        List<GitlabDataDO> gitlabDataDOList2 = null;
+        // 查询周
+        if (StringUtils.isNotBlank(date1) && StringUtils.isBlank(date2)) {
+            GitlabDataDO gitlabDataDO = new GitlabDataDO();
+            gitlabDataDO.setDevpLeadDept(devpLeadDept);
+            gitlabDataDO.setCommittedDate(date1);
+            gitlabDataDOList = gitlabDataDao.findWeekGitLab(gitlabDataDO);
+            gitlabDataDOList2 = gitlabDataDao.findWeekGitLabSum(gitlabDataDO);
+
+        }
+        //查询月
+        if (StringUtils.isNotBlank(date2) && StringUtils.isBlank(date1)) {
+            GitlabDataDO gitlabDataDO = new GitlabDataDO();
+            gitlabDataDO.setDevpLeadDept(devpLeadDept);
+            gitlabDataDO.setCommittedDate(date2);
+            gitlabDataDOList = gitlabDataDao.findMonthGitLab(gitlabDataDO);
+            gitlabDataDOList2 = gitlabDataDao.findMonthGitLabSum(gitlabDataDO);
+        }
+        if(JudgeUtils.isNotEmpty(gitlabDataDOList)){
+            for(int i =0;i<gitlabDataDOList.size();i++){
+                String rate = "更新代码总量："+gitlabDataDOList.get(i).getStatsTotal()+"</br>新增代码量："+gitlabDataDOList.get(i).getStatsAdditions()+"</br>删除代码量：" +gitlabDataDOList.get(i).getStatsDeletions();
+                String str = "{ products: '" + gitlabDataDOList.get(i).getDisplayName() + "', 代码提交量: '" + gitlabDataDOList.get(i).getStatsTotal()  + "', rate: '" + rate + "'}";
+                // { product: '产品测试团队', 工时: '70', 功能点: '150'},
+                workingHoursBOS.add(str);
+                listRate.add(gitlabDataDOList.get(i).getDisplayName());
+            }
+            List<UserDO> list = iUserDao.getUserByDept(devpLeadDept);
+            if(JudgeUtils.isNotEmpty(list)){
+                int sum = list.size()-gitlabDataDOList.size();
+                for(int i =0;i<sum;i++){
+                    String str = "{ products: '" + ""+ "'}";
+                    workingHoursBOS.add(str);
+                    listRate.add("");
+                }
+            }
+        } else {
+            List<UserDO> list = iUserDao.getUserByDept(devpLeadDept);
+            if(JudgeUtils.isNotEmpty(list)){
+                for(int i =0;i<list.size();i++){
+                    String str = "{ products: '" + list.get(i).getFullname() + "', 代码提交量: '" + 0  + "'}";
+                    listRate.add(list.get(i).getFullname());
+                    workingHoursBOS.add(str);
+                }
+            }
+        }
+
+        SumBos.add("product");
+        SumBos.add("代码提交量");
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        demandHoursRspBO.setListRate(listRate);
+        demandHoursRspBO.setSum(gitlabDataDOList2.get(0).getStatsTotal()+"");
+        return demandHoursRspBO;
     }
 }
 

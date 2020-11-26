@@ -31,6 +31,11 @@
         <result column="fund_loss" property="fundLoss" jdbcType="INTEGER" />
         <result column="working_attitude" property="workingAttitude" jdbcType="INTEGER" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="develop_work" property="developWork" jdbcType="DOUBLE" />
+        <result column="support_work" property="supportWork" jdbcType="DOUBLE" />
+        <result column="develop_work_sum" property="developWorkSum" jdbcType="DOUBLE" />
+        <result column="support_work_sum" property="supportWorkSum" jdbcType="DOUBLE" />
+        <result column="easy_work_sum" property="easyWorkSum" jdbcType="DOUBLE" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -41,7 +46,7 @@
         defect_rate, data_change_problems_number, production_problems_number, smoke_test_failed,
         version_update_issues, base_awarded_marks, praise_awarded_marks, quality_awarded_marks,
         innovate_awarded_marks, base_deduct_marks, criticism_deduct_marks, fund_loss, working_attitude,
-        remark
+        remark, develop_work, support_work, develop_work_sum, support_work_sum, easy_work_sum
     </sql>
 
 
@@ -59,4 +64,56 @@
             </if>
         </where>
     </select>
+
+    <update id="updateDataExcel" parameterType="com.cmpay.lemon.monitor.entity.QuantitativeDataDO" >
+        update t_quantitative_data
+        <set >
+            <if test="functionPointsAssessWorkload != null" >
+                function_points_assess_workload = #{functionPointsAssessWorkload,jdbcType=VARCHAR},
+            </if>
+            <if test="inputOutputRatio != null" >
+                input_output_ratio = #{inputOutputRatio,jdbcType=VARCHAR},
+            </if>
+            <if test="workNotCompletedNumber != null" >
+                work_not_completed_number = #{workNotCompletedNumber,jdbcType=INTEGER},
+            </if>
+            <if test="unstandardizedFeedbackWorksNumber != null" >
+                unstandardized_feedback_works_number = #{unstandardizedFeedbackWorksNumber,jdbcType=INTEGER},
+            </if>
+            <if test="defectRate != null" >
+                defect_rate = #{defectRate,jdbcType=VARCHAR},
+            </if>
+            <if test="versionUpdateIssues != null" >
+                version_update_issues = #{versionUpdateIssues,jdbcType=INTEGER},
+            </if>
+            <if test="baseAwardedMarks != null" >
+                base_awarded_marks = #{baseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="praiseAwardedMarks != null" >
+                praise_awarded_marks = #{praiseAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="qualityAwardedMarks != null" >
+                quality_awarded_marks = #{qualityAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="innovateAwardedMarks != null" >
+                innovate_awarded_marks = #{innovateAwardedMarks,jdbcType=INTEGER},
+            </if>
+            <if test="baseDeductMarks != null" >
+                base_deduct_marks = #{baseDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="criticismDeductMarks != null" >
+                criticism_deduct_marks = #{criticismDeductMarks,jdbcType=INTEGER},
+            </if>
+            <if test="fundLoss != null" >
+                fund_loss = #{fundLoss,jdbcType=INTEGER},
+            </if>
+            <if test="developWork != null" >
+                develop_work = #{developWork,jdbcType=DOUBLE},
+            </if>
+            <if test="supportWork != null" >
+                support_work = #{supportWork,jdbcType=DOUBLE},
+            </if>
+        </set>
+        where quantitative_id = #{quantitativeId,jdbcType=BIGINT}
+    </update>
 </mapper>

@@ -1187,4 +1187,40 @@ public class reportFormController {
 		unhandledIssuesRspDTO.setSmokeTestFailedCountDTOList(BeanConvertUtils.convertList(proUnhandledIssuesRspBO.getSmokeTestFailedCountBOList(), SmokeTestFailedCountDTO.class));
 		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, unhandledIssuesRspDTO);
 	}
+
+	/**
+	 * 个人视图查询代码提交情况
+	 *
+	 * @param workingHoursDTO
+	 * @return
+	 */
+	@RequestMapping("/getGetLabDateView")
+	public GenericRspDTO<GitlabDataRspDTO> getGetLabDateView(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		List<GitlabDataBO> reportLista = new ArrayList<>();
+		reportLista = reqDataCountService.getGetLabDateView(workingHoursDTO.getDisplayname(), workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+		GitlabDataRspDTO reqDataCountRspDTO = new GitlabDataRspDTO();
+		List<GitlabDataDTO> gitlabDataDTOLinkedList = new LinkedList<>();
+		reportLista.forEach(m ->
+				gitlabDataDTOLinkedList.add(BeanUtils.copyPropertiesReturnDest(new GitlabDataDTO(), m))
+		);
+		reqDataCountRspDTO.setGitlabDataRspDTOList(gitlabDataDTOLinkedList);
+		// 统计部门
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, reqDataCountRspDTO);
+	}
+	@RequestMapping("/getCentreGitLab")
+	public GenericRspDTO<DemandHoursRspDTO> getCentreGitLab(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO = reqDataCountService.getCentreGitLab(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+		DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+	}
+    @RequestMapping("/getCentreGitLabDept")
+    public GenericRspDTO<DemandHoursRspDTO> getCentreGitLabDept(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.getCentreGitLabDept(workingHoursDTO.getDevpLeadDept(),workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 }

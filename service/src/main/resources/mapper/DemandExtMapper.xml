@@ -524,7 +524,7 @@
         <if test="projectedWorkload != null">
             ,projectedWorkload =#{projectedWorkload }
         </if>
-        <if test="devpCoorDept != null and devpCoorDept != ''">
+        <if test="devpCoorDept != null">
             ,devp_coor_dept =#{devpCoorDept}
         </if>
         <if test="stateCauseClassification != null and stateCauseClassification != ''">

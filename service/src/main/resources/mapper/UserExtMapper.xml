@@ -27,6 +27,20 @@
         where username = #{username,jdbcType=VARCHAR}
     </select>
 
+    <select id="getUserByDept" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_user
+        where department = #{department,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getUserByEmail" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from sys_user
+        where email = #{email,jdbcType=VARCHAR}
+    </select>
+
     <select id="getUserByUserFullName" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select
         <include refid="Base_Column_List" />

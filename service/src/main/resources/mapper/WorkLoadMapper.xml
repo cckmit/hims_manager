@@ -698,8 +698,14 @@
 		SELECT
         <include refid="Base_Column_List" />
 		FROM t_demand_info a
-		WHERE a.req_impl_mon LIKE CONCAT('%',#{reqImplMon},'%')
-		 and  pre_cur_period > 50 and a.req_sts not in ('60' )
+		WHERE
+        pre_cur_period > 50 and a.req_sts not in ('60' )
+        <if test="reqImplMon != null and reqImplMon != ''">
+            AND a.req_impl_mon LIKE CONCAT('%',#{reqImplMon},'%')
+        </if>
+        <if test="reqStartDate != null and reqStartDate != '' and reqEndDate != null and reqEndDate != ''">
+            AND a.req_impl_mon between #{reqStartDate} and #{reqEndDate}
+        </if>
 		ORDER BY a.update_time DESC
 	</select>
     <select id="getReqWorkLoad" resultMap="BaseResultMap" parameterType="map">

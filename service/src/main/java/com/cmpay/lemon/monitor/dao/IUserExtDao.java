@@ -17,9 +17,13 @@ public interface IUserExtDao extends IUserDao {
      * @return
      */
     UserDO getUserByUserName(String username);
+    UserDO getUserByEmail(String email);
+
 
     UserDO getUserByMobile(String username);
     List<UserDO> search(UserDO entity);
+    List<UserDO> getUserByDept(String dept);
+
 
     UserDO getUserByUserFullName(String loginname);
 }

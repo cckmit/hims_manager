@@ -17,6 +17,7 @@ import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
+import com.cmpay.lemon.monitor.service.gitlab.GitlabSubmitCodeDateService;
 import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
@@ -61,6 +62,8 @@ public class ReqMonitorTimer {
     private IProductionVerificationIsNotTimelyExtDao iProductionVerificationIsNotTimelyExtDao;
     @Autowired
     private ReqDataCountService reqDataCountService;
+    @Autowired
+    private GitlabSubmitCodeDateService gitlabSubmitCodeDateService;
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -94,7 +97,7 @@ public class ReqMonitorTimer {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
         }
-       // reqDataCountService.test();
+        //reqDataCountService.test();
     }
     /**
      * 每天凌晨1点定时处理统计前一天测试部需求测试进度表
@@ -106,6 +109,18 @@ public class ReqMonitorTimer {
             return;
         }
         jiraDataCollationService.TestProgressDetailOneDay();
+    }
+
+    /**
+     * 每天凌晨2点定时处理统计前一天的gitlab代码提交情况
+     */
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void getGitLabDate() {
+        //如果是dev环境则不处理
+        if (LemonUtils.getEnv().equals(Env.DEV)) {
+            return;
+        }
+        gitlabSubmitCodeDateService.getGitlabDate();
     }
     /**
      * 需求累计投入资源
@@ -141,7 +156,7 @@ public class ReqMonitorTimer {
         productionTimeBO.setId(Integer.valueOf(4));
         productionTimeBO.setTime(day);
         productTimeService.updateProductTime(productionTimeBO);
-        boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
+        //boardcastScheduler.pushTimeOutWarning("投产时间周定时变更");
     }
     // 每月工作日定时任务
     @Scheduled(cron = "0 0 1 * * ?")
@@ -178,7 +193,7 @@ public class ReqMonitorTimer {
      *邮件发送给 it.version@hisuntech.com
      **/
 
-    @Scheduled(cron = "10 0 12 * * ?")
+   /* @Scheduled(cron = "10 0 12 * * ?")
     public void listOfUntimelyStatusChanges() {
         //如果是dev环境则不处理
         if (LemonUtils.getEnv().equals(Env.DEV)) {
@@ -246,13 +261,13 @@ public class ReqMonitorTimer {
         mailInfo.setContent("版本组:<br/>&nbsp;&nbsp;&nbsp;&nbsp;以下投产记录或系统操作记录目前处于待部署状态清单，请确认最新部署状态，并更新。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;如果投产已回退，也请更新对应状态。如果既没有部署也没有回退则无需操作。<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;如有任何问题请及时反馈与沟通。<br/><br/>" + sb.toString());
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
-    }
+    }*/
 
     /*
      *投产不及时验证清单发送企业微信
      *每天中午12点10秒执行，避免和别的微信推送内容冲突
      * */
-    @Scheduled(cron = "10 0 12 * * ?")
+    /*@Scheduled(cron = "10 0 12 * * ?")
     public void productionVerificationIsNotTimely() throws ParseException {
         //测试环境不发通知
         if (LemonUtils.getEnv().equals(Env.DEV)) {
@@ -476,7 +491,7 @@ public class ReqMonitorTimer {
             boardcastScheduler.pushValidationNotTimelyChecklist(body, file);
         }
         file.delete();
-    }
+    }*/
 
 /**
  * 需求月底反馈 每月1号 系统统计月底实际完成阶段未达到月初预计完成阶段的需求，并邮件通知产品经理对需求目标未完成情况进行原因反馈，
@@ -527,7 +542,7 @@ public class ReqMonitorTimer {
     /*
      * 每日需求进度异常监控 日终，系统判断需求实际实施完成阶段与计划完成阶段是否存在异常，对于存在异常的需求，每天中午十二点发送进度异常邮件通知
      */
-     @Scheduled(cron = "0 0 12 * * ?")
+    /* @Scheduled(cron = "0 0 12 * * ?")
     public void dailyAbnormalMonitor() {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
@@ -614,14 +629,14 @@ public class ReqMonitorTimer {
             e.printStackTrace();
             logger.error("需求异常状态监控失败：" + e.getMessage());
         }
-    }
+    }*/
 
 
     //todo
     // 需求预警 ：“需求定稿时间”或“UAT更新时间”或“测试完成时间”或“预投产时间”、“投产时间”小于1天，系统每日发送微信推送。
     // 日终，根据系统当前时间离关键里程碑计划完成时间剩余天数小于等于1且进度滞后于里程碑阶段的需求，每日上午8点-8点30分发送需求预警邮件通知
     //
-      @Scheduled(cron = "0 0 12 * * ?")
+      /*@Scheduled(cron = "0 0 12 * * ?")
     public void progressAlertPush() {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
@@ -743,7 +758,7 @@ public class ReqMonitorTimer {
             }
         });
 
-    }
+    }*/
 
     private int dateDifference(String date1, String date2) {
         int betweenDate = 0;

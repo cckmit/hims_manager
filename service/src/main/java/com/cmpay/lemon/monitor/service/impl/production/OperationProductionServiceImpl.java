@@ -1864,6 +1864,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public MsgEnum productionInput(MultipartFile file, Boolean isApproveProduct, ProductionBO bean) {
         bean.setProStatus("投产提出");
         boolean isSend = false;
+        File file_fire = null;
         //后台判断数据
         if (!bean.getProNumber().matches(".*[a-zA-z].*")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 您的投产编号填写错误");
@@ -2040,7 +2041,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setSubject("【投产录入审批申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于超过正常投产录入时间，投产无法正常录入，现申请投产审批，烦请审批！");
             // 这个类主要来发送邮件
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(bnb);
         }
         //正常投产；投产日投产；不投产验证
@@ -2069,7 +2069,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setSubject("【预投产不验证申请】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             mailInfo.setContent("武金艳、肖铧：<br/>&nbsp;&nbsp;由于" + bean.getNotAdvanceReason() + "，预投产无法验证，现申请预投产不验证，烦请审批！");
             // 这个类主要来发送邮件
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【预投产不验证申请】", Constant.P_EMAIL_NAME, receiver_mail, ""));
         }
         //非投产日正常投产
@@ -2077,14 +2076,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setProStatus("投产待部署");
             List<ProductionBO> unusuaList = new ArrayList<ProductionBO>();
             unusuaList.add(bean);
-            File unusualFile = this.exportUnusualExcel(unusuaList);
+            file_fire = this.exportUnusualExcel(unusuaList);
             // 附件
             Vector<File> filesv = new Vector<File>();
             // 添加附件信息
             if (file != null && !file.isEmpty()) {
                 filesv = this.setVectorFile(file, filesv, bean);
             }
-            filesv.add(unusualFile);
+            filesv.add(file_fire);
             mailInfo.setFile(filesv);
             // 收件人邮箱
             List<String> receiver_users = new ArrayList<String>();
@@ -2132,12 +2131,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setSubject("【正常投产(非投产日)通知】-" + bean.getProNeed() + "-" + bean.getProNumber() + "-" + bean.getProApplicant());
             //拼接邮件内容
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setProEmailContent(bean));
-            // 这个类主要来发送邮件
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)通知】", Constant.P_EMAIL_NAME, receiver_mail, unusualFile.getName(), ""));
-            if (unusualFile.isFile() && unusualFile.exists()) {
-                unusualFile.delete();
-            }
+            this.addMailFlow(new MailFlowBean("【正常投产(非投产日)通知】", Constant.P_EMAIL_NAME, receiver_mail, file_fire.getName(), ""));
         }
         //多个编号集合
         String crMore = bean.getCrMore();
@@ -2195,7 +2189,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             bean.setProNumber(beanNumbers);
             // 设置邮件中投产名称
             bean.setProNeed(beanNeeds);
-            File file_fire = this.exportUrgentExcel(list);
+            file_fire = this.exportUrgentExcel(list);
             files.add(file_fire);
             mailInfo.setFile(files);
             // 收件人邮箱
@@ -2234,11 +2228,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【救火更新通知】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
-            if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
-                file_fire.delete();
-            }
             //邮件发送完成，名称改回来
             // 设置邮件中投产编号
             bean.setProNumber(beanNumber);
@@ -2261,7 +2251,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             copy_users.add(bean.getProApplicant());
             // 附件
             Vector<File> files = new Vector<File>();
-            File file_fire = this.exportUrgentExcel(list);
+            file_fire = this.exportUrgentExcel(list);
             // 添加救火附件
             if (file != null && !file.isEmpty()) {
                 files = this.setVectorFile(file, files, bean);
@@ -2304,11 +2294,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + EmailConfig.setFireEmailContent(bean, flag));
             // 这个类主要来发送邮件
             //SimpleMailSender sms = new SimpleMailSender();
-            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
             this.addMailFlow(new MailFlowBean("【救火更新通知】", Constant.P_EMAIL_NAME, receiver_mail, "", ""));
-            if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
-                file_fire.delete();
-            }
         }
 
 
@@ -2317,7 +2303,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         bean.setProductionDeploymentResult("未部署");
         if (productionBean != null) {
             this.updateAllProduction(bean);
-
             //生成流水记录
             ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", productionBean.getProStatus(), bean.getProStatus(), "无");
             this.addScheduleBean(scheduleBean);
@@ -2332,28 +2317,31 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     reqTaskService.updatePreCurPeriod(demand);
                 }
             }
-            if (!isSend) {
-                MsgEnum.CUSTOMSUCCESS.setMsgInfo(" 投产已录入,但您有邮件没有发送成功,请及时联系系统维护人员!");
-                return MsgEnum.CUSTOMSUCCESS;
+        }else{
+            this.addProduction(bean);
+            //生成流水记录
+            ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
+            this.addScheduleBean(scheduleBean);
+            //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
+            if (bean.getIsAdvanceProduction().equals("否")) {
+                DemandBO vo = new DemandBO();
+                vo.setReqNo(bean.getProNumber());
+                List<DemandBO> list = reqTaskService.getReqTaskByUK(vo);
+                if (list.size() != 0) {
+                    DemandBO DemandBO = list.get(0);
+                    DemandBO.setPreCurPeriod("160");
+                    reqTaskService.updatePreCurPeriod(DemandBO);
+                }
             }
-            MsgEnum.CUSTOMSUCCESS.setMsgInfo("投产已重新提交");
-            return MsgEnum.CUSTOMSUCCESS;
         }
-
-        this.addProduction(bean);
-        //生成流水记录
-        ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
-        this.addScheduleBean(scheduleBean);
-        //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
-        if (bean.getIsAdvanceProduction().equals("否")) {
-            DemandBO vo = new DemandBO();
-            vo.setReqNo(bean.getProNumber());
-            List<DemandBO> list = reqTaskService.getReqTaskByUK(vo);
-            if (list.size() != 0) {
-                DemandBO DemandBO = list.get(0);
-                DemandBO.setPreCurPeriod("160");
-                reqTaskService.updatePreCurPeriod(DemandBO);
-            }
+        //正常投产日投产，做预投产验证的不发邮件
+        if (!(bean.getProType().equals("正常投产") && bean.getIsOperationProduction().equals("是") && bean.getIsAdvanceProduction().equals("是"))) {
+            // 邮件发送
+            isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        }
+        // 附件删除
+        if (file_fire != null && file_fire.isFile() && file_fire.exists()) {
+                file_fire.delete();
         }
         if (!isSend) {
             //自定义类型成功

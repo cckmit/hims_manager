@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IGitlabDataExtDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        <id column="gitlab_id" property="gitlabId" jdbcType="VARCHAR" />
+        <result column="committer_name" property="committerName" jdbcType="VARCHAR" />
+        <result column="committed_date" property="committedDate" jdbcType="VARCHAR" />
+        <result column="committer_email" property="committerEmail" jdbcType="VARCHAR" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="message" property="message" jdbcType="VARCHAR" />
+        <result column="stats_total" property="statsTotal" jdbcType="INTEGER" />
+        <result column="stats_additions" property="statsAdditions" jdbcType="INTEGER" />
+        <result column="stats_deletions" property="statsDeletions" jdbcType="INTEGER" />
+        <result column="branch_name" property="branchName" jdbcType="VARCHAR" />
+        <result column="http_url_to_repo" property="httpUrlToRepo" jdbcType="VARCHAR" />
+        <result column="project_id" property="projectId" jdbcType="VARCHAR" />
+        <result column="name_with_namespace" property="nameWithNamespace" jdbcType="VARCHAR" />
+        <result column="description" property="description" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="display_name" property="displayName" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        gitlab_id, committer_name, committed_date, committer_email, title, message, stats_total,
+        stats_additions, stats_deletions, branch_name, http_url_to_repo, project_id, name_with_namespace,
+        description, devp_lead_dept, display_name
+    </sql>
+    <sql id="Base_Column_List1" >
+        gitlab_id, committer_name, committed_date, committer_email, title, message,
+         branch_name, http_url_to_repo, project_id, name_with_namespace,
+        description, devp_lead_dept, display_name
+    </sql>
+
+    <select id="findListWeekView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        sum(stats_total) stats_total, sum(stats_additions) stats_additions, sum(stats_deletions) stats_deletions,
+        <include refid="Base_Column_List1" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and YEARWEEK(date_format(committed_date,'%Y-%m-%d')) = YEARWEEK(#{committedDate,jdbcType=VARCHAR})
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY LEFT(committed_date,10)
+        ORDER BY committed_date desc
+    </select>
+
+    <select id="findListMonthView" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        sum(stats_total) stats_total, sum(stats_additions) stats_additions, sum(stats_deletions) stats_deletions,
+        <include refid="Base_Column_List1" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and LEFT(committed_date,10)  like CONCAT('%',#{committedDate},'%')
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY LEFT(committed_date,10)
+        ORDER BY committed_date desc
+    </select>
+
+    <select id="findWeekGit" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        COALESCE(sum(stats_total) , 0) stats_total,
+        COALESCE(sum(stats_additions) , 0) stats_additions,
+        COALESCE(sum(stats_deletions) , 0) stats_deletions
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and YEARWEEK(date_format(committed_date,'%Y-%m-%d')) = YEARWEEK(#{committedDate,jdbcType=VARCHAR})
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findMonthGit" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        COALESCE(sum(stats_total) , 0) stats_total,
+        COALESCE(sum(stats_additions) , 0) stats_additions,
+        COALESCE(sum(stats_deletions) , 0) stats_deletions
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and LEFT(committed_date,10)  like CONCAT('%',#{committedDate},'%')
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <select id="findWeekGitLab" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+    select
+    COALESCE(sum(stats_total) , 0) stats_total,
+    COALESCE(sum(stats_additions) , 0) stats_additions,
+    COALESCE(sum(stats_deletions) , 0) stats_deletions,
+    <include refid="Base_Column_List1" />
+    from t_gitlab_submit_code_data
+    <where >
+        <if test="gitlabId != null" >
+            and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+        </if>
+        <if test="committerName != null" >
+            and committer_name = #{committerName,jdbcType=VARCHAR}
+        </if>
+        <if test="committedDate != null" >
+            and YEARWEEK(date_format(committed_date,'%Y-%m-%d')) = YEARWEEK(#{committedDate,jdbcType=VARCHAR})
+        </if>
+        <if test="committerEmail != null" >
+            and committer_email = #{committerEmail,jdbcType=VARCHAR}
+        </if>
+        <if test="title != null" >
+            and title = #{title,jdbcType=VARCHAR}
+        </if>
+        <if test="message != null" >
+            and message = #{message,jdbcType=VARCHAR}
+        </if>
+        <if test="statsTotal != null" >
+            and stats_total = #{statsTotal,jdbcType=INTEGER}
+        </if>
+        <if test="statsAdditions != null" >
+            and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+        </if>
+        <if test="statsDeletions != null" >
+            and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+        </if>
+        <if test="branchName != null" >
+            and branch_name = #{branchName,jdbcType=VARCHAR}
+        </if>
+        <if test="httpUrlToRepo != null" >
+            and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+        </if>
+        <if test="projectId != null" >
+            and project_id = #{projectId,jdbcType=VARCHAR}
+        </if>
+        <if test="nameWithNamespace != null" >
+            and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+        </if>
+        <if test="description != null" >
+            and description = #{description,jdbcType=VARCHAR}
+        </if>
+        <if test="devpLeadDept != null" >
+            and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+        </if>
+        <if test="displayName != null" >
+            and display_name = #{displayName,jdbcType=VARCHAR}
+        </if>
+    </where>
+    GROUP BY  display_name
+</select>
+
+    <select id="findMonthGitLab" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        COALESCE(sum(stats_total) , 0) stats_total,
+        COALESCE(sum(stats_additions) , 0) stats_additions,
+        COALESCE(sum(stats_deletions) , 0) stats_deletions,
+        <include refid="Base_Column_List1" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and LEFT(committed_date,10)  like CONCAT('%',#{committedDate},'%')
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        GROUP BY  display_name
+    </select>
+    <select id="findWeekGitLabSum" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        COALESCE(sum(stats_total) , 0) stats_total,
+        COALESCE(sum(stats_additions) , 0) stats_additions,
+        COALESCE(sum(stats_deletions) , 0) stats_deletions,
+        <include refid="Base_Column_List1" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and YEARWEEK(date_format(committed_date,'%Y-%m-%d')) = YEARWEEK(#{committedDate,jdbcType=VARCHAR})
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="findMonthGitLabSum" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.GitlabDataDO" >
+        select
+        COALESCE(sum(stats_total) , 0) stats_total,
+        COALESCE(sum(stats_additions) , 0) stats_additions,
+        COALESCE(sum(stats_deletions) , 0) stats_deletions,
+        <include refid="Base_Column_List1" />
+        from t_gitlab_submit_code_data
+        <where >
+            <if test="gitlabId != null" >
+                and gitlab_id = #{gitlabId,jdbcType=VARCHAR}
+            </if>
+            <if test="committerName != null" >
+                and committer_name = #{committerName,jdbcType=VARCHAR}
+            </if>
+            <if test="committedDate != null" >
+                and LEFT(committed_date,10)  like CONCAT('%',#{committedDate},'%')
+            </if>
+            <if test="committerEmail != null" >
+                and committer_email = #{committerEmail,jdbcType=VARCHAR}
+            </if>
+            <if test="title != null" >
+                and title = #{title,jdbcType=VARCHAR}
+            </if>
+            <if test="message != null" >
+                and message = #{message,jdbcType=VARCHAR}
+            </if>
+            <if test="statsTotal != null" >
+                and stats_total = #{statsTotal,jdbcType=INTEGER}
+            </if>
+            <if test="statsAdditions != null" >
+                and stats_additions = #{statsAdditions,jdbcType=INTEGER}
+            </if>
+            <if test="statsDeletions != null" >
+                and stats_deletions = #{statsDeletions,jdbcType=INTEGER}
+            </if>
+            <if test="branchName != null" >
+                and branch_name = #{branchName,jdbcType=VARCHAR}
+            </if>
+            <if test="httpUrlToRepo != null" >
+                and http_url_to_repo = #{httpUrlToRepo,jdbcType=VARCHAR}
+            </if>
+            <if test="projectId != null" >
+                and project_id = #{projectId,jdbcType=VARCHAR}
+            </if>
+            <if test="nameWithNamespace != null" >
+                and name_with_namespace = #{nameWithNamespace,jdbcType=VARCHAR}
+            </if>
+            <if test="description != null" >
+                and description = #{description,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayName != null" >
+                and display_name = #{displayName,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

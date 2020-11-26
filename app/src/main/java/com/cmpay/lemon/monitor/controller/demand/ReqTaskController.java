@@ -370,4 +370,40 @@ public class ReqTaskController {
         }
         return;
     }
+
+    /**
+     * 导入
+     *
+     * @return
+     */
+    @PostMapping("/uploadDataExcel")
+    public GenericRspDTO<NoBody> uploadDataExcel(HttpServletRequest request, GenericDTO<NoBody> req) {
+        MultipartFile file = ((MultipartHttpServletRequest) request).getFile(FILE);
+        reqTaskService.uploadDataExcel(file);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/doDownloadData")
+    public GenericRspDTO<NoBody> doDownloadData(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        reqTaskService.doDownloadData(response, demandBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    /**
+     * 导出
+     *
+     * @return
+     * @throws IOException
+     */
+    @RequestMapping("/doDownloadData2")
+    public GenericRspDTO<NoBody> doDownloadData2(@RequestBody DemandReqDTO reqDTO, HttpServletResponse response) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        reqTaskService.doDownloadData2(response, demandBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

@@ -16,5 +16,6 @@ import java.util.List;
 public interface IQuantitativeDataExtDao extends IQuantitativeDataDao {
 
     List<QuantitativeDataDO> findOne(QuantitativeDataDO entity);
+    void updateDataExcel(QuantitativeDataDO entity);
 
 }

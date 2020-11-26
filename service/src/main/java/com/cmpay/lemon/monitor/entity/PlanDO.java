@@ -32,7 +32,7 @@ public class PlanDO extends BaseDO {
     private String uatUpdateTm;
     @Excel(name = "UAT测试完成时间")
     private String testFinshTm;
-    @Excel(name = "预计投产时间")
+    @Excel(name = "投产时间")
     private String productionTime;
     @Excel(name = "本月预计完成阶段")
     private String curMonTarget;
@@ -58,6 +58,8 @@ public class PlanDO extends BaseDO {
     private String planStartTime;
     @Excel(name = "测试主任务计划完成时间")
     private String planEndTime;
+    @Excel(name = "预计产品发布日期")
+    private String expPrdReleaseTm;
     private String reqProDept;
     private String reqProposer;
     private String reqMnger;
@@ -119,7 +121,7 @@ public class PlanDO extends BaseDO {
     private String reqAbnorType;
 
 
-    private String expPrdReleaseTm;
+
     @Override
     public String toString() {
         return "PlanDO{" +

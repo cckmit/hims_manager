@@ -31,6 +31,11 @@
         <result column="fund_loss" property="fundLoss" jdbcType="INTEGER" />
         <result column="working_attitude" property="workingAttitude" jdbcType="INTEGER" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
+        <result column="develop_work" property="developWork" jdbcType="DOUBLE" />
+        <result column="support_work" property="supportWork" jdbcType="DOUBLE" />
+        <result column="develop_work_sum" property="developWorkSum" jdbcType="DOUBLE" />
+        <result column="support_work_sum" property="supportWorkSum" jdbcType="DOUBLE" />
+        <result column="easy_work_sum" property="easyWorkSum" jdbcType="DOUBLE" />
     </resultMap>
 
     <sql id="Base_Column_List" >
@@ -41,7 +46,7 @@
         defect_rate, data_change_problems_number, production_problems_number, smoke_test_failed, 
         version_update_issues, base_awarded_marks, praise_awarded_marks, quality_awarded_marks, 
         innovate_awarded_marks, base_deduct_marks, criticism_deduct_marks, fund_loss, working_attitude, 
-        remark
+        remark, develop_work, support_work, develop_work_sum, support_work_sum, easy_work_sum
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
@@ -143,6 +148,21 @@
             <if test="remark != null" >
                 remark,
             </if>
+            <if test="developWork != null" >
+                develop_work,
+            </if>
+            <if test="supportWork != null" >
+                support_work,
+            </if>
+            <if test="developWorkSum != null" >
+                develop_work_sum,
+            </if>
+            <if test="supportWorkSum != null" >
+                support_work_sum,
+            </if>
+            <if test="easyWorkSum != null" >
+                easy_work_sum,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="quantitativeId != null" >
@@ -228,6 +248,21 @@
             </if>
             <if test="remark != null" >
                 #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="developWork != null" >
+                #{developWork,jdbcType=DOUBLE},
+            </if>
+            <if test="supportWork != null" >
+                #{supportWork,jdbcType=DOUBLE},
+            </if>
+            <if test="developWorkSum != null" >
+                #{developWorkSum,jdbcType=DOUBLE},
+            </if>
+            <if test="supportWorkSum != null" >
+                #{supportWorkSum,jdbcType=DOUBLE},
+            </if>
+            <if test="easyWorkSum != null" >
+                #{easyWorkSum,jdbcType=DOUBLE},
             </if>
         </trim>
     </insert>
@@ -315,6 +350,21 @@
             </if>
             <if test="remark != null" >
                 remark = #{remark,jdbcType=VARCHAR},
+            </if>
+            <if test="developWork != null" >
+                develop_work = #{developWork,jdbcType=DOUBLE},
+            </if>
+            <if test="supportWork != null" >
+                support_work = #{supportWork,jdbcType=DOUBLE},
+            </if>
+            <if test="developWorkSum != null" >
+                develop_work_sum = #{developWorkSum,jdbcType=DOUBLE},
+            </if>
+            <if test="supportWorkSum != null" >
+                support_work_sum = #{supportWorkSum,jdbcType=DOUBLE},
+            </if>
+            <if test="easyWorkSum != null" >
+                easy_work_sum = #{easyWorkSum,jdbcType=DOUBLE},
             </if>
         </set>
         where quantitative_id = #{quantitativeId,jdbcType=BIGINT}
@@ -408,6 +458,21 @@
             </if>
             <if test="remark != null" >
                 and remark = #{remark,jdbcType=VARCHAR}
+            </if>
+            <if test="developWork != null" >
+                and develop_work = #{developWork,jdbcType=DOUBLE}
+            </if>
+            <if test="supportWork != null" >
+                and support_work = #{supportWork,jdbcType=DOUBLE}
+            </if>
+            <if test="developWorkSum != null" >
+                and develop_work_sum = #{developWorkSum,jdbcType=DOUBLE}
+            </if>
+            <if test="supportWorkSum != null" >
+                and support_work_sum = #{supportWorkSum,jdbcType=DOUBLE}
+            </if>
+            <if test="easyWorkSum != null" >
+                and easy_work_sum = #{easyWorkSum,jdbcType=DOUBLE}
             </if>
         </where>
     </select>

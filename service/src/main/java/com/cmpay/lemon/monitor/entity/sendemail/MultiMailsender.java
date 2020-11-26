@@ -2,14 +2,25 @@ package com.cmpay.lemon.monitor.entity.sendemail;
 
 import com.cmpay.lemon.common.Env;
 import com.cmpay.lemon.common.exception.BusinessException;
+import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.TestProgressDetailRspBO;
 import com.cmpay.lemon.monitor.entity.Constant;
+import com.cmpay.lemon.monitor.entity.GitlabDataDO;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.impl.reportForm.ReqDataCountServiceImpl;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.gitlab4j.api.CommitsApi;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.Pager;
+import org.gitlab4j.api.RepositoryApi;
+import org.gitlab4j.api.models.Branch;
+import org.gitlab4j.api.models.Commit;
+import org.gitlab4j.api.models.Project;
+import org.gitlab4j.api.models.User;
+import org.gitlab4j.api.utils.ISO8601;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.activation.DataHandler;
@@ -20,6 +31,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 public class MultiMailsender {
@@ -292,7 +304,76 @@ public class MultiMailsender {
     }
     //邮件发送
     public static void main(String[] args) throws Exception{
-        System.err.println("(!(~+[])+{})[--[~+\"\"][+[]]*[~+[]]+~~!+[]]+({}+[])[[~!+[]]*~+[]]");
+        // 获取连接
+        // hostUrl：gitLab的域名（或者IP:port）
+        // personalAccessToken：步骤2中的AccessToken
+//        GitlabAPI gitlabAPI = GitlabAPI.connect(hostUrl, accessToken);
+        // 条件获取project
+        // nameSpace：项目的命名空间
+        // projectName：项目名称
+//        GitlabProject project = gitlabAPI.getProject(nameSpace, projectName);
+        String hostUrl= "http://172.16.50.222:82/";
+        String privateToken= "4YkRcSKMJKyWtRUGxxU3";
+        GitLabApi gitLabApi = new GitLabApi(hostUrl, privateToken);
+//        RepositoryApi repositoryApi = gitLabApi.getRepositoryApi();
+//       // System.err.println(repositoryApi);
+//        CommitsApi commitsApi = gitLabApi.getCommitsApi();
+       // System.err.println(commitsApi);
+        //全部的项目
+//        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        List<User> users = gitLabApi.getUserApi().getUsers();
+//        System.err.println(users);
+//        List<Project> projects = gitLabApi.getProjectApi().getProjects();
+//        System.err.println(projects);
+//        for (int i=0;i<projects.size();i++){
+//            System.err.println("----------------------------------------");
+//            System.err.println(projects.get(i).getId());
+//            System.err.println(projects.get(i).getDescription());
+//            System.err.println(projects.get(i).getHttpUrlToRepo());
+//            System.err.println(projects.get(i).getNameWithNamespace());
+//            System.err.println(projects.get(i).getNameWithNamespace());
+//        }
+//       //System.err.println(projects);
+//        //流可见的项目，打印出项目名称。
+        Stream<Project> projectStream = gitLabApi.getProjectApi().getProjectsStream();
+        projectStream.map(Project::getNameWithNamespace).forEach(name -> System.out.println(name));
+//        // 项目分支
+//        List <Branch> branch = gitLabApi.getRepositoryApi().getBranches(523);
+//        //System.err.println(branch);
+//        //获取当前日期的前一天
+//        String date = DateUtil.getBeforeDay();
+//        String start = date+"T00:00:00Z";
+//        String end = date+"T23:59:59Z";
+//        Date since = ISO8601.toDate(start);
+//        Date until = ISO8601.toDate(end); // now
+//        for(int i=0;i<branch.size();i++){
+//            List<Commit> commits = gitLabApi.getCommitsApi().getCommits(523, branch.get(i).getName(), since, until);
+//            if(JudgeUtils.isNotEmpty(commits)){
+//                for(int j =0;j<commits.size();j++){
+//                    GitlabDataDO gitlabDataDO = new GitlabDataDO();
+//                    Commit commit = gitLabApi.getCommitsApi().getCommit(523,commits.get(j).getShortId());
+//                    System.err.println(commit);
+//                    gitlabDataDO.setGitlabId(commit.getId());
+//                    gitlabDataDO.setCommitterName(commit.getCommitterName());
+//
+//                    gitlabDataDO.setCommittedDate(sdf.format(commit.getCommittedDate()));
+//                    gitlabDataDO.setCommitterEmail(commit.getCommitterEmail());
+//                    gitlabDataDO.setTitle(commit.getTitle());
+//                    gitlabDataDO.setMessage(commit.getMessage());
+//                    gitlabDataDO.setStatsTotal(commit.getStats().getTotal());
+//                    gitlabDataDO.setStatsAdditions(commit.getStats().getAdditions());
+//                    gitlabDataDO.setStatsDeletions(commit.getStats().getDeletions());
+//                    System.err.println(gitlabDataDO);
+//                    System.out.println("变更行数:"+commit.getStats().getTotal()+",新增变更行数："+commit.getStats().getAdditions()+",删除变更行数："+commit.getStats().getDeletions());
+//                }
+//
+//            }
+//        }
+
+
+//        Commit commit = gitLabApi.getCommitsApi().getCommit(523,"c42d856d");
+//        System.err.println(commit);
+//        System.out.println("变更行数:"+commit.getStats().getTotal()+",新增变更行数："+commit.getStats().getAdditions()+",删除变更行数："+commit.getStats().getDeletions());
 
 
     }

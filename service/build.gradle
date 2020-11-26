@@ -22,6 +22,7 @@ dependencies {
     //快逸
     compile('hisun.quiee:report4:1.0')
     compile('log4j:log4j:1.2.17')
+    compile('org.gitlab4j:gitlab4j-api:4.15.7')
 }
 jar {
     manifest {

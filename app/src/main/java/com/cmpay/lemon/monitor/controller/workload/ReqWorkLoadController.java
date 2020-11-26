@@ -127,32 +127,41 @@ public class ReqWorkLoadController {
     // 各部门工作量月统计明细报表导出
     @RequestMapping("/goExportDetlForDevp")
     public void goExportDetlForDevp(@RequestBody DemandReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        if(reqDTO.getReqStartDate()!=null && !reqDTO.getReqStartDate().equals("") && (reqDTO.getReqEndDate()==null || reqDTO.getReqEndDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqStartDate());
+        }
+        if(reqDTO.getReqEndDate()!=null && !reqDTO.getReqEndDate().equals("") && (reqDTO.getReqStartDate()==null || reqDTO.getReqStartDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqEndDate());
+        }
         DemandBO demandBO = new DemandBO();
         BeanConvertUtils.convert(demandBO, reqDTO);
-        if (StringUtils.isBlank(demandBO.getReqImplMon())) {
-            demandBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
-        }
         reqWorkLoadService.exportExcel(request,response, demandBO, "2", "基地工作量");
     }
     // 各部门工作量月统计明细报表导出
     @RequestMapping("/goExportCountForDevp")
     public GenericRspDTO<NoBody> goExportCountForDevp(@RequestBody DemandReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        if(reqDTO.getReqStartDate()!=null && !reqDTO.getReqStartDate().equals("") && (reqDTO.getReqEndDate()==null || reqDTO.getReqEndDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqStartDate());
+        }
+        if(reqDTO.getReqEndDate()!=null && !reqDTO.getReqEndDate().equals("") && (reqDTO.getReqStartDate()==null || reqDTO.getReqStartDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqEndDate());
+        }
         DemandBO demandBO = new DemandBO();
         BeanConvertUtils.convert(demandBO, reqDTO);
-        if (StringUtils.isBlank(demandBO.getReqImplMon())) {
-            demandBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
-        }
         reqWorkLoadService.exportExcel(request,response, demandBO, "3", "基地工作量");
         return GenericRspDTO.newSuccessInstance();
     }
     // 各二级部门工作量月统计明细报表导出
     @RequestMapping("/goExportCountForDevp2")
     public GenericRspDTO<NoBody> goExportCountForDevp2(@RequestBody DemandReqDTO reqDTO,HttpServletRequest request,HttpServletResponse response) {
+        if(reqDTO.getReqStartDate()!=null && !reqDTO.getReqStartDate().equals("") && (reqDTO.getReqEndDate()==null || reqDTO.getReqEndDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqStartDate());
+        }
+        if(reqDTO.getReqEndDate()!=null && !reqDTO.getReqEndDate().equals("") && (reqDTO.getReqStartDate()==null || reqDTO.getReqStartDate().equals(""))){
+            reqDTO.setReqImplMon(reqDTO.getReqEndDate());
+        }
         DemandBO demandBO = new DemandBO();
         BeanConvertUtils.convert(demandBO, reqDTO);
-        if (StringUtils.isBlank(demandBO.getReqImplMon())) {
-            demandBO.setReqImplMon(DateUtil.date2String(new Date(), "yyyy-MM"));
-        }
         reqWorkLoadService.goExportCountForDevp2(request,response, demandBO, "3");
         return GenericRspDTO.newSuccessInstance();
     }

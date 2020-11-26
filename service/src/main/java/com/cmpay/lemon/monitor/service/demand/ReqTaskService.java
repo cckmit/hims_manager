@@ -176,4 +176,12 @@ public interface ReqTaskService {
     void easeDevelopmentWorkloadCountForDevp2(HttpServletRequest request, HttpServletResponse response, DemandEaseDevelopmentBO demandEaseDevelopmentBO);
 
     List<Double> easeDevelopmentWorkloadCountForDevp3( DemandEaseDevelopmentBO demandEaseDevelopmentBO );
+
+    /**
+     * 导入
+     * @param file
+     */
+    void uploadDataExcel(MultipartFile file);
+    void doDownloadData(HttpServletResponse response,DemandBO demandBO);
+    void doDownloadData2(HttpServletResponse response,DemandBO demandBO);
 }
