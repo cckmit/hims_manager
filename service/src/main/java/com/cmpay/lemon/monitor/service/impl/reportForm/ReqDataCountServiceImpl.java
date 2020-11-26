@@ -6543,5 +6543,70 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
         demandHoursRspBO.setSum(gitlabDataDOList2.get(0).getStatsTotal()+"");
         return demandHoursRspBO;
     }
+
+    /**
+     * 中心团队缺陷未解决
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    @Override
+    public DemandHoursRspBO getCentreGitlabMonth(String date1, String date2) {
+        List<GitlabDataDO> impl = null;
+        GitlabDataDO workingHoursDO = new GitlabDataDO();
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < list.size(); i++) {
+            workingHoursDO.setCommittedDate(list.get(i));
+            impl = gitlabDataDao.findMonthGitLabSum(workingHoursDO);
+            SumBos.add(list.get(i));
+            workingHoursBOS.add(impl.get(0).getStatsTotal()+"");
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+
+    @Override
+    public DemandHoursRspBO getTeamGitlabMonth(String devpLeadDept,String date1, String date2){
+        List<GitlabDataDO> impl = null;
+        GitlabDataDO workingHoursDO = new GitlabDataDO();
+        workingHoursDO.setDevpLeadDept(devpLeadDept);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < list.size(); i++) {
+            workingHoursDO.setCommittedDate(list.get(i));
+            impl = gitlabDataDao.findMonthGitLabSum(workingHoursDO);
+            SumBos.add(list.get(i));
+            workingHoursBOS.add(impl.get(0).getStatsTotal()+"");
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
+    @Override
+    public DemandHoursRspBO getEmployeeGitlabMonth(String displayName ,String date1, String date2){
+        List<GitlabDataDO> impl = null;
+        GitlabDataDO workingHoursDO = new GitlabDataDO();
+        workingHoursDO.setDisplayName(displayName);
+        List<String> list = getSixMonth(date2);
+        List<String> workingHoursBOS = new LinkedList<>();
+        List<String> SumBos = new LinkedList<>();
+        for (int i = 0; i < list.size(); i++) {
+            workingHoursDO.setCommittedDate(list.get(i));
+            impl = gitlabDataDao.findMonthGitLabSum(workingHoursDO);
+            SumBos.add(list.get(i));
+            workingHoursBOS.add(impl.get(0).getStatsTotal()+"");
+        }
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO.setStringList(workingHoursBOS);
+        demandHoursRspBO.setListSum(SumBos);
+        return demandHoursRspBO;
+    }
 }
 

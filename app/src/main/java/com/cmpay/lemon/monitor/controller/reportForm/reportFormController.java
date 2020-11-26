@@ -1223,4 +1223,28 @@ public class reportFormController {
         BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
     }
+	@RequestMapping("/getCentreGitlabMonth")
+	public GenericRspDTO<DemandHoursRspDTO> getCentreGitlabMonth(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+		DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+		demandHoursRspBO = reqDataCountService.getCentreGitlabMonth(workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+		DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+		BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+		return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+	}
+    @RequestMapping("/getTeamGitlabMonth")
+    public GenericRspDTO<DemandHoursRspDTO> getTeamGitlabMonth(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.getTeamGitlabMonth(workingHoursDTO.getDevpLeadDept(),workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
+    @RequestMapping("/getEmployeeGitlabMonth")
+    public GenericRspDTO<DemandHoursRspDTO> getEmployeeGitlabMonth(@RequestBody WorkingHoursReqDTO workingHoursDTO) {
+        DemandHoursRspBO demandHoursRspBO = new DemandHoursRspBO();
+        demandHoursRspBO = reqDataCountService.getEmployeeGitlabMonth(workingHoursDTO.getDisplayname(),workingHoursDTO.getSelectTime1(), workingHoursDTO.getSelectTime2());
+        DemandHoursRspDTO demandHoursRspDTO = new DemandHoursRspDTO();
+        BeanUtils.copyPropertiesReturnDest(demandHoursRspDTO, demandHoursRspBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandHoursRspDTO);
+    }
 }
