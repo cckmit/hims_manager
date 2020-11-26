@@ -49,8 +49,8 @@ public class GitlabSubmitCodeDateServiceImpl implements GitlabSubmitCodeDateServ
             String privateToken= TOKEN;
             //获取当前日期的前一天
             String date = DateUtil.getBeforeDay();
-            String start = "2020-11-25"+"T00:00:00Z";
-            String end = "2020-11-25"+"T23:59:59Z";
+            String start = date+"T00:00:00Z";
+            String end = date+"T23:59:59Z";
             Date since = ISO8601.toDate(start);
             Date until = ISO8601.toDate(end);
             SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -67,11 +67,21 @@ public class GitlabSubmitCodeDateServiceImpl implements GitlabSubmitCodeDateServ
                 if (projects.get(i).getId() == 302){
                     continue;
                 }
-                List <Branch> branch = gitLabApi.getRepositoryApi().getBranches(projects.get(i).getId());
+                List <Branch> branch ;
+                try{
+                     branch = gitLabApi.getRepositoryApi().getBranches(projects.get(i).getId());
+                }catch (Exception e){
+                    continue;
+                }
                 if(JudgeUtils.isNotEmpty(branch)){
                     for(int j=0;j<branch.size();j++){
                         // 查询指定时间内，该分支是否有提交记录
-                        List<Commit> commits = gitLabApi.getCommitsApi().getCommits(projects.get(i).getId(), branch.get(j).getName(), since, until);
+                        List<Commit> commits ;
+                        try{
+                            commits = gitLabApi.getCommitsApi().getCommits(projects.get(i).getId(), branch.get(j).getName(), since, until);
+                        }catch (Exception e){
+                            continue;
+                        }
                         if(JudgeUtils.isNotEmpty(commits)){
                             //如果分支存在提交记录
                             for(int k =0;k<commits.size();k++){
@@ -79,7 +89,7 @@ public class GitlabSubmitCodeDateServiceImpl implements GitlabSubmitCodeDateServ
                                 // 获取代码提交记录详情
                                 // 判断邮箱后缀，@hisuntech.com为高阳员工
                                 if(commits.get(k).getCommitterEmail().contains("@hisuntech.com")){
-                                    Commit commit =new Commit();
+                                    Commit commit ;
                                     try{
                                          commit = gitLabApi.getCommitsApi().getCommit(projects.get(i).getId(),commits.get(k).getShortId());
                                     }catch (Exception e){
