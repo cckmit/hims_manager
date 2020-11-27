@@ -50,6 +50,61 @@ public class ProblemDTO  extends PageableRspDTO {
      * 页面大小
      */
     private int pageSize;
+    /**
+     * 类型
+     */
+    private String  proType;
+    /**
+     * 投产日期
+     */
+    private String  proDate;
+    /**
+     * 需求名称
+     */
+    private String  proNeed;
+
+    private String isJira;
+    private String reqStartMon;
+
+    public String getProType() {
+        return proType;
+    }
+
+    public void setProType(String proType) {
+        this.proType = proType;
+    }
+
+    public String getProDate() {
+        return proDate;
+    }
+
+    public void setProDate(String proDate) {
+        this.proDate = proDate;
+    }
+
+    public String getProNeed() {
+        return proNeed;
+    }
+
+    public void setProNeed(String proNeed) {
+        this.proNeed = proNeed;
+    }
+
+    public String getIsJira() {
+        return isJira;
+    }
+
+    public void setIsJira(String isJira) {
+        this.isJira = isJira;
+    }
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
 
     public Long getProblemSerialNumber() {
         return problemSerialNumber;
@@ -139,6 +194,11 @@ public class ProblemDTO  extends PageableRspDTO {
                 ", devpLeadDept='" + devpLeadDept + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", proType='" + proType + '\'' +
+                ", proDate='" + proDate + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", isJira='" + isJira + '\'' +
+                ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
     }
 }

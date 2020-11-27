@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 
 public class ProblemReqDTO  extends PageableRspDTO {
+
     /**
      *  problemSerialNumber id
      */
@@ -43,6 +44,14 @@ public class ProblemReqDTO  extends PageableRspDTO {
      */
     private String devpLeadDept;
     /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+    /**
      * 类型
      */
     private String  proType;
@@ -54,32 +63,9 @@ public class ProblemReqDTO  extends PageableRspDTO {
      * 需求名称
      */
     private String  proNeed;
-    /**
-     * 页数
-     */
-    private int pageNum;
-    /**
-     * 页面大小
-     */
-    private int pageSize;
 
     private String isJira;
     private String reqStartMon;
-
-    public String getReqStartMon() {
-        return reqStartMon;
-    }
-
-    public void setReqStartMon(String reqStartMon) {
-        this.reqStartMon = reqStartMon;
-    }
-    public String getIsJira() {
-        return isJira;
-    }
-
-    public void setIsJira(String isJira) {
-        this.isJira = isJira;
-    }
 
     public String getProType() {
         return proType;
@@ -103,6 +89,22 @@ public class ProblemReqDTO  extends PageableRspDTO {
 
     public void setProNeed(String proNeed) {
         this.proNeed = proNeed;
+    }
+
+    public String getIsJira() {
+        return isJira;
+    }
+
+    public void setIsJira(String isJira) {
+        this.isJira = isJira;
+    }
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
     }
 
     public Long getProblemSerialNumber() {
@@ -183,7 +185,7 @@ public class ProblemReqDTO  extends PageableRspDTO {
 
     @Override
     public String toString() {
-        return "ProblemReqDTO{" +
+        return "ProblemDTO{" +
                 "problemSerialNumber=" + problemSerialNumber +
                 ", proNumber='" + proNumber + '\'' +
                 ", problemDetail='" + problemDetail + '\'' +
@@ -191,11 +193,11 @@ public class ProblemReqDTO  extends PageableRspDTO {
                 ", issuekey='" + issuekey + '\'' +
                 ", displayname='" + displayname + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
                 ", proType='" + proType + '\'' +
                 ", proDate='" + proDate + '\'' +
                 ", proNeed='" + proNeed + '\'' +
-                ", pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
                 ", isJira='" + isJira + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
