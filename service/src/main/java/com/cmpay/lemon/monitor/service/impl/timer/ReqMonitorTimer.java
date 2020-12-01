@@ -8,11 +8,9 @@ import com.cmpay.lemon.framework.utils.LemonUtils;
 import com.cmpay.lemon.monitor.bo.DemandBO;
 import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.bo.ProductionVerificationIsNotTimelyBO;
-import com.cmpay.lemon.monitor.dao.IMonthWorkdayDao;
-import com.cmpay.lemon.monitor.dao.IProCheckTimeOutStatisticsExtDao;
-import com.cmpay.lemon.monitor.dao.IProductionVerificationIsNotTimelyExtDao;
-import com.cmpay.lemon.monitor.dao.IUserExtDao;
+import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
@@ -35,6 +33,7 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReqMonitorTimer {
@@ -43,6 +42,8 @@ public class ReqMonitorTimer {
     private ReqTaskService reqTaskService;
     @Autowired
     private ReqPlanService reqPlanService;
+    @Autowired
+    private IOperationProductionDao operationProductionDao;
 
     @Autowired
     private ProductTimeService productTimeService;
@@ -64,6 +65,9 @@ public class ReqMonitorTimer {
     private ReqDataCountService reqDataCountService;
     @Autowired
     private GitlabSubmitCodeDateService gitlabSubmitCodeDateService;
+    @Autowired
+    private IPlanDao planDao;
+
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
 //
@@ -273,6 +277,7 @@ public class ReqMonitorTimer {
         if (LemonUtils.getEnv().equals(Env.DEV)) {
             return;
         }
+        List<String> devpCoorDepts = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         //项目启动日期开始当天计算
         String date = "2020-09-01";
@@ -321,6 +326,7 @@ public class ReqMonitorTimer {
                         }
                     }
                     productionVerificationIsNotTimelyBO.setSumDay(day + "");
+                    devpCoorDepts.add(productionDOList.get(i).getIdentifier());
                     listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
                 }
             }
@@ -341,6 +347,7 @@ public class ReqMonitorTimer {
                     c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
                     long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
                     productionVerificationIsNotTimelyBO.setSumDay(day + "");
+                    devpCoorDepts.add(operationApplicationDOList.get(i).getIdentifier());
                     listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
                 }
             }
@@ -468,17 +475,25 @@ public class ReqMonitorTimer {
             mailInfo.setUsername(Constant.EMAIL_NAME);
             mailInfo.setPassword(Constant.EMAIL_PSWD);
             mailInfo.setFromAddress(Constant.EMAIL_NAME);
-            //收件人 所有部门经理 暂时写死，后续查库
-            String result = "tian_qun@hisuntech.com;tan_wj1@hisuntech.com;duan_chj@hisuntech.com;wan_hao@hisuntech.com;zhang_dy@hisuntech.com;"
-                    +
-                    "li_ys@hisuntech.com;lu_zhou@hisuntech.com;yu_zhou@hisuntech.com;liao_jie@hisuntech.com;zhou_xl@hisuntech.com;liao_yk@hisuntech.com;"
-                    +
-                    "liao_jie@hisuntech.com;huang_yh1@hisuntech.com;yang_chl@hisuntech.com;li_zhen@hisuntech.com;liao_lj@hisuntech.com;li_ms@hisuntech.com;"
-                    + "wang_yw@hisuntech.com;yu_kuan@hisuntech.com;li_fan@hisuntech.com;jiang_qiong@hisuntech.com;peng_cong@hisuntech.com;tu_yi@hisuntech.com";
+            //去重
+            List<String> list=(List) devpCoorDepts.stream().distinct().collect(Collectors.toList());
+//            String [] nameList = new String[list.size()];
+//            nameList = list.toArray(nameList);
+            String nameList ="";
+            for (int i=0;i<list.size();i++){
+                DemandDO demandDO =planDao.searchUserEmail(list.get(i));
+                if(JudgeUtils.isNotNull(demandDO)){
+                    nameList = nameList+demandDO.getMonRemark()+";";
+                }
+            }
+            System.err.println(nameList);
+            // 获取所有部门主管的邮箱
+            MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("9");
+            String result = mp.getMailUser()+nameList;
             String[] mailToAddress = result.split(";");
             mailInfo.setReceivers(mailToAddress);
             //抄送人
-            result = "wang_yw@hisuntech.com";
+            result = "wang_yw@hisuntech.com;xiao_hua@hisuntech.com;wujinyan@hisuntech.com;";
             mailInfo.setCcs(result.split(";"));
             //添加附件
             Vector filesv = new Vector();
