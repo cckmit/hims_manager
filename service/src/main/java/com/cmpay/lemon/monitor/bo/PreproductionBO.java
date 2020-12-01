@@ -4,58 +4,108 @@ import cn.afterturn.easypoi.excel.annotation.Excel;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author: zhou_xiong
  */
 
 public class PreproductionBO {
-    //@Excel(name = "投产编号")
-    private String preNumber;
-    //@Excel(name = "需求名称及内容简述")
-    private String preNeed;
-    //@Excel(name = "投产类型")
-    private String preType;
     private Date preDateStart;
     private Date preDateEnd;
-   // @Excel(name = "计划投产日期")
+    /**
+     * @Fields preNumber 预投产编号
+     */
+    private String preNumber;
+    /**
+     * @Fields preNeed 预投产名称
+     */
+    private String preNeed;
+    /**
+     * @Fields preDate 预计预投产时间
+     */
     private Date preDate;
-    //@Excel(name = "申请部门")
+    /**
+     * @Fields applicationDept 申请部门
+     */
     private String applicationDept;
-    //@Excel(name = "预投产申请人")
+    /**
+     * @Fields preApplicant 预投产申请人
+     */
     private String preApplicant;
-    //@Excel(name = "申请人联系方式")
+    /**
+     * @Fields applicantTel 预投产申请人联系方式
+     */
     private String applicantTel;
-    //@Excel(name = "产品经理")
+    /**
+     * @Fields preManager 产品经理
+     */
     private String preManager;
-    //@Excel(name = "开发负责人")
-    private String developmentLeader;
-    //@Excel(name = "开发负责人邮箱")
-    private String mailLeader;
-    //@Excel(name = "验证人")
-    private String identifier;
-    //@Excel(name = "验证人联系方式")
-    private String identifierTel;
-    //@Excel(name = "验证复核人")
-    private String proChecker;
-    //@Excel(name = "验证复核人联系方式")
-    private String checkerTel;
-    //@Excel(name = "预投产需求状态")
+    /**
+     * @Fields preStatus 预投产状态
+     */
     private String preStatus;
-
-    //@Excel(name = "备注")
-    private String remark;
-    //@Excel(name = "预投产包上传时间")
-    private Date proPkgTime;
-    //@Excel(name = "预投产包名")
-    private String proPkgName;
-    //@Excel(name = "预投产部署结果")
+    /**
+     * @Fields productionDeploymentResult 预投产部署结果
+     */
     private String productionDeploymentResult;
     /**
      * @Fields proAdvanceResult 预投产验证结果
      */
-    //@Excel(name = "预投产验证结果")
     private String proAdvanceResult;
+    /**
+     * @Fields proPkgTime 版本操作投产包上传时间
+     */
+    private LocalDateTime proPkgTime;
+    /**
+     * @Fields proPkgName 版本操作投产包名称
+     */
+    private String proPkgName;
+    /**
+     * @Fields developmentLeader 开发负责人
+     */
+    private String developmentLeader;
+    /**
+     * @Fields mailLeader 开发负责人邮箱
+     */
+    private String mailLeader;
+    /**
+     * @Fields identifier 验证人
+     */
+    private String identifier;
+    /**
+     * @Fields identifierTel 验证人联系方式
+     */
+    private String identifierTel;
+    /**
+     * @Fields proChecker 验证复核人
+     */
+    private String proChecker;
+    /**
+     * @Fields checkerTel 验证复核人联系方式
+     */
+    private String checkerTel;
+    /**
+     * @Fields remark 备注
+     */
+    private String remark;
+    /**
+     * @Fields ddlPkgName ddl操作预投产包
+     */
+    private String ddlPkgName;
+    /**
+     * @Fields ddlPkgTime ddl操作预投产包上传时间
+     */
+    private LocalDateTime ddlPkgTime;
+    /**
+     * @Fields isDbaOperation 是否有DBA操作
+     */
+    private String isDbaOperation;
+    /**
+     * @Fields isDbaOperationComplete DBA操作是否完成
+     */
+    private String isDbaOperationComplete;
     /**
      * 页数
      */
@@ -65,7 +115,20 @@ public class PreproductionBO {
      */
     private int pageSize;
 
-    public PreproductionBO() {
+    public Date getPreDateStart() {
+        return preDateStart;
+    }
+
+    public void setPreDateStart(Date preDateStart) {
+        this.preDateStart = preDateStart;
+    }
+
+    public Date getPreDateEnd() {
+        return preDateEnd;
+    }
+
+    public void setPreDateEnd(Date preDateEnd) {
+        this.preDateEnd = preDateEnd;
     }
 
     public String getPreNumber() {
@@ -82,30 +145,6 @@ public class PreproductionBO {
 
     public void setPreNeed(String preNeed) {
         this.preNeed = preNeed;
-    }
-
-    public String getPreType() {
-        return preType;
-    }
-
-    public void setPreType(String preType) {
-        this.preType = preType;
-    }
-
-    public Date getPreDateStart() {
-        return preDateStart;
-    }
-
-    public void setPreDateStart(Date preDateStart) {
-        this.preDateStart = preDateStart;
-    }
-
-    public Date getPreDateEnd() {
-        return preDateEnd;
-    }
-
-    public void setPreDateEnd(Date preDateEnd) {
-        this.preDateEnd = preDateEnd;
     }
 
     public Date getPreDate() {
@@ -146,6 +185,46 @@ public class PreproductionBO {
 
     public void setPreManager(String preManager) {
         this.preManager = preManager;
+    }
+
+    public String getPreStatus() {
+        return preStatus;
+    }
+
+    public void setPreStatus(String preStatus) {
+        this.preStatus = preStatus;
+    }
+
+    public String getProductionDeploymentResult() {
+        return productionDeploymentResult;
+    }
+
+    public void setProductionDeploymentResult(String productionDeploymentResult) {
+        this.productionDeploymentResult = productionDeploymentResult;
+    }
+
+    public String getProAdvanceResult() {
+        return proAdvanceResult;
+    }
+
+    public void setProAdvanceResult(String proAdvanceResult) {
+        this.proAdvanceResult = proAdvanceResult;
+    }
+
+    public LocalDateTime getProPkgTime() {
+        return proPkgTime;
+    }
+
+    public void setProPkgTime(LocalDateTime proPkgTime) {
+        this.proPkgTime = proPkgTime;
+    }
+
+    public String getProPkgName() {
+        return proPkgName;
+    }
+
+    public void setProPkgName(String proPkgName) {
+        this.proPkgName = proPkgName;
     }
 
     public String getDevelopmentLeader() {
@@ -196,14 +275,6 @@ public class PreproductionBO {
         this.checkerTel = checkerTel;
     }
 
-    public String getPreStatus() {
-        return preStatus;
-    }
-
-    public void setPreStatus(String preStatus) {
-        this.preStatus = preStatus;
-    }
-
     public String getRemark() {
         return remark;
     }
@@ -212,36 +283,36 @@ public class PreproductionBO {
         this.remark = remark;
     }
 
-    public Date getProPkgTime() {
-        return proPkgTime;
+    public String getDdlPkgName() {
+        return ddlPkgName;
     }
 
-    public void setProPkgTime(Date proPkgTime) {
-        this.proPkgTime = proPkgTime;
+    public void setDdlPkgName(String ddlPkgName) {
+        this.ddlPkgName = ddlPkgName;
     }
 
-    public String getProPkgName() {
-        return proPkgName;
+    public LocalDateTime getDdlPkgTime() {
+        return ddlPkgTime;
     }
 
-    public void setProPkgName(String proPkgName) {
-        this.proPkgName = proPkgName;
+    public void setDdlPkgTime(LocalDateTime ddlPkgTime) {
+        this.ddlPkgTime = ddlPkgTime;
     }
 
-    public String getProductionDeploymentResult() {
-        return productionDeploymentResult;
+    public String getIsDbaOperation() {
+        return isDbaOperation;
     }
 
-    public void setProductionDeploymentResult(String productionDeploymentResult) {
-        this.productionDeploymentResult = productionDeploymentResult;
+    public void setIsDbaOperation(String isDbaOperation) {
+        this.isDbaOperation = isDbaOperation;
     }
 
-    public String getProAdvanceResult() {
-        return proAdvanceResult;
+    public String getIsDbaOperationComplete() {
+        return isDbaOperationComplete;
     }
 
-    public void setProAdvanceResult(String proAdvanceResult) {
-        this.proAdvanceResult = proAdvanceResult;
+    public void setIsDbaOperationComplete(String isDbaOperationComplete) {
+        this.isDbaOperationComplete = isDbaOperationComplete;
     }
 
     public int getPageNum() {
@@ -263,28 +334,31 @@ public class PreproductionBO {
     @Override
     public String toString() {
         return "PreproductionBO{" +
-                "preNumber='" + preNumber + '\'' +
-                ", preNeed='" + preNeed + '\'' +
-                ", preType='" + preType + '\'' +
-                ", preDateStart=" + preDateStart +
+                "preDateStart=" + preDateStart +
                 ", preDateEnd=" + preDateEnd +
+                ", preNumber='" + preNumber + '\'' +
+                ", preNeed='" + preNeed + '\'' +
                 ", preDate=" + preDate +
                 ", applicationDept='" + applicationDept + '\'' +
                 ", preApplicant='" + preApplicant + '\'' +
                 ", applicantTel='" + applicantTel + '\'' +
                 ", preManager='" + preManager + '\'' +
+                ", preStatus='" + preStatus + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", proPkgTime=" + proPkgTime +
+                ", proPkgName='" + proPkgName + '\'' +
                 ", developmentLeader='" + developmentLeader + '\'' +
                 ", mailLeader='" + mailLeader + '\'' +
                 ", identifier='" + identifier + '\'' +
                 ", identifierTel='" + identifierTel + '\'' +
                 ", proChecker='" + proChecker + '\'' +
                 ", checkerTel='" + checkerTel + '\'' +
-                ", preStatus='" + preStatus + '\'' +
                 ", remark='" + remark + '\'' +
-                ", proPkgTime=" + proPkgTime +
-                ", proPkgName='" + proPkgName + '\'' +
-                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
-                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", ddlPkgName='" + ddlPkgName + '\'' +
+                ", ddlPkgTime=" + ddlPkgTime +
+                ", isDbaOperation='" + isDbaOperation + '\'' +
+                ", isDbaOperationComplete='" + isDbaOperationComplete + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

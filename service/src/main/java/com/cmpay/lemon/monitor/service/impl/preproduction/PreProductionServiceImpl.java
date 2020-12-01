@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -490,7 +491,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        bean.setProPkgTime(new Date(new java.util.Date().getTime()));
+        bean.setProPkgTime(LocalDateTime.now());
         bean.setProPkgName(file.getOriginalFilename());
         iPreproductionExtDao.updatePropkg(bean);
     }
@@ -567,7 +568,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        bean.setProPkgTime(new Date(new java.util.Date().getTime()));
+        bean.setProPkgTime(LocalDateTime.now());
         bean.setProPkgName(file.getOriginalFilename());
         iPreproductionExtDao.updatePropkg(bean);
     }

@@ -8,75 +8,75 @@ import java.sql.Timestamp;
 
 
 public class ProductionInputReqDTO {
-        private String crMore;
-        private Boolean attachment;
-        private String proNumber;
-        private String proNeed;
-        private String proType;
-        private Date proDateStart;
-        private Date proDateEnd;
-        private Date proDate;
-        private String applicationDept;
-        private String proApplicant;
-        private String applicantTel;
-        private String proModule;
-        private String businessPrincipal;
-        private String basePrincipal;
-        private String proManager;
-        private String proStatus;
-        private String isUpDatabase;
-        private String isUpStructure;
-        private String proOperation;
-        private String isRefCerificate;
-        private String isAdvanceProduction;
-        private String notAdvanceReason;
-        private String proAdvanceResult;
-        private String notProductionImpact;
-        private String identifier;
-        private String identifierTel;
-        private String proChecker;
-        private String checkerTel;
-        private String validation;
-        private String developmentLeader;
-        private String approver;
-        private String updateOperator;
-        private String remark;
-        private String unusualReasonPhrase;
-        private String urgentReasonPhrase;
-        private String productionDeploymentResult;
-        private String isOperationProduction;
-        private String mailLeader;//开发负责人邮箱
-        private String svntabName;//SVN表名称
-        /*
-         * 紧急更新
-         */
-        private String completionUpdate ;
-        private String earlyImplementation;
-        private String influenceUse ;
-        private String influenceUseReason;
-        private String influenceUseInf;
-        private String operatingTime;
-        /*
-         * 审核邮件
-         */
-        private String mailRecipient;
-        private String mailCopyPerson;
-        /*
-         * 部门关系
-         */
-        private String deptName;
-        private String deptManagerName;
-        private String developmentDept;
-        /**
-         * 投产包
-         */
-        private String proPkgStatus;
-        private Timestamp proPkgTime;
-        private String proPkgName;
-        /**
-         * 是否有回退方案
-         */
-        private String isFallback;
+    private String crMore;
+    private Boolean attachment;
+    private String proNumber;
+    private String proNeed;
+    private String proType;
+    private Date proDateStart;
+    private Date proDateEnd;
+    private Date proDate;
+    private String applicationDept;
+    private String proApplicant;
+    private String applicantTel;
+    private String proModule;
+    private String businessPrincipal;
+    private String basePrincipal;
+    private String proManager;
+    private String proStatus;
+    private String isUpDatabase;
+    private String isUpStructure;
+    private String proOperation;
+    private String isRefCerificate;
+    private String isAdvanceProduction;
+    private String notAdvanceReason;
+    private String proAdvanceResult;
+    private String notProductionImpact;
+    private String identifier;
+    private String identifierTel;
+    private String proChecker;
+    private String checkerTel;
+    private String validation;
+    private String developmentLeader;
+    private String approver;
+    private String updateOperator;
+    private String remark;
+    private String unusualReasonPhrase;
+    private String urgentReasonPhrase;
+    private String productionDeploymentResult;
+    private String isOperationProduction;
+    private String mailLeader;//开发负责人邮箱
+    private String svntabName;//SVN表名称
+    /*
+     * 紧急更新
+     */
+    private String completionUpdate ;
+    private String earlyImplementation;
+    private String influenceUse ;
+    private String influenceUseReason;
+    private String influenceUseInf;
+    private String operatingTime;
+    /*
+     * 审核邮件
+     */
+    private String mailRecipient;
+    private String mailCopyPerson;
+    /*
+     * 部门关系
+     */
+    private String deptName;
+    private String deptManagerName;
+    private String developmentDept;
+    /**
+     * 投产包
+     */
+    private String proPkgStatus;
+    private Timestamp proPkgTime;
+    private String proPkgName;
+    /**
+     * 是否有回退方案
+     */
+    private String isFallback;
     /**
      * 是否是考核问题
      */
@@ -85,6 +85,30 @@ public class ProductionInputReqDTO {
      * 考核问题备注
      */
     private String accessRemark;
+    /**
+     *验证方案
+     */
+    private String proofScheme;
+    /**
+     * 回退/应急方案
+     */
+    private String crashProgramme;
+
+    public String getProofScheme() {
+        return proofScheme;
+    }
+
+    public void setProofScheme(String proofScheme) {
+        this.proofScheme = proofScheme;
+    }
+
+    public String getCrashProgramme() {
+        return crashProgramme;
+    }
+
+    public void setCrashProgramme(String crashProgramme) {
+        this.crashProgramme = crashProgramme;
+    }
 
     public String getIsAccessQuestion() {
         return isAccessQuestion;

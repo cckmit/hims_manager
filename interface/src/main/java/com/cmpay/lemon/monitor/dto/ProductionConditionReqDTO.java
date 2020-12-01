@@ -69,6 +69,14 @@ public class ProductionConditionReqDTO extends PageableRspDTO {
 
     private String proPkgStatus;
     /**
+     *验证方案
+     */
+    private String proofScheme;
+    /**
+     * 回退/应急方案
+     */
+    private String crashProgramme;
+    /**
      * 页数
      */
     private int pageNum;
@@ -76,6 +84,22 @@ public class ProductionConditionReqDTO extends PageableRspDTO {
      * 页面大小
      */
     private int pageSize;
+
+    public String getProofScheme() {
+        return proofScheme;
+    }
+
+    public void setProofScheme(String proofScheme) {
+        this.proofScheme = proofScheme;
+    }
+
+    public String getCrashProgramme() {
+        return crashProgramme;
+    }
+
+    public void setCrashProgramme(String crashProgramme) {
+        this.crashProgramme = crashProgramme;
+    }
 
     @Override
     public int getPageNum() {
@@ -489,4 +513,62 @@ public class ProductionConditionReqDTO extends PageableRspDTO {
         this.proPkgStatus = proPkgStatus;
     }
 
+    @Override
+    public String toString() {
+        return "ProductionConditionReqDTO{" +
+                "proNumber='" + proNumber + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", proType='" + proType + '\'' +
+                ", proDate=" + proDate +
+                ", proDateStart=" + proDateStart +
+                ", proDateEnd=" + proDateEnd +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", proApplicant='" + proApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", proModule='" + proModule + '\'' +
+                ", businessPrincipal='" + businessPrincipal + '\'' +
+                ", basePrincipal='" + basePrincipal + '\'' +
+                ", proManager='" + proManager + '\'' +
+                ", proStatus='" + proStatus + '\'' +
+                ", isUpDatabase='" + isUpDatabase + '\'' +
+                ", isUpStructure='" + isUpStructure + '\'' +
+                ", proOperation='" + proOperation + '\'' +
+                ", isRefCerificate='" + isRefCerificate + '\'' +
+                ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
+                ", notAdvanceReason='" + notAdvanceReason + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", notProductionImpact='" + notProductionImpact + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", proChecker='" + proChecker + '\'' +
+                ", checkerTel='" + checkerTel + '\'' +
+                ", validation='" + validation + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", approver='" + approver + '\'' +
+                ", updateOperator='" + updateOperator + '\'' +
+                ", remark='" + remark + '\'' +
+                ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
+                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
+                ", isOperationProduction='" + isOperationProduction + '\'' +
+                ", completionUpdate='" + completionUpdate + '\'' +
+                ", earlyImplementation='" + earlyImplementation + '\'' +
+                ", influenceUse='" + influenceUse + '\'' +
+                ", influenceUseReason='" + influenceUseReason + '\'' +
+                ", influenceUseInf='" + influenceUseInf + '\'' +
+                ", operatingTime='" + operatingTime + '\'' +
+                ", proOperator='" + proOperator + '\'' +
+                ", operationType='" + operationType + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", deptName='" + deptName + '\'' +
+                ", deptManagerName='" + deptManagerName + '\'' +
+                ", developmentDept='" + developmentDept + '\'' +
+                ", proPkgStatus='" + proPkgStatus + '\'' +
+                ", proofScheme='" + proofScheme + '\'' +
+                ", crashProgramme='" + crashProgramme + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
 }

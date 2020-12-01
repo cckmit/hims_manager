@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="t_gitlab_submit_code_data" domainObjectName="GitlabDataDO" enableCountByExample="false"
+        <table tableName="t_preproduction_records" domainObjectName="PreproductionDO" enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

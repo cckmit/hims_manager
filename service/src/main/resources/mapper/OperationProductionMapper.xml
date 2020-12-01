@@ -55,6 +55,8 @@
         <result property="svntabName" jdbcType="VARCHAR" column="svntab_name" />
         <result property="isAccessQuestion" jdbcType="VARCHAR" column="is_access_question" />
         <result property="accessRemark" jdbcType="VARCHAR" column="access_remark" />
+        <result property="proofScheme" jdbcType="VARCHAR" column="proof_scheme" />
+        <result property="crashProgramme" jdbcType="VARCHAR" column="crash_programme" />
     </resultMap>
 
     <!--<resultMap id="pm" type="com.hisun.persistence.beans.ProductionBean">-->
@@ -179,7 +181,7 @@
        pro_advance_result ,not_production_impact,identifier,identifier_tel ,pro_checker,checker_tel ,validation,development_leader,approver,update_operator, remark ,
 	   unusual_reason_phrase,urgent_reason_phrase ,completion_update,early_implementation,influence_use,
 	   influence_use_reason,influence_use_inf,operating_time,production_deployment_result,is_operation_production,mail_recipient,mail_copy_person,
-	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name,is_access_question,access_remark
+	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name,is_access_question,access_remark,proof_scheme,crash_programme
     </sql>
 
 
@@ -361,7 +363,13 @@
         #{mailCopyPerson},
         '待上传',
         NULL,
-        NULL,#{mailLeader},#{svntabName},#{isAccessQuestion},#{accessRemark}
+        NULL,
+        #{mailLeader},
+        #{svntabName},
+        #{isAccessQuestion},
+        #{accessRemark},
+        #{proofScheme},
+        #{crashProgramme}
         )
     </insert>
 
@@ -868,6 +876,12 @@
         </if>
         <if test="accessRemark != null and accessRemark != ''">
             access_remark = #{accessRemark},
+        </if>
+        <if test="proofScheme != null and proofScheme != ''">
+            proof_scheme = #{proofScheme},
+        </if>
+        <if test="crashProgramme != null and crashProgramme != ''">
+            crash_programme = #{crashProgramme},
         </if>
         <if test="proStatus != null and proStatus != ''">
             pro_status = #{proStatus}

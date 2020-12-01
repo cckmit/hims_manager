@@ -1228,27 +1228,25 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         MailFlowDO bn = new MailFlowDO("投产清单通报", Constant.P_EMAIL_NAME, mp.getMailUser() + ";" + sbfStr, "", "");
         //组织发送内容
         StringBuffer sb = new StringBuffer();
-        sb.append("<table border ='1' style='width:3000px;border-collapse: collapse;background-color: white;'>");
+        sb.append("<table border ='1' style='width:3100px;border-collapse: collapse;background-color: white;'>");
         sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th>");
         sb.append("<th>申请部门</th><th>投产申请人</th><th>申请人联系方式</th><th>产品所属模块</th><th>业务需求提出人</th>");
         sb.append("<th>基地负责人</th><th>产品经理</th><th>投产状态</th><th>是否更新数据库数据</th><th>是否更新数据库(表)结构</th>");
         sb.append("<th>投产后是否需要运维监控</th><th>是否涉及证书</th><th>是否预投产验证</th><th>不能预投产验证原因</th><th>预投产验证结果</th>");
         sb.append("<th>验证人</th><th>验证人联系方式</th><th>验证复核人</th><th>验证复核人联系方式</th><th>生产验证方式</th>");
-        sb.append("<th>开发负责人</th><th>审批人</th><th>版本更新操作人</th><th>备注 (影响范围,其它补充说明)</th></tr>");
+        sb.append("<th>开发负责人</th><th>审批人</th><th>版本更新操作人</th>");
+        sb.append("<th>影响范围</th><th>验证方案</th><th>回退/应急方案</th></tr>");
         for (int i = 2; i < pro_number_list.length; i++) {
 
             ProductionDO bean = operationProductionDao.findExportExcelList(pro_number_list[i]);
-            String proNumber = bean.getProNumber();
-            if (bean.getProNumber().startsWith("REQ")) {
-                proNumber = bean.getProNumber().substring(4, bean.getProNumber().length()).toString();
-            }
-            sb.append("<tr><td>" + proNumber + "</td>");//投产编号
+            sb.append("<tr><td>" + bean.getProNumber() + "</td>");//投产编号
             sb.append("<td >" + bean.getProNeed() + "</td>");//需求名称及内容简述
             sb.append("<td style='white-space: nowrap;'>" + bean.getProType() + "</td>");//投产类型
             // 日期转换
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            if (bean.getProDate() != null)
+            if (bean.getProDate() != null){
                 sb.append("<td style='white-space: nowrap;'>" + sdf.format(bean.getProDate()) + "</td>");//计划投产日期
+            }
             sb.append("<td style='white-space: nowrap;'>" + bean.getApplicationDept() + "</td>");//申请部门
             sb.append("<td style='white-space: nowrap;'>" + bean.getProApplicant() + "</td>");//投产申请人
             sb.append("<td style='white-space: nowrap;'>" + bean.getApplicantTel() + "</td>");//申请人联系方式
@@ -1280,7 +1278,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             sb.append("<td style='white-space: nowrap;'>" + bean.getDevelopmentLeader() + "</td>");//开发负责人
             sb.append("<td style='white-space: nowrap;'>" + bean.getApprover() + "</td>");//审批人
             sb.append("<td style='white-space: nowrap;'>" + bean.getUpdateOperator() + "</td>");
-            sb.append("<td style='width:100px;'>" + bean.getRemark() + "</td></tr>");//备注(更新原因及影响范围详细说明)
+            sb.append("<td style='white-space: nowrap;'>" + bean.getRemark() + "</td>");//备注(更新原因及影响范围详细说明)
+            sb.append("<td style='white-space: nowrap;'>" + bean.getProofScheme() + "</td>");//验证方案
+            sb.append("<td style='white-space: nowrap;'>" + bean.getCrashProgramme() + "</td></tr>");//回退/应急方案
         }
         sb.append("</table>");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -1991,10 +1991,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
         if (bean.getRemark() == null || bean.getRemark().equals("") || bean.getRemark().equals("undefined")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 备注不能为空");
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 影响范围不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-
+        if (bean.getProofScheme() == null || bean.getProofScheme().equals("") || bean.getProofScheme().equals("undefined")) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证方案不能为空");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
+        if (bean.getCrashProgramme() == null || bean.getCrashProgramme().equals("") || bean.getCrashProgramme().equals("undefined")) {
+            MsgEnum.ERROR_IMPORT.setMsgInfo(" 回退/应急方案不能为空");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+        }
         if (bean.getMailLeader() == null || bean.getMailLeader().equals("") || bean.getMailLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
@@ -2434,7 +2441,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
 
-        bean.setProPkgTime(new Timestamp(new Date().getTime())); //待修复BUG
+        bean.setProPkgTime(new Timestamp(System.currentTimeMillis())); //待修复BUG
         bean.setProPkgName(file.getOriginalFilename());
         StringBuffer command = new StringBuffer();
         command.append("cd ~/tomcat/webapps/hims/hckeck/\n");

@@ -284,10 +284,10 @@ public class ReqMonitorTimer {
         //获得投产验证不及时清单
         List<ProductionDO> productionDOList = operationProductionService.getProductionVerificationIsNotTimely(date);
         //获得系统录入验证不及时清单
-        List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList(date);
+        //List<OperationApplicationDO> operationApplicationDOList = operationProductionService.getSystemEntryVerificationIsNotTimelyList(date);
 
         List<ProductionVerificationIsNotTimelyBO> listOfUntimelyStatusChangesBos = new LinkedList<>();
-        if (JudgeUtils.isEmpty(productionDOList) && JudgeUtils.isEmpty(operationApplicationDOList)) {
+        if (JudgeUtils.isEmpty(productionDOList)) {
             return ;
         }
         try {
@@ -330,27 +330,27 @@ public class ReqMonitorTimer {
                     listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
                 }
             }
-            if (operationApplicationDOList != null && operationApplicationDOList.size() != 0) {
-                for (int i = 0; i < operationApplicationDOList.size(); i++) {
-                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
-                    productionVerificationIsNotTimelyBO.setProNumber(operationApplicationDOList.get(i).getOperNumber());
-                    productionVerificationIsNotTimelyBO.setProNeed(operationApplicationDOList.get(i).getOperRequestContent());
-                    productionVerificationIsNotTimelyBO.setProType(operationApplicationDOList.get(i).getSysOperType());
-                    productionVerificationIsNotTimelyBO.setValidation("");
-                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(operationApplicationDOList.get(i).getProposeDate()));
-                    productionVerificationIsNotTimelyBO.setIdentifier(operationApplicationDOList.get(i).getIdentifier());
-                    productionVerificationIsNotTimelyBO.setDepartment(operationApplicationDOList.get(i).getApplicationSector());
-                    productionVerificationIsNotTimelyBO.setProStatus(operationApplicationDOList.get(i).getOperStatus());
-                    Calendar c1 = Calendar.getInstance();
-                    Calendar c2 = Calendar.getInstance();
-                    c1.setTime(sdf.parse(sdf.format(new Date())));
-                    c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
-                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
-                    productionVerificationIsNotTimelyBO.setSumDay(day + "");
-                    devpCoorDepts.add(operationApplicationDOList.get(i).getIdentifier());
-                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
-                }
-            }
+//            if (operationApplicationDOList != null && operationApplicationDOList.size() != 0) {
+//                for (int i = 0; i < operationApplicationDOList.size(); i++) {
+//                    ProductionVerificationIsNotTimelyBO productionVerificationIsNotTimelyBO = new ProductionVerificationIsNotTimelyBO();
+//                    productionVerificationIsNotTimelyBO.setProNumber(operationApplicationDOList.get(i).getOperNumber());
+//                    productionVerificationIsNotTimelyBO.setProNeed(operationApplicationDOList.get(i).getOperRequestContent());
+//                    productionVerificationIsNotTimelyBO.setProType(operationApplicationDOList.get(i).getSysOperType());
+//                    productionVerificationIsNotTimelyBO.setValidation("");
+//                    productionVerificationIsNotTimelyBO.setProDate(sdf.format(operationApplicationDOList.get(i).getProposeDate()));
+//                    productionVerificationIsNotTimelyBO.setIdentifier(operationApplicationDOList.get(i).getIdentifier());
+//                    productionVerificationIsNotTimelyBO.setDepartment(operationApplicationDOList.get(i).getApplicationSector());
+//                    productionVerificationIsNotTimelyBO.setProStatus(operationApplicationDOList.get(i).getOperStatus());
+//                    Calendar c1 = Calendar.getInstance();
+//                    Calendar c2 = Calendar.getInstance();
+//                    c1.setTime(sdf.parse(sdf.format(new Date())));
+//                    c2.setTime(sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())));
+//                    long day = (sdf.parse(sdf.format(new Date())).getTime() - sdf.parse(sdf.format(operationApplicationDOList.get(i).getProposeDate())).getTime()) / (24 * 60 * 60 * 1000);
+//                    productionVerificationIsNotTimelyBO.setSumDay(day + "");
+//                    devpCoorDepts.add(operationApplicationDOList.get(i).getIdentifier());
+//                    listOfUntimelyStatusChangesBos.add(productionVerificationIsNotTimelyBO);
+//                }
+//            }
         } catch (ParseException e) {
         }
 
@@ -409,29 +409,29 @@ public class ReqMonitorTimer {
             body = body + mapKey + ":" + mapValue + "条" + "\n";
         }
         body = body + "\n";
-        if (!operationApplicationDOList.isEmpty()) {
-            operationApplicationDOList.forEach(m -> {
-                String applicationDept = m.getApplicationSector();
-                boolean exist = map.containsKey(applicationDept);
-                if (exist) {
-                    map.put(applicationDept, map.get(applicationDept) + 1);
-                } else {
-                    map.put(applicationDept, 1);
-                }
-            });
-            body = body + "操作录入不及时验证清单汇总" + "\n";
-            for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                String mapKey = entry.getKey();
-                Integer mapValue = entry.getValue();
-                body = body + mapKey + ":" + mapValue + "条" + "\n";
-            }
-        }
+//        if (!operationApplicationDOList.isEmpty()) {
+//            operationApplicationDOList.forEach(m -> {
+//                String applicationDept = m.getApplicationSector();
+//                boolean exist = map.containsKey(applicationDept);
+//                if (exist) {
+//                    map.put(applicationDept, map.get(applicationDept) + 1);
+//                } else {
+//                    map.put(applicationDept, 1);
+//                }
+//            });
+//            body = body + "操作录入不及时验证清单汇总" + "\n";
+//            for (Map.Entry<String, Integer> entry : map.entrySet()) {
+//                String mapKey = entry.getKey();
+//                Integer mapValue = entry.getValue();
+//                body = body + mapKey + ":" + mapValue + "条" + "\n";
+//            }
+//        }
         body = body + "详情如下";
         SendExcelProductionVerificationIsNotTimely sendExcelProductionVerificationIsNotTimely = new SendExcelProductionVerificationIsNotTimely();
         File file = null;
         try {
             String excel = "\\Unverified_List_" + DateUtil.date2String(new Date(), "yyyyMMdd") + ".xls";
-            sendExcelProductionVerificationIsNotTimely.createExcel(excel, listOfUntimelyStatusChangesBos, null, operationApplicationDOList);
+            sendExcelProductionVerificationIsNotTimely.createExcel(excel, listOfUntimelyStatusChangesBos, null, null);
             file = new File(excel);
 
         } catch (Exception e) {
@@ -466,7 +466,7 @@ public class ReqMonitorTimer {
         }
 
         //如果有内容则调用企业微信应用和邮件发送推送
-        if (!productionDOList.isEmpty() || !operationApplicationDOList.isEmpty()) {
+        if (!productionDOList.isEmpty()) {
             //邮件信息推送
             MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
             mailInfo.setMailServerHost("smtp.qiye.163.com");

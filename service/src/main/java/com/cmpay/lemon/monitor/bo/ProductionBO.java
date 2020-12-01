@@ -86,6 +86,14 @@ public class ProductionBO {
      * 考核问题备注
      */
     private String accessRemark;
+    /**
+     *验证方案
+     */
+    private String proofScheme;
+    /**
+     * 回退/应急方案
+     */
+    private String crashProgramme;
 
     /**
      * 页数
@@ -97,6 +105,22 @@ public class ProductionBO {
     private int pageSize;
 
     public ProductionBO() {
+    }
+
+    public String getProofScheme() {
+        return proofScheme;
+    }
+
+    public void setProofScheme(String proofScheme) {
+        this.proofScheme = proofScheme;
+    }
+
+    public String getCrashProgramme() {
+        return crashProgramme;
+    }
+
+    public void setCrashProgramme(String crashProgramme) {
+        this.crashProgramme = crashProgramme;
     }
 
     public String getIsAccessQuestion() {
@@ -113,70 +137,6 @@ public class ProductionBO {
 
     public void setAccessRemark(String accessRemark) {
         this.accessRemark = accessRemark;
-    }
-
-    @Override
-    public String toString() {
-        return "ProductionBO{" +
-                "crMore='" + crMore + '\'' +
-                ", proNumber='" + proNumber + '\'' +
-                ", proNeed='" + proNeed + '\'' +
-                ", proType='" + proType + '\'' +
-                ", proDateStart=" + proDateStart +
-                ", proDateEnd=" + proDateEnd +
-                ", proDate=" + proDate +
-                ", applicationDept='" + applicationDept + '\'' +
-                ", proApplicant='" + proApplicant + '\'' +
-                ", applicantTel='" + applicantTel + '\'' +
-                ", proModule='" + proModule + '\'' +
-                ", businessPrincipal='" + businessPrincipal + '\'' +
-                ", basePrincipal='" + basePrincipal + '\'' +
-                ", proManager='" + proManager + '\'' +
-                ", proStatus='" + proStatus + '\'' +
-                ", isUpDatabase='" + isUpDatabase + '\'' +
-                ", isUpStructure='" + isUpStructure + '\'' +
-                ", proOperation='" + proOperation + '\'' +
-                ", isRefCerificate='" + isRefCerificate + '\'' +
-                ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
-                ", notAdvanceReason='" + notAdvanceReason + '\'' +
-                ", proAdvanceResult='" + proAdvanceResult + '\'' +
-                ", notProductionImpact='" + notProductionImpact + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", identifierTel='" + identifierTel + '\'' +
-                ", proChecker='" + proChecker + '\'' +
-                ", checkerTel='" + checkerTel + '\'' +
-                ", validation='" + validation + '\'' +
-                ", developmentLeader='" + developmentLeader + '\'' +
-                ", approver='" + approver + '\'' +
-                ", updateOperator='" + updateOperator + '\'' +
-                ", remark='" + remark + '\'' +
-                ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
-                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
-                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
-                ", isOperationProduction='" + isOperationProduction + '\'' +
-                ", mailLeader='" + mailLeader + '\'' +
-                ", svntabName='" + svntabName + '\'' +
-                ", completionUpdate='" + completionUpdate + '\'' +
-                ", earlyImplementation='" + earlyImplementation + '\'' +
-                ", influenceUse='" + influenceUse + '\'' +
-                ", influenceUseReason='" + influenceUseReason + '\'' +
-                ", influenceUseInf='" + influenceUseInf + '\'' +
-                ", operatingTime='" + operatingTime + '\'' +
-                ", mailRecipient='" + mailRecipient + '\'' +
-                ", mailCopyPerson='" + mailCopyPerson + '\'' +
-                ", deptName='" + deptName + '\'' +
-                ", deptManagerName='" + deptManagerName + '\'' +
-                ", developmentDept='" + developmentDept + '\'' +
-                ", proPkgStatus='" + proPkgStatus + '\'' +
-                ", proPkgTime=" + proPkgTime +
-                ", proPkgName='" + proPkgName + '\'' +
-                ", dayNumber='" + dayNumber + '\'' +
-                ", isFallback='" + isFallback + '\'' +
-                ", isAccessQuestion='" + isAccessQuestion + '\'' +
-                ", accessRemark='" + accessRemark + '\'' +
-                ", pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                '}';
     }
 
     public String getDayNumber() {
@@ -625,5 +585,71 @@ public class ProductionBO {
 
     public void setCrMore(String crMore) {
         this.crMore = crMore;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductionBO{" +
+                "crMore='" + crMore + '\'' +
+                ", proNumber='" + proNumber + '\'' +
+                ", proNeed='" + proNeed + '\'' +
+                ", proType='" + proType + '\'' +
+                ", proDateStart=" + proDateStart +
+                ", proDateEnd=" + proDateEnd +
+                ", proDate=" + proDate +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", proApplicant='" + proApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", proModule='" + proModule + '\'' +
+                ", businessPrincipal='" + businessPrincipal + '\'' +
+                ", basePrincipal='" + basePrincipal + '\'' +
+                ", proManager='" + proManager + '\'' +
+                ", proStatus='" + proStatus + '\'' +
+                ", isUpDatabase='" + isUpDatabase + '\'' +
+                ", isUpStructure='" + isUpStructure + '\'' +
+                ", proOperation='" + proOperation + '\'' +
+                ", isRefCerificate='" + isRefCerificate + '\'' +
+                ", isAdvanceProduction='" + isAdvanceProduction + '\'' +
+                ", notAdvanceReason='" + notAdvanceReason + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", notProductionImpact='" + notProductionImpact + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", proChecker='" + proChecker + '\'' +
+                ", checkerTel='" + checkerTel + '\'' +
+                ", validation='" + validation + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", approver='" + approver + '\'' +
+                ", updateOperator='" + updateOperator + '\'' +
+                ", remark='" + remark + '\'' +
+                ", unusualReasonPhrase='" + unusualReasonPhrase + '\'' +
+                ", urgentReasonPhrase='" + urgentReasonPhrase + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
+                ", isOperationProduction='" + isOperationProduction + '\'' +
+                ", mailLeader='" + mailLeader + '\'' +
+                ", svntabName='" + svntabName + '\'' +
+                ", completionUpdate='" + completionUpdate + '\'' +
+                ", earlyImplementation='" + earlyImplementation + '\'' +
+                ", influenceUse='" + influenceUse + '\'' +
+                ", influenceUseReason='" + influenceUseReason + '\'' +
+                ", influenceUseInf='" + influenceUseInf + '\'' +
+                ", operatingTime='" + operatingTime + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", deptName='" + deptName + '\'' +
+                ", deptManagerName='" + deptManagerName + '\'' +
+                ", developmentDept='" + developmentDept + '\'' +
+                ", proPkgStatus='" + proPkgStatus + '\'' +
+                ", proPkgTime=" + proPkgTime +
+                ", proPkgName='" + proPkgName + '\'' +
+                ", dayNumber='" + dayNumber + '\'' +
+                ", isFallback='" + isFallback + '\'' +
+                ", isAccessQuestion='" + isAccessQuestion + '\'' +
+                ", accessRemark='" + accessRemark + '\'' +
+                ", proofScheme='" + proofScheme + '\'' +
+                ", crashProgramme='" + crashProgramme + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

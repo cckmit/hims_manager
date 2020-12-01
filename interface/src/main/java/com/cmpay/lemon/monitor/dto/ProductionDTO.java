@@ -85,6 +85,30 @@ public class ProductionDTO extends GenericDTO {
      * 页面大小
      */
     private int pageSize;
+    /**
+     *验证方案
+     */
+    private String proofScheme;
+    /**
+     * 回退/应急方案
+     */
+    private String crashProgramme;
+
+    public String getProofScheme() {
+        return proofScheme;
+    }
+
+    public void setProofScheme(String proofScheme) {
+        this.proofScheme = proofScheme;
+    }
+
+    public String getCrashProgramme() {
+        return crashProgramme;
+    }
+
+    public void setCrashProgramme(String crashProgramme) {
+        this.crashProgramme = crashProgramme;
+    }
 
     @Override
     public String toString() {
@@ -140,9 +164,12 @@ public class ProductionDTO extends GenericDTO {
                 ", proPkgStatus='" + proPkgStatus + '\'' +
                 ", proPkgTime=" + proPkgTime +
                 ", proPkgName='" + proPkgName + '\'' +
+                ", dayNumber='" + dayNumber + '\'' +
                 ", isFallback='" + isFallback + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
+                ", proofScheme='" + proofScheme + '\'' +
+                ", crashProgramme='" + crashProgramme + '\'' +
                 '}';
     }
 

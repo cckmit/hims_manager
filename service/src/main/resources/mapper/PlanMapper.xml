@@ -543,6 +543,15 @@
 		AND req_inner_seq = #{req_inner_seq}
 	</select>
 
+    <select id="searchUserLEmail" resultMap="BaseResultMap">
+		SELECT group_concat(a.email separator';')  as mon_remark
+		FROM  t_permi_user a
+		WHERE  a.user_name in (
+        <foreach item="devpCoorDept" index="index" collection="devpCoorDepts" separator=",">
+            #{devpCoorDept} </foreach>
+        )
+	</select>
+
     <!-- 根据条件查询部门主管邮箱 -->
     <select id="findDevpEmail" resultMap="BaseResultMap">
         SELECT group_concat(a.email separator';') as mon_remark FROM sys_user a, t_demand_info b

@@ -5,7 +5,6 @@
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.PreproductionDO" >
         <id column="pre_number" property="preNumber" jdbcType="VARCHAR" />
         <result column="pre_need" property="preNeed" jdbcType="VARCHAR" />
-        <result column="pre_type" property="preType" jdbcType="VARCHAR" />
         <result column="pre_date" property="preDate" jdbcType="DATE" />
         <result column="application_dept" property="applicationDept" jdbcType="VARCHAR" />
         <result column="pre_applicant" property="preApplicant" jdbcType="VARCHAR" />
@@ -14,36 +13,31 @@
         <result column="pre_status" property="preStatus" jdbcType="VARCHAR" />
         <result column="production_deployment_result" property="productionDeploymentResult" jdbcType="VARCHAR" />
         <result column="pro_advance_result" property="proAdvanceResult" jdbcType="VARCHAR" />
-        <result column="pro_pkg_time" property="proPkgTime" jdbcType="DATE" />
+        <result column="pro_pkg_time" property="proPkgTime" jdbcType="TIMESTAMP" />
         <result column="pro_pkg_name" property="proPkgName" jdbcType="VARCHAR" />
         <result column="development_leader" property="developmentLeader" jdbcType="VARCHAR" />
+        <result column="mail_leader" property="mailLeader" jdbcType="VARCHAR" />
         <result column="identifier" property="identifier" jdbcType="VARCHAR" />
         <result column="identifier_tel" property="identifierTel" jdbcType="VARCHAR" />
         <result column="pro_checker" property="proChecker" jdbcType="VARCHAR" />
         <result column="checker_tel" property="checkerTel" jdbcType="VARCHAR" />
         <result column="remark" property="remark" jdbcType="VARCHAR" />
-    </resultMap>
-
-    <resultMap id="ResultMapWithBLOBs" type="com.cmpay.lemon.monitor.entity.PreproductionDO" extends="BaseResultMap" >
-        <result column="mail_leader" property="mailLeader" jdbcType="LONGVARCHAR" />
+        <result column="ddl_pkg_name" property="ddlPkgName" jdbcType="VARCHAR" />
+        <result column="ddl_pkg_time" property="ddlPkgTime" jdbcType="TIMESTAMP" />
+        <result column="is_dba_operation" property="isDbaOperation" jdbcType="VARCHAR" />
+        <result column="is_dba_operation_complete" property="isDbaOperationComplete" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        pre_number, pre_need, pre_type, pre_date, application_dept, pre_applicant, applicant_tel, 
-        pre_manager, pre_status, production_deployment_result, pro_advance_result, pro_pkg_time, 
-        pro_pkg_name, development_leader, identifier, identifier_tel, pro_checker, checker_tel, 
-        remark
+        pre_number, pre_need, pre_date, application_dept, pre_applicant, applicant_tel, pre_manager, 
+        pre_status, production_deployment_result, pro_advance_result, pro_pkg_time, pro_pkg_name, 
+        development_leader, mail_leader, identifier, identifier_tel, pro_checker, checker_tel, 
+        remark, ddl_pkg_name, ddl_pkg_time, is_dba_operation, is_dba_operation_complete
     </sql>
 
-    <sql id="Blob_Column_List" >
-        mail_leader
-    </sql>
-
-    <select id="get" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
         select 
         <include refid="Base_Column_List" />
-        ,
-        <include refid="Blob_Column_List" />
         from t_preproduction_records
         where pre_number = #{preNumber,jdbcType=VARCHAR}
     </select>
@@ -61,9 +55,6 @@
             </if>
             <if test="preNeed != null" >
                 pre_need,
-            </if>
-            <if test="preType != null" >
-                pre_type,
             </if>
             <if test="preDate != null" >
                 pre_date,
@@ -98,6 +89,9 @@
             <if test="developmentLeader != null" >
                 development_leader,
             </if>
+            <if test="mailLeader != null" >
+                mail_leader,
+            </if>
             <if test="identifier != null" >
                 identifier,
             </if>
@@ -113,8 +107,17 @@
             <if test="remark != null" >
                 remark,
             </if>
-            <if test="mailLeader != null" >
-                mail_leader,
+            <if test="ddlPkgName != null" >
+                ddl_pkg_name,
+            </if>
+            <if test="ddlPkgTime != null" >
+                ddl_pkg_time,
+            </if>
+            <if test="isDbaOperation != null" >
+                is_dba_operation,
+            </if>
+            <if test="isDbaOperationComplete != null" >
+                is_dba_operation_complete,
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -123,9 +126,6 @@
             </if>
             <if test="preNeed != null" >
                 #{preNeed,jdbcType=VARCHAR},
-            </if>
-            <if test="preType != null" >
-                #{preType,jdbcType=VARCHAR},
             </if>
             <if test="preDate != null" >
                 #{preDate,jdbcType=DATE},
@@ -152,13 +152,16 @@
                 #{proAdvanceResult,jdbcType=VARCHAR},
             </if>
             <if test="proPkgTime != null" >
-                #{proPkgTime,jdbcType=DATE},
+                #{proPkgTime,jdbcType=TIMESTAMP},
             </if>
             <if test="proPkgName != null" >
                 #{proPkgName,jdbcType=VARCHAR},
             </if>
             <if test="developmentLeader != null" >
                 #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="mailLeader != null" >
+                #{mailLeader,jdbcType=VARCHAR},
             </if>
             <if test="identifier != null" >
                 #{identifier,jdbcType=VARCHAR},
@@ -175,8 +178,17 @@
             <if test="remark != null" >
                 #{remark,jdbcType=VARCHAR},
             </if>
-            <if test="mailLeader != null" >
-                #{mailLeader,jdbcType=LONGVARCHAR},
+            <if test="ddlPkgName != null" >
+                #{ddlPkgName,jdbcType=VARCHAR},
+            </if>
+            <if test="ddlPkgTime != null" >
+                #{ddlPkgTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDbaOperation != null" >
+                #{isDbaOperation,jdbcType=VARCHAR},
+            </if>
+            <if test="isDbaOperationComplete != null" >
+                #{isDbaOperationComplete,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -186,9 +198,6 @@
         <set >
             <if test="preNeed != null" >
                 pre_need = #{preNeed,jdbcType=VARCHAR},
-            </if>
-            <if test="preType != null" >
-                pre_type = #{preType,jdbcType=VARCHAR},
             </if>
             <if test="preDate != null" >
                 pre_date = #{preDate,jdbcType=DATE},
@@ -215,13 +224,16 @@
                 pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},
             </if>
             <if test="proPkgTime != null" >
-                pro_pkg_time = #{proPkgTime,jdbcType=DATE},
+                pro_pkg_time = #{proPkgTime,jdbcType=TIMESTAMP},
             </if>
             <if test="proPkgName != null" >
                 pro_pkg_name = #{proPkgName,jdbcType=VARCHAR},
             </if>
             <if test="developmentLeader != null" >
                 development_leader = #{developmentLeader,jdbcType=VARCHAR},
+            </if>
+            <if test="mailLeader != null" >
+                mail_leader = #{mailLeader,jdbcType=VARCHAR},
             </if>
             <if test="identifier != null" >
                 identifier = #{identifier,jdbcType=VARCHAR},
@@ -238,36 +250,21 @@
             <if test="remark != null" >
                 remark = #{remark,jdbcType=VARCHAR},
             </if>
-            <if test="mailLeader != null" >
-                mail_leader = #{mailLeader,jdbcType=LONGVARCHAR},
+            <if test="ddlPkgName != null" >
+                ddl_pkg_name = #{ddlPkgName,jdbcType=VARCHAR},
+            </if>
+            <if test="ddlPkgTime != null" >
+                ddl_pkg_time = #{ddlPkgTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDbaOperation != null" >
+                is_dba_operation = #{isDbaOperation,jdbcType=VARCHAR},
+            </if>
+            <if test="isDbaOperationComplete != null" >
+                is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR},
             </if>
         </set>
         where pre_number = #{preNumber,jdbcType=VARCHAR}
     </update>
-
-    <!--<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >-->
-        <!--update t_preproduction_records-->
-        <!--set pre_need = #{preNeed,jdbcType=VARCHAR},-->
-            <!--pre_type = #{preType,jdbcType=VARCHAR},-->
-            <!--pre_date = #{preDate,jdbcType=DATE},-->
-            <!--application_dept = #{applicationDept,jdbcType=VARCHAR},-->
-            <!--pre_applicant = #{preApplicant,jdbcType=VARCHAR},-->
-            <!--applicant_tel = #{applicantTel,jdbcType=VARCHAR},-->
-            <!--pre_manager = #{preManager,jdbcType=VARCHAR},-->
-            <!--pre_status = #{preStatus,jdbcType=VARCHAR},-->
-            <!--production_deployment_result = #{productionDeploymentResult,jdbcType=VARCHAR},-->
-            <!--pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR},-->
-            <!--pro_pkg_time = #{proPkgTime,jdbcType=DATE},-->
-            <!--pro_pkg_name = #{proPkgName,jdbcType=VARCHAR},-->
-            <!--development_leader = #{developmentLeader,jdbcType=VARCHAR},-->
-            <!--identifier = #{identifier,jdbcType=VARCHAR},-->
-            <!--identifier_tel = #{identifierTel,jdbcType=VARCHAR},-->
-            <!--pro_checker = #{proChecker,jdbcType=VARCHAR},-->
-            <!--checker_tel = #{checkerTel,jdbcType=VARCHAR},-->
-            <!--remark = #{remark,jdbcType=VARCHAR},-->
-            <!--mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}-->
-        <!--where pre_number = #{preNumber,jdbcType=VARCHAR}-->
-    <!--</update>-->
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.PreproductionDO" >
         select 
@@ -279,9 +276,6 @@
             </if>
             <if test="preNeed != null" >
                 and pre_need = #{preNeed,jdbcType=VARCHAR}
-            </if>
-            <if test="preType != null" >
-                and pre_type = #{preType,jdbcType=VARCHAR}
             </if>
             <if test="preDate != null" >
                 and pre_date = #{preDate,jdbcType=DATE}
@@ -308,13 +302,16 @@
                 and pro_advance_result = #{proAdvanceResult,jdbcType=VARCHAR}
             </if>
             <if test="proPkgTime != null" >
-                and pro_pkg_time = #{proPkgTime,jdbcType=DATE}
+                and pro_pkg_time = #{proPkgTime,jdbcType=TIMESTAMP}
             </if>
             <if test="proPkgName != null" >
                 and pro_pkg_name = #{proPkgName,jdbcType=VARCHAR}
             </if>
             <if test="developmentLeader != null" >
                 and development_leader = #{developmentLeader,jdbcType=VARCHAR}
+            </if>
+            <if test="mailLeader != null" >
+                and mail_leader = #{mailLeader,jdbcType=VARCHAR}
             </if>
             <if test="identifier != null" >
                 and identifier = #{identifier,jdbcType=VARCHAR}
@@ -331,8 +328,17 @@
             <if test="remark != null" >
                 and remark = #{remark,jdbcType=VARCHAR}
             </if>
-            <if test="mailLeader != null" >
-                and mail_leader = #{mailLeader,jdbcType=LONGVARCHAR}
+            <if test="ddlPkgName != null" >
+                and ddl_pkg_name = #{ddlPkgName,jdbcType=VARCHAR}
+            </if>
+            <if test="ddlPkgTime != null" >
+                and ddl_pkg_time = #{ddlPkgTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="isDbaOperation != null" >
+                and is_dba_operation = #{isDbaOperation,jdbcType=VARCHAR}
+            </if>
+            <if test="isDbaOperationComplete != null" >
+                and is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR}
             </if>
         </where>
     </select>
