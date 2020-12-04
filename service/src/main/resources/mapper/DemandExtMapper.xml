@@ -1002,6 +1002,11 @@
 
     <select id="findUnFinishReq1" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">
         select
+        (CASE WHEN (SELECT pic_name FROM t_demand_picture t
+        <where>
+            t.pic_reqInnerSeq = req_inner_seq and t.pic_moth =#{reqImplMon}
+        </where>
+        ) IS NOT NULL THEN '是' ELSE '否' END) AS isApprovalProcess,
         <include refid="Base_Column_List" />
         from t_demand_info
         where req_impl_mon=#{reqImplMon}

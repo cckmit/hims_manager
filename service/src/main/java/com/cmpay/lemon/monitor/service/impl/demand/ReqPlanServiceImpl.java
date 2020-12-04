@@ -553,7 +553,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDO.setOldReqSts(reqTaskService.reqStsCheck((demandDO1.getReqSts())));
                     String reqSts = reqTaskService.reqStsCheck(demand.getReqSts());
                     demandStateHistoryDO.setReqSts(reqSts);
-                    demandStateHistoryDO.setRemarks("存量变更录入");
+                    demandStateHistoryDO.setRemarks("遗留工作量存量变更录入");
                     demandStateHistoryDO.setReqNo(demand.getReqNo());
                     demandStateHistoryDO.setReqNm(demand.getReqNm());
                     //依据内部需求编号查唯一标识

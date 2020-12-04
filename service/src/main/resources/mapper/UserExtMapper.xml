@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.cmpay.lemon.monitor.dao.IUserExtDao" >
     <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.UserDO" >
-        <id column="user_no" property="userNo" jdbcType="VARCHAR" />
+        <id column="user_no" property="userNo" jdbcType="BIGINT" />
         <result column="username" property="username" jdbcType="VARCHAR" />
         <result column="password" property="password" jdbcType="VARCHAR" />
         <result column="salt" property="salt" jdbcType="VARCHAR" />
@@ -13,11 +13,13 @@
         <result column="status" property="status" jdbcType="TINYINT" />
         <result column="create_user_no" property="createUserNo" jdbcType="BIGINT" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="failures_number" property="failuresNumber" jdbcType="TINYINT" />
+        <result column="is_reset" property="isReset" jdbcType="TINYINT" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         user_no, username, password, salt, department, fullname, email, mobile, status, create_user_no,
-        create_time
+        create_time, failures_number, is_reset
     </sql>
     <!-- add -->
     <select id="getUserByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -95,5 +97,18 @@
             </if>
         </where>
     </select>
+
+    <update id="updateStatus" parameterType="com.cmpay.lemon.monitor.entity.UserDO" >
+        update sys_user
+        <set >
+            <if test="status != null" >
+                status = #{status,jdbcType=TINYINT},
+            </if>
+            <if test="failuresNumber != null" >
+                failures_number = #{failuresNumber,jdbcType=TINYINT},
+            </if>
+        </set>
+        where user_no = #{userNo,jdbcType=BIGINT}
+    </update>
 
 </mapper>

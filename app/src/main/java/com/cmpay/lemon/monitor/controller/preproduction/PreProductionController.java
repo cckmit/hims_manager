@@ -31,7 +31,7 @@ import static com.cmpay.lemon.monitor.constant.MonitorConstants.FILE;
  * 预投产过程管理
  */
 @RestController
-@Api(value = "测试",tags = "测试预投产")
+//@Api(value = "测试",tags = "测试预投产")
 @RequestMapping(value = MonitorConstants.PREPRODUCTION_PATH)
 public class PreProductionController {
     @Autowired
@@ -115,9 +115,15 @@ public class PreProductionController {
     }
 
 
-    // 下载投产包
+    // 下载版本组投产包
     @RequestMapping("/pkgDownload")
     public GenericRspDTO<NoBody> pkgDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
+        preProductionService.pkgDownload(request,response,proNumber);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    // 下载DBA投产包
+    @RequestMapping("/dbaDownload")
+    public GenericRspDTO<NoBody> dbaDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
         preProductionService.pkgDownload(request,response,proNumber);
         return GenericRspDTO.newSuccessInstance();
     }

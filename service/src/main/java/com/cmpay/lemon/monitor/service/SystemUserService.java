@@ -123,4 +123,5 @@ public interface SystemUserService {
     String getTelbyName(String name);
 
     public void updateMobile(String fullName,String mobile);
+    void test();
 }

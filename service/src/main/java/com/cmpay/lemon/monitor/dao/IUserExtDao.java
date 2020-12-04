@@ -26,4 +26,5 @@ public interface IUserExtDao extends IUserDao {
 
 
     UserDO getUserByUserFullName(String loginname);
+    void updateStatus(UserDO entity);
 }

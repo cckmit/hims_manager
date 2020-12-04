@@ -123,6 +123,32 @@ public class ProductionDO extends BaseDO {
      */
     @Excel(name = "考核问题备注")
     private String accessRemark;
+    /**
+     *验证方案
+     */
+    @Excel(name = "验证方案")
+    private String proofScheme;
+    /**
+     * 回退/应急方案
+     */
+    @Excel(name = "回退/应急方案")
+    private String crashProgramme;
+
+    public String getProofScheme() {
+        return proofScheme;
+    }
+
+    public void setProofScheme(String proofScheme) {
+        this.proofScheme = proofScheme;
+    }
+
+    public String getCrashProgramme() {
+        return crashProgramme;
+    }
+
+    public void setCrashProgramme(String crashProgramme) {
+        this.crashProgramme = crashProgramme;
+    }
 
     public String getIsAccessQuestion() {
         return isAccessQuestion;
@@ -630,6 +656,8 @@ public class ProductionDO extends BaseDO {
                 ", proDate2='" + proDate2 + '\'' +
                 ", isAccessQuestion='" + isAccessQuestion + '\'' +
                 ", accessRemark='" + accessRemark + '\'' +
+                ", proofScheme='" + proofScheme + '\'' +
+                ", crashProgramme='" + crashProgramme + '\'' +
                 '}';
     }
 }

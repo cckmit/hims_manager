@@ -10,6 +10,7 @@ import com.cmpay.lemon.monitor.service.SystemLoginService;
 import com.cmpay.lemon.monitor.utils.CryptoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @date : 2018/10/31
  */
 @Service
-@Transactional
 public class SystemLoginServiceImpl implements SystemLoginService {
     private static final String ENABLED = "1";
     @Autowired
@@ -48,16 +48,44 @@ public class SystemLoginServiceImpl implements SystemLoginService {
                   BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
               }
           }
+          //获取账号登录失败次数
+        int fail = userDO.getFailuresNumber();
+        System.err.println(userDO.getFailuresNumber());
+          //查询账号禁用情况
             if (!userDO.getStatus().toString().equals(ENABLED)) {
-                BusinessException.throwBusinessException(MsgEnum.USER_DISABLED);
+                BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_USER_STATUS);
             }
+            //密码校验
             String inputPassword = CryptoUtils.sha256Hash(userLoginBO.getPassword(), userDO.getSalt());
             if (JudgeUtils.notEquals(inputPassword, userDO.getPassword())) {
+                // 密码校验失败， 密码失败次数加1
+                fail = fail + 1;
+                //密码登录失败次数
+                if(fail>5){
+                    //如果密码失败次数大与5次，则账号禁用,登录失败次数重置
+                    userDO.setStatus((byte)0);
+                    userDO.setFailuresNumber((byte)0);
+                    updateStatus(userDO);
+                    // 更新数据库后，页面提示报错
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_USER_STATUS);
+                }else{
+                    // 失败次数小于五
+                    userDO.setFailuresNumber((byte)fail);
+                    updateStatus(userDO);
+                }
                 BusinessException.throwBusinessException(MsgEnum.LOGIN_ACCOUNT_OR_PASSWORD_ERROR);
             }
+            // 密码校验正确，则密码失败次数归0，登录成功
+            userDO.setFailuresNumber((byte)0);
+            updateStatus(userDO);
+
             userLoginBO.setUsername(userDO.getUsername());
             userLoginBO.setUserNo(userDO.getUserNo());
             userLoginBO.setMobileNo(userDO.getMobile());
             return userLoginBO;
         }
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = BusinessException.class)
+    public void updateStatus(UserDO userDO){
+        iUserDao.updateStatus(userDO);
+    }
 }

@@ -1,8 +1,8 @@
 /*
  * @ClassName UserDO
- * @Description 
+ * @Description
  * @version 1.0
- * @Date 2019-11-07 09:40:56
+ * @Date 2020-12-03 14:11:38
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -56,6 +56,14 @@ public class UserDO extends BaseDO {
      * @Fields createTime 创建时间
      */
     private LocalDateTime createTime;
+    /**
+     * @Fields failuresNumber 失败次数，大于5次就禁用
+     */
+    private Byte failuresNumber;
+    /**
+     * @Fields isReset 是否重置密码 0：否 1：是
+     */
+    private Byte isReset;
 
     public Long getUserNo() {
         return userNo;
@@ -145,6 +153,22 @@ public class UserDO extends BaseDO {
         this.createTime = createTime;
     }
 
+    public Byte getFailuresNumber() {
+        return failuresNumber;
+    }
+
+    public void setFailuresNumber(Byte failuresNumber) {
+        this.failuresNumber = failuresNumber;
+    }
+
+    public Byte getIsReset() {
+        return isReset;
+    }
+
+    public void setIsReset(Byte isReset) {
+        this.isReset = isReset;
+    }
+
     @Override
     public String toString() {
         return "UserDO{" +
@@ -159,6 +183,8 @@ public class UserDO extends BaseDO {
                 ", status=" + status +
                 ", createUserNo=" + createUserNo +
                 ", createTime=" + createTime +
+                ", failuresNumber=" + failuresNumber +
+                ", isReset=" + isReset +
                 '}';
     }
 }

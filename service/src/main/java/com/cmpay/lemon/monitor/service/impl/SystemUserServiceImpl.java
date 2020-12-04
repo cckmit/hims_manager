@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
  * @date : 2018/11/5
  */
 @Service
-@Transactional
 public class SystemUserServiceImpl implements SystemUserService {
+    private static final String ENABLED = "1";
     @Autowired
     private IUserRoleExtDao iUserRoleDao;
     @Autowired
@@ -279,6 +279,7 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public void addUserRole(Long userNo, List<Long> roleIds, String username) {
         if (JudgeUtils.isNull(roleIds)) {
             return;
@@ -309,6 +310,7 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public void delete(Long userNo) {
         if (userNo == MonitorConstants.SUPER_ADMIN) {
             BusinessException.throwBusinessException(MsgEnum.SUPER_ADMIN_CANNNOT_DELETE);
@@ -330,6 +332,7 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public void deleteBatch(List<Long> userNos) {
         if (userNos.size() <= 0) {
             return;
@@ -340,11 +343,16 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public void update(UserInfoBO user) {
         if (JudgeUtils.isBlank(user.getPassword())) {
             user.setPassword(null);
         } else {
             String password = CryptoUtils.sha256Hash(user.getPassword(), user.getSalt());
+            // 是否重置过密码 重置密码
+            user.setIsReset((byte)0);
+            // 密码更新成功，则密码失败次数归0，登录成功
+            user.setFailuresNumber((byte)0);
             user.setPassword(password);
         }
         UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
@@ -363,20 +371,51 @@ public class SystemUserServiceImpl implements SystemUserService {
         }
         Long userNo = Long.valueOf(id);
         UserDO oldUser = iUserDao.get(userNo);
+        //获取账号登录失败次数
+        int fail = oldUser.getFailuresNumber();
+        //查询账号禁用情况
+        if (!oldUser.getStatus().toString().equals(ENABLED)) {
+            BusinessException.throwBusinessException(MsgEnum.USER_DISABLED2);
+        }
         String orginPassword = oldUser.getPassword();
         String comparePassword = CryptoUtils.sha256Hash(oldPassword, oldUser.getSalt());
+        // 老密码验证是否一致
         if (JudgeUtils.notEquals(orginPassword, comparePassword)) {
+            // 密码校验失败， 密码失败次数加1
+            fail = fail + 1;
+            //密码登录失败次数
+            if(fail>5){
+                //如果密码失败次数大与5次，则账号禁用,登录失败次数重置
+                oldUser.setStatus((byte)0);
+                oldUser.setFailuresNumber((byte)0);
+                updateStatus(oldUser);
+                // 更新数据库后，页面提示报错
+                BusinessException.throwBusinessException(MsgEnum.ERROR_FAIL_USER_STATUS);
+            }else{
+                // 失败次数小于五
+                oldUser.setFailuresNumber((byte)fail);
+                updateStatus(oldUser);
+            }
             BusinessException.throwBusinessException(MsgEnum.ORGIN_PASSWORD_NOT_CORRECT);
         }
         UserDO userDO = new UserDO();
         userDO.setUserNo(userNo);
         userDO.setPassword(CryptoUtils.sha256Hash(newPassword, oldUser.getSalt()));
+        // 是否重置过密码
+        userDO.setIsReset((byte)1);
+        // 密码更新成功，则密码失败次数归0，登录成功
+        userDO.setFailuresNumber((byte)0);
         int res = iUserDao.update(userDO);
         if (res != 1) {
             BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
         }
     }
+    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = BusinessException.class)
+    public void updateStatus(UserDO userDO){
+        iUserDao.updateStatus(userDO);
+    }
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public void updateUserRole(Long userNo, List<Long> roleIds,String username) {
         //删除用户拥有的角色
         iUserRoleDao.deleteUserRoleByUserNo(userNo);
@@ -528,6 +567,32 @@ public class SystemUserServiceImpl implements SystemUserService {
         }else{
             userDOS.get(0).setMobile(mobile);
             iUserDao.update(userDOS.get(0));
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
+    public void test() {
+        // 获取所有系统用户
+        UserDO userDO = new UserDO();
+        List<UserDO> list = iUserDao.find(userDO);
+        for(int i = 0;i<list.size();i++){
+            // 超级管理员和我的账号跳过
+            if(list.get(i).getUserNo() == 1 && list.get(i).getUserNo() == 21111){
+                continue;
+            }
+            UserDO userDO1 = new UserDO();
+            userDO1.setUserNo(list.get(i).getUserNo());
+            userDO1.setPassword(CryptoUtils.sha256Hash("hisunpay", list.get(i).getSalt()));
+            // 是否重置过密码
+            userDO1.setIsReset((byte)0);
+            // 密码更新成功，则密码失败次数归0，登录成功
+            userDO1.setFailuresNumber((byte)0);
+            System.err.println(userDO1);
+            int res = iUserDao.update(userDO1);
+            if (res != 1) {
+                BusinessException.throwBusinessException(MsgEnum.DB_UPDATE_FAILED);
+            }
+
         }
     }
 }

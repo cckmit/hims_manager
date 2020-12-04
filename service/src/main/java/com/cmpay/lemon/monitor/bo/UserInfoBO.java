@@ -33,7 +33,30 @@ public class UserInfoBO {
      * @Fields createTime 创建时间
      */
     private LocalDateTime createTime;
+    /**
+     *  failuresNumber 失败次数，大于5次就禁用
+     */
+    private Byte failuresNumber;
+    /**
+     *  isReset 是否重置密码 0：否 1：是
+     */
+    private Byte isReset;
 
+    public Byte getFailuresNumber() {
+        return failuresNumber;
+    }
+
+    public void setFailuresNumber(Byte failuresNumber) {
+        this.failuresNumber = failuresNumber;
+    }
+
+    public Byte getIsReset() {
+        return isReset;
+    }
+
+    public void setIsReset(Byte isReset) {
+        this.isReset = isReset;
+    }
 //    private List<Long> roleIds;
 //
 //    public List<Long> getRoleIds() {
@@ -139,13 +162,15 @@ public class UserInfoBO {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", salt='" + salt + '\'' +
-                ", department='" + department + '\'' +
-                ", fullname='" + fullname + '\'' +
                 ", email='" + email + '\'' +
                 ", mobile='" + mobile + '\'' +
                 ", status=" + status +
+                ", department='" + department + '\'' +
+                ", fullname='" + fullname + '\'' +
                 ", createUserNo=" + createUserNo +
                 ", createTime=" + createTime +
+                ", failuresNumber=" + failuresNumber +
+                ", isReset=" + isReset +
                 '}';
     }
 }

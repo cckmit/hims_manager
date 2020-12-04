@@ -26,6 +26,30 @@ public class UserInfoDTO {
      * @Fields fullname 用户全名
      */
     private String fullname;
+    /**
+     *  failuresNumber 失败次数，大于5次就禁用
+     */
+    private Byte failuresNumber;
+    /**
+     *  isReset 是否重置密码 0：否 1：是
+     */
+    private Byte isReset;
+
+    public Byte getFailuresNumber() {
+        return failuresNumber;
+    }
+
+    public void setFailuresNumber(Byte failuresNumber) {
+        this.failuresNumber = failuresNumber;
+    }
+
+    public Byte getIsReset() {
+        return isReset;
+    }
+
+    public void setIsReset(Byte isReset) {
+        this.isReset = isReset;
+    }
 
     public String getDepartment() {
         return department;
@@ -120,6 +144,8 @@ public class UserInfoDTO {
                 ", roleIds=" + roleIds +
                 ", department='" + department + '\'' +
                 ", fullname='" + fullname + '\'' +
+                ", failuresNumber=" + failuresNumber +
+                ", isReset=" + isReset +
                 '}';
     }
 }

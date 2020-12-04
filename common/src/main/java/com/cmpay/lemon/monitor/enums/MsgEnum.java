@@ -7,6 +7,7 @@ import com.cmpay.lemon.common.utils.StringUtils;
  * @author: zhou_xiong
  */
 public enum MsgEnum implements AlertCapable {
+
     /**
      * 成功
      */
@@ -43,6 +44,7 @@ public enum MsgEnum implements AlertCapable {
      * 失败
      */
     USER_DISABLED("MON00007", "该用户已被禁用,不可登陆"),
+    USER_DISABLED2("MON00513", "该用户已被禁用,不可再修改密码，请联系系统管理员"),
 
     /**
      * 失败
@@ -187,10 +189,13 @@ public enum MsgEnum implements AlertCapable {
     /**
      * 失败
      */
-    ERROR_FAIL_CHANGE("MON00510", "存量需求转存失败:");
+
+    ERROR_FAIL_CHANGE("MON00510", "存量需求转存失败:"),
     /**
      * 失败
      */
+
+    ERROR_FAIL_USER_STATUS("MON00512", "密码错误次数已超限，账号已禁用！解封请联系系统管理员（黄佳海）重置密码！:");
 
     private String msgCd;
     private String msgInfo;
