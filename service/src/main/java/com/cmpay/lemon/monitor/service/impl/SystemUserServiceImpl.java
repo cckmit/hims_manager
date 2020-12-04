@@ -122,6 +122,10 @@ public class SystemUserServiceImpl implements SystemUserService {
         user.setPassword(password);
         user.setCreateTime(LocalDateTime.now());
         user.setCreateUserNo(Long.valueOf(SecurityUtils.getLoginUserId()));
+        // 密码失败次数
+        user.setFailuresNumber((byte)0);
+        // 是否修改初始化密码
+        user.setIsReset((byte)0);
         UserDO userDO = BeanUtils.copyPropertiesReturnDest(new UserDO(), user);
 
         //同步老表
