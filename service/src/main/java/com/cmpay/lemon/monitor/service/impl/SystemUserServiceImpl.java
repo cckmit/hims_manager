@@ -581,12 +581,12 @@ public class SystemUserServiceImpl implements SystemUserService {
         List<UserDO> list = iUserDao.find(userDO);
         for(int i = 0;i<list.size();i++){
             // 超级管理员和我的账号跳过
-            if(list.get(i).getUserNo() == 1 && list.get(i).getUserNo() == 21111){
+            if(list.get(i).getUserNo() == 1 ){
                 continue;
             }
             UserDO userDO1 = new UserDO();
             userDO1.setUserNo(list.get(i).getUserNo());
-            userDO1.setPassword(CryptoUtils.sha256Hash("hisunpay", list.get(i).getSalt()));
+            userDO1.setPassword(CryptoUtils.sha256Hash("hisun321", list.get(i).getSalt()));
             // 是否重置过密码
             userDO1.setIsReset((byte)0);
             // 密码更新成功，则密码失败次数归0，登录成功

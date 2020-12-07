@@ -54,6 +54,17 @@ public class VpnInfoServiceImpl implements VpnInfoService {
     public void add(VpnInfoBO vpnInfoBO) {
         VpnInfoDO vpnInfoDO = new VpnInfoDO();
         BeanConvertUtils.convert(vpnInfoDO, vpnInfoBO);
+        //判断是否是团队主管
+        if(!isDepartmentManager(SUPERADMINISTRATOR3)){
+            // 不是部门主管就只能 申请人是本人
+            // 获取当前操作人
+            String user = userService.getFullname(SecurityUtils.getLoginName());
+            if(!user.equals(vpnInfoDO.getVpnApplicant())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("非部门主管申请人只能填本人，请重新选择申请人再申请VPN!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         vpnInfoDO.setVpnInnerSeq(this.getNextInnerSeq());
         vpnInfoDO.setVpnApplyType("录入待审核");
         MailFlowConditionDO mfva = new MailFlowConditionDO();
@@ -96,7 +107,6 @@ public class VpnInfoServiceImpl implements VpnInfoService {
         }
         iVpnInfoDao.insert(vpnInfoDO);
     }
-
     @Override
     public void update(VpnInfoBO vpnInfoBO) {
 
