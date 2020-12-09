@@ -105,6 +105,14 @@ public class PreproductionDTO extends GenericDTO {
      */
     private String isDbaOperationComplete;
     /**
+     * @Fields mailRecipient 收件人
+     */
+    private String mailRecipient;
+    /**
+     * @Fields mailCopyPerson 抄送人
+     */
+    private String mailCopyPerson;
+    /**
      * 页数
      */
     private int pageNum;
@@ -116,37 +124,20 @@ public class PreproductionDTO extends GenericDTO {
     public PreproductionDTO() {
     }
 
-    @Override
-    public String toString() {
-        return "PreproductionDTO{" +
-                "preDateStart=" + preDateStart +
-                ", preDateEnd=" + preDateEnd +
-                ", preNumber='" + preNumber + '\'' +
-                ", preNeed='" + preNeed + '\'' +
-                ", preDate=" + preDate +
-                ", applicationDept='" + applicationDept + '\'' +
-                ", preApplicant='" + preApplicant + '\'' +
-                ", applicantTel='" + applicantTel + '\'' +
-                ", preManager='" + preManager + '\'' +
-                ", preStatus='" + preStatus + '\'' +
-                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
-                ", proAdvanceResult='" + proAdvanceResult + '\'' +
-                ", proPkgTime=" + proPkgTime +
-                ", proPkgName='" + proPkgName + '\'' +
-                ", developmentLeader='" + developmentLeader + '\'' +
-                ", mailLeader='" + mailLeader + '\'' +
-                ", identifier='" + identifier + '\'' +
-                ", identifierTel='" + identifierTel + '\'' +
-                ", proChecker='" + proChecker + '\'' +
-                ", checkerTel='" + checkerTel + '\'' +
-                ", remark='" + remark + '\'' +
-                ", ddlPkgName='" + ddlPkgName + '\'' +
-                ", ddlPkgTime=" + ddlPkgTime +
-                ", isDbaOperation='" + isDbaOperation + '\'' +
-                ", isDbaOperationComplete='" + isDbaOperationComplete + '\'' +
-                ", pageNum=" + pageNum +
-                ", pageSize=" + pageSize +
-                '}';
+    public String getMailRecipient() {
+        return mailRecipient;
+    }
+
+    public void setMailRecipient(String mailRecipient) {
+        this.mailRecipient = mailRecipient;
+    }
+
+    public String getMailCopyPerson() {
+        return mailCopyPerson;
+    }
+
+    public void setMailCopyPerson(String mailCopyPerson) {
+        this.mailCopyPerson = mailCopyPerson;
     }
 
     public Date getPreDateStart() {
@@ -363,5 +354,40 @@ public class PreproductionDTO extends GenericDTO {
 
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
+    }
+
+    @Override
+    public String toString() {
+        return "PreproductionDTO{" +
+                "preDateStart=" + preDateStart +
+                ", preDateEnd=" + preDateEnd +
+                ", preNumber='" + preNumber + '\'' +
+                ", preNeed='" + preNeed + '\'' +
+                ", preDate=" + preDate +
+                ", applicationDept='" + applicationDept + '\'' +
+                ", preApplicant='" + preApplicant + '\'' +
+                ", applicantTel='" + applicantTel + '\'' +
+                ", preManager='" + preManager + '\'' +
+                ", preStatus='" + preStatus + '\'' +
+                ", productionDeploymentResult='" + productionDeploymentResult + '\'' +
+                ", proAdvanceResult='" + proAdvanceResult + '\'' +
+                ", proPkgTime=" + proPkgTime +
+                ", proPkgName='" + proPkgName + '\'' +
+                ", developmentLeader='" + developmentLeader + '\'' +
+                ", mailLeader='" + mailLeader + '\'' +
+                ", identifier='" + identifier + '\'' +
+                ", identifierTel='" + identifierTel + '\'' +
+                ", proChecker='" + proChecker + '\'' +
+                ", checkerTel='" + checkerTel + '\'' +
+                ", remark='" + remark + '\'' +
+                ", ddlPkgName='" + ddlPkgName + '\'' +
+                ", ddlPkgTime=" + ddlPkgTime +
+                ", isDbaOperation='" + isDbaOperation + '\'' +
+                ", isDbaOperationComplete='" + isDbaOperationComplete + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
     }
 }

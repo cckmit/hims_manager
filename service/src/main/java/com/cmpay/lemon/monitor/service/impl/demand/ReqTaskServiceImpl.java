@@ -1474,6 +1474,14 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         if (!userRoleDOS.isEmpty()) {
             return true;
         }
+        //查询该操作员是否为需求管理员
+        userRoleDO.setRoleId(SUPERADMINISTRATOR2);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        userRoleDOS = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()) {
+            return true;
+        }
+
 
         //当前操作员姓名
         PermiUserDO permiUserDO = new PermiUserDO();

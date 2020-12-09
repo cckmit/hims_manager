@@ -2,7 +2,7 @@
  * @ClassName PreproductionDO
  * @Description
  * @version 1.0
- * @Date 2020-11-30 15:34:39
+ * @Date 2020-12-08 15:20:24
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -109,6 +109,14 @@ public class PreproductionDO extends BaseDO {
      * @Fields isDbaOperationComplete DBA操作是否完成
      */
     private String isDbaOperationComplete;
+    /**
+     * @Fields mailRecipient 收件人
+     */
+    private String mailRecipient;
+    /**
+     * @Fields mailCopyPerson 抄送人
+     */
+    private String mailCopyPerson;
 
     public String getPreNumber() {
         return preNumber;
@@ -294,6 +302,22 @@ public class PreproductionDO extends BaseDO {
         this.isDbaOperationComplete = isDbaOperationComplete;
     }
 
+    public String getMailRecipient() {
+        return mailRecipient;
+    }
+
+    public void setMailRecipient(String mailRecipient) {
+        this.mailRecipient = mailRecipient;
+    }
+
+    public String getMailCopyPerson() {
+        return mailCopyPerson;
+    }
+
+    public void setMailCopyPerson(String mailCopyPerson) {
+        this.mailCopyPerson = mailCopyPerson;
+    }
+
     public Date getPreDateStart() {
         return preDateStart;
     }
@@ -313,7 +337,9 @@ public class PreproductionDO extends BaseDO {
     @Override
     public String toString() {
         return "PreproductionDO{" +
-                "preNumber='" + preNumber + '\'' +
+                "preDateStart=" + preDateStart +
+                ", preDateEnd=" + preDateEnd +
+                ", preNumber='" + preNumber + '\'' +
                 ", preNeed='" + preNeed + '\'' +
                 ", preDate=" + preDate +
                 ", applicationDept='" + applicationDept + '\'' +
@@ -336,6 +362,8 @@ public class PreproductionDO extends BaseDO {
                 ", ddlPkgTime=" + ddlPkgTime +
                 ", isDbaOperation='" + isDbaOperation + '\'' +
                 ", isDbaOperationComplete='" + isDbaOperationComplete + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
                 '}';
     }
 }

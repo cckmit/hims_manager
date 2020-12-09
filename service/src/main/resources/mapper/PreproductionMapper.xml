@@ -26,13 +26,16 @@
         <result column="ddl_pkg_time" property="ddlPkgTime" jdbcType="TIMESTAMP" />
         <result column="is_dba_operation" property="isDbaOperation" jdbcType="VARCHAR" />
         <result column="is_dba_operation_complete" property="isDbaOperationComplete" jdbcType="VARCHAR" />
+        <result column="mail_recipient" property="mailRecipient" jdbcType="VARCHAR" />
+        <result column="mail_copy_person" property="mailCopyPerson" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         pre_number, pre_need, pre_date, application_dept, pre_applicant, applicant_tel, pre_manager, 
         pre_status, production_deployment_result, pro_advance_result, pro_pkg_time, pro_pkg_name, 
         development_leader, mail_leader, identifier, identifier_tel, pro_checker, checker_tel, 
-        remark, ddl_pkg_name, ddl_pkg_time, is_dba_operation, is_dba_operation_complete
+        remark, ddl_pkg_name, ddl_pkg_time, is_dba_operation, is_dba_operation_complete, 
+        mail_recipient, mail_copy_person
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.String" >
@@ -119,6 +122,12 @@
             <if test="isDbaOperationComplete != null" >
                 is_dba_operation_complete,
             </if>
+            <if test="mailRecipient != null" >
+                mail_recipient,
+            </if>
+            <if test="mailCopyPerson != null" >
+                mail_copy_person,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
             <if test="preNumber != null" >
@@ -189,6 +198,12 @@
             </if>
             <if test="isDbaOperationComplete != null" >
                 #{isDbaOperationComplete,jdbcType=VARCHAR},
+            </if>
+            <if test="mailRecipient != null" >
+                #{mailRecipient,jdbcType=VARCHAR},
+            </if>
+            <if test="mailCopyPerson != null" >
+                #{mailCopyPerson,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -261,6 +276,12 @@
             </if>
             <if test="isDbaOperationComplete != null" >
                 is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR},
+            </if>
+            <if test="mailRecipient != null" >
+                mail_recipient = #{mailRecipient,jdbcType=VARCHAR},
+            </if>
+            <if test="mailCopyPerson != null" >
+                mail_copy_person = #{mailCopyPerson,jdbcType=VARCHAR},
             </if>
         </set>
         where pre_number = #{preNumber,jdbcType=VARCHAR}
@@ -339,6 +360,12 @@
             </if>
             <if test="isDbaOperationComplete != null" >
                 and is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR}
+            </if>
+            <if test="mailRecipient != null" >
+                and mail_recipient = #{mailRecipient,jdbcType=VARCHAR}
+            </if>
+            <if test="mailCopyPerson != null" >
+                and mail_copy_person = #{mailCopyPerson,jdbcType=VARCHAR}
             </if>
         </where>
     </select>

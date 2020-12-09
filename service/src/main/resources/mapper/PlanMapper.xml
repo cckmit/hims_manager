@@ -603,4 +603,11 @@
         </if>
         WHERE req_inner_seq = #{reqInnerSeq}
     </update>
+
+    <select id="searchDeptUserEmail" resultMap="BaseResultMap" parameterType="java.lang.String">
+		SELECT group_concat(a.email separator';')  as mon_remark
+		FROM  sys_user a
+		WHERE  a.fullname =
+		( select dept_manager_name from t_permi_dept where dept_name = #{name} )
+	</select>
 </mapper>

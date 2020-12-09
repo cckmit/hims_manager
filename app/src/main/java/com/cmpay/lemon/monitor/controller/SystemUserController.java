@@ -179,9 +179,25 @@ public class SystemUserController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, fullName);
     }
 
+    /**
+     * 根据中文名获取手机号
+     * @param name
+     * @return
+     */
     @PostMapping("/getTelbyName")
     public GenericRspDTO<String> getTelbyName(@RequestParam("name")String name) {
         String tel=systemUserService.getTelbyName(name);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, tel);
+    }
+
+    /**
+     * 根据中文名获取邮箱
+     * @param name
+     * @return
+     */
+    @PostMapping("/getEmailbyName")
+    public GenericRspDTO<String> getEmailbyName(@RequestParam("name")String name) {
+        String tel=systemUserService.getEmailbyName(name);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, tel);
     }
 

@@ -559,6 +559,20 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
 
+    @Override
+    public String getEmailbyName(String name) {
+        UserDO userDO = new UserDO();
+        userDO.setFullname(name);
+        List<UserDO> userDOS = iUserDao.find(userDO);
+        //查询不为空，则判断是否有电话号码，
+        if(JudgeUtils.isNotEmpty(userDOS)) {
+            String email = userDOS.get(0).getEmail();
+            if(StringUtils.isNotBlank(email)){
+                return email;
+            }
+        }
+        return "";
+    }
     @Async
     @Override
     @Transactional(propagation= Propagation.REQUIRES_NEW)

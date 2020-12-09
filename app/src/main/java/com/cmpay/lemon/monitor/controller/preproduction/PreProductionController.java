@@ -77,8 +77,30 @@ public class PreProductionController {
     }
 
     @RequestMapping("/updateAllProduction")
-    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        preProductionService.updateAllProduction(request,response,taskIdStr);
+    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr){
+        preProductionService.updateAllProduction(taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * dba操作完成
+     * @param taskIdStr
+     * @return
+     */
+    @RequestMapping("/updateAllProductionDBA")
+    public GenericRspDTO<NoBody> updateAllProductionDBA(@RequestParam("taskIdStr") String taskIdStr){
+        preProductionService.updateAllProductionDBA(taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
+    /**
+     * 版本组操作完成
+     * @param taskIdStr
+     * @return
+     */
+    @RequestMapping("/updateAllProductionBBZ")
+    public GenericRspDTO<NoBody> updateAllProductionBBZ(@RequestParam("taskIdStr") String taskIdStr){
+        preProductionService.updateAllProductionBBZ(taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
 
@@ -124,7 +146,7 @@ public class PreProductionController {
     // 下载DBA投产包
     @RequestMapping("/dbaDownload")
     public GenericRspDTO<NoBody> dbaDownload(@RequestParam("proNumber") String proNumber, HttpServletRequest request, HttpServletResponse response){
-        preProductionService.pkgDownload(request,response,proNumber);
+        preProductionService.dbaDownload(request,response,proNumber);
         return GenericRspDTO.newSuccessInstance();
     }
 

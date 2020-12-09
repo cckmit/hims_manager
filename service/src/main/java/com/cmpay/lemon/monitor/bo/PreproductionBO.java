@@ -107,6 +107,14 @@ public class PreproductionBO {
      */
     private String isDbaOperationComplete;
     /**
+     * @Fields mailRecipient 收件人
+     */
+    private String mailRecipient;
+    /**
+     * @Fields mailCopyPerson 抄送人
+     */
+    private String mailCopyPerson;
+    /**
      * 页数
      */
     private int pageNum;
@@ -114,6 +122,22 @@ public class PreproductionBO {
      * 页面大小
      */
     private int pageSize;
+
+    public String getMailRecipient() {
+        return mailRecipient;
+    }
+
+    public void setMailRecipient(String mailRecipient) {
+        this.mailRecipient = mailRecipient;
+    }
+
+    public String getMailCopyPerson() {
+        return mailCopyPerson;
+    }
+
+    public void setMailCopyPerson(String mailCopyPerson) {
+        this.mailCopyPerson = mailCopyPerson;
+    }
 
     public Date getPreDateStart() {
         return preDateStart;
@@ -359,6 +383,8 @@ public class PreproductionBO {
                 ", ddlPkgTime=" + ddlPkgTime +
                 ", isDbaOperation='" + isDbaOperation + '\'' +
                 ", isDbaOperationComplete='" + isDbaOperationComplete + '\'' +
+                ", mailRecipient='" + mailRecipient + '\'' +
+                ", mailCopyPerson='" + mailCopyPerson + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 '}';

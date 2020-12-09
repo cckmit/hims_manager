@@ -20,13 +20,16 @@ public interface PreProductionService {
      */
     PreproductionRspBO find(PreproductionBO productionBO);
     void update(PreproductionBO productionBO);
-    void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
+    void updateAllProduction(String str);
+    void updateAllProductionDBA(String str);
+    void updateAllProductionBBZ(String str);
     void add(PreproductionBO productionBO);
     void doBatchImport(MultipartFile file,String reqNumber);
     void updateProductionPackage(MultipartFile file,String reqNumber);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
-
+    //投产包下载
+    void dbaDownload(HttpServletRequest request, HttpServletResponse response, String str);
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
     void updateState(AutomatedProductionCallbackReqBO productionCallbackBO);
 

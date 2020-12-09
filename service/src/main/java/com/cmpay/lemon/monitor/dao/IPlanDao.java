@@ -24,4 +24,7 @@ public interface IPlanDao extends IDemandDao {
     DemandDO searchUserLEmail(@Param("devpCoorDepts") String[] devpCoorDepts);
     //根据功能点文档更新工作量
     void updateReqWorkLoad(DemandDO bean);
+
+    //根据名字查询邮箱
+    DemandDO searchDeptUserEmail(String name);
 }

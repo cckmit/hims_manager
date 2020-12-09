@@ -5,6 +5,7 @@ import com.cmpay.lemon.common.exception.BusinessException;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.common.utils.StringUtils;
+import com.cmpay.lemon.framework.autoconfigure.schedule.ScheduleAutoConfiguration;
 import com.cmpay.lemon.framework.page.PageInfo;
 import com.cmpay.lemon.framework.security.SecurityUtils;
 import com.cmpay.lemon.framework.utils.LemonUtils;
@@ -12,10 +13,7 @@ import com.cmpay.lemon.framework.utils.PageUtils;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowConditionDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
-import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
+import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.SystemUserService;
 import com.cmpay.lemon.monitor.service.automaticCommissioningInterface.AutomaticCommissioningInterfaceService;
@@ -39,6 +37,7 @@ import java.io.*;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -84,6 +83,8 @@ public class PreProductionServiceImpl implements PreProductionService {
     private IOperationProductionDao operationProductionDao;
     @Autowired
     private IAutomatedProductionRegistrationDao automatedProductionRegistrationDao;
+    @Autowired
+    private IPlanDao planDao;
 
     @Override
     public PreproductionRspBO find(PreproductionBO productionBO) {
@@ -99,7 +100,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         PreproductionDO preproductionDO = new PreproductionDO();
         BeanConvertUtils.convert(preproductionDO, productionBO);
         PageInfo<PreproductionBO> pageInfo = PageUtils.pageQueryWithCount(productionBO.getPageNum(), productionBO.getPageSize(),
-                () -> BeanConvertUtils.convertList(iPreproductionExtDao.find(preproductionDO), PreproductionBO.class));
+                () -> BeanConvertUtils.convertList(iPreproductionExtDao.findList(preproductionDO), PreproductionBO.class));
         return pageInfo;
     }
 
@@ -111,6 +112,10 @@ public class PreProductionServiceImpl implements PreProductionService {
         iPreproductionExtDao.update(preproductionDO);
     }
 
+    /**
+     * 预投产录入
+     * @param productionBO
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void add(PreproductionBO productionBO){
@@ -120,16 +125,22 @@ public class PreProductionServiceImpl implements PreProductionService {
         productionBO.setProAdvanceResult("未通过");
         //预投产部署结果
         productionBO.setProductionDeploymentResult("未部署");
+        // 如果 是否需要dba操作为"是"，则dba操作完成为：否，否则不赋值
+        if(productionBO.getIsDbaOperation().equals("是")){
+            productionBO.setIsDbaOperationComplete("否");
+        }else{
+            productionBO.setIsDbaOperationComplete("");
+        }
         BeanConvertUtils.convert(preproductionDO, productionBO);
+        System.err.println(preproductionDO);
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         // 将其原先的lis循环查找相同pro_number编号的投产信息 更新为查找一条记录是否存在
         PreproductionBO preproductionBean = this.searchProdutionDetail(preproductionDO.getPreNumber());
-        if (preproductionBean != null) {
-            //修改原记录
-            this.update(productionBO);
+        if (JudgeUtils.isNotNull(preproductionBean)) {
+            iPreproductionExtDao.updateAgain(preproductionDO);
             //生成流水记录
-            ScheduleDO scheduleBean = new ScheduleDO(preproductionDO.getPreNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", preproductionDO.getPreStatus(), preproductionDO.getPreStatus(), "无");
+            ScheduleDO scheduleBean = new ScheduleDO(preproductionDO.getPreNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", preproductionDO.getPreStatus(), preproductionDO.getPreStatus(), "预投产重新录入");
             operationProductionDao.insertSchedule(scheduleBean);
 
         }else{
@@ -140,7 +151,58 @@ public class PreProductionServiceImpl implements PreProductionService {
 
             iPreproductionExtDao.insert(preproductionDO);
         }
+        // 发送邮件通知
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+        // 根据部门获取部门经理
+        DemandDO demandDO =planDao.searchDeptUserEmail(preproductionDO.getApplicationDept());
+        // 收件人 mailRecipient + 部门经理
+        String mailToAddress  = preproductionDO.getMailRecipient()+demandDO.getMonRemark();
+        mailInfo.setReceivers(mailToAddress.split(";"));
+        // 抄送人 mailCopyPerson  申请人 开发负责人
+        // 获取申请人邮箱 开发负责人邮箱
+        List<String> list = new ArrayList<>();
+        list.add(preproductionDO.getPreApplicant());
+        list.add(preproductionDO.getDevelopmentLeader());
+        String [] nameList = new String[list.size()];
+        nameList = list.toArray(nameList);
+        DemandDO demandDO1 =planDao.searchUserLEmail(nameList);
+        if (JudgeUtils.isNotNull(demandDO)){
+            if(JudgeUtils.isNotEmpty(preproductionDO.getMailCopyPerson())){
+                mailInfo.setCcs((preproductionDO.getMailCopyPerson()+demandDO.getMonRemark()).split(";"));
+            }else {
+                mailInfo.setCcs(demandDO.getMonRemark().split(";"));
+            }
+        }
+        mailInfo.setSubject("【预投产通知】");
+        mailInfo.setSubject("【预投产通知】-" + preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "-" + preproductionDO.getPreApplicant());
 
+        StringBuffer sb = new StringBuffer();
+        sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+        sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>预投产通知邮件</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>预投产编号</td><td>" + preproductionDO.getPreNumber() + "</td><td style='font-weight: bold;'>需求名称</td><td>" + preproductionDO.getPreNeed() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + preproductionDO.getApplicationDept() + "</td><td style='font-weight: bold;'>计划预投产日期</td><td>" + preproductionDO.getPreDate() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>预投产申请人</td><td>" + preproductionDO.getPreApplicant() + "</td><td style='font-weight: bold;'>申请人联系方式</td><td>" + preproductionDO.getApplicantTel() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>开发负责人</td><td>" + preproductionDO.getDevelopmentLeader() + "</td><td style='font-weight: bold;'>产品经理</td><td>" + preproductionDO.getPreManager() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>验证人</td><td>" + preproductionDO.getIdentifier() + "</td><td style='font-weight: bold;'>验证人联系方式</td><td>" + preproductionDO.getIdentifierTel() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>验证复核人</td><td>" + preproductionDO.getProChecker() + "</td><td style='font-weight: bold;'>是否有DBA操作</td><td>" + preproductionDO.getIsDbaOperation() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>备注</td><td colspan='5'>" + preproductionDO.getRemark() + "</td></tr></table>");
+        mailInfo.setContent("各位领导好:<br/>&nbsp;&nbsp;本次预投产申请详细内容请参见下表<br/>烦请查看，谢谢！<br/>" + sb.toString());
+//        // 这个类主要来发送邮件
+        boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        //MailFlowDO bnb = new MailFlowDO("预投产申请通知", "code_review@hisuntech.com", mvoDept.getEmployeeEmail(), mailInfo.getContent());
+        //operationProductionDao.addMailFlow(bnb);
+        if (!(isSend)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("审批邮件发送失败!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
     }
 
     // 判断是否为角色权限
@@ -159,7 +221,7 @@ public class PreProductionServiceImpl implements PreProductionService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr){
+    public void updateAllProduction(String taskIdStr){
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
         //生成流水记录
@@ -266,13 +328,17 @@ public class PreProductionServiceImpl implements PreProductionService {
 
 
             boolean isSend = true;
-            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("预投产打回")) && (status.equals("预投产待部署"))) || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))) || ((pro_status_after.equals("预投产取消")) && (((status.equals("预投产提出")) || (status.equals("预投产待部署"))))))) && ((
-                    (pro_status_after.equals("预投产打回")) || (pro_status_after.equals("预投产回退")) || (pro_status_after.equals("预投产取消")))))
+            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("预投产打回")) && (status.equals("预投产待部署"))) || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))&& (status.equals("预投产部署待验证"))) || ((pro_status_after.equals("预投产取消")) && (((status.equals("预投产提出")) || (status.equals("预投产待部署"))))))) &&
+                    (((pro_status_after.equals("预投产打回")) || (pro_status_after.equals("预投产回退")) || (pro_status_after.equals("预投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
                 mfva.setEmployeeName(iPreproductionExtDao.get(pro_number_list[j]).getPreApplicant());
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
                 PreproductionDO bean = iPreproductionExtDao.get(pro_number_list[j]);
+                bean.setPreStatus(pro_status_after);
+                iPreproductionExtDao.updatePreSts(bean);
+                // 获取更改前的状态
+                String PreOperation = bean.getPreStatus();
                 MailFlowDO bnb = new MailFlowDO("预投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
                 // 创建邮件信息
@@ -295,17 +361,17 @@ public class PreProductionServiceImpl implements PreProductionService {
                 }
                 if (pro_status_after.equals("预投产取消")) {
                     mess = pro_status_after;
-                    // 自动化调用投产取消接口
-                    AutoCancellationProductionBO autoCancellationProductionBO = new AutoCancellationProductionBO();
-                    autoCancellationProductionBO.setProNumber(bean.getPreNumber());
-                    autoCancellationProductionBO.setReason(pro_number_list[1]);
-                    System.err.println(Thread.currentThread().getName());
-                    String msg = automaticCommissioningInterfaceService.autoCancellationProduction(autoCancellationProductionBO);
-                    if("ERROR".equals(msg)){
-                        MsgEnum.SUCCESS.setMsgInfo("");
-                        MsgEnum.SUCCESS.setMsgInfo("调用自动化投产取消接口失败！请刷新后再试，或人工联系投产人员。");
-                        BusinessException.throwBusinessException(MsgEnum.SUCCESS);
-                    }
+//                    // 自动化调用投产取消接口
+//                    AutoCancellationProductionBO autoCancellationProductionBO = new AutoCancellationProductionBO();
+//                    autoCancellationProductionBO.setProNumber(bean.getPreNumber());
+//                    autoCancellationProductionBO.setReason(pro_number_list[1]);
+//                    System.err.println(Thread.currentThread().getName());
+//                    String msg = automaticCommissioningInterfaceService.autoCancellationProduction(autoCancellationProductionBO);
+//                    if("ERROR".equals(msg)){
+//                        MsgEnum.SUCCESS.setMsgInfo("");
+//                        MsgEnum.SUCCESS.setMsgInfo("调用自动化投产取消接口失败！请刷新后再试，或人工联系投产人员。");
+//                        BusinessException.throwBusinessException(MsgEnum.SUCCESS);
+//                    }
                 }
 
                 mailInfo.setSubject("【" + mess + "通知】");
@@ -313,8 +379,9 @@ public class PreProductionServiceImpl implements PreProductionService {
 
                 // 这个类主要来发送邮件
                 isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-
                 operationProductionDao.addMailFlow(bnb);
+                ScheduleDO schedule=new ScheduleDO(bean.getPreNumber(), currentUser, bean.getPreStatus(), PreOperation, bean.getPreStatus(), mess);
+                operationProductionDao.insertSchedule(schedule);
             }
 
             if(pro_status_after.equals("预投产待部署")){
@@ -325,18 +392,18 @@ public class PreProductionServiceImpl implements PreProductionService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 // todo 调用自动化投产接口 提供投产编号，包名，环境
-                AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
-                automatedProductionBO.setEnv("0");
-                automatedProductionBO.setProNumber(beanCheck.getPreNumber());
-                automatedProductionBO.setProPkgName(beanCheck.getProPkgName());
-                System.err.println(Thread.currentThread().getName());
-                String msg = automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
-                if("ERROR".equals(msg)){
-                    MsgEnum.SUCCESS.setMsgInfo("");
-                    MsgEnum.SUCCESS.setMsgInfo("调用增加自动化投产包接口调用失败！请刷新后再试。");
-                    BusinessException.throwBusinessException(MsgEnum.SUCCESS);
-                }
-                // addpack();
+//                AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
+//                automatedProductionBO.setEnv("0");
+//                automatedProductionBO.setProNumber(beanCheck.getPreNumber());
+//                automatedProductionBO.setProPkgName(beanCheck.getProPkgName());
+//                System.err.println(Thread.currentThread().getName());
+//                String msg = automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+//                if("ERROR".equals(msg)){
+//                    MsgEnum.SUCCESS.setMsgInfo("");
+//                    MsgEnum.SUCCESS.setMsgInfo("调用增加自动化投产包接口调用失败！请刷新后再试。");
+//                    BusinessException.throwBusinessException(MsgEnum.SUCCESS);
+//                }
+//                // addpack();
                 PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
                 bean.setPreStatus("预投产待部署");
                 iPreproductionExtDao.updatePreSts(bean);
@@ -347,7 +414,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 if(beanCheck.getProductionDeploymentResult().equals("已部署")){
                     //return ajaxDoneError("当前投产预投产已部署，不可重复操作!");
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前投产预投产已部署，不可重复操作!");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(beanCheck.getPreNeed() + "-" + beanCheck.getPreNumber() + "当前投产预投产已部署，不可重复操作!");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
@@ -366,7 +433,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 }
                 if(beanCheck.getProAdvanceResult().equals("通过")){
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("当前预投产验证已通过,不可重复操作!");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(beanCheck.getPreNeed() + "-" + beanCheck.getPreNumber() + "当前预投产验证已通过,不可重复操作!");
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
 
@@ -401,22 +468,10 @@ public class PreProductionServiceImpl implements PreProductionService {
                                     demandDao.updateOperation(demand);
                                 }
                             }
-                            // 投产月份  < 需求实施月份时 ，说明该月需求数据为异常数据，需求之前已经投产，故删除需求
-                            if(demandBOList.get(i).getReqImplMon().compareTo(month)>0){
-                                DemandDO demand = demandBOList.get(i);
-                                demandDao.delete(demand.getReqInnerSeq());
-                            }
                         }
                     }
                 }
             }
-            if(pro_status_after.equals("预投产取消")||pro_status_after.equals("预投产打回")||pro_status_after.equals("预投产回退")){
-                PreproductionDO  bean=iPreproductionExtDao.get(pro_number_list[j]);
-                bean.setPreStatus(pro_status_after);
-                iPreproductionExtDao.updatePreSts(bean);
-            }
-
-            operationProductionDao.insertSchedule(scheduleBean);
 
             if (!(isSend)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -424,12 +479,184 @@ public class PreProductionServiceImpl implements PreProductionService {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
         }
-        return ;//ajaxDoneSuccess("批量操作成功");
+        return ;
     }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void updateAllProductionDBA(String taskIdStr){
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //生成流水记录
+        ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+        // 所有预投产编号数组
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list[0].equals("1")){
+            //return ajaxDoneError("请填写进行此操作原因");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 先判断所选择的预投产编号是否需要DBA操作，如果不需要，则提示报错
+        for (int i = 2; i < pro_number_list.length; ++i) {
+            // 获取预投产当前状态
+            String status = iPreproductionExtDao.get(pro_number_list[i]).getPreStatus();
+            // 获取是否需要DBA操作字段
+            String isDbaOperation = iPreproductionExtDao.get(pro_number_list[i]).getIsDbaOperation();
+            // 获取DBA操作是否完成字段
+            String isDbaOperationComplete = iPreproductionExtDao.get(pro_number_list[i]).getIsDbaOperationComplete();
+            // 先判断预投产状态是否符合需求
+            if(!"预投产待部署".equals(status)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"的预投产状态不为【预投产待部署】，请更新正确的预投产状态！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            // 判断是否需要DBA操作， 需要再判断，是否已经操作完成
+            if("是".equals(isDbaOperation)){
+                // 需要DBA操作，
+                if("是".equals(isDbaOperationComplete)){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"DBA操作已完成，请不要重复操作！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }else{
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"不需要DBA操作，请选择正确状态的预投产需求！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
 
+        }
 
+        for (int j = 2; j < pro_number_list.length; ++j) {
+            PreproductionDO preproductionDO = iPreproductionExtDao.get(pro_number_list[j]);
+            preproductionDO.setPreNumber(pro_number_list[j]);
+            preproductionDO.setIsDbaOperation("是");
+            preproductionDO.setIsDbaOperationComplete("是");
+            // 更新DBA操作是否完成标志
+            iPreproductionExtDao.updatePreDBA(preproductionDO);
+            // 记录操作
+            scheduleBean.setProNumber(pro_number_list[j]);
+            scheduleBean.setProOperator(currentUser);
+            scheduleBean.setOperationType("DBA操作完成");
+            scheduleBean.setPreOperation("预投产待部署");
+            scheduleBean.setOperationReason("预投产DBA操作完成");
+            scheduleBean.setAfterOperation("DBA操作完成");
+            operationProductionDao.insertSchedule(scheduleBean);
+            // 邮件通知版本组，及时更新状态
+            // 发送邮件通知
+            // 创建邮件信息
+            MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+            mailInfo.setMailServerHost("smtp.qiye.163.com");
+            mailInfo.setMailServerPort("25");
+            mailInfo.setValidate(true);
+            mailInfo.setUsername(Constant.EMAIL_NAME);
+            mailInfo.setPassword(Constant.EMAIL_PSWD);
+            mailInfo.setFromAddress(Constant.EMAIL_NAME);
+            //String[] mailToAddress  = mvoDept.getEmployeeEmail().split(";");
+            String[] mailToAddress  ={"tu_yi@hisuntech.com"};
+            mailInfo.setReceivers(mailToAddress);
+//        String[] mailToCss = mfba.getEmployeeEmail().split(";");
+//        mailInfo.setCcs(mailToCss);
+            mailInfo.setSubject("【预投产DBA操作完成通知】");
+            mailInfo.setSubject("【预投产DBA操作完成通知】-" + preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "-" + preproductionDO.getPreApplicant());
+            mailInfo.setContent(preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "的DBA操作已完成:<br/>&nbsp;&nbsp;请版本组及时更新版本组操作包，并及时更新研发管理系统状态！<br/>");
+//        // 这个类主要来发送邮件
+            boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            //MailFlowDO bnb = new MailFlowDO("预投产申请通知", "code_review@hisuntech.com", mvoDept.getEmployeeEmail(), mailInfo.getContent());
+            //operationProductionDao.addMailFlow(bnb);
+            if (!(isSend)) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+        }
+    }
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void updateAllProductionBBZ(String taskIdStr){
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //生成流水记录
+        ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+        String[] pro_number_list=taskIdStr.split("~");
+        if(pro_number_list[0].equals("1")){
+            //return ajaxDoneError("请填写进行此操作原因");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        // 先判断所选择的预投产编号是否需要DBA操作，如果需要，则判断是否DBA操作完成
+        for (int i = 2; i < pro_number_list.length; ++i) {
+            // 获取预投产当前状态
+            String status = iPreproductionExtDao.get(pro_number_list[i]).getPreStatus();
+            // 获取是否需要DBA操作字段
+            String isDbaOperation = iPreproductionExtDao.get(pro_number_list[i]).getIsDbaOperation();
+            // 获取DBA操作是否完成字段
+            String isDbaOperationComplete = iPreproductionExtDao.get(pro_number_list[i]).getIsDbaOperationComplete();
+            // 先判断预投产状态是否符合需求
+            if(!"预投产待部署".equals(status)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"的预投产状态不为【预投产待部署】，请更新正确的预投产状态！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            // 判断是否需要DBA操作， 需要再判断，是否已经操作完成
+            if("是".equals(isDbaOperation)){
+                // 需要DBA操作，但DBA操作未完成
+                if("否".equals(isDbaOperationComplete)){
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"DBA操作未完成，请先完成DBA操作！");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+
+        }
+        for (int j = 2; j < pro_number_list.length; ++j) {
+            PreproductionDO preproductionDO = iPreproductionExtDao.get(pro_number_list[j]);
+            preproductionDO.setPreNumber(pro_number_list[j]);
+            preproductionDO.setProductionDeploymentResult("已部署");
+            preproductionDO.setPreStatus("预投产部署待验证");
+            iPreproductionExtDao.updatePreSts(preproductionDO);
+
+            // 记录操作
+            scheduleBean.setProNumber(pro_number_list[j]);
+            scheduleBean.setOperationType("预投产部署待验证");
+            scheduleBean.setPreOperation("预投产待部署");
+            scheduleBean.setOperationReason("预投产版本组操作完成");
+            scheduleBean.setAfterOperation("预投产部署待验证");
+            operationProductionDao.insertSchedule(scheduleBean);
+            // 邮件通知版本组，及时更新状态
+            // 发送邮件通知
+            // 创建邮件信息
+            MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+            mailInfo.setMailServerHost("smtp.qiye.163.com");
+            mailInfo.setMailServerPort("25");
+            mailInfo.setValidate(true);
+            mailInfo.setUsername(Constant.EMAIL_NAME);
+            mailInfo.setPassword(Constant.EMAIL_PSWD);
+            mailInfo.setFromAddress(Constant.EMAIL_NAME);
+            //String[] mailToAddress  = mvoDept.getEmployeeEmail().split(";");
+            String[] mailToAddress  ={"tu_yi@hisuntech.com"};
+            mailInfo.setReceivers(mailToAddress);
+//        String[] mailToCss = mfba.getEmployeeEmail().split(";");
+//        mailInfo.setCcs(mailToCss);
+            mailInfo.setSubject("【预投产版本组操作完成通知】");
+            mailInfo.setSubject("【预投产版本组操作完成通知】-" + preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "-" + preproductionDO.getPreApplicant());
+            mailInfo.setContent(preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "的DBA操作已完成:<br/>&nbsp;&nbsp;请及时验证，并及时更新研发管理系统状态！<br/>");
+//        // 这个类主要来发送邮件
+            boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+            //MailFlowDO bnb = new MailFlowDO("预投产申请通知", "code_review@hisuntech.com", mvoDept.getEmployeeEmail(), mailInfo.getContent());
+            //operationProductionDao.addMailFlow(bnb);
+            if (!(isSend)) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+        }
+
+    }
     /**
-     * 投产包上传
+     * 版本组投产包上传
      * @param file
      */
     @Override
@@ -448,14 +675,21 @@ public class PreProductionServiceImpl implements PreProductionService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-
+        // 判断两个操作包 包名不能一致
+        if(bean.getDdlPkgName() != null && bean.getDdlPkgName() !="" ){
+            if(file.getOriginalFilename().equals(bean.getDdlPkgName())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("版本组操作包包名不能与DBA操作包包名一致!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         //依据环境配置路径
         String path="";
         if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/preproduction/propkg/";
+            path= "/home/devms/temp/preproduction/propkg/bbz/";
         }
         else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/preproduction/propkg/";
+            path= "/home/devadm/temp/preproduction/propkg/bbz/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
@@ -463,41 +697,136 @@ public class PreProductionServiceImpl implements PreProductionService {
         }
         File fileDir = new File(path + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
+        LOGGER.info(fileDir.getPath());
+        LOGGER.info(filePath.getPath());
         if(fileDir.exists()){
             File[] oldFile = fileDir.listFiles();
             for(File o:oldFile) o.delete();
         }else{
             fileDir.mkdir();
         }
-        boolean flag = true;
+//        boolean flag = true;
         try {
             file.transferTo(filePath);
-            // 将服务器中的投产包上传到ftp服务器
-            FileInputStream in=new FileInputStream(filePath);
-            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
+//            // 将服务器中的投产包上传到ftp服务器
+//            FileInputStream in=new FileInputStream(filePath);
+//            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
         } catch (IllegalStateException e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("版本组操作包上传失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         } catch (IOException e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("版本组操作包上传失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        if(!flag){
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+//        if(!flag){
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
+        // 发送邮件通知
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+
         bean.setProPkgTime(LocalDateTime.now());
         bean.setProPkgName(file.getOriginalFilename());
+        // 更新包信息
         iPreproductionExtDao.updatePropkg(bean);
+        //更新预投产状态 ，当当前状态为预投产提出时
+        if(bean.getPreStatus().equals("预投产提出")){
+            if(bean.getIsDbaOperation().equals("是")){
+                //如果需要DBA操作，则再判断DAB操作包是否已经上传
+                if(bean.getDdlPkgName() != null && bean.getDdlPkgName() !="" && bean.getDdlPkgTime() != null ){
+                    bean.setPreStatus("预投产待部署");
+                    iPreproductionExtDao.updatePreSts(bean);
+                    //生成流水记录
+                    ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+                    // 记录操作
+                    scheduleBean.setProNumber(bean.getPreNumber());
+                    scheduleBean.setOperationType("预投产待部署");
+                    scheduleBean.setPreOperation("预投产提出");
+                    scheduleBean.setOperationReason("预投产包上传完成");
+                    scheduleBean.setAfterOperation("预投产待部署");
+                    operationProductionDao.insertSchedule(scheduleBean);
+                    // 邮件通知DBA和版本组更新预投产 ，备注DBA先操作ddlSQL
+                    // 获取DBA邮箱组
+                    MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("10");
+                    mailInfo.setReceivers(("tu_yi@hisuntech.com;"+ mp.getMailUser()).split(";"));
+                    mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的预投产包均已上传:<br/>&nbsp;&nbsp;请版本组和DBA及时取包、部署，（先执行DBA操作包，后执行版本组操作包）并及时更新研发管理系统状态！<br/>");
+                    // 抄送人  申请人 开发负责人
+                    // 获取申请人邮箱 开发负责人邮箱
+                    List<String> list = new ArrayList<>();
+                    list.add(bean.getPreApplicant());
+                    list.add(bean.getDevelopmentLeader());
+                    String [] nameList = new String[list.size()];
+                    nameList = list.toArray(nameList);
+                    DemandDO demandDO =planDao.searchUserLEmail(nameList);
+                    if (JudgeUtils.isNotNull(demandDO)){
+                        mailInfo.setCcs(demandDO.getMonRemark().split(";"));
+                    }
+                    mailInfo.setSubject("【预投产待部署通知】");
+                    mailInfo.setSubject("【预投产待部署】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
+//                  // 这个类主要来发送邮件
+                    boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+                    if (!(isSend)) {
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
+                }
+            }else{
+                bean.setPreStatus("预投产待部署");
+                // 不需要DBA操作，直接更新状态
+                iPreproductionExtDao.updatePreSts(bean);
+                //生成流水记录
+                ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+                // 记录操作
+                scheduleBean.setProNumber(bean.getPreNumber());
+                scheduleBean.setOperationType("预投产待部署");
+                scheduleBean.setPreOperation("预投产提出");
+                scheduleBean.setOperationReason("预投产包上传完成");
+                scheduleBean.setAfterOperation("预投产待部署");
+                operationProductionDao.insertSchedule(scheduleBean);
+                // 邮件通知版本组更新预投产
+                MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("10");
+                mailInfo.setReceivers(("tu_yi@hisuntech.com;").split(";"));
+                mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的预投产包均已上传:<br/>&nbsp;&nbsp;请版本组及时取包、部署，并及时更新研发管理系统状态！<br/>");
+                // 抄送人  申请人 开发负责人
+                // 获取申请人邮箱 开发负责人邮箱
+                List<String> list = new ArrayList<>();
+                list.add(bean.getPreApplicant());
+                list.add(bean.getDevelopmentLeader());
+                String [] nameList = new String[list.size()];
+                nameList = list.toArray(nameList);
+                DemandDO demandDO =planDao.searchUserLEmail(nameList);
+                if (JudgeUtils.isNotNull(demandDO)){
+                    mailInfo.setCcs(demandDO.getMonRemark().split(";"));
+                }
+                mailInfo.setSubject("【预投产待部署通知】");
+                mailInfo.setSubject("【预投产待部署】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
+//        // 这个类主要来发送邮件
+                boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+                if (!(isSend)) {
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+        }
+
     }
 
     /**
-     * 更新投产包
+     * 上传DBA投产包
      * @param file
      */
     @Override
@@ -516,14 +845,21 @@ public class PreProductionServiceImpl implements PreProductionService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("只有负责投产的申请提出人或开发负责人才能上传投产包!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-
+        // 判断两个操作包 包名不能一致
+        if(bean.getProPkgName() != null && bean.getProPkgName() !="" ){
+            if(file.getOriginalFilename().equals(bean.getProPkgName())){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("DBA操作包包名不能与版本组操作包包名一致!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
         //依据环境配置路径
         String path="";
         if(LemonUtils.getEnv().equals(Env.SIT)) {
-            path= "/home/devms/temp/preproduction/propkg/";
+            path= "/home/devms/temp/preproduction/propkg/dba/";
         }
         else if(LemonUtils.getEnv().equals(Env.DEV)) {
-            path= "/home/devadm/temp/preproduction/propkg/";
+            path= "/home/devadm/temp/preproduction/propkg/dba/";
         }else {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
@@ -531,48 +867,104 @@ public class PreProductionServiceImpl implements PreProductionService {
         }
         File fileDir = new File(path + reqNumber);
         File filePath = new File(fileDir.getPath()+"/"+file.getOriginalFilename());
+        LOGGER.info(fileDir.getPath());
+        LOGGER.info(filePath.getPath());
         if(fileDir.exists()){
             File[] oldFile = fileDir.listFiles();
             for(File o:oldFile) o.delete();
         }else{
             fileDir.mkdir();
         }
-        boolean flag = true;
+//        boolean flag = true;
         try {
             file.transferTo(filePath);
-            // 将服务器中的投产包上传到ftp服务器
-            FileInputStream in=new FileInputStream(filePath);
-            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
+//            // 将服务器中的投产包上传到ftp服务器
+//            FileInputStream in=new FileInputStream(filePath);
+//            flag = FtpUtil.uploadFile("10.9.102.186", 21, "admin", "admin", "/home/ftpuser/www/images", "/2020/04/09", file.getOriginalFilename(), in);
         } catch (IllegalStateException e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("DBA操作包上传失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         } catch (IOException e) {
             e.printStackTrace();
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传失败");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("DBA操作包上传失败");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        // 投产包上传ftp服务器成功
-        if(flag){
-            // 上传成功后调用自动化投产接口，调用自动化投产接口 提供投产编号，包名，环境
-            AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
-            automatedProductionBO.setEnv("0");
-            automatedProductionBO.setProNumber(reqNumber);
-            automatedProductionBO.setProPkgName(file.getOriginalFilename());
-            automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+//        // 投产包上传ftp服务器成功
+//        if(flag){
+//            // 上传成功后调用自动化投产接口，调用自动化投产接口 提供投产编号，包名，环境
+//            AutomatedProductionBO automatedProductionBO = new AutomatedProductionBO();
+//            automatedProductionBO.setEnv("0");
+//            automatedProductionBO.setProNumber(reqNumber);
+//            automatedProductionBO.setProPkgName(file.getOriginalFilename());
+//            automaticCommissioningInterfaceService.automatedProduction(automatedProductionBO);
+//
+//        }else{
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        }
+        bean.setDdlPkgTime(LocalDateTime.now());
+        bean.setDdlPkgName(file.getOriginalFilename());
+        iPreproductionExtDao.updateDbapkg(bean);
+        //更新预投产状态 ，当当前状态为预投产提出时
+        if(bean.getPreStatus().equals("预投产提出")){
+            if(bean.getIsDbaOperation().equals("是")){
+                //如果需要DBA操作，则再判断DAB操作包是否已经上传
+                if(bean.getProPkgName() != null && bean.getProPkgName() !="" && bean.getProPkgName() != null ){
+                    bean.setPreStatus("预投产待部署");
+                    iPreproductionExtDao.updatePreSts(bean);
+                    //生成流水记录
+                    ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+                    // 记录操作
+                    scheduleBean.setProNumber(bean.getPreNumber());
+                    scheduleBean.setOperationType("预投产待部署");
+                    scheduleBean.setPreOperation("预投产提出");
+                    scheduleBean.setOperationReason("预投产包上传完成");
+                    scheduleBean.setAfterOperation("预投产待部署");
+                    operationProductionDao.insertSchedule(scheduleBean);
+                    // 邮件通知DBA和版本组更新预投产 ，备注DBA先操作ddlSQL
 
-        }else{
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("文件上传FTP服务器失败，请重新上传");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+                    mailInfo.setMailServerHost("smtp.qiye.163.com");
+                    mailInfo.setMailServerPort("25");
+                    mailInfo.setValidate(true);
+                    mailInfo.setUsername(Constant.EMAIL_NAME);
+                    mailInfo.setPassword(Constant.EMAIL_PSWD);
+                    mailInfo.setFromAddress(Constant.EMAIL_NAME);
+                    // 接收人 版本组、DBA
+                    // 获取DBA邮箱组
+                    MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("10");
+                    mailInfo.setReceivers(("tu_yi@hisuntech.com;"+ mp.getMailUser()).split(";"));
+                    // 抄送人  申请人 开发负责人
+                    // 获取申请人邮箱 开发负责人邮箱
+                    List<String> list = new ArrayList<>();
+                    list.add(bean.getPreApplicant());
+                    list.add(bean.getDevelopmentLeader());
+                    String [] nameList = new String[list.size()];
+                    nameList = list.toArray(nameList);
+                    DemandDO demandDO =planDao.searchUserLEmail(nameList);
+                    if (JudgeUtils.isNotNull(demandDO)){
+                        mailInfo.setCcs(demandDO.getMonRemark().split(";"));
+                    }
+                    mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的预投产包均已上传:<br/>&nbsp;&nbsp;请版本组和DBA及时取包、部署，（先执行DBA操作包，后执行版本组操作包）并及时更新研发管理系统状态！<br/>");
+                    mailInfo.setSubject("【预投产待部署通知】");
+                    mailInfo.setSubject("【预投产待部署】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
+                   // 这个类主要来发送邮件
+                    boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
+                    if (!(isSend)) {
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                        MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                    }
+                }
+            }
         }
-        bean.setProPkgTime(LocalDateTime.now());
-        bean.setProPkgName(file.getOriginalFilename());
-        iPreproductionExtDao.updatePropkg(bean);
+
     }
-    //投产包下载
+    //版本组投产包下载
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void pkgDownload(HttpServletRequest request, HttpServletResponse response, String proNumber){
@@ -582,10 +974,67 @@ public class PreProductionServiceImpl implements PreProductionService {
             //依据环境配置路径
             String path="";
             if(LemonUtils.getEnv().equals(Env.SIT)) {
-                path= "/home/devms/temp/preproduction/propkg/";
+                path= "/home/devms/temp/preproduction/propkg/bbz/";
             }
             else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                path= "/home/devadm/temp/preproduction/propkg/";
+                path= "/home/devadm/temp/preproduction/propkg/bbz/";
+            }else {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+            File fileDir = new File(path + proNumber);
+            File[] pkgFile=fileDir.listFiles();
+            File fileSend=null;
+            if(pkgFile!=null&&pkgFile.length>0){
+                fileSend = pkgFile[0];
+            }
+            response.setHeader("Content-Disposition", "attachment; filename="  + new String(fileSend.getName().getBytes(Constant.CHARSET_GB2312), Constant.CHARSET_ISO8859));
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            //告诉浏览器允许所有的域访问
+            //注意 * 不能满足带有cookie的访问,Origin 必须是全匹配
+            //resp.addHeader("Access-Control-Allow-Origin", "*");
+            //解决办法通过获取Origin请求头来动态设置
+            String origin = request.getHeader("Origin");
+            if (StringUtils.isNotBlank(origin)) {
+                response.addHeader("Access-Control-Allow-Origin", origin);
+            }
+            //允许带有cookie访问
+            response.addHeader("Access-Control-Allow-Credentials", "true");
+            //告诉浏览器允许跨域访问的方法
+            response.addHeader("Access-Control-Allow-Methods", "*");
+            //告诉浏览器允许带有Content-Type,header1,header2头的请求访问
+            //resp.addHeader("Access-Control-Allow-Headers", "Content-Type,header1,header2");
+            //设置支持所有的自定义请求头
+            String headers = request.getHeader("Access-Control-Request-Headers");
+            if (StringUtils.isNotBlank(headers)) {
+                response.addHeader("Access-Control-Allow-Headers", headers);
+            }
+            //告诉浏览器缓存OPTIONS预检请求1小时,避免非简单请求每次发送预检请求,提升性能
+            response.addHeader("Access-Control-Max-Age", "3600");
+            response.setContentType("application/octet-stream; charset=utf-8");
+            output.write(org.apache.commons.io.FileUtils.readFileToByteArray(fileSend));
+            bufferedOutPut.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+    //DBA投产包下载
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void dbaDownload(HttpServletRequest request, HttpServletResponse response, String proNumber){
+        response.reset();
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            //依据环境配置路径
+            String path="";
+            if(LemonUtils.getEnv().equals(Env.SIT)) {
+                path= "/home/devms/temp/preproduction/propkg/dba/";
+            }
+            else if(LemonUtils.getEnv().equals(Env.DEV)) {
+                path= "/home/devadm/temp/preproduction/propkg/dba/";
             }else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
@@ -634,7 +1083,7 @@ public class PreProductionServiceImpl implements PreProductionService {
     public DemandBO verifyAndQueryTheProductionNumber(String proNumber) {
         //未投产,req前缀投产编号则查询该编号对应的需求计划
         DemandDO demandDO = new DemandDO();
-        if(proNumber.startsWith("REQ")) {
+        if(proNumber.startsWith("REQ")&& !proNumber.startsWith("REQS")) {
             //查询该是编号是否已经投产
             PreproductionBO productionBO = this.searchProdutionDetail(proNumber);
             if(productionBO!=null && !productionBO.getPreStatus().equals("预投产取消")&& !productionBO.getPreStatus().equals("预投产打回")&& !productionBO.getPreStatus().equals("预投产回退")){

@@ -20,4 +20,6 @@ public interface IPreproductionExtDao extends IPreproductionDao {
     //上传投产包，更新包名，上传时间
     void updateDbapkg(PreproductionDO preproductionDO);
     void updatePreSts(PreproductionDO preproductionDO);
+    void updateAgain(PreproductionDO preproductionDO);
+    void updatePreDBA(PreproductionDO preproductionDO);
 }
