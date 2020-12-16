@@ -157,7 +157,7 @@ public enum MsgEnum implements AlertCapable {
     /**
      * 失败
      */
-    ERROR_NOT_PROJECTMNG("MON00504", "项目启动失败，只能有项目经理进行项目启动"),
+    ERROR_NOT_PROJECTMNG("MON00504", "项目启动失败，只有该需求的项目经理和产品经理才能进行项目启动"),
     /**
      * 失败
      */

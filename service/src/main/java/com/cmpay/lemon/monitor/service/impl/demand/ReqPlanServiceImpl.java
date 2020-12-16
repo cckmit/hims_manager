@@ -649,9 +649,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         //获取登录名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        // 项目经理
         String projectMng = demandDO.getProjectMng();
-        if (!currentUser.equals(projectMng)) {
-            //"项目启动失败，只能有项目经理进行项目启动"
+        // 产品经理
+        String productMng = demandDO.getProjectMng();
+        if (!currentUser.equals(projectMng) && !currentUser.equals(productMng)) {
+            //"项目启动失败，只能有项目经理和产品经理进行项目启动"
             BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
         }
         ProjectStartDO projectStartDO = new ProjectStartDO();
@@ -987,9 +990,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //"项目启动失败，需求编号和需求名称不能为空!"
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQNO_REQNM_ISBLANK);
             }
+            // 项目经理
             String projectMng = reqPlan.getProjectMng();
-            if (!currentUser.equals(projectMng)) {
-                //"项目启动失败，只能有项目经理进行项目启动"
+            // 产品经理
+            String productMng = reqPlan.getProjectMng();
+            if (!currentUser.equals(projectMng) && !currentUser.equals(productMng)) {
+                //"项目启动失败，只能有项目经理和产品经理进行项目启动"
                 BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_PROJECTMNG);
             }
         }

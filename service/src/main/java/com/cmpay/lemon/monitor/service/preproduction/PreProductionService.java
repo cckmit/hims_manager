@@ -32,6 +32,7 @@ public interface PreProductionService {
     //投产包下载
     void dbaDownload(HttpServletRequest request, HttpServletResponse response, String str);
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
+    PreproductionBO againProductionNumber(String proNumber);
     void updateState(AutomatedProductionCallbackReqBO productionCallbackBO);
 
     void automatedProductionCallback(AutomatedProductionCallbackReqBO productionCallbackBO);

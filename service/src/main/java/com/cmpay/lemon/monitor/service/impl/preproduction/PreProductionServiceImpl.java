@@ -166,7 +166,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         mailInfo.setFromAddress(Constant.EMAIL_NAME);
         // 根据部门获取部门经理
         DemandDO demandDO =planDao.searchDeptUserEmail(preproductionDO.getApplicationDept());
-        // 收件人 mailRecipient + 部门经理 + 金艳、肖铧、董建敏
+        // 收件人 mailRecipient + 部门经理 + 金艳、肖铧、邓善军
         String mailToAddress  = "deng_shj@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;"+preproductionDO.getMailRecipient()+";"+demandDO.getMonRemark();
         if(LemonUtils.getEnv().equals(Env.SIT)) {
             mailInfo.setReceivers(mailToAddress.split(";"));
@@ -1226,7 +1226,17 @@ public class PreProductionServiceImpl implements PreProductionService {
         DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), demandDO);
         return demandBO;
     }
-
+    // 重新投产查询数据
+    @Override
+    public PreproductionBO againProductionNumber(String proNumber) {
+            PreproductionBO productionBO = this.searchProdutionDetail(proNumber);
+            if(productionBO!=null && !productionBO.getPreStatus().equals("预投产取消")&& !productionBO.getPreStatus().equals("预投产打回")&& !productionBO.getPreStatus().equals("预投产回退")){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("该预投产编号已经预投产!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        return productionBO;
+    }
     public PreproductionBO searchProdutionDetail(String proNumber) {
         PreproductionBO productionBO=null;
         PreproductionDO productionBean = iPreproductionExtDao.get(proNumber);

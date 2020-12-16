@@ -113,6 +113,14 @@ public class PreProductionController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, demandDTO);
     }
 
+    @RequestMapping("/againFindOne")
+    public GenericRspDTO<PreproductionDTO> againFindOne(@RequestParam("pro_number") String proNumber){
+        //验证并查询需求编号
+        PreproductionBO demandBO = preProductionService.againProductionNumber(proNumber);
+        System.err.println(demandBO);
+        PreproductionDTO preproductionDTO = BeanUtils.copyPropertiesReturnDest(new PreproductionDTO(), demandBO);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, preproductionDTO);
+    }
     /**
      * 上传投产包
      * @return
