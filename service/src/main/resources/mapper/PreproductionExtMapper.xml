@@ -183,7 +183,10 @@
             <if test="isDbaOperation != null and isDbaOperation != ''" >
                 and is_dba_operation = #{isDbaOperation,jdbcType=VARCHAR}
             </if>
-            <if test="isDbaOperationComplete != null and isDbaOperationComplete != ''" >
+            <if test="isDbaOperationComplete != null and isDbaOperationComplete != '' and isDbaOperationComplete == '是'.toString()" >
+                and (is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR}  or is_dba_operation_complete = '')
+            </if>
+            <if test="isDbaOperationComplete != null and isDbaOperationComplete != '' and isDbaOperationComplete == '否'.toString()" >
                 and is_dba_operation_complete = #{isDbaOperationComplete,jdbcType=VARCHAR}
             </if>
             <if test="mailRecipient != null and mailRecipient != ''" >

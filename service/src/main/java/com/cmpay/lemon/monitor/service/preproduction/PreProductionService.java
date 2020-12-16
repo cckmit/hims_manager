@@ -2,6 +2,7 @@ package com.cmpay.lemon.monitor.service.preproduction;
 
 
 import com.cmpay.lemon.monitor.bo.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;

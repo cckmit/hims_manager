@@ -22,6 +22,7 @@ import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.User;
 import org.gitlab4j.api.utils.ISO8601;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -216,6 +217,103 @@ public class MultiMailsender {
         }
     }
 
+    public static boolean sendMailtoMulti(MultiMailSenderInfo mailInfo){
+        MyAuthenticator authenticator = null;
+        if (mailInfo.isValidate()) {
+            authenticator = new MyAuthenticator(mailInfo.getUsername(),
+                    mailInfo.getPassword());
+        }
+        Session sendMailSession = Session.getInstance(mailInfo
+                .getProperties(), authenticator);
+        String fail_mail = "";
+        while (true) {
+            try {
+                Message mailMessage = new MimeMessage(sendMailSession);
+                // 创建邮件发送者地址
+                Address from = new InternetAddress(mailInfo.getFromAddress());
+                mailMessage.setFrom(from);
+                // 创建邮件的接收者地址，并设置到邮件消息中
+                String[] mailToAddress = mailInfo.getReceivers() ;
+                if (mailToAddress != null) {
+                    String mailTOAddressSTR = "";
+                    for (String toMailAddress : mailToAddress) {
+                        // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
+                        if (fail_mail.indexOf(toMailAddress) < 0){
+                            mailTOAddressSTR += toMailAddress + ";";
+                        }
+                    }
+                    mailTOAddressSTR = mailTOAddressSTR.substring(0, mailTOAddressSTR.length() - 1);
+
+                    // 为每个邮件接收者创建一个地址
+                    Address[] toAddresses = new InternetAddress[mailTOAddressSTR.split(";").length];
+                    int i = 0;
+                    for (String ccAddStr : mailTOAddressSTR.split(";")) {
+                        toAddresses[i] = new InternetAddress(ccAddStr);
+                        i++;
+                    }
+                    mailMessage.setRecipients(Message.RecipientType.TO, toAddresses);
+                }
+                // 获取抄送者信息
+                String[] ccs = mailInfo.getCcs();
+                if (ccs != null) {
+                    String mailCCAddressSTR = "";
+                    for (String ccMailAddress : ccs) {
+                        // ccMailAddress.indexOf("@hisuntech.com") > -1 &&
+                        if ( fail_mail.indexOf(ccMailAddress) < 0){
+                            mailCCAddressSTR += ccMailAddress + ";";
+                        }
+                    }
+                    mailCCAddressSTR = mailCCAddressSTR.substring(0, mailCCAddressSTR.length() - 1);
+
+                    // 为每个邮件接收者创建一个地址
+                    Address[] ccAddresses = new InternetAddress[mailCCAddressSTR.split(";").length];
+                    int i = 0;
+                    for (String ccAddStr : mailCCAddressSTR.split(";")) {
+                        ccAddresses[i] = new InternetAddress(ccAddStr);
+                        i++;
+                    }
+                    // 	将抄送者信息设置到邮件信息中，注意类型为Message.RecipientType.CC
+                    mailMessage.setRecipients(Message.RecipientType.CC, ccAddresses);
+                }
+
+                mailMessage.setSubject(mailInfo.getSubject());
+                mailMessage.setSentDate(new Date());
+                // 设置邮件内容
+                Multipart mainPart = new MimeMultipart();
+                BodyPart html = new MimeBodyPart();
+                html.setContent(mailInfo.getContent(), "text/html; charset=GBK");
+                mainPart.addBodyPart(html);
+                //向multipart中添加附件
+                Vector<File> files = mailInfo.getFile() ;
+                String fileName = mailInfo.getFileName() ;
+                Enumeration<File> efile = files.elements() ;
+                while(efile.hasMoreElements()){
+                    MimeBodyPart mdpFile = new MimeBodyPart() ;
+                    fileName = efile.nextElement().toString() ;
+                    FileDataSource fds = new FileDataSource(fileName) ;
+                    mdpFile.setDataHandler(new DataHandler(fds)) ;
+                    //这个方法可以解决乱码问题
+                    String fileName1 = MimeUtility.encodeText(fds.getName()) ;
+                    mdpFile.setFileName(fileName1) ;
+                    mainPart.addBodyPart(mdpFile) ;
+                }
+                //files.removeAllElements() ;
+                // 将MiniMultipart对象设置为邮件内容
+                mailMessage.setContent(mainPart);
+                // 发送邮件
+                Transport transport = sendMailSession.getTransport("smtp");
+                transport.connect("smtp.qiye.163.com", Constant.P_EMAIL_NAME, Constant.P_EMAIL_PSWD);
+                transport.sendMessage(mailMessage, mailMessage.getAllRecipients());
+                transport.close();
+                return true;
+            } catch (Exception ex) {
+                String testStr = ex.getCause().toString();
+                String[] testarr = testStr.split(":");
+                fail_mail += fail_mail + testarr[testarr.length - 1].trim() + ";";
+                logger.error("邮件发送失败:" + testarr[testarr.length - 1].trim());
+            }
+        }
+    }
 
     public static boolean sendMailtoMultiCC(MultiMailSenderInfo mailInfo){
         MyAuthenticator authenticator = null;
