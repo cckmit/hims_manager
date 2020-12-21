@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -166,8 +167,8 @@ public class PreProductionServiceImpl implements PreProductionService {
         mailInfo.setFromAddress(Constant.EMAIL_NAME);
         // 根据部门获取部门经理
         DemandDO demandDO =planDao.searchDeptUserEmail(preproductionDO.getApplicationDept());
-        // 收件人 mailRecipient + 部门经理 + 金艳、肖铧、邓善军
-        String mailToAddress  = "deng_shj@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;"+preproductionDO.getMailRecipient()+";"+demandDO.getMonRemark();
+        // 收件人 mailRecipient + 部门经理
+        String mailToAddress  = preproductionDO.getMailRecipient()+";"+demandDO.getMonRemark();
         if(LemonUtils.getEnv().equals(Env.SIT)) {
             mailInfo.setReceivers(mailToAddress.split(";"));
         }
@@ -473,7 +474,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 // 根据部门获取部门经理
                 DemandDO demandDO =planDao.searchDeptUserEmail(bean.getApplicationDept());
                 // 收件人 mailRecipient + 部门经理
-                String mailToAddress  = "deng_shj@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;"+bean.getMailRecipient()+";"+demandDO.getMonRemark();
+                String mailToAddress  = bean.getMailRecipient()+";"+demandDO.getMonRemark();
                 if(LemonUtils.getEnv().equals(Env.SIT)) {
                     mailInfo.setReceivers(mailToAddress.split(";"));
                 }
@@ -694,7 +695,6 @@ public class PreProductionServiceImpl implements PreProductionService {
             mailInfo.setPassword(Constant.EMAIL_PSWD);
             mailInfo.setFromAddress(Constant.EMAIL_NAME);
             // 邮件通知 申请人 开发负责人
-            String[] mailToAddress  ={"tu_yi@hisuntech.com"};
             List<String> list = new ArrayList<>();
             list.add(preproductionDO.getPreApplicant());
             list.add(preproductionDO.getDevelopmentLeader());
@@ -1008,7 +1008,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         // 获取DBA邮箱组
         MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("10");
         if(LemonUtils.getEnv().equals(Env.SIT)) {
-            mailInfo.setReceivers(mp.getMailUser().split(";"));
+            mailInfo.setReceivers(("deng_shj@hisuntech.com;wujinyan@hisuntech.com;xiao_hua@hisuntech.com;"+mp.getMailUser()).split(";"));
         }
         else if(LemonUtils.getEnv().equals(Env.DEV)) {
             mailInfo.setReceivers(("tu_yi@hisuntech.com;").split(";"));
@@ -1034,8 +1034,36 @@ public class PreProductionServiceImpl implements PreProductionService {
         sb.append("<tr><td style='font-weight: bold;'>验证复核人</td><td>" + bean.getProChecker() + "</td><td style='font-weight: bold;'>金科负责人邮箱</td><td>" + bean.getMailRecipient() + "</td></tr>");
         sb.append("<tr><td style='font-weight: bold;'>是否有DBA操作</td><td>" + bean.getIsDbaOperation() + "</td><td style='font-weight: bold;'>DBA操作是否完成</td><td>" + bean.getIsDbaOperationComplete() + "</td></tr>");
         sb.append("<tr><td style='font-weight: bold;'>备注</td><td colspan='5'>" + bean.getRemark() + "</td></tr></table>");
-        mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的DBA操作包已上传:<br/>&nbsp;&nbsp;请DBA及时取包、部署，并及时更新研发管理系统状态！<br/>"+sb.toString());
+        mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的DBA操作包已上传:<br/>&nbsp;&nbsp;烦请各位领导查看，并请DBA及时取包、部署，并及时更新研发管理系统状态！<br/>"+sb.toString());
         mailInfo.setSubject("【DBA操作包上传通知】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
+
+        Vector<File> filesv = new Vector<File>() ;
+        /**
+         * 附件
+         */
+        //获取邮件附件
+        File motherFile=null;
+        //归类文件，创建编号文件夹
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            motherFile = new File("/home/devms/temp/preproduction/propkg/dba/" + bean.getPreNumber());
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            motherFile = new File("/home/devadm/temp/preproduction/propkg/dba/" + bean.getPreNumber());
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        File[] childFile=motherFile.listFiles();
+        if(childFile!=null){
+            for(File file1:childFile){
+                filesv.add(file1) ;
+            }
+        }
+        //添加附件
+        if(filesv!=null && filesv.size()!=0){
+            mailInfo.setFile(filesv);
+        }
         // 这个类主要来发送邮件
         sendMailService.sendMail(mailInfo);
         //更新预投产状态 ，当当前状态为预投产提出时
@@ -1055,15 +1083,21 @@ public class PreProductionServiceImpl implements PreProductionService {
                     scheduleBean.setAfterOperation("预投产待部署");
                     operationProductionDao.insertSchedule(scheduleBean);
                     // 邮件通知DBA和版本组更新预投产 ，备注DBA先操作ddlSQL
-
+                    MultiMailSenderInfo mailInfo1 = new MultiMailSenderInfo();
+                    mailInfo1.setMailServerHost("smtp.qiye.163.com");
+                    mailInfo1.setMailServerPort("25");
+                    mailInfo1.setValidate(true);
+                    mailInfo1.setUsername(Constant.EMAIL_NAME);
+                    mailInfo1.setPassword(Constant.EMAIL_PSWD);
+                    mailInfo1.setFromAddress(Constant.EMAIL_NAME);
                     // 接收人 版本组、DBA
                     // 获取DBA邮箱组
                     MailGroupDO mp1 = operationProductionDao.findMailGroupBeanDetail("10");
                     if(LemonUtils.getEnv().equals(Env.SIT)) {
-                        mailInfo.setReceivers(("version_it@hisuntech.com;"+ mp.getMailUser()).split(";"));
+                        mailInfo1.setReceivers(("version_it@hisuntech.com;"+ mp.getMailUser()).split(";"));
                     }
                     else if(LemonUtils.getEnv().equals(Env.DEV)) {
-                        mailInfo.setReceivers(("tu_yi@hisuntech.com;").split(";"));
+                        mailInfo1.setReceivers(("tu_yi@hisuntech.com;").split(";"));
                     }
                     // 抄送人  申请人 开发负责人
                     // 获取申请人邮箱 开发负责人邮箱
@@ -1074,12 +1108,12 @@ public class PreProductionServiceImpl implements PreProductionService {
                     nameList1 = list1.toArray(nameList1);
                     DemandDO demandDO1 =planDao.searchUserLEmail(nameList1);
                     if (JudgeUtils.isNotNull(demandDO1)){
-                        mailInfo.setCcs(demandDO1.getMonRemark().split(";"));
+                        mailInfo1.setCcs(demandDO1.getMonRemark().split(";"));
                     }
-                    mailInfo.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的预投产包均已上传:<br/>&nbsp;&nbsp;请版本组和DBA及时取包、部署，（先执行DBA操作包，后执行版本组操作包）并及时更新研发管理系统状态！<br/>"+sb.toString());
-                    mailInfo.setSubject("【预投产待部署通知】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
-                   // 这个类主要来发送邮件
-                    sendMailService.sendMail(mailInfo);
+                    mailInfo1.setContent(bean.getPreNeed() + "-" + bean.getPreNumber() + "的预投产包均已上传:<br/>&nbsp;&nbsp;请DBA和版本组及时取包、部署，（先执行DBA操作包，后执行版本组操作包）并及时更新研发管理系统状态！<br/>"+sb.toString());
+                    mailInfo1.setSubject("【预投产待部署通知】-" + bean.getPreNeed() + "-" + bean.getPreNumber() + "-" + bean.getPreApplicant());
+                    // 这个类主要来发送邮件
+                    sendMailService.sendMail(mailInfo1);
                 }
             }
         }

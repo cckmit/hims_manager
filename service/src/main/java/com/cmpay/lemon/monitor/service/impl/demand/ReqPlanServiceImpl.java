@@ -689,10 +689,11 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
-        if (JudgeUtils.isNull(demandDO.getIsSvnBuild()) || "否".equals(demandDO.getIsSvnBuild())) {
+        // 不进行项目启动也能上传需求文档
+        /*if (JudgeUtils.isNull(demandDO.getIsSvnBuild()) || "否".equals(demandDO.getIsSvnBuild())) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
+        }*/
         ProjectStartDO projectStartDO = new ProjectStartDO();
         projectStartDO.setReqNm(demandDO.getReqNm());
         projectStartDO.setReqNo(demandDO.getReqNo());
@@ -1006,7 +1007,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         }
         try {
             // 建立svn项目
-            String message = bulidSvnProjrct(reqPlan, request);
+            String message = bulidSvnProjrct(reqPlan);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败:" + message);
                 MsgEnum.ERROR_NOT_SVN.setMsgInfo("项目启动失败:" + message);
@@ -1061,10 +1062,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     /**
      * svn项目建立
      * @param reqTask
-     * @param request
      * @return
      */
-    private String bulidSvnProjrct(DemandDO reqTask, HttpServletRequest request) {
+    private String bulidSvnProjrct(DemandDO reqTask) {
         //连接svn失败后报错，项目启动失败
         try {
             // 身份验证
@@ -1727,6 +1727,30 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (StringUtils.isBlank(reqNo)) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：需求编号不能为空!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (!uploadPeriod.equals("30")) {
+            if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }else{
+            // 如果是上传需求定稿文档就先建立svn目录
+            if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
+                try {
+                    // 建立svn项目
+                    String message = bulidSvnProjrct(reqPlan);
+                    if (StringUtils.isNotBlank(message)) {
+                        //return ajaxDoneError("项目启动失败:" + message);
+                        MsgEnum.ERROR_NOT_SVN.setMsgInfo("需求文档上传失败:" + message);
+                        BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
+                    }
+                } catch (Exception e1) {
+                    // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
+                    e1.printStackTrace();
+                    MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("需求文档上传失败:" + e1.getMessage());
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
+                }
+            }
         }
         // 如果当前是uat更新转预投产，则新增判断需求jira内部缺陷流程是否全部关闭
         // 30	需求定稿
