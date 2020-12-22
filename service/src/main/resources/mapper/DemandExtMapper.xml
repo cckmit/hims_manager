@@ -1710,4 +1710,14 @@
         where req_inner_seq =#{reqInnerSeq }
     </update>
 
+    <update id="updateSvnBuild" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        update t_demand_info
+        set
+        req_inner_seq =#{reqInnerSeq }
+        <if test="isSvnBuild != null and isSvnBuild != ''">
+            ,is_svn_build =#{isSvnBuild }
+        </if>
+        where req_inner_seq =#{reqInnerSeq }
+    </update>
+
 </mapper>

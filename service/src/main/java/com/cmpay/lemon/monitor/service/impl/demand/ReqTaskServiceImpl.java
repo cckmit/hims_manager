@@ -151,11 +151,6 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     private GenRptService genRptService;
     @Resource
     private IDemandEaseDevelopmentExtDao easeDevelopmentExtDao;
-    /**
-     * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
-     */
-    @Autowired
-    private ReqTaskService reqTaskService;
 
     @Autowired
     private ReqPlanService reqPlanService;
@@ -207,7 +202,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
             String reqAbnorType = demandBOList.get(i).getReqAbnorType();
             String reqAbnorTypeAll = "";
-            DemandBO demand = reqTaskService.findById(demandBOList.get(i).getReqInnerSeq());
+            DemandBO demand = findById(demandBOList.get(i).getReqInnerSeq());
 
             //当需求定稿时间、uat更新时间、测试完成时间、需求当前阶段、需求状态都不为空的时候，执行进度实时显示逻辑。
             if (StringUtils.isNotBlank(demand.getPrdFinshTm()) && StringUtils.isNotBlank(demand.getUatUpdateTm())
@@ -325,7 +320,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
         demandBO.setReqImplMon(mon);
         demandBO.setReqStartMon(mon);
         // 判断需求编号或需求名称是否重复
-        List<DemandBO> list = reqTaskService.getReqTaskByUK(demandBO);
+        List<DemandBO> list = getReqTaskByUK(demandBO);
         if (list.size() > 0) {
             BusinessException.throwBusinessException(MsgEnum.NON_UNIQUE);
         }
@@ -351,7 +346,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             }
         }
 
-        demandBO.setReqInnerSeq(reqTaskService.getNextInnerSeq());
+        demandBO.setReqInnerSeq(getNextInnerSeq());
         if (JudgeUtils.isEmpty(demandBO.getQaMng())) {
             demandBO.setQaMng("刘桂娟");
         }
@@ -393,6 +388,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             demandNameChangeDO.setUuid(UUID.randomUUID().toString());
             // 插入数据
             iDemandNameChangeExtDao.insert(demandNameChangeDO);
+            // 如果需求编号和需求名称都不为空，则新建svn文档文件夹
+            if(JudgeUtils.isNotEmpty(demandBO.getReqNm())&&JudgeUtils.isNotEmpty(demandBO.getReqNo())){
+                reqPlanService.bulidSVNProjrcts(demandBO.getReqInnerSeq(),demandBO.getReqNo(),demandBO.getReqNm());
+            }
 
             String reqInnerSeq = demandDao.getMaxInnerSeq().getReqInnerSeq();
             // 登记需求变更明细表
@@ -604,6 +603,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 }
                 // 插入
                 iDemandNameChangeExtDao.insert(demandNameChangeDO);
+                // 如果修改后，需求编号和需求名称都不为空，则新建svn文档目录
+                if(JudgeUtils.isNotEmpty(demandBO.getReqNm())&&JudgeUtils.isNotEmpty(demandBO.getReqNo())){
+                    reqPlanService.bulidSVNProjrcts(demandBO.getReqInnerSeq(),demandBO.getReqNo(),demandBO.getReqNm());
+                }
 
             }
             //如果修改了需求节点计划时间
@@ -733,7 +736,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
     public void checkReqTask(DemandBO demandBO) {
         //判断编号是否规范
         String reqNo = demandBO.getReqNo();
-        if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
+        if (StringUtils.isNotBlank(reqNo) && !checkNumber(reqNo)) {
             BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
         }
 
@@ -921,7 +924,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             //判断编号是否规范
             String reqNo = m.getReqNo();
-            if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
+            if (StringUtils.isNotBlank(reqNo) && !checkNumber(reqNo)) {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
             }
 
@@ -1044,6 +1047,10 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 // 插入数据
                 iDemandNameChangeExtDao.insert(demandNameChangeDO);
 
+                if(JudgeUtils.isNotEmpty(m.getReqNm())&&JudgeUtils.isNotEmpty(m.getReqNo())){
+                    reqPlanService.bulidSVNProjrcts(m.getReqInnerSeq(),m.getReqNo(),m.getReqNm());
+                }
+
                 // 登记需求变更明细表
                 DemandChangeDetailsDO demandChangeDetailsDO = new DemandChangeDetailsDO();
                 demandChangeDetailsDO.setReqInnerSeq(m.getReqInnerSeq());
@@ -1155,7 +1162,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     }
                     // 插入
                     iDemandNameChangeExtDao.insert(demandNameChangeDO);
-
+                    if(JudgeUtils.isNotEmpty(m.getReqNm())&&JudgeUtils.isNotEmpty(m.getReqNo())){
+                        reqPlanService.bulidSVNProjrcts(m.getReqInnerSeq(),m.getReqNo(),m.getReqNm());
+                    }
                 }
                 demandDao.update(m);
             });
@@ -1194,7 +1203,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             String zipName = DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".zip";
             //压缩文件
             File zip = new File(zipPath + zipName);
-            reqTaskService.ZipFiles(srcfile, zip, true);
+            ZipFiles(srcfile, zip, true);
             response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + zipName);
             response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
             //告诉浏览器允许所有的域访问
@@ -1254,7 +1263,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
 
             //判断编号是否规范
             String reqNo = m.getReqNo();
-            if (StringUtils.isNotBlank(reqNo) && !reqTaskService.checkNumber(reqNo)) {
+            if (StringUtils.isNotBlank(reqNo) && !checkNumber(reqNo)) {
                 BusinessException.throwBusinessException(MsgEnum.ERROR_REQ_NO);
             }
 

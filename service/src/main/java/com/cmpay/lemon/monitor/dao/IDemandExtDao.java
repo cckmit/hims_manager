@@ -88,4 +88,5 @@ public interface IDemandExtDao extends IDemandDao {
     List<DemandDO> QueryIsExecutingDemand2(DemandDO demandDO);
 
     void updatePlanInput(DemandDO demand);
+    void updateSvnBuild(DemandDO demand);
 }

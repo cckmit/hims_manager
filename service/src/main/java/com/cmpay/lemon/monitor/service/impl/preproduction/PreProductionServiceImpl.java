@@ -127,7 +127,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         PreproductionDO preproductionDO = new PreproductionDO();
         productionBO.setPreStatus("预投产提出");
         //预投产验证结果
-        productionBO.setProAdvanceResult("未通过");
+        productionBO.setProAdvanceResult("未验证");
         //预投产部署结果
         productionBO.setProductionDeploymentResult("未部署");
         // 如果 是否需要dba操作为"是"，则dba操作完成为：否，否则不赋值

@@ -136,6 +136,7 @@ public interface ReqPlanService {
 
 
      void modifyFolder();
-
-    public String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath);
+     String checkOutSvnDir(String directoryName, String svnRoot, String localSvnPath);
+     void bulidSVNProjrcts(String reqInnerSeq,String reqNo,String reqNm);
+     void buildSvn(DemandBO demandBO);
 }

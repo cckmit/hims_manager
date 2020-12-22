@@ -270,4 +270,11 @@ public class ReqPlanController {
         rspDTO.setPageSize(demandTimeFrameHistoryRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+
+    @RequestMapping("/buildSvn")
+    public GenericRspDTO<NoBody> buildSvn(@RequestBody DemandReqDTO reqDTO) {
+        DemandBO demandBO = BeanUtils.copyPropertiesReturnDest(new DemandBO(), reqDTO);
+        reqPlanService.buildSvn(demandBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

@@ -43,6 +43,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,11 +143,6 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     @Autowired
     private IOrganizationStructureDao iOrganizationStructureDao;
 
-    /**
-     * 自注入,解决getAppsByName中调用findAll的缓存不生效问题
-     */
-    @Autowired
-    private ReqPlanService reqPlanService;
     @Autowired
     private ReqTaskService reqTaskService;
     @Autowired
@@ -402,7 +398,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     //项目计划变更 发送邮件
     public void productionChangeEmail(DemandBO demandBO) {
         Map<String, String> resMap = new HashMap<>();
-        resMap = reqPlanService.getMailbox(demandBO.getReqInnerSeq());
+        resMap = getMailbox(demandBO.getReqInnerSeq());
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
         String devpEmail = resMap.get("devpEmail");
@@ -411,8 +407,8 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         String subject = "【项目计划变更】" + demandBO.getReqNo() + "_" + demandBO.getReqNm() + "_"
                 + userService.getFullname(SecurityUtils.getLoginName());
         String content = projectChangeContent(demandBO);
-        String message = reqPlanService.sendMail(proMemberEmail, testDevpEmail + devpEmail, content, subject, null);
-        //String message = reqPlanService.sendMail("tu_yi@hisuntech.com", "wu_lr@hisuntech.com", content, subject, null);
+        String message = sendMail(proMemberEmail, testDevpEmail + devpEmail, content, subject, null);
+        //String message = sendMail("tu_yi@hisuntech.com", "wu_lr@hisuntech.com", content, subject, null);
         if (StringUtils.isNotBlank(message)) {
             //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
             MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目计划变更成功，邮件发送失败:" + message);
@@ -662,7 +658,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         projectStartDO.setReqNo(demandDO.getReqNo());
         projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
         Map<String, String> resMap = new HashMap<>();
-        resMap = reqPlanService.getMailbox(reqInnerSeq);
+        resMap = getMailbox(reqInnerSeq);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
         String devpEmail = resMap.get("devpEmail");
@@ -689,17 +685,12 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (JudgeUtils.isNull(demandDO)) {
             BusinessException.throwBusinessException(MsgEnum.DB_FIND_FAILED);
         }
-        // 不进行项目启动也能上传需求文档
-        /*if (JudgeUtils.isNull(demandDO.getIsSvnBuild()) || "否".equals(demandDO.getIsSvnBuild())) {
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }*/
         ProjectStartDO projectStartDO = new ProjectStartDO();
         projectStartDO.setReqNm(demandDO.getReqNm());
         projectStartDO.setReqNo(demandDO.getReqNo());
         projectStartDO.setReqInnerSeq(demandDO.getReqInnerSeq());
         Map<String, String> resMap = new HashMap<>();
-        resMap = reqPlanService.getMailbox(reqInnerSeq);
+        resMap = getMailbox(reqInnerSeq);
         String proMemberEmail = resMap.get("proMemberEmail");
         String testDevpEmail = resMap.get("testDevpEmail");
         String devpEmail = resMap.get("devpEmail");
@@ -1005,29 +996,34 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             //"项目启动失败:人员或时间配置不完善"
             BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_FINISHINFO);
         }
-        try {
-            // 建立svn项目
-            String message = bulidSvnProjrct(reqPlan);
-            if (StringUtils.isNotBlank(message)) {
-                //return ajaxDoneError("项目启动失败:" + message);
-                MsgEnum.ERROR_NOT_SVN.setMsgInfo("项目启动失败:" + message);
-                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
-            }
+        //
+        if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
+            try {
+                // 建立svn项目
+                String message = bulidSvnProjrct(reqPlan);
+                if (StringUtils.isNotBlank(message)) {
+                    //return ajaxDoneError("项目启动失败:" + message);
+                    MsgEnum.ERROR_NOT_SVN.setMsgInfo("项目启动失败:" + message);
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
+                }
 
-            //文档建立成功后，更新字段 is_svn_build
-            bean.setIsSvnBuild("是");
-            demandDao.update(bean);
-        } catch (Exception e1) {
-            // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
-            e1.printStackTrace();
-            MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("项目启动失败:" + e1.getMessage());
-            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
+                //文档建立成功后，更新字段 is_svn_build
+                bean.setIsSvnBuild("是");
+                demandDao.updateSvnBuild(bean);
+            } catch (Exception e1) {
+                // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
+                e1.printStackTrace();
+                MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("项目启动失败:" + e1.getMessage());
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
+            }
         }
+
+
         try {
             String subject = "【项目启动】" + reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_"
                     + reqPlan.getProjectMng();
             String content = genProjectStartContent(reqPlan);
-            String message = reqPlanService.sendMail(sendTo, copyTo, content, subject, null);
+            String message = sendMail(sendTo, copyTo, content, subject, null);
             if (StringUtils.isNotBlank(message)) {
                 //return ajaxDoneError("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
                 MsgEnum.ERROR_MAIL_FAIL.setMsgInfo("项目启动失败,SVN项目建立成功，启动邮件发送失败:" + message);
@@ -1507,7 +1503,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String update_user = SecurityUtils.getLoginName();
             for (int i = 0; i < ids.size(); i++) {
                 //根据内部编号查询需求信息
-                DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), reqPlanService.findById(ids.get(i)));
+                DemandDO demand = BeanUtils.copyPropertiesReturnDest(new DemandDO(), findById(ids.get(i)));
                 DemandDO demandDO1 = demandDao.get(ids.get(i));
                 //判断需求是否暂停需求，不是则跳过
                 if (!REQCANCEL.equals(demand.getReqSts())) {
@@ -1630,7 +1626,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                     demandStateHistoryDao.insert(demandStateHistoryDO);
                     // 插入jk领导审核记录
                     // l历史数据上传了图片，本月未上传
-                    if ("是".equals(demand.getIsApprovalProcess())&&"否".equals(reqPlanService.findById(demand.getReqInnerSeq()).getIsApprovalProcess())) {
+                    if ("是".equals(demand.getIsApprovalProcess())&&"否".equals(findById(demand.getReqInnerSeq()).getIsApprovalProcess())) {
                         DemandPictureDO demandPictureDO = iDemandPictureDao.findOne(ids.get(i));
                         demandPictureDO.setPicId(null);
                         demandPictureDO.setPicReqinnerseq(dem.get(0).getReqInnerSeq());
@@ -1728,28 +1724,19 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败：需求编号不能为空!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
-        if (!uploadPeriod.equals("30")) {
-            if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN未建立:请先进行项目启动!");
-                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-            }
-        }else{
-            // 如果是上传需求定稿文档就先建立svn目录
-            if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
-                try {
-                    // 建立svn项目
-                    String message = bulidSvnProjrct(reqPlan);
-                    if (StringUtils.isNotBlank(message)) {
-                        //return ajaxDoneError("项目启动失败:" + message);
-                        MsgEnum.ERROR_NOT_SVN.setMsgInfo("需求文档上传失败:" + message);
-                        BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
-                    }
-                } catch (Exception e1) {
-                    // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
-                    e1.printStackTrace();
-                    MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("需求文档上传失败:" + e1.getMessage());
-                    BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
+        // 如果是上传需求定稿文档就先建立svn目录
+        if (JudgeUtils.isNull(reqPlan.getIsSvnBuild()) || "否".equals(reqPlan.getIsSvnBuild())) {
+            try {
+                // 建立svn项目
+                String message = bulidSvnProjrct(reqPlan);
+                if (StringUtils.isNotBlank(message)) {
+                    MsgEnum.ERROR_NOT_SVN.setMsgInfo("SVN未建立文档上传失败:" + message);
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
                 }
+            } catch (Exception e1) {
+                e1.printStackTrace();
+                MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("SVN未建立文档上传失败:" + e1.getMessage());
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
             }
         }
         // 如果当前是uat更新转预投产，则新增判断需求jira内部缺陷流程是否全部关闭
@@ -1880,7 +1867,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             String currentUser = userService.getFullname(SecurityUtils.getLoginName());
             String subject = reqPlan.getReqNo() + "_" + reqPlan.getReqNm() + "_" + "需求" + periodChName + "文档";
             String content = "您好！<br/> &nbsp;&nbsp;附件是" + subject + "，请帮忙尽快上传到电子工单系统，谢谢！";
-            String msg = reqPlanService.sendMail(sendTo, copyTo, content, subject + "-" + currentUser, attachFiles);
+            String msg = sendMail(sendTo, copyTo, content, subject + "-" + currentUser, attachFiles);
             if (StringUtils.isNotEmpty(msg)) {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传成功，邮件发送失败");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -1902,7 +1889,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 BeanConvertUtils.convert(demandBO, reqPlan);
                 //登记需求阶段记录表
                 String remarks = "文档上传自动修改";
-                reqPlanService.registrationDemandPhaseRecordForm(demandBO, remarks);
+                registrationDemandPhaseRecordForm(demandBO, remarks);
             }
             //上传文档更新需求状态
             if (!"30".equals(reqPlan.getReqSts()) && !"40".equals(reqPlan.getReqSts())) {
@@ -3037,6 +3024,67 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 //进行中
                 demandBO.setReqSts("20");
             }
+        }
+    }
+
+    /**
+     *  建立svn
+     * @param reqInnerSeq 内部编号
+     * @param reqNo 需求编号
+     * @param reqNm 需求名称
+     */
+    @Async
+    @Override
+    public void bulidSVNProjrcts(String reqInnerSeq,String reqNo,String reqNm){
+        try {
+            DemandDO demandDO = new DemandDO();
+            demandDO.setReqInnerSeq(reqInnerSeq);
+            demandDO.setReqNo(reqNo);
+            demandDO.setReqNm(reqNm);
+            // 建立svn项目
+            String message = bulidSvnProjrct(demandDO);
+            if (StringUtils.isNotBlank(message)) {
+                //return ajaxDoneError("项目启动失败:" + message);
+                MsgEnum.ERROR_NOT_SVN.setMsgInfo("SVN项目建立失败:" + message);
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
+            }
+
+            //文档建立成功后，更新字段 is_svn_build
+            demandDO.setIsSvnBuild("是");
+            demandDao.updateSvnBuild(demandDO);
+        } catch (Exception e1) {
+            // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
+            e1.printStackTrace();
+            MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("SVN项目建立失败:" + e1.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
+        }
+    }
+
+    @Override
+    public void buildSvn(DemandBO demandBO){
+        DemandDO demandDO = BeanUtils.copyPropertiesReturnDest(new DemandDO(), demandBO);
+        String reqNo = demandDO.getReqNo();
+        if (StringUtils.isBlank(reqNo)) {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("SVN文档目录创建失败：需求编号不能为空!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        try {
+            // 建立svn项目
+            String message = bulidSvnProjrct(demandDO);
+            if (StringUtils.isNotBlank(message)) {
+                //return ajaxDoneError("项目启动失败:" + message);
+                MsgEnum.ERROR_NOT_SVN.setMsgInfo("SVN文档目录创建失败:" + message);
+                BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVN);
+            }
+
+            //文档建立成功后，更新字段 is_svn_build
+            demandDO.setIsSvnBuild("是");
+            demandDao.updateSvnBuild(demandDO);
+        } catch (Exception e1) {
+            // "项目启动失败，SVN项目建立失败：" + e1.getMessage()
+            e1.printStackTrace();
+            MsgEnum.ERROR_NOT_SVNBULID.setMsgInfo("SVN文档目录创建失败:" + e1.getMessage());
+            BusinessException.throwBusinessException(MsgEnum.ERROR_NOT_SVNBULID);
         }
     }
 }
