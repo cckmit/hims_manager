@@ -103,6 +103,16 @@ public class PreProductionController {
         preProductionService.updateAllProductionBBZ(taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
+    /**
+     * 验证失败待重传包
+     * @param taskIdStr
+     * @return
+     */
+    @RequestMapping("/updateAllProductionVerificationFailed")
+    public GenericRspDTO<NoBody> updateAllProductionVerificationFailed(@RequestParam("taskIdStr") String taskIdStr){
+        preProductionService.updateAllProductionVerificationFailed(taskIdStr);
+        return GenericRspDTO.newSuccessInstance();
+    }
 
     // 查询需求编号
     @RequestMapping("/findOne")

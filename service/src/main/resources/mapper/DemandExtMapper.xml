@@ -1720,4 +1720,17 @@
         where req_inner_seq =#{reqInnerSeq }
     </update>
 
+    <update id="updateTest" parameterType="com.cmpay.lemon.monitor.entity.DemandDO" >
+        update t_demand_info
+        <set>
+            <if test="testFinshTm != null and testFinshTm != ''">
+                test_finsh_tm =#{testFinshTm },
+            </if>
+            <if test="testEng != null and testEng != ''">
+                test_eng =#{testEng },
+            </if>
+        </set>
+        where req_inner_seq =#{reqInnerSeq }
+    </update>
+
 </mapper>

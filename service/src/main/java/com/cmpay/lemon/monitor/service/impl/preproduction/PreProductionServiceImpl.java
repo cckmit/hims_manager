@@ -342,10 +342,10 @@ public class PreProductionServiceImpl implements PreProductionService {
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
                 //状态变更
                 PreproductionDO bean = iPreproductionExtDao.get(pro_number_list[j]);
+                String PreOperation = bean.getPreStatus();
                 bean.setPreStatus(pro_status_after);
                 iPreproductionExtDao.updatePreSts(bean);
                 // 获取更改前的状态
-                String PreOperation = bean.getPreStatus();
                 MailFlowDO bnb = new MailFlowDO("预投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
 
                 String[] mailToAddress = mfba.getEmployeeEmail().split(";");
@@ -528,12 +528,6 @@ public class PreProductionServiceImpl implements PreProductionService {
         ScheduleDO scheduleBean =new ScheduleDO(currentUser);
         // 所有预投产编号数组
         String[] pro_number_list=taskIdStr.split("~");
-        if(pro_number_list[0].equals("1")){
-            //return ajaxDoneError("请填写进行此操作原因");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
         // 先判断所选择的预投产编号是否需要DBA操作，如果不需要，则提示报错
         for (int i = 2; i < pro_number_list.length; ++i) {
             // 获取预投产当前状态
@@ -639,12 +633,6 @@ public class PreProductionServiceImpl implements PreProductionService {
         //生成流水记录
         ScheduleDO scheduleBean =new ScheduleDO(currentUser);
         String[] pro_number_list=taskIdStr.split("~");
-        if(pro_number_list[0].equals("1")){
-            //return ajaxDoneError("请填写进行此操作原因");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("请填写进行此操作原因");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
         // 先判断所选择的预投产编号是否需要DBA操作，如果需要，则判断是否DBA操作完成
         for (int i = 2; i < pro_number_list.length; ++i) {
             // 获取预投产当前状态
@@ -721,6 +709,81 @@ public class PreProductionServiceImpl implements PreProductionService {
 
         }
 
+    }
+
+    /**
+     * 验证失败待重传包
+     * @param taskIdStr
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void updateAllProductionVerificationFailed(String taskIdStr){
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //生成流水记录
+        ScheduleDO scheduleBean =new ScheduleDO(currentUser);
+        String[] pro_number_list=taskIdStr.split("~");
+        // 先判断所选择的预投产编号是否需要DBA操作，如果需要，则判断是否DBA操作完成
+        for (int i = 2; i < pro_number_list.length; ++i) {
+            // 获取预投产当前状态
+            String status = iPreproductionExtDao.get(pro_number_list[i]).getPreStatus();
+            // 先判断预投产状态是否符合需求
+            if(!"预投产部署待验证".equals(status)){
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo(iPreproductionExtDao.get(pro_number_list[i]).getPreNumber()+"的预投产状态不为【预投产部署待验证】，请选择正确的预投产需求！");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+
+        }
+        // 更新状态
+        for (int j = 2; j < pro_number_list.length; ++j) {
+            PreproductionDO preproductionDO = iPreproductionExtDao.get(pro_number_list[j]);
+            preproductionDO.setPreNumber(pro_number_list[j]);
+            preproductionDO.setProductionDeploymentResult("已部署");
+            preproductionDO.setPreStatus("预投产验证失败待重传包");
+            preproductionDO.setProAdvanceResult("验证失败");
+            iPreproductionExtDao.updatePreSts(preproductionDO);
+            // 记录操作
+            scheduleBean.setProNumber(pro_number_list[j]);
+            scheduleBean.setOperationType("预投产验证失败待重传包");
+            scheduleBean.setPreOperation("预投产部署待验证");
+            scheduleBean.setOperationReason("预投产验证失败待重传包");
+            scheduleBean.setAfterOperation("预投产验证失败待重传包");
+            operationProductionDao.insertSchedule(scheduleBean);
+            // 发送邮件通知
+            // 创建邮件信息
+            MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+            mailInfo.setMailServerHost("smtp.qiye.163.com");
+            mailInfo.setMailServerPort("25");
+            mailInfo.setValidate(true);
+            mailInfo.setUsername(Constant.EMAIL_NAME);
+            mailInfo.setPassword(Constant.EMAIL_PSWD);
+            mailInfo.setFromAddress(Constant.EMAIL_NAME);
+            // 邮件通知 申请人 开发负责人
+            List<String> list = new ArrayList<>();
+            list.add(preproductionDO.getPreApplicant());
+            list.add(preproductionDO.getDevelopmentLeader());
+            String [] nameList = new String[list.size()];
+            nameList = list.toArray(nameList);
+            DemandDO demandDO1 =planDao.searchUserLEmail(nameList);
+            mailInfo.setReceivers(demandDO1.getMonRemark().split(";"));
+
+            mailInfo.setSubject("【预投产验证失败待重传包】-" + preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "-" + preproductionDO.getPreApplicant());
+            StringBuffer sb = new StringBuffer();
+            sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+            sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>预投产验证失败待重传包通知</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>预投产编号</td><td>" + preproductionDO.getPreNumber() + "</td><td style='font-weight: bold;'>需求名称</td><td>" + preproductionDO.getPreNeed() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>申请部门</td><td>" + preproductionDO.getApplicationDept() + "</td><td style='font-weight: bold;'>计划预投产日期</td><td>" + preproductionDO.getPreDate() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>预投产申请人</td><td>" + preproductionDO.getPreApplicant() + "</td><td style='font-weight: bold;'>申请人联系方式</td><td>" + preproductionDO.getApplicantTel() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>开发负责人</td><td>" + preproductionDO.getDevelopmentLeader() + "</td><td style='font-weight: bold;'>产品经理</td><td>" + preproductionDO.getPreManager() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>验证人</td><td>" + preproductionDO.getIdentifier() + "</td><td style='font-weight: bold;'>验证人联系方式</td><td>" + preproductionDO.getIdentifierTel() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>验证复核人</td><td>" + preproductionDO.getProChecker() + "</td><td style='font-weight: bold;'>金科负责人邮箱</td><td>" + preproductionDO.getMailRecipient() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>是否有DBA操作</td><td>" + preproductionDO.getIsDbaOperation() + "</td><td style='font-weight: bold;'>DBA操作是否完成</td><td>" + preproductionDO.getIsDbaOperationComplete() + "</td></tr>");
+            sb.append("<tr><td style='font-weight: bold;'>备注</td><td colspan='5'>" + preproductionDO.getRemark() + "</td></tr></table>");
+            mailInfo.setContent(preproductionDO.getPreNeed() + "-" + preproductionDO.getPreNumber() + "的预投产验证失败:<br/>&nbsp;&nbsp;请开发及时上传预投产操作包，重新部署、验证！<br/>"+sb.toString());
+//        // 这个类主要来发送邮件
+            sendMailService.sendMail(mailInfo);
+        }
     }
     /**
      * 版本组投产包上传
@@ -808,8 +871,10 @@ public class PreProductionServiceImpl implements PreProductionService {
         bean.setProPkgName(file.getOriginalFilename());
         // 更新包信息
         iPreproductionExtDao.updatePropkg(bean);
-        //更新预投产状态 ，当当前状态为预投产提出时
-        if(bean.getPreStatus().equals("预投产提出")){
+        //更新预投产状态 ，当当前状态为预投产提出时 或者“预投产验证失败待重传包”
+        if(bean.getPreStatus().equals("预投产提出") || bean.getPreStatus().equals("预投产验证失败待重传包")){
+            // 当前状态
+             String status = bean.getPreStatus();
             if(bean.getIsDbaOperation().equals("是")){
                 //如果需要DBA操作，则再判断DAB操作包是否已经上传
                 if(JudgeUtils.isNotEmpty(bean.getDdlPkgName())){
@@ -820,7 +885,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     // 记录操作
                     scheduleBean.setProNumber(bean.getPreNumber());
                     scheduleBean.setOperationType("预投产包上传");
-                    scheduleBean.setPreOperation("预投产提出");
+                    scheduleBean.setPreOperation(status);
                     scheduleBean.setOperationReason("预投产包上传完成");
                     scheduleBean.setAfterOperation("预投产待部署");
                     operationProductionDao.insertSchedule(scheduleBean);
@@ -870,7 +935,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 // 记录操作
                 scheduleBean.setProNumber(bean.getPreNumber());
                 scheduleBean.setOperationType("预投产包上传");
-                scheduleBean.setPreOperation("预投产提出");
+                scheduleBean.setPreOperation(status);
                 scheduleBean.setOperationReason("预投产包上传完成");
                 scheduleBean.setAfterOperation("预投产待部署");
                 operationProductionDao.insertSchedule(scheduleBean);

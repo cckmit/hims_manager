@@ -24,6 +24,7 @@ public interface PreProductionService {
     void updateAllProduction(String str);
     void updateAllProductionDBA(String str);
     void updateAllProductionBBZ(String str);
+    void updateAllProductionVerificationFailed(String str);
     void add(PreproductionBO productionBO);
     void doBatchImport(MultipartFile file,String reqNumber);
     void updateProductionPackage(MultipartFile file,String reqNumber);

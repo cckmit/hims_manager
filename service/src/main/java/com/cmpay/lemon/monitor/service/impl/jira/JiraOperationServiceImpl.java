@@ -48,6 +48,8 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     IProductionProblemJiraDao  productionProblemJiraDao;
     @Autowired
     private IProblemExtDao iProblemDao;
+    @Autowired
+    private IDemandExtDao demandDao;
     //jira项目类型 和包项目 jira编号10106(测试环境)
     final static Integer PROJECTTYPE_CMPAY_dev = 10106;
     //jira项目类型 和包项目 jira编号10100
@@ -516,7 +518,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
     @Override
     public void jiraTestMainTaskBatchEdit(MultipartFile file) {
         List<JiraTaskBodyBO> jiraTaskBodyBOS = new ArrayList<>();
-
+        List<DemandDO> demandDOList = new ArrayList<>();
            File f = null;
 
         try {
@@ -540,6 +542,21 @@ public class JiraOperationServiceImpl implements JiraOperationService {
             Map<Integer, Map<Integer, Object>> map = excelReader.readExcelContent();
             for (int i = 1; i <= map.size(); i++) {
                 JiraTaskBodyBO jiraTaskBodyBO = new JiraTaskBodyBO();
+                DemandDO demandDO = new DemandDO();
+                // 内部编号
+                demandDO.setReqInnerSeq(map.get(i).get(1).toString());
+                // uat完成时间
+                if (map.get(i).get(8) instanceof String) {
+                    demandDO.setTestFinshTm(map.get(i).get(8).toString().trim());
+                }
+                if (map.get(i).get(8) instanceof Date) {
+                    Date date = (Date)map.get(i).get(8);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    String dt = simpleDateFormat.format(date);
+                    demandDO.setTestFinshTm(dt.trim());
+                }
+                // 测试人员
+                demandDO.setTestEng(map.get(i).get(17).toString().trim());
                 jiraTaskBodyBO.setReqInnerSeq(map.get(i).get(1).toString());
                 if (!JudgeUtils.isBlank(map.get(i).get(19).toString().trim())) {
                     jiraTaskBodyBO.setAssignee(map.get(i).get(19).toString().trim());
@@ -554,6 +571,7 @@ public class JiraOperationServiceImpl implements JiraOperationService {
                 } else {
                     jiraTaskBodyBO.setPlanEndTime("");
                 }
+                demandDOList.add(demandDO);
                 jiraTaskBodyBOS.add(jiraTaskBodyBO);
             }
         } catch (FileNotFoundException e) {
@@ -565,6 +583,10 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         } finally {
             f.delete();
         }
+        // 循环修改 uat测试完成时间和测试工程师人员
+        demandDOList.forEach(m -> {
+            demandDao.updateTest(m);
+        });
         //讲所有需要修改的任务添加到这个list
         List<JiraTaskBodyBO> jiraTastBodyAllTestTesk = new ArrayList<>();
         //获取导入文件的需求的jirekey
