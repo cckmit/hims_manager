@@ -1062,6 +1062,14 @@ public class PreProductionServiceImpl implements PreProductionService {
         bean.setDdlPkgName(file.getOriginalFilename());
         iPreproductionExtDao.updateDbapkg(bean);
 
+        // 判断 如果上传DBA操作包时的需求状态为“预投产验证失败待重传包”，则将DBA操作是否完成改成“否”
+        if("预投产验证失败待重传包".equals(bean.getPreStatus())){
+            bean.setIsDbaOperation("是");
+            bean.setIsDbaOperationComplete("否");
+            // 更新DBA操作是否完成标志
+            iPreproductionExtDao.updatePreDBA(bean);
+        }
+
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
         mailInfo.setMailServerHost("smtp.qiye.163.com");
         mailInfo.setMailServerPort("25");
