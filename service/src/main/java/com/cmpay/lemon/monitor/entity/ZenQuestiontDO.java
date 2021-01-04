@@ -202,6 +202,15 @@ public class ZenQuestiontDO extends BaseDO {
     private String reqImplMon;
     @Excel(name = "归属一级团队")
     private String firstLevelOrganization;
+    private boolean isTest;
+
+    public boolean isTest() {
+        return isTest;
+    }
+
+    public void setTest(boolean test) {
+        isTest = test;
+    }
 
     public String getBugnumber() {
         return bugnumber;
@@ -575,6 +584,7 @@ public class ZenQuestiontDO extends BaseDO {
                 ", endTime='" + endTime + '\'' +
                 ", reqImplMon='" + reqImplMon + '\'' +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", isTest=" + isTest +
                 '}';
     }
 }

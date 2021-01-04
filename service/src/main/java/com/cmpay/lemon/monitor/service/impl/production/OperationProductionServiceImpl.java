@@ -398,7 +398,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     (pro_status_after.equals("投产打回")) || (pro_status_after.equals("投产回退")) || (pro_status_after.equals("投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
-                mfva.setEmployeeName(operationProductionDao.findProductionBean(pro_number_list[j]).getProApplicant());
+                ProductionDO productionBean = operationProductionDao.findProductionBean(pro_number_list[j]);
+                // 投产申请人
+                mfva.setEmployeeName(productionBean.getProApplicant());
                 MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
                 ProductionDO bean = operationProductionDao.findProductionBean(pro_number_list[j]);
                 MailFlowDO bnb = new MailFlowDO("投产不合格结果反馈", "code_review@hisuntech.com", mfba.getEmployeeEmail(), "");
@@ -414,6 +416,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
                 String[] mailToAddress = mfba.getEmployeeEmail().split(";");
                 mailInfo.setReceivers(mailToAddress);
+                if(productionBean.getProType().equals("救火更新")){
+                    mailToAddress = productionBean.getMailRecipient().split(";");
+                    //String[] mailToAddress = {"tu_yi@hisuntech.com","wu_lr@hisuntech.com","huangyan@hisuntech.com"};
+                    mailInfo.setReceivers(mailToAddress);
+                    mailInfo.setCcs(productionBean.getMailCopyPerson().split(";"));
+                }
                 String mess = null;
                 if (pro_status_after.equals("投产打回")) {
                     mess = pro_status_after;

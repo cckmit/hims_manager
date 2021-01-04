@@ -300,6 +300,21 @@ public class DefectsServiceImpl  implements DefectsService {
                     zenQuestiontDO.setChangeddate(dt.trim());
                 }
                 zenQuestiontDO.setAccessory(map.get(i).get(35).toString().trim());
+                // 根据创建人姓名查询是否为测试部员工
+                if(JudgeUtils.isNotBlank(zenQuestiontDO.getCreator())){
+                    UserDO userDO = new UserDO();
+                    userDO.setFullname(zenQuestiontDO.getCreator());
+                    List<UserDO> userDOS = iUserDao.find(userDO);
+                    if(!userDOS.isEmpty()){
+                        if("产品测试团队".equals(userDOS.get(0).getDepartment())){
+                            zenQuestiontDO.setTest(true);
+                        }else {
+                            zenQuestiontDO.setTest(false);
+                        }
+                    }else{
+                        zenQuestiontDO.setTest(false);
+                    }
+                }
                 //二级主导部门
                 //根据解决人查询部门，如果不存在则没有部门。
                 // 解决不为空，则根据姓名查询部门
@@ -341,6 +356,32 @@ public class DefectsServiceImpl  implements DefectsService {
                 zenQuestiontExtDao.insert(m);
             } else {
                 zenQuestiontExtDao.update(m);
+            }
+            // 创建人为产品测试部的人，添加缺陷
+            if(m.isTest()){
+                //无效问题不添加
+                if(!"外部原因".equals(m.getSolution()) && !"重复BUG".equals(m.getSolution()) ){
+                    DefectDetailsDO defectDetailsDO = new DefectDetailsDO();
+                    defectDetailsDO.setJireKey(m.getBugnumber());
+                    defectDetailsDO.setEpicKey(m.getBugnumber());
+                    defectDetailsDO.setDefectName(m.getBugtitle());
+                    defectDetailsDO.setRegistrationDate(m.getCreateddate()+" 00:00:01");
+                    defectDetailsDO.setTestNumber(0);
+                    defectDetailsDO.setDefectDetails(m.getRepeatsteps());
+                    defectDetailsDO.setDefectRegistrant(m.getCreator());
+                    defectDetailsDO.setSolution(m.getSolution());
+                    if("已解决".equals(m.getBugstatus()) || "已关闭".equals(m.getBugstatus()) ){
+                        defectDetailsDO.setDefectStatus("关闭");
+                    }else{
+                        defectDetailsDO.setDefectStatus("待处理");
+                    }
+                    DefectDetailsDO defectDetailsDO1 = defectDetailsDao.get(defectDetailsDO.getJireKey());
+                    if (JudgeUtils.isNull(defectDetailsDO1)) {
+                        defectDetailsDao.insert(defectDetailsDO);
+                    } else {
+                        defectDetailsDao.update(defectDetailsDO);
+                    }
+                }
             }
             //有部门的才添加缺陷
             if(m.getSecondlevelorganization()!=null && m.getSecondlevelorganization()!=""){
