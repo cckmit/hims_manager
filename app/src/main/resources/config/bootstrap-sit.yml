@@ -23,9 +23,9 @@ lemon:
     primary:
       type: com.alibaba.druid.pool.DruidDataSource
       driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://10.9.10.116:3306/newhimsdb?useSSL=false
-      username: newhimsdb
-      password: 'hims123'
+      url: jdbc:mysql://10.9.10.117:3306/newhimsdb?useSSL=false
+      username: root
+      password: 'root'
     dsSit:
       type: com.alibaba.druid.pool.DruidDataSource
       validationQuery: 'select 1 from dual'

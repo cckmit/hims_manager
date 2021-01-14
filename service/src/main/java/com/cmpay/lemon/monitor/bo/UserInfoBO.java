@@ -57,15 +57,15 @@ public class UserInfoBO {
     public void setIsReset(Byte isReset) {
         this.isReset = isReset;
     }
-//    private List<Long> roleIds;
-//
-//    public List<Long> getRoleIds() {
-//        return roleIds;
-//    }
-//
-//    public void setRoleIds(List<Long> roleIds) {
-//        this.roleIds = roleIds;
-//    }
+    private List<Long> roleIds;
+
+    public List<Long> getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(List<Long> roleIds) {
+        this.roleIds = roleIds;
+    }
 
     public Long getUserNo() {
         return userNo;
