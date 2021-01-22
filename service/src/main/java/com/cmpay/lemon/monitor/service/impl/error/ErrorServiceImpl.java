@@ -215,7 +215,7 @@ public class ErrorServiceImpl implements ErrorService {
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
         try {
-            String sit_url_str = "http://172.16.49.25:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+            String sit_url_str = "http://172.16.48.172:8031/v1/common/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
             URL sit_url = new URL(sit_url_str);
             //得到connection对象。
             HttpURLConnection sit_connection = (HttpURLConnection) sit_url.openConnection();
@@ -261,7 +261,7 @@ public class ErrorServiceImpl implements ErrorService {
         }
         iErcdmgErorDao.insertPubttms(errorComditionDO);
         try {
-            String uat_url_str = "http://172.16.48.170:8002/v1/user/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
+            String uat_url_str = "http://172.16.48.172:8031/v1/common/message/redis?errorCode=" + ercdmgErrorComditionBO.getErrorCd();
 
             URL uat_url = new URL(uat_url_str);
             //得到connection对象。

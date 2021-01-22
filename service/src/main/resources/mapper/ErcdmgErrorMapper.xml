@@ -28,7 +28,7 @@
         <result property="createUserId" jdbcType="VARCHAR" column="create_UserId"/>
         <result property="synflg" jdbcType="VARCHAR" column="syn_flg"/>
         <result property="cr" jdbcType="VARCHAR" column="cr"/>
-        
+
     </resultMap>
      <resultMap id="rm5" type="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
         <result property="id"      jdbcType="VARCHAR"      column="id"/>
@@ -103,7 +103,7 @@
 		  ,is_enabled
 		  ,is_locked
 		  ,login_count
-		  ,login_failure_count 
+		  ,login_failure_count
     </sql>
     <sql id="Base_Column_List">
     	id,
@@ -205,7 +205,7 @@
 
         )
     </insert>
-    
+
      <!-- 备份错误码历史表 -->
     <insert id="insertErrorlg" parameterType="com.cmpay.lemon.monitor.entity.ErcdmgErrorComditionDO">
         INSERT INTO t_ercdmg_errorlg (
@@ -517,7 +517,7 @@
     <!-- 分页查询 -->
     <select id="findErcdmgErrorList" resultMap="rm" parameterType="map">
         SELECT
-         (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod ) AS prod_mod_name,
+         (SELECT description FROM t_ercdmg_busmod t WHERE t.NAME =prod_mod limit 1) AS prod_mod_name,
         (SELECT VALUE FROM t_permi_dic_data t WHERE t.NAME =curt_state AND t.DIC_ID='CURT_STATE') AS curt_state_name,
         <include refid="Base_Column_List" />
         from t_ercdmg_error
@@ -827,5 +827,5 @@
     <update id="updateIndex" parameterType="java.lang.String">
         update t_error_index set errorCdEnd=#{errorCdEnd} where errorCdStart=#{errorCdStart}
     </update>
-    
+
 </mapper>

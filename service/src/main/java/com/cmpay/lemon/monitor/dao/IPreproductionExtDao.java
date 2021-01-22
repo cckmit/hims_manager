@@ -22,4 +22,5 @@ public interface IPreproductionExtDao extends IPreproductionDao {
     void updatePreSts(PreproductionDO preproductionDO);
     void updateAgain(PreproductionDO preproductionDO);
     void updatePreDBA(PreproductionDO preproductionDO);
+    void updateData(PreproductionDO preproductionDO);
 }

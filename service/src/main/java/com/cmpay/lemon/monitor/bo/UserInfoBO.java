@@ -171,6 +171,7 @@ public class UserInfoBO {
                 ", createTime=" + createTime +
                 ", failuresNumber=" + failuresNumber +
                 ", isReset=" + isReset +
+                ", roleIds=" + roleIds +
                 '}';
     }
 }

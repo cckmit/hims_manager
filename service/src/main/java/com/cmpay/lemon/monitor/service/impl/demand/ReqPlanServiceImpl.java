@@ -1311,6 +1311,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demand.setEndFeedbackTm("");
                 // 是否核减置空
                 demand.setIsCut("");
+                // 预计产品发布日期和本月期望目标置空
+                demand.setExpPrdReleaseTm("");
+                demand.setCurMonTarget("");
                 // 工作量已录入总量
                 int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
@@ -1528,6 +1531,9 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demand.setEndFeedbackTm("");
                 // 是否核减置空
                 demand.setIsCut("");
+                // 预计产品发布日期和本月期望目标置空
+                demand.setExpPrdReleaseTm("");
+                demand.setCurMonTarget("");
                 // 工作量已录入总量
                 int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);

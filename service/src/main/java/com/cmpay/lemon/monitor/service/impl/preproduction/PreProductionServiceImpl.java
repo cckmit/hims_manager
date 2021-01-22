@@ -36,13 +36,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
@@ -312,7 +308,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
             }
-            if(!(pro_status_before.equals(status) || (pro_status_after.equals("预投产打回") && (status.equals("预投产待部署")) ) || (pro_status_after.equals("预投产回退") && status.equals("预投产验证完成")) ||(pro_status_after.equals("预投产取消") && (status.equals("预投产提出")|| status.equals("预投产待部署"))))){
+            if(!(pro_status_before.equals(status) || (pro_status_after.equals("预投产回退") && (status.equals("预投产验证失败待重传包")) ) || ((pro_status_after.equals("预投产回退")) && ((status.equals("预投产验证完成"))|| (status.equals("预投产部署待验证")))) ||(pro_status_after.equals("预投产取消") && (status.equals("预投产提出")|| status.equals("预投产待部署"))))){
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("请选择符合当前操作类型的正确投产状态!");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -334,7 +330,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             mailInfo.setPassword(Constant.EMAIL_PSWD);
             mailInfo.setFromAddress(Constant.EMAIL_NAME);
             //boolean isSend = true;
-            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("预投产打回")) && (status.equals("预投产待部署"))) || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证完成"))|| (status.equals("预投产部署待验证"))) || ((pro_status_after.equals("预投产取消")) && (((status.equals("预投产提出")) || (status.equals("预投产待部署"))))))) &&
+            if ((((pro_status_before.equals(status)) || ((pro_status_after.equals("预投产回退")) && (status.equals("预投产验证失败待重传包"))) || ((pro_status_after.equals("预投产回退")) && ((status.equals("预投产验证完成"))|| (status.equals("预投产部署待验证")))) || ((pro_status_after.equals("预投产取消")) && (((status.equals("预投产提出")) || (status.equals("预投产待部署"))))))) &&
                     (((pro_status_after.equals("预投产打回")) || (pro_status_after.equals("预投产回退")) || (pro_status_after.equals("预投产取消")))))
             {
                 MailFlowConditionDO mfva = new MailFlowConditionDO();
@@ -742,7 +738,11 @@ public class PreProductionServiceImpl implements PreProductionService {
             preproductionDO.setProductionDeploymentResult("已部署");
             preproductionDO.setPreStatus("预投产验证失败待重传包");
             preproductionDO.setProAdvanceResult("验证失败");
+            preproductionDO.setPreDate(new java.sql.Date(new java.util.Date().getTime()));
+            System.err.println(preproductionDO.getPreDate());
             iPreproductionExtDao.updatePreSts(preproductionDO);
+            // 更新投产日期成当前日期
+            iPreproductionExtDao.updateData(preproductionDO);
             // 记录操作
             scheduleBean.setProNumber(pro_number_list[j]);
             scheduleBean.setOperationType("预投产验证失败待重传包");

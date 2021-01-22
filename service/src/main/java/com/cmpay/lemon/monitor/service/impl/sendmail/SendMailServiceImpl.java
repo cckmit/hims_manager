@@ -23,7 +23,7 @@ public class SendMailServiceImpl implements SendMailService {
     @Async
     @Override
     public void sendMail(MultiMailSenderInfo mailInfo){
-        MultiMailsender.sendMailtoMultiTest( mailInfo);
+         MultiMailsender.sendMailtoMultiTest( mailInfo);
     }
 
 }

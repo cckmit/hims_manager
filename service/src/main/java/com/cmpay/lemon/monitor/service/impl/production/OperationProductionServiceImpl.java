@@ -1680,10 +1680,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         try {
             if (LemonUtils.getEnv().equals(Env.SIT)) {
-                session = jsch.getSession("devms", "10.9.10.116", 22);
+                session = jsch.getSession("devms", "10.9.10.115", 22);
                 session.setPassword("dev1234");
             } else if (LemonUtils.getEnv().equals(Env.DEV)) {
-                session = jsch.getSession("devadm", "10.9.10.116", 22);
+                session = jsch.getSession("devadm", "10.9.10.115", 22);
                 session.setPassword("devadm@hisun");
             } else {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("");
