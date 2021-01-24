@@ -44,15 +44,15 @@
         <result property="riskFeedbackTm" jdbcType="VARCHAR" column="risk_feedback_tm" />
         <result property="endMonRemark" jdbcType="VARCHAR" column="end_mon_remark" />
         <result property="endFeedbackTm" jdbcType="VARCHAR" column="end_feedback_tm" />
-        <result property="totalWorkload" jdbcType="INTEGER" column="total_workload" />
         <result property="leadDeptPro" jdbcType="VARCHAR" column="lead_dept_pro" />
         <result property="coorDeptPro" jdbcType="VARCHAR" column="coor_dept_pro" />
         <result property="leadDeptWorkload" jdbcType="VARCHAR" column="lead_dept_workload" />
         <result property="coorDeptWorkload" jdbcType="VARCHAR" column="coor_dept_workload" />
-        <result property="inputWorkload" jdbcType="INTEGER" column="input_workload" />
-        <result property="lastInputWorkload" jdbcType="INTEGER" column="last_input_workload" />
-        <result property="remainWorkload" jdbcType="INTEGER" column="remain_workload" />
-        <result property="monInputWorkload" jdbcType="INTEGER" column="mon_input_workload" />
+        <result property="totalWorkload" jdbcType="DOUBLE" column="total_workload" />
+        <result property="inputWorkload" jdbcType="DOUBLE" column="input_workload" />
+        <result property="lastInputWorkload" jdbcType="DOUBLE" column="last_input_workload" />
+        <result property="remainWorkload" jdbcType="DOUBLE" column="remain_workload" />
+        <result property="monInputWorkload" jdbcType="DOUBLE" column="mon_input_workload" />
         <result property="isSvnBuild" jdbcType="VARCHAR" column="is_svn_build" />
         <result property="reqAbnorType" jdbcType="VARCHAR" column="req_abnor_type" />
         <result property="creatTime" jdbcType="TIMESTAMP" column="creat_time" />

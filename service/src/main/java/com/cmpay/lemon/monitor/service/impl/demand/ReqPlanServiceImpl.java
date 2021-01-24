@@ -2070,7 +2070,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
         if (StringUtils.isBlank(totalWorkload)) {
             return "功能点合计不能为空！";
         }
-        int totWork = 0;
+        double totWork = 0;
         try {
             totWork = Double.valueOf(totalWorkload).intValue();
         } catch (Exception e) {
@@ -2089,7 +2089,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
             reqTask.setCoorDeptPro(result.get("coorDeptRate"));
             reqTask.setLeadDeptWorkload(result.get("leadDpetWorkLoad"));
             reqTask.setCoorDeptWorkload(result.get("coorDpetWorkLoad"));
-            reqTask.setRemainWorkload(Integer.parseInt(result.get("remainWordkLoad")));
+            reqTask.setRemainWorkload(Double.parseDouble(result.get("remainWordkLoad")));
             // 上传原子功能点文件时同步更新预计总工作量
             reqTask.setExpInput(totWork);
             //已录入总量 新增的时候默认为0
@@ -2238,7 +2238,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
     /**
      * 工作量检查
      */
-    public Map<String, String> checkDeptRate(int totWork, String deptInfo, DemandDO demand) {
+    public Map<String, String> checkDeptRate(double totWork, String deptInfo, DemandDO demand) {
         deptInfo = deptInfo.replaceAll("：", ":").replaceAll("；", ";");
         Map<String, String> map = new HashMap<>();
         if (deptInfo.indexOf(":") < 0) {
