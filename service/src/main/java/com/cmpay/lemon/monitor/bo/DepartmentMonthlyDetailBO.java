@@ -14,13 +14,13 @@ public class DepartmentMonthlyDetailBO {
     @Excel(name = "需求名称")
     private String reqNm;
     @Excel(name = "总工作量")
-    private int totalWorkload;
+    private double totalWorkload;
     @Excel(name = "二级主导团队完成情况")
     private String leadDeptWorkload;
     @Excel(name = "二级配合团队完成情况")
     private String coorDeptWorkload;
     @Excel(name = "本月录入工作量")
-    private int monInputWorkload;
+    private double monInputWorkload;
     @Excel(name = "二级主导团队本月工作量")
     private String leadDeptWorkload1;
     @Excel(name = "二级配合团队本月工作量")
@@ -50,11 +50,11 @@ public class DepartmentMonthlyDetailBO {
         this.reqNm = reqNm;
     }
 
-    public int getTotalWorkload() {
+    public double getTotalWorkload() {
         return totalWorkload;
     }
 
-    public void setTotalWorkload(int totalWorkload) {
+    public void setTotalWorkload(double totalWorkload) {
         this.totalWorkload = totalWorkload;
     }
 
@@ -74,11 +74,11 @@ public class DepartmentMonthlyDetailBO {
         this.coorDeptWorkload = coorDeptWorkload;
     }
 
-    public int getMonInputWorkload() {
+    public double getMonInputWorkload() {
         return monInputWorkload;
     }
 
-    public void setMonInputWorkload(int monInputWorkload) {
+    public void setMonInputWorkload(double monInputWorkload) {
         this.monInputWorkload = monInputWorkload;
     }
 

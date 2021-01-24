@@ -94,18 +94,18 @@ public class DemandDO extends BaseDO {
 
     private String endFeedbackTm;
     @Excel(name = "总工作量")
-    private int totalWorkload;
+    private double totalWorkload;
     //已录入总工作量
     @Excel(name = "已录入总工作量")
-    private int inputWorkload;
+    private double inputWorkload;
     //上月录入
-    private int lastInputWorkload;
+    private double lastInputWorkload;
     //本月录入工作量
     @Excel(name = "本月计划录入工作量")
-    private int monInputWorkload;
+    private double monInputWorkload;
     //剩余录入工作量
     @Excel(name = "剩余工作量")
-    private int remainWorkload;
+    private double remainWorkload;
     //	主导部门工作量占比
     private String leadDeptPro;
     //	配合部门工作量占比
@@ -627,44 +627,44 @@ public class DemandDO extends BaseDO {
         this.endFeedbackTm = endFeedbackTm;
     }
 
-    public int getTotalWorkload() {
+    public double getTotalWorkload() {
         return totalWorkload;
     }
 
-    public void setTotalWorkload(int totalWorkload) {
+    public void setTotalWorkload(double totalWorkload) {
         this.totalWorkload = totalWorkload;
     }
 
-    public int getInputWorkload() {
+    public double getInputWorkload() {
         return inputWorkload;
     }
 
-    public void setInputWorkload(int inputWorkload) {
+    public void setInputWorkload(double inputWorkload) {
         this.inputWorkload = inputWorkload;
     }
 
-    public int getLastInputWorkload() {
+    public double getLastInputWorkload() {
         return lastInputWorkload;
     }
 
-    public void setLastInputWorkload(int lastInputWorkload) {
+    public void setLastInputWorkload(double lastInputWorkload) {
         this.lastInputWorkload = lastInputWorkload;
     }
 
-    public int getRemainWorkload() {
-        return remainWorkload;
-    }
-
-    public void setRemainWorkload(int remainWorkload) {
-        this.remainWorkload = remainWorkload;
-    }
-
-    public int getMonInputWorkload() {
+    public double getMonInputWorkload() {
         return monInputWorkload;
     }
 
-    public void setMonInputWorkload(int monInputWorkload) {
+    public void setMonInputWorkload(double monInputWorkload) {
         this.monInputWorkload = monInputWorkload;
+    }
+
+    public double getRemainWorkload() {
+        return remainWorkload;
+    }
+
+    public void setRemainWorkload(double remainWorkload) {
+        this.remainWorkload = remainWorkload;
     }
 
     public String getLeadDeptPro() {

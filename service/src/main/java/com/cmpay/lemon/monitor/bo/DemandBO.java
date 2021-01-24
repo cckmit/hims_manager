@@ -49,15 +49,15 @@ public class DemandBO {
     private String riskFeedbackTm;
     private String endMonRemark;
     private String endFeedbackTm;
-    private int totalWorkload;
+    private double totalWorkload;
     //已录入总工作量
-    private int inputWorkload;
+    private double inputWorkload;
     //上月录入
-    private int lastInputWorkload;
+    private double lastInputWorkload;
     //剩余录入工作量
-    private int remainWorkload;
+    private double remainWorkload;
     //本月录入工作量
-    private int monInputWorkload;
+    private double monInputWorkload;
     //	主导部门工作量占比
     private String leadDeptPro;
     //	配合部门工作量占比
@@ -184,7 +184,7 @@ public class DemandBO {
     public DemandBO() {
     }
 
-    public DemandBO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String reqProposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, int totalWorkload, int inputWorkload, int lastInputWorkload, int remainWorkload, int monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
+    public DemandBO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String reqProposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, double totalWorkload, double inputWorkload, double lastInputWorkload, double remainWorkload, double monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
         this.reqInnerSeq = reqInnerSeq;
         this.reqPrdLine = reqPrdLine;
         this.reqType = reqType;
@@ -588,46 +588,6 @@ public class DemandBO {
         this.endFeedbackTm = endFeedbackTm;
     }
 
-    public int getTotalWorkload() {
-        return totalWorkload;
-    }
-
-    public void setTotalWorkload(int totalWorkload) {
-        this.totalWorkload = totalWorkload;
-    }
-
-    public int getInputWorkload() {
-        return inputWorkload;
-    }
-
-    public void setInputWorkload(int inputWorkload) {
-        this.inputWorkload = inputWorkload;
-    }
-
-    public int getLastInputWorkload() {
-        return lastInputWorkload;
-    }
-
-    public void setLastInputWorkload(int lastInputWorkload) {
-        this.lastInputWorkload = lastInputWorkload;
-    }
-
-    public int getRemainWorkload() {
-        return remainWorkload;
-    }
-
-    public void setRemainWorkload(int remainWorkload) {
-        this.remainWorkload = remainWorkload;
-    }
-
-    public int getMonInputWorkload() {
-        return monInputWorkload;
-    }
-
-    public void setMonInputWorkload(int monInputWorkload) {
-        this.monInputWorkload = monInputWorkload;
-    }
-
     public String getLeadDeptPro() {
         return leadDeptPro;
     }
@@ -844,6 +804,46 @@ public class DemandBO {
         this.productionTime = productionTime;
     }
 
+    public double getTotalWorkload() {
+        return totalWorkload;
+    }
+
+    public void setTotalWorkload(double totalWorkload) {
+        this.totalWorkload = totalWorkload;
+    }
+
+    public double getInputWorkload() {
+        return inputWorkload;
+    }
+
+    public void setInputWorkload(double inputWorkload) {
+        this.inputWorkload = inputWorkload;
+    }
+
+    public double getLastInputWorkload() {
+        return lastInputWorkload;
+    }
+
+    public void setLastInputWorkload(double lastInputWorkload) {
+        this.lastInputWorkload = lastInputWorkload;
+    }
+
+    public double getRemainWorkload() {
+        return remainWorkload;
+    }
+
+    public void setRemainWorkload(double remainWorkload) {
+        this.remainWorkload = remainWorkload;
+    }
+
+    public double getMonInputWorkload() {
+        return monInputWorkload;
+    }
+
+    public void setMonInputWorkload(double monInputWorkload) {
+        this.monInputWorkload = monInputWorkload;
+    }
+
     @Override
     public String toString() {
         return "DemandBO{" +
@@ -930,4 +930,5 @@ public class DemandBO {
                 ", noUpload=" + noUpload +
                 '}';
     }
+
 }

@@ -503,7 +503,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 // 是否核减置空
                 demand.setIsCut("");
                 // 工作量已录入总量
-                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                double inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
                 demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
                 // 本月录入，计入上月录入
@@ -1315,7 +1315,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demand.setExpPrdReleaseTm("");
                 demand.setCurMonTarget("");
                 // 工作量已录入总量
-                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                double inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
                 demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
                 // 本月录入，计入上月录入
@@ -1535,7 +1535,7 @@ public class ReqPlanServiceImpl implements ReqPlanService {
                 demand.setExpPrdReleaseTm("");
                 demand.setCurMonTarget("");
                 // 工作量已录入总量
-                int inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
+                double inputWorkLoad = demand.getInputWorkload() + demand.getMonInputWorkload();
                 demand.setInputWorkload(inputWorkLoad);
                 demand.setRemainWorkload(demand.getTotalWorkload() - inputWorkLoad);
                 // 本月录入，计入上月录入

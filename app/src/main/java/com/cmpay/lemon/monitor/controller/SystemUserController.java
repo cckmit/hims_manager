@@ -243,18 +243,29 @@ public class SystemUserController {
             for (int i = 1; i <= map.size(); i++) {
                 UserInfoBO demandDO = new UserInfoBO();
                 System.err.println(map.get(i).get(0).toString());
+                demandDO.setUserNo(Long.parseLong(map.get(i).get(0).toString()));
                 //部门
-                demandDO.setDepartment(map.get(i).get(0).toString());
-                System.err.println(map.get(i).get(1).toString());
-                demandDO.setUsername(map.get(i).get(1).toString());
-                System.err.println(map.get(i).get(2).toString());
-                demandDO.setFullname(map.get(i).get(2).toString());
-                System.err.println(map.get(i).get(3).toString());
-                demandDO.setEmail(map.get(i).get(3).toString());
+                demandDO.setDepartment(map.get(i).get(1).toString());
+                demandDO.setUsername(map.get(i).get(2).toString());
+                demandDO.setFullname(map.get(i).get(3).toString());
+                demandDO.setEmail(map.get(i).get(4).toString());
                 List<Long> list = new ArrayList<Long>();
                 list.add((long)4001);
-                if("运维部署组".equals(map.get(i).get(5).toString())){
-                    list.add((long)5005);
+                // 团队主管
+                if("是".equals(map.get(i).get(5).toString())){
+                    list.add((long)5004);
+                }
+                // 产品经理
+                if("是".equals(map.get(i).get(6).toString())){
+                    list.add((long)5002);
+                }
+                // 技术负责人
+                if("是".equals(map.get(i).get(7).toString())){
+                    list.add((long)5006);
+                }
+                // 测试人员
+                if("是".equals(map.get(i).get(8).toString())){
+                    list.add((long)83004);
                 }
                 demandDO.setRoleIds(list);
                 demandDO.setPassword("hisun321");
@@ -282,8 +293,10 @@ public class SystemUserController {
 //        try {
         //更新数据库
         updateList.forEach(m -> {
-            Long userNo = systemUserService.addP(m);
-            systemUserService.addUserRole(userNo, m.getRoleIds(),m.getUsername());
+//            Long userNo = systemUserService.addP(m);
+//            systemUserService.addUserRole(userNo, m.getRoleIds(),m.getUsername());
+            systemUserService.updateUserRole(m.getUserNo(), m.getRoleIds(),m.getUsername());
+            System.err.println(m);
         });
 //        } catch (Exception e) {
 //            MsgEnum.ERROR_CUSTOM.setMsgInfo("");

@@ -16,7 +16,7 @@ public class DefectMonthlyBO {
     @Excel(name = "研发代码缺陷密度")
     private String defectRate;
     @Excel(name = "需求工作量")
-    private int totalWorkload;
+    private double totalWorkload;
     @Excel(name = "问题总数")
     private int defectsNumber;
     @Excel(name = "致命问题数")
@@ -66,13 +66,11 @@ public class DefectMonthlyBO {
         this.reqPrdLine = reqPrdLine;
     }
 
-
-
-    public int getTotalWorkload() {
+    public double getTotalWorkload() {
         return totalWorkload;
     }
 
-    public void setTotalWorkload(int totalWorkload) {
+    public void setTotalWorkload(double totalWorkload) {
         this.totalWorkload = totalWorkload;
     }
 

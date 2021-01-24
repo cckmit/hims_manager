@@ -268,7 +268,7 @@ public class ReqWorkLoadController {
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
         }
         WorkLoadRspDTO rspDTO = new WorkLoadRspDTO();
-        rspDTO.setRemainWorkload(Integer.parseInt(map.get("remainWordkLoad")));
+        rspDTO.setRemainWorkload(Double.parseDouble(map.get("remainWordkLoad")));
         rspDTO.setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
         rspDTO.setCoorDeptWorkload(map.get("coorDpetWorkLoad"));
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);

@@ -21,13 +21,13 @@ public class BaseWorkloadBO {
     @Excel(name = "开发负责人")
     private String devpResMng;
     @Excel(name = "总工作量")
-    private int totalWorkload;
+    private double totalWorkload;
     @Excel(name = "已录入工作量(不包含本月)")
-    private int inputWorkload;
+    private double inputWorkload;
     @Excel(name = "本月录入工作量")
-    private int monInputWorkload;
+    private double monInputWorkload;
     @Excel(name = "剩余工作量")
-    private int remainWorkload;
+    private double remainWorkload;
     @Excel(name = "需求当前阶段")
     private String preCurPeriod;
     @Excel(name = "一级主导团队")
@@ -89,35 +89,35 @@ public class BaseWorkloadBO {
         this.devpResMng = devpResMng;
     }
 
-    public int getTotalWorkload() {
+    public double getTotalWorkload() {
         return totalWorkload;
     }
 
-    public void setTotalWorkload(int totalWorkload) {
+    public void setTotalWorkload(double totalWorkload) {
         this.totalWorkload = totalWorkload;
     }
 
-    public int getInputWorkload() {
+    public double getInputWorkload() {
         return inputWorkload;
     }
 
-    public void setInputWorkload(int inputWorkload) {
+    public void setInputWorkload(double inputWorkload) {
         this.inputWorkload = inputWorkload;
     }
 
-    public int getMonInputWorkload() {
+    public double getMonInputWorkload() {
         return monInputWorkload;
     }
 
-    public void setMonInputWorkload(int monInputWorkload) {
+    public void setMonInputWorkload(double monInputWorkload) {
         this.monInputWorkload = monInputWorkload;
     }
 
-    public int getRemainWorkload() {
+    public double getRemainWorkload() {
         return remainWorkload;
     }
 
-    public void setRemainWorkload(int remainWorkload) {
+    public void setRemainWorkload(double remainWorkload) {
         this.remainWorkload = remainWorkload;
     }
 

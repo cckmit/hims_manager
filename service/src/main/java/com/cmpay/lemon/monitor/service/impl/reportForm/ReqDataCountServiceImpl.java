@@ -3741,7 +3741,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             //updateReqWorkLoad(demand);
         }
         //本月工作量
-        int monInputWorkload = demand.getMonInputWorkload() + demand.getInputWorkload();
+        double monInputWorkload = demand.getMonInputWorkload() + demand.getInputWorkload();
         //主导部门本月工作量
         String LeadDeptCurMonWorkLoad = "";
         String lead = demand.getLeadDeptPro();
@@ -4598,7 +4598,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             demandDO1.setReqPrdLine(dictionaryDOList.get(i).getName());
             List<DemandDO> demandDOS1 = demandDao.find(demandDO1);
             //工作量和缺陷计数器
-            int workload =0;
+            double workload =0;
             int defectsNumber=0;
             if(JudgeUtils.isNotEmpty(demandDOS1)){
                 for(int j=0;j<demandDOS1.size();j++){
@@ -4637,7 +4637,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             if(workload==0){
                 productLineDefectsBO.setDefectRate("0.00%");
             }else{
-                String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / (float) Integer.parseInt(productLineDefectsBO.getWorkload()) * 100) + "%";
+                String defectRate = String.format("%.2f", (float) Integer.parseInt(productLineDefectsBO.getDefectsNumber()) / Double.parseDouble(productLineDefectsBO.getWorkload()) * 100) + "%";
                 productLineDefectsBO.setDefectRate(defectRate);
             }
             //如果工作量或者缺陷数为0则不增加
@@ -5106,7 +5106,7 @@ public class ReqDataCountServiceImpl implements ReqDataCountService {
             demandDO1.setReqImplMon(months[i]);
             demandDO1.setDevpLeadDept(devpLeadDept);
             List<DemandDO> demandDOS = demandDao.find(demandDO1);
-            int workload =0;
+            double workload =0;
             int defectsNumber=0;
             if(JudgeUtils.isNotEmpty(demandDOS)){
                 for(int j=0;j<demandDOS.size();j++){

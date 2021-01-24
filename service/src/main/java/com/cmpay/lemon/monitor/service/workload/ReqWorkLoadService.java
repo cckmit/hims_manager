@@ -46,7 +46,7 @@ public interface ReqWorkLoadService {
      * @param demand 需求信息
      * @return
      */
-    Map<String,String> checkDeptRate(int totWork,String deptInfo,DemandBO demand);
+    Map<String,String> checkDeptRate(double totWork,String deptInfo,DemandBO demand);
     Map<String,String> checkDeptRate1(DemandBO demand);
 
     List<Double> getExportCountForDevp(DemandBO demandBO);

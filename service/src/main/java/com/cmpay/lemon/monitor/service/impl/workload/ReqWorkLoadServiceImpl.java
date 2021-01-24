@@ -284,7 +284,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 demandDO.setDevpLeadDept(map.get(i).get(4).toString().trim());
                 demandDO.setDevpResMng(map.get(i).get(5).toString().trim());
                 if(!JudgeUtils.isEmpty(map.get(i).get(6).toString().trim())) {
-                    demandDO.setTotalWorkload((int)Float.parseFloat( map.get(i).get(6).toString().trim()));
+                    demandDO.setTotalWorkload(Double.parseDouble( map.get(i).get(6).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -292,7 +292,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 if(!JudgeUtils.isEmpty(map.get(i).get(7).toString().trim())) {
-                    demandDO.setInputWorkload((int)Float.parseFloat( map.get(i).get(7).toString().trim()));
+                    demandDO.setInputWorkload(Double.parseDouble( map.get(i).get(7).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -300,7 +300,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                     BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
                 }
                 if(!JudgeUtils.isEmpty(map.get(i).get(8).toString().trim())) {
-                    demandDO.setMonInputWorkload((int)Float.parseFloat( map.get(i).get(8).toString().trim()));
+                    demandDO.setMonInputWorkload(Double.parseDouble( map.get(i).get(8).toString().trim()));
                 }else {
                     int t = i+1;
                     MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -425,7 +425,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     }
 
     @Override
-    public Map<String, String> checkDeptRate(int totWork, String deptInfo, DemandBO demand) {
+    public Map<String, String> checkDeptRate(double totWork, String deptInfo, DemandBO demand) {
         deptInfo = deptInfo.replaceAll("：", ":").replaceAll("；", ";");
         Map<String, String> map = new HashMap<>();
         if (deptInfo.indexOf(":") < 0) {
@@ -820,7 +820,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             updateReqWorkLoad(demand);
         }
         //本月工作量
-        int monInputWorkload = demand.getMonInputWorkload();
+        double monInputWorkload = demand.getMonInputWorkload();
         //主导部门本月工作量
         String LeadDeptCurMonWorkLoad = "";
         String lead = demand.getLeadDeptPro();
@@ -867,7 +867,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
             //updateReqWorkLoad(demand);
         }
         //本月工作量
-        int monInputWorkload = demand.getMonInputWorkload();
+        double monInputWorkload = demand.getMonInputWorkload();
         //主导部门本月工作量
         String LeadDeptCurMonWorkLoad = "";
         String lead = demand.getLeadDeptPro();
@@ -1144,16 +1144,16 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
     public Map<String,String> checkDeptRate1(DemandBO demand){
         String ReqInnerSeq = demand.getReqInnerSeq();
         String deptInfo = demand.getLeadDeptPro() + demand.getCoorDeptPro();
-        int totWorkload = demand.getTotalWorkload();
+        double totWorkload = demand.getTotalWorkload();
         String coorDept = demand.getDevpCoorDept();
-        int input_workload =demand.getInputWorkload();
+        double input_workload =demand.getInputWorkload();
         DemandDO demandDO = workLoadDao.getReqWorkLoad(ReqInnerSeq);
         demandDO.setDevpCoorDept(coorDept);
         demandDO.setInputWorkload(input_workload);
         DemandBO demandBO = new DemandBO();
         BeanConvertUtils.convert(demandBO, demandDO);
         Map<String, String> map = new HashMap<String, String>();
-        int workLoad = 0;
+        double workLoad = 0;
         try {
             workLoad = totWorkload;
         } catch (Exception e) {
@@ -1186,7 +1186,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         String coorDeptPro = bean.getCoorDeptPro();
         bean.setCoorDeptPro(coorDeptPro);
         // 合法性校验以及自动补充数据
-        int totWork = bean.getTotalWorkload();
+        double totWork = bean.getTotalWorkload();
         if (totWork == 0){
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo(MsgEnum.ERROR_WORK_UPDATE.getMsgInfo() + "【总工作量】不能为零！");
@@ -1212,7 +1212,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
         }
         bean.setLeadDeptWorkload(map.get("leadDpetWorkLoad"));
         bean.setCoorDeptWorkload(map.get("coorDpetWorkLoad"));
-        bean.setRemainWorkload(Integer.parseInt(map.get("remainWordkLoad")));
+        bean.setRemainWorkload(Double.parseDouble(map.get("remainWordkLoad")));
         //页面需求实施月份
         String req_impl_mon_page = demand.getReqImplMon();
         DemandDO demandDO = new DemandDO();
@@ -1228,7 +1228,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 //实施月份
                 String req_impl_mon = list.get(i).getReqImplMon();
                 //总工作量
-                int total_workload = list.get(i).getTotalWorkload();
+                double total_workload = list.get(i).getTotalWorkload();
                 //需求状态
                 int pre_cur_period = Integer.parseInt(list.get(i).getPreCurPeriod());
                 String req_sts = list.get(i).getReqSts();
@@ -1260,7 +1260,7 @@ public class ReqWorkLoadServiceImpl implements ReqWorkLoadService {
                 }
             }
             //已录入工作量
-            int input_workload = bean.getMonInputWorkload();
+            double input_workload = bean.getMonInputWorkload();
             for(int i=0; i < list.size(); i++){
                 //实施月份
                 String req_impl_mon = list.get(i).getReqImplMon();
