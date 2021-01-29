@@ -10,6 +10,9 @@
         <result property="reqNo" jdbcType="VARCHAR" column="req_no" />
         <result property="reqNm" jdbcType="VARCHAR" column="req_nm" />
         <result property="reqDesc" jdbcType="VARCHAR" column="req_desc" />
+        <result property="reqBackground" jdbcType="VARCHAR" column="req_background" />
+        <result property="reqRetrofit" jdbcType="VARCHAR" column="req_retrofit" />
+        <result property="reqValue" jdbcType="VARCHAR" column="req_value" />
         <result property="inputRes" jdbcType="INTEGER" column="input_res" />
         <result property="devCycle" jdbcType="INTEGER" column="dev_cycle" />
         <result property="expInput" jdbcType="DOUBLE" column="exp_input" />
@@ -84,6 +87,9 @@
 		req_no ,
 		req_nm ,
 		req_desc ,
+		req_background ,
+		req_retrofit ,
+		req_value ,
 		input_res ,
 		dev_cycle ,
 		exp_input ,
@@ -225,6 +231,9 @@
         req_no ,
         req_nm ,
         req_desc ,
+        req_background ,
+        req_retrofit ,
+        req_value ,
         input_res ,
         dev_cycle ,
         exp_input ,
@@ -287,6 +296,9 @@
         #{reqNo },
         #{reqNm },
         #{reqDesc },
+        #{req_background },
+        #{req_retrofit },
+        #{req_value },
         #{inputRes },
         #{devCycle },
         #{expInput },
@@ -373,6 +385,15 @@
         </if>
         <if test="reqDesc != null and reqDesc != ''">
             ,req_desc =#{reqDesc }
+        </if>
+        <if test="reqBackground != null and reqBackground != ''">
+            ,req_background =#{reqBackground }
+        </if>
+        <if test="reqRetrofit != null and reqRetrofit != ''">
+            ,req_retrofit =#{reqRetrofit }
+        </if>
+        <if test="reqValue != null and reqValue != ''">
+            ,req_value =#{reqValue }
         </if>
         <if test="inputRes != null">
             ,input_res =#{inputRes }

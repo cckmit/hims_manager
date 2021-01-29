@@ -16,6 +16,9 @@ public class DemandReqDTO extends PageableRspDTO {
     private String reqNo;
     private String reqNm;
     private String reqDesc;
+    private String reqBackground;
+    private String reqRetrofit;
+    private String reqValue;
     private int inputRes;
     private int devCycle;
     private double expInput;
@@ -104,6 +107,30 @@ public class DemandReqDTO extends PageableRspDTO {
     private String isApprovalProcess;
     private String reqStartDate;
     private String reqEndDate;
+
+    public String getReqBackground() {
+        return reqBackground;
+    }
+
+    public void setReqBackground(String reqBackground) {
+        this.reqBackground = reqBackground;
+    }
+
+    public String getReqRetrofit() {
+        return reqRetrofit;
+    }
+
+    public void setReqRetrofit(String reqRetrofit) {
+        this.reqRetrofit = reqRetrofit;
+    }
+
+    public String getReqValue() {
+        return reqValue;
+    }
+
+    public void setReqValue(String reqValue) {
+        this.reqValue = reqValue;
+    }
 
     public String getReqStartDate() {
         return reqStartDate;
@@ -816,6 +843,9 @@ public class DemandReqDTO extends PageableRspDTO {
                 ", reqNo='" + reqNo + '\'' +
                 ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
+                ", reqBackground='" + reqBackground + '\'' +
+                ", reqRetrofit='" + reqRetrofit + '\'' +
+                ", reqValue='" + reqValue + '\'' +
                 ", inputRes=" + inputRes +
                 ", devCycle=" + devCycle +
                 ", expInput=" + expInput +
@@ -877,10 +907,14 @@ public class DemandReqDTO extends PageableRspDTO {
                 ", reqAbnorType='" + reqAbnorType + '\'' +
                 ", ids=" + ids +
                 ", firstLevelOrganization='" + firstLevelOrganization + '\'' +
+                ", defectStartTime='" + defectStartTime + '\'' +
+                ", defectEndTime='" + defectEndTime + '\'' +
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", orderDirection='" + orderDirection + '\'' +
                 ", isApprovalProcess='" + isApprovalProcess + '\'' +
+                ", reqStartDate='" + reqStartDate + '\'' +
+                ", reqEndDate='" + reqEndDate + '\'' +
                 '}';
     }
 }

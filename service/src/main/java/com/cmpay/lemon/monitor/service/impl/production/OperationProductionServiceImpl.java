@@ -1998,18 +1998,18 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 审批人不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
         }
-        if (bean.getRemark() == null || bean.getRemark().equals("") || bean.getRemark().equals("undefined")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 影响范围不能为空");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
-        }
-        if (bean.getProofScheme() == null || bean.getProofScheme().equals("") || bean.getProofScheme().equals("undefined")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证方案不能为空");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
-        }
-        if (bean.getCrashProgramme() == null || bean.getCrashProgramme().equals("") || bean.getCrashProgramme().equals("undefined")) {
-            MsgEnum.ERROR_IMPORT.setMsgInfo(" 回退/应急方案不能为空");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
-        }
+//        if (bean.getRemark() == null || bean.getRemark().equals("") || bean.getRemark().equals("undefined")) {
+//            MsgEnum.ERROR_IMPORT.setMsgInfo(" 影响范围不能为空");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+//        }
+//        if (bean.getProofScheme() == null || bean.getProofScheme().equals("") || bean.getProofScheme().equals("undefined")) {
+//            MsgEnum.ERROR_IMPORT.setMsgInfo(" 验证方案不能为空");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+//        }
+//        if (bean.getCrashProgramme() == null || bean.getCrashProgramme().equals("") || bean.getCrashProgramme().equals("undefined")) {
+//            MsgEnum.ERROR_IMPORT.setMsgInfo(" 回退/应急方案不能为空");
+//            BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);
+//        }
         if (bean.getMailLeader() == null || bean.getMailLeader().equals("") || bean.getMailLeader().equals("undefined")) {
             MsgEnum.ERROR_IMPORT.setMsgInfo(" 开发负责人邮箱不能为空");
             BusinessException.throwBusinessException(MsgEnum.ERROR_IMPORT);

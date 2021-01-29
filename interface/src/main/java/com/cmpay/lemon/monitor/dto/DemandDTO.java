@@ -15,6 +15,9 @@ public class DemandDTO extends GenericDTO {
     private String reqNo;
     private String reqNm;
     private String reqDesc;
+    private String reqBackground;
+    private String reqRetrofit;
+    private String reqValue;
     private int inputRes;
     private int devCycle;
     private double expInput;
@@ -127,6 +130,30 @@ public class DemandDTO extends GenericDTO {
     private String targetCauseClassification;
     //投产时间
     private String productionTime;
+
+    public String getReqBackground() {
+        return reqBackground;
+    }
+
+    public void setReqBackground(String reqBackground) {
+        this.reqBackground = reqBackground;
+    }
+
+    public String getReqRetrofit() {
+        return reqRetrofit;
+    }
+
+    public void setReqRetrofit(String reqRetrofit) {
+        this.reqRetrofit = reqRetrofit;
+    }
+
+    public String getReqValue() {
+        return reqValue;
+    }
+
+    public void setReqValue(String reqValue) {
+        this.reqValue = reqValue;
+    }
 
     public int getProjectedWorkload() {
         return projectedWorkload;
@@ -849,6 +876,9 @@ public class DemandDTO extends GenericDTO {
                 ", reqNo='" + reqNo + '\'' +
                 ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
+                ", reqBackground='" + reqBackground + '\'' +
+                ", reqRetrofit='" + reqRetrofit + '\'' +
+                ", reqValue='" + reqValue + '\'' +
                 ", inputRes=" + inputRes +
                 ", devCycle=" + devCycle +
                 ", expInput=" + expInput +

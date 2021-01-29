@@ -144,7 +144,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
 
         createIssueEpicRequestBO.setIssueType(ISSUETYPE_EPIC);
         createIssueEpicRequestBO.setDevpLeadDept(demandBO.getDevpLeadDept());
-        createIssueEpicRequestBO.setDescription(demandBO.getReqDesc());
+        // 需求描述 变更为需求背景、改造范围、价值
+        String description = "【需求背景】"+demandBO.getReqBackground().replaceAll("\r|\n", "")+"【改造范围】"+demandBO.getReqRetrofit().replaceAll("\r|\n", "")+"【价值】"+demandBO.getReqValue().replaceAll("\r|\n", "");
+        createIssueEpicRequestBO.setDescription(description);
         createIssueEpicRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
         //获取部门管理人员
         JiraDepartmentDO jiraDepartmentDO = jiraDepartmentDao.get(demandBO.getDevpLeadDept());
@@ -315,7 +317,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         createMainTaskRequestBO.setEpicKey(epicDemandJiraDO.getJiraKey());
         //拼凑jira主任务名称  部门+任务名
         createMainTaskRequestBO.setSummary("【" + devpCoorDept + "】" + demandBO.getReqNm());
-        createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
+        // 需求描述 变更为需求背景、改造范围、价值
+        String description = "【需求背景】"+demandBO.getReqBackground().replaceAll("\r|\n", "")+"【改造范围】"+demandBO.getReqRetrofit().replaceAll("\r|\n", "")+"【价值】"+demandBO.getReqValue().replaceAll("\r|\n", "");
+        createMainTaskRequestBO.setDescription(description);
         //设置项目为和包项目，问题类型主任务
         if (taskType.equals(DEVELOPMAINTASK)) {
             createMainTaskRequestBO.setIssueType(ISSUETYPE_DEVELOPMAINTASK);
@@ -338,7 +342,6 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
 
         createMainTaskRequestBO.setDevpLeadDept(devpCoorDept);
-        createMainTaskRequestBO.setDescription(demandBO.getReqDesc());
         createMainTaskRequestBO.setReqInnerSeq(demandBO.getReqInnerSeq());
         createMainTaskRequestBO.setManager(jiraDepartmentDO.getManagerjiranm());
         //创建子任务

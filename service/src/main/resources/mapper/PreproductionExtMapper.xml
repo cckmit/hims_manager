@@ -258,7 +258,7 @@
         UPDATE t_preproduction_records
         <set >
             <if test="preDate != null" >
-                and pre_date = #{preDate}
+                pre_date = #{preDate}
             </if>
         </set>
         WHERE pre_number = #{preNumber}

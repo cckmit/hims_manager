@@ -24,8 +24,14 @@ public class DemandDO extends BaseDO {
     private String reqPrdLine;
     @Excel(name = "需求名称")
     private String reqNm;
-    @Excel(name = "需求描述")
+    // @Excel(name = "需求描述")
     private String reqDesc;
+    @Excel(name = "需求背景")
+    private String reqBackground;
+    @Excel(name = "改造范围")
+    private String reqRetrofit;
+    @Excel(name = "价值")
+    private String reqValue;
     @Excel(name = "预计总工作量(人天)")
     private double expInput;
     @Excel(name = "本月预计投入工作量(人天)")
@@ -151,6 +157,30 @@ public class DemandDO extends BaseDO {
     private String productionTime;
     private String reqStartDate;
     private String reqEndDate;
+
+    public String getReqBackground() {
+        return reqBackground;
+    }
+
+    public void setReqBackground(String reqBackground) {
+        this.reqBackground = reqBackground;
+    }
+
+    public String getReqRetrofit() {
+        return reqRetrofit;
+    }
+
+    public void setReqRetrofit(String reqRetrofit) {
+        this.reqRetrofit = reqRetrofit;
+    }
+
+    public String getReqValue() {
+        return reqValue;
+    }
+
+    public void setReqValue(String reqValue) {
+        this.reqValue = reqValue;
+    }
 
     public String getReqStartDate() {
         return reqStartDate;
@@ -884,6 +914,9 @@ public class DemandDO extends BaseDO {
                 ", reqPrdLine='" + reqPrdLine + '\'' +
                 ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
+                ", reqBackground='" + reqBackground + '\'' +
+                ", reqRetrofit='" + reqRetrofit + '\'' +
+                ", reqValue='" + reqValue + '\'' +
                 ", expInput=" + expInput +
                 ", projectedWorkload=" + projectedWorkload +
                 ", isCut='" + isCut + '\'' +
@@ -956,6 +989,8 @@ public class DemandDO extends BaseDO {
                 ", stateCauseClassification='" + stateCauseClassification + '\'' +
                 ", targetCauseClassification='" + targetCauseClassification + '\'' +
                 ", productionTime='" + productionTime + '\'' +
+                ", reqStartDate='" + reqStartDate + '\'' +
+                ", reqEndDate='" + reqEndDate + '\'' +
                 '}';
     }
 }

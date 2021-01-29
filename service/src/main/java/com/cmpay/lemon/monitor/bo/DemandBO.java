@@ -14,6 +14,9 @@ public class DemandBO {
     private String reqNo;
     private String reqNm;
     private String reqDesc;
+    private String reqBackground;
+    private String reqRetrofit;
+    private String reqValue;
     private int inputRes;
     private int devCycle;
     private double expInput;
@@ -182,6 +185,30 @@ public class DemandBO {
     }
 
     public DemandBO() {
+    }
+
+    public String getReqBackground() {
+        return reqBackground;
+    }
+
+    public void setReqBackground(String reqBackground) {
+        this.reqBackground = reqBackground;
+    }
+
+    public String getReqRetrofit() {
+        return reqRetrofit;
+    }
+
+    public void setReqRetrofit(String reqRetrofit) {
+        this.reqRetrofit = reqRetrofit;
+    }
+
+    public String getReqValue() {
+        return reqValue;
+    }
+
+    public void setReqValue(String reqValue) {
+        this.reqValue = reqValue;
     }
 
     public DemandBO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String reqProposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, double totalWorkload, double inputWorkload, double lastInputWorkload, double remainWorkload, double monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
@@ -854,6 +881,9 @@ public class DemandBO {
                 ", reqNo='" + reqNo + '\'' +
                 ", reqNm='" + reqNm + '\'' +
                 ", reqDesc='" + reqDesc + '\'' +
+                ", reqBackground='" + reqBackground + '\'' +
+                ", reqRetrofit='" + reqRetrofit + '\'' +
+                ", reqValue='" + reqValue + '\'' +
                 ", inputRes=" + inputRes +
                 ", devCycle=" + devCycle +
                 ", expInput=" + expInput +
@@ -927,8 +957,9 @@ public class DemandBO {
                 ", pageNum=" + pageNum +
                 ", pageSize=" + pageSize +
                 ", preCurPeriod2='" + preCurPeriod2 + '\'' +
+                ", reqStartDate='" + reqStartDate + '\'' +
+                ", reqEndDate='" + reqEndDate + '\'' +
                 ", noUpload=" + noUpload +
                 '}';
     }
-
 }
