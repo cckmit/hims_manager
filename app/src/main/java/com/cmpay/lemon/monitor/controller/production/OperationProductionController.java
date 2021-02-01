@@ -272,4 +272,14 @@ public class OperationProductionController {
         MsgEnum.SUCCESS.setMsgInfo(result);
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
     }
+
+    /**
+     * 投产审核确定
+     */
+    @PostMapping("productionAudit")
+    public GenericRspDTO<NoBody> productionAudit(@RequestBody ProductionDTO productionDTO) {
+        ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDTO);
+        operationProductionService.productionAudit(productionBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
 }

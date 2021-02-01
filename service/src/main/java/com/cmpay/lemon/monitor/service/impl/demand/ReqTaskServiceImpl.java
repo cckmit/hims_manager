@@ -900,8 +900,16 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                 MsgEnum.ERROR_CUSTOM.setMsgInfo("第" + i + "行" + "需求名称不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
-            if (StringUtils.isBlank(m.getReqDesc())) {
-                MsgEnum.ERROR_CUSTOM.setMsgInfo("第" + i + "行" + "需求描述不能为空");
+            if (StringUtils.isBlank(m.getReqBackground())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第" + i + "行" + "需求背景不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqRetrofit())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第" + i + "行" + "改造范围不能为空");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+            if (StringUtils.isBlank(m.getReqValue())) {
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("第" + i + "行" + "价值不能为空");
                 BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
             }
             if (StringUtils.isBlank(m.getReqProposer())) {
@@ -1165,9 +1173,9 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     }
                     // 插入
                     iDemandNameChangeExtDao.insert(demandNameChangeDO);
-//                    if(JudgeUtils.isNotEmpty(m.getReqNm())&&JudgeUtils.isNotEmpty(m.getReqNo())){
-//                        reqPlanService.bulidSVNProjrcts(m.getReqInnerSeq(),m.getReqNo(),m.getReqNm());
-//                    }
+                    if(JudgeUtils.isNotEmpty(m.getReqNm())&&JudgeUtils.isNotEmpty(m.getReqNo())){
+                        reqPlanService.bulidSVNProjrcts(m.getReqInnerSeq(),m.getReqNo(),m.getReqNm());
+                    }
                 }
                 demandDao.update(m);
             });
@@ -1177,7 +1185,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
             BusinessException.throwBusinessException(MsgEnum.DB_INSERT_FAILED);
         }
 
-        //jiraOperationService.batchCreateEpic(demandDOS);
+        jiraOperationService.batchCreateEpic(demandDOS);
 
     }
 

@@ -887,6 +887,22 @@
 
         WHERE pro_number = #{proNumber}
     </update>
+
+    <update id="productionAudit" parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
+        UPDATE t_production_records
+        <set>
+            <if test="remark != null and remark != ''">
+                remark=#{remark},
+            </if>
+            <if test="proofScheme != null and proofScheme != ''">
+                proof_scheme = #{proofScheme},
+            </if>
+            <if test="crashProgramme != null and crashProgramme != ''">
+                crash_programme = #{crashProgramme},
+            </if>
+        </set>
+        WHERE pro_number = #{proNumber}
+    </update>
     <!--<delete id="deleteMailGroup" parameterType="string">-->
     <!--delete from t_mail_group-->
     <!--where mail_group_id=#{mail_group_id}-->

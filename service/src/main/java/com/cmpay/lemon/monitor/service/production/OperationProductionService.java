@@ -59,6 +59,8 @@ public interface OperationProductionService {
     // 投产详情修改
     void updateProductionBean(ProductionBO productionBO);
 
+    void productionAudit(ProductionBO productionBO);
+
     void updateAllProduction(ProductionBO bean);
 
     void addScheduleBean(ScheduleDO scheduleBean);

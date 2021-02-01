@@ -10,6 +10,7 @@ import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.bo.ProductionVerificationIsNotTimelyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
+import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
 import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
@@ -20,6 +21,7 @@ import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.service.reportForm.ReqDataCountService;
+import com.cmpay.lemon.monitor.service.sendmail.SendMailService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.DateUtil;
 import com.cmpay.lemon.monitor.utils.SendExcelProductionVerificationIsNotTimely;
@@ -44,7 +46,8 @@ public class ReqMonitorTimer {
     private ReqPlanService reqPlanService;
     @Autowired
     private IOperationProductionDao operationProductionDao;
-
+    @Autowired
+    private SendMailService sendMailService;
     @Autowired
     private ProductTimeService productTimeService;
     @Autowired
@@ -267,6 +270,81 @@ public class ReqMonitorTimer {
 
     }
 
+    // 每天18点，发送当日投产清单邮件
+    @Scheduled(cron = "0 0 18 * * ?")
+    public void productionAuditToEmail(){
+        // 查询当天的投产需求
+        // 获取当前日期
+        String date = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        ProductionDO productionDO = new ProductionDO();
+        productionDO.setProDate(new java.sql.Date(new java.util.Date().getTime()));
+        List<ProductionDO>  list = operationProductionDao.findPageBreakByCondition(productionDO);
+        if(JudgeUtils.isNotEmpty(list)){
+            // 总经理邮件组
+            MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("7");
+            // 部门主管邮件组
+            MailGroupDO mp2 = operationProductionDao.findMailGroupBeanDetail("9");
+            // 创建邮件信息
+            MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+            mailInfo.setMailServerHost("smtp.qiye.163.com");
+            mailInfo.setMailServerPort("25");
+            mailInfo.setValidate(true);
+            mailInfo.setUsername(Constant.EMAIL_NAME);
+            mailInfo.setPassword(Constant.EMAIL_PSWD);
+            mailInfo.setFromAddress(Constant.EMAIL_NAME);
+            String[] mailToAddress = (mp.getMailUser()+";"+mp2.getMailUser()).split(";");
+            mailInfo.setReceivers(mailToAddress);
+            mailInfo.setSubject("【当日投产清单 - "+date+"】");
+           //组织发送内容
+            StringBuffer sb = new StringBuffer();
+            sb.append("<table border ='1' style='width:3100px;border-collapse: collapse;background-color: white;'>");
+            sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th>");
+            sb.append("<th>申请部门</th><th>投产申请人</th>");
+            sb.append("<th>影响范围</th><th>验证方案</th><th>回退/应急方案</th></tr>");
+            for (int i = 0; i < list.size(); i++) {
+                ProductionDO bean = list.get(i);
+                //投产编号
+                sb.append("<tr><td>" + bean.getProNumber() + "</td>");
+                //需求名称及内容简述
+                sb.append("<td >" + bean.getProNeed() + "</td>");
+                //投产类型
+                sb.append("<td style='white-space: nowrap;'>" + bean.getProType() + "</td>");
+                // 日期转换
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                //计划投产日期
+                if (bean.getProDate() != null){
+                    sb.append("<td style='white-space: nowrap;'>" + sdf.format(bean.getProDate()) + "</td>");
+                }
+                //申请部门
+                sb.append("<td style='white-space: nowrap;'>" + bean.getApplicationDept() + "</td>");
+                //投产申请人
+                sb.append("<td style='white-space: nowrap;'>" + bean.getProApplicant() + "</td>");
+                //影响范围
+                if (JudgeUtils.isNotNull(bean.getRemark())){
+                    sb.append("<td style='white-space: nowrap;'>" + bean.getRemark() + "</td>");
+                }else {
+                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                }
+                //验证方案
+                if (JudgeUtils.isNotNull(bean.getProofScheme())){
+                    sb.append("<td style='white-space: nowrap;'>" + bean.getProofScheme() + "</td>");
+                }else {
+                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                }
+                //回退/应急方案
+                if (JudgeUtils.isNotNull(bean.getCrashProgramme())){
+                    sb.append("<td style='white-space: nowrap;'>" + bean.getCrashProgramme() + "</td>");
+                }else{
+                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                }
+            }
+            sb.append("</table>");
+            mailInfo.setContent("大家好!<br/>&nbsp;&nbsp; 以下是今日投产清单,如有任何问题请及时反馈与沟通。<br/>" + sb.toString());
+           // 这个类主要来发送邮件
+            sendMailService.sendMail(mailInfo);
+        }
+
+    }
     /*
      *投产不及时验证清单发送企业微信
      *每天中午12点10秒执行，避免和别的微信推送内容冲突

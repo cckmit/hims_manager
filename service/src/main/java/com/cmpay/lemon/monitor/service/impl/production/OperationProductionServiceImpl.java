@@ -83,6 +83,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     ITPermiDeptDao permiDeptDao;
     @Autowired
     IDemandExtDao demandDao;
+    @Autowired
+    private IUserRoleExtDao userRoleExtDao;
 
     @Autowired
     SystemUserService userService;
@@ -106,7 +108,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private static final String FINISHPRD = "180";
     // 1
     private static final String NO = "否";
-
+    //超级管理员
+    private static final Long SUPERADMINISTRATOR =(long)10506;
     public static final long configurationAdministratorRoleID = 5003;
 
     @Override
@@ -2888,6 +2891,42 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 "投产流程正常共:"+finished+"个," + "<br/>" +
                 "jira缺陷流程未完成共:"+unfinished+"个";
         return str;
+    }
+
+    // 判断是否为角色权限
+    public boolean isDepartmentManager(Long juese ){
+        //查询该操作员角色
+        UserRoleDO userRoleDO = new UserRoleDO();
+        userRoleDO.setRoleId(juese);
+        userRoleDO.setUserNo(Long.parseLong(SecurityUtils.getLoginUserId()));
+        List<UserRoleDO> userRoleDOS =new LinkedList<>();
+        userRoleDOS  = userRoleExtDao.find(userRoleDO);
+        if (!userRoleDOS.isEmpty()){
+            return true ;
+        }
+        return false ;
+    }
+
+    @Override
+    public void productionAudit(ProductionBO productionBO){
+        //获取登录用户名
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        // 判断用户角色 是否为超级管理员
+        if(!isDepartmentManager(SUPERADMINISTRATOR)) {
+            // 查询当前操作人的部门
+            UserInfoBO getUserInfo = userService.getUserByUserFullName(currentUser);
+            if(JudgeUtils.isNotNull(getUserInfo)){
+                if (!(productionBO.getApplicationDept().equals(getUserInfo.getDepartment()))) {
+                    String msg = "您的归属部门为"+productionBO.getApplicationDept()+"，与该投产需求归属部门不一致，只有投产所属部门成员可操作提交!";
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                    MsgEnum.ERROR_CUSTOM.setMsgInfo(msg);
+                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+                }
+            }
+        }
+
+        ProductionDO bean = BeanUtils.copyPropertiesReturnDest(new ProductionDO(), productionBO);
+        operationProductionDao.productionAudit(bean);
     }
 
 }

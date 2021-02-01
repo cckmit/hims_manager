@@ -41,6 +41,12 @@ public interface SystemUserService {
     UserInfoBO getUserInfo(UserInfoBO userInfoBO);
 
     /**
+     * 根据中文名获取用户信息
+     * @param fullname
+     */
+    UserInfoBO getUserByUserFullName(String fullname);
+
+    /**
      * 用户新增
      *
      * @param user

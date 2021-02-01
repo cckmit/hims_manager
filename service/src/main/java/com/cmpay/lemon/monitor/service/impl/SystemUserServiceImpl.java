@@ -111,6 +111,14 @@ public class SystemUserServiceImpl implements SystemUserService {
     }
 
     @Override
+    public UserInfoBO getUserByUserFullName(String fullname) {
+        UserInfoBO userInfoBO = new UserInfoBO();
+        UserDO userDO = iUserDao.getUserByUserFullName(fullname);
+        BeanUtils.copyProperties(userInfoBO, userDO);
+        return userInfoBO;
+    }
+
+    @Override
     @Transactional(propagation = Propagation.SUPPORTS,rollbackFor = RuntimeException.class)
     public Long add(UserInfoBO user) {
         String salt = RandomStringUtils.randomAlphanumeric(20);
