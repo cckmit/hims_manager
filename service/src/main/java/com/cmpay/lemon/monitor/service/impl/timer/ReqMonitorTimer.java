@@ -278,7 +278,7 @@ public class ReqMonitorTimer {
         String date = DateUtil.date2String(new Date(), "yyyy-MM-dd");
         ProductionDO productionDO = new ProductionDO();
         productionDO.setProDate(new java.sql.Date(new java.util.Date().getTime()));
-        List<ProductionDO>  list = operationProductionDao.findPageBreakByCondition(productionDO);
+        List<ProductionDO>  list = operationProductionDao.findProductionAudit(productionDO);
         if(JudgeUtils.isNotEmpty(list)){
             // 总经理邮件组
             MailGroupDO mp = operationProductionDao.findMailGroupBeanDetail("7");

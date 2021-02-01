@@ -281,6 +281,16 @@
         order by pro_date desc
     </select>
 
+    <select id="findProductionAudit" resultMap="rm" parameterType="map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from  t_production_records t1
+        WHERE  pro_status not in ('投产取消','投产打回','''投产回退')
+        <if test="proDate != null ">
+            and pro_date = #{proDate}
+        </if>
+        order by pro_date desc
+    </select>
     <!--<select id="findSubTaskBean" parameterType="string" resultMap="tm">-->
         <!--SELECT (SELECT DEPT_NAME-->
         <!--FROM t_permi_dept t-->
