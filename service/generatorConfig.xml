@@ -23,8 +23,8 @@
             <property name="suppressAllComments" value="false"/>
         </commentGenerator>
 
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.9.10.16:3306/hims"
-                        userId="hims" password="hims2019">
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://10.9.10.117:3306/newhimsdb"
+                        userId="root" password="root">
         </jdbcConnection>
 
         <javaTypeResolver>
@@ -46,7 +46,7 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
 
-        <table tableName="t_preproduction_records" domainObjectName="PreproductionDO" enableCountByExample="false"
+        <table tableName="t_verification_results_feedback" domainObjectName="VerificationResultsFeedbackDO" enableCountByExample="false"
                enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
         </table>

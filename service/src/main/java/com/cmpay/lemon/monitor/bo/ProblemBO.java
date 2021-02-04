@@ -62,7 +62,43 @@ public class ProblemBO  {
     private String  proNeed;
 
     private String isJira;
+    /**
+     * @Fields problemType 投产问题分类
+     */
+    private String problemType;
+    /**
+     * @Fields updateTime 修改时间
+     */
+    private LocalDateTime updateTime;
+    /**
+     * @Fields updateUser 修改人
+     */
+    private String updateUser;
     private String reqStartMon;
+
+    public String getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(String problemType) {
+        this.problemType = problemType;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
 
     public String getReqStartMon() {
         return reqStartMon;
@@ -191,6 +227,9 @@ public class ProblemBO  {
                 ", proDate='" + proDate + '\'' +
                 ", proNeed='" + proNeed + '\'' +
                 ", isJira='" + isJira + '\'' +
+                ", problemType='" + problemType + '\'' +
+                ", updateTime=" + updateTime +
+                ", updateUser='" + updateUser + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
                 '}';
     }

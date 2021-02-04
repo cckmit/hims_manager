@@ -62,9 +62,44 @@ public class ProblemDTO  extends PageableRspDTO {
      * 需求名称
      */
     private String  proNeed;
-
+    /**
+     * problemType 投产问题分类
+     */
+    private String problemType;
+    /**
+     *  updateTime 修改时间
+     */
+    private LocalDateTime updateTime;
+    /**
+     *  updateUser 修改人
+     */
+    private String updateUser;
     private String isJira;
     private String reqStartMon;
+
+    public String getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(String problemType) {
+        this.problemType = problemType;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
 
     public String getProType() {
         return proType;
@@ -197,6 +232,9 @@ public class ProblemDTO  extends PageableRspDTO {
                 ", proType='" + proType + '\'' +
                 ", proDate='" + proDate + '\'' +
                 ", proNeed='" + proNeed + '\'' +
+                ", problemType='" + problemType + '\'' +
+                ", updateTime=" + updateTime +
+                ", updateUser='" + updateUser + '\'' +
                 ", isJira='" + isJira + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
                 '}';

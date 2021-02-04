@@ -4,6 +4,7 @@ package com.cmpay.lemon.monitor.controller.production;
 import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
+import com.cmpay.lemon.common.utils.JudgeUtils;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -81,8 +82,8 @@ public class OperationProductionController {
         operationProductionService.exportExcel(request,response,productionBO);
     }
     @RequestMapping("/updateAllProduction")
-    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr, HttpServletRequest request, HttpServletResponse response){
-        operationProductionService.updateAllProduction(request,response,taskIdStr);
+    public GenericRspDTO<NoBody> updateAllProduction(@RequestParam("taskIdStr") String taskIdStr){
+        operationProductionService.updateAllProduction(taskIdStr);
         return GenericRspDTO.newSuccessInstance();
     }
     // 投产清单通报
@@ -281,5 +282,96 @@ public class OperationProductionController {
         ProductionBO productionBO = BeanUtils.copyPropertiesReturnDest(new ProductionBO(), productionDTO);
         operationProductionService.productionAudit(productionBO);
         return GenericRspDTO.newSuccessInstance();
+    }
+
+    @PostMapping("/resultsSaveExcel")
+    public GenericRspDTO resultsSaveExcelbatchImport(HttpServletRequest request, @RequestParam("proNumber") String proNumber,
+                                                     @RequestParam("proNeed") String proNeed,@RequestParam("proDate") String proDate,@RequestParam("proType") String proType,@RequestParam("id") Long id,
+                                                     @RequestParam("applicationDept") String applicationDept,@RequestParam("functionCaseDetail") String functionCaseDetail,@RequestParam("isVerification") String isVerification,
+                                                     @RequestParam("otherFeedback") String otherFeedback,@RequestParam("resultsDetail") String resultsDetail,@RequestParam("technicalCaseDetail") String technicalCaseDetail,
+                                                     @RequestParam("problemType") String problemType,@RequestParam("problemDetail") String problemDetail,@RequestParam("problemSerialNumber") Long problemSerialNumber,
+                                                     @ModelAttribute("productionFollowDTOList") ProductionFollowReqDTO productionFollowReqDTO) {
+
+        MultipartFile file1 = ((MultipartHttpServletRequest) request).getFile("file1");
+        MultipartFile file2 = ((MultipartHttpServletRequest) request).getFile("file2");
+        VerificationResultsFeedbackBO verificationResultsFeedbackBO = new VerificationResultsFeedbackBO();
+        verificationResultsFeedbackBO.setDevpLeadDept(applicationDept);
+        verificationResultsFeedbackBO.setId(id);
+        verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
+        verificationResultsFeedbackBO.setIsVerification(isVerification);
+        verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        verificationResultsFeedbackBO.setProNumber(proNumber);
+        verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
+        verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
+        System.err.println(productionFollowReqDTO);
+        System.err.println(verificationResultsFeedbackBO);
+        ProblemBO problemBO = new ProblemBO();
+        problemBO.setDevpLeadDept(applicationDept);
+        problemBO.setProNumber(proNumber);
+        problemBO.setProNeed(proNeed);
+        problemBO.setProDate(proDate);
+        problemBO.setProType(proType);
+        problemBO.setIsJira("否");
+        problemBO.setProblemSerialNumber(problemSerialNumber);
+        problemBO.setProblemDetail(problemDetail);
+        problemBO.setProblemType(problemType);
+        List<ProductionFollowBO> followBOList= null;
+        if(JudgeUtils.isNotNull(productionFollowReqDTO.getProductionFollowDTOList())){
+            followBOList = BeanConvertUtils.convertList(productionFollowReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);
+        }
+        operationProductionService.resultsSaveExcelbatchImport(file1,file2,verificationResultsFeedbackBO,problemBO,followBOList);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+    @PostMapping("/resultsSubmitExcel")
+    public GenericRspDTO resultsSubmitExcel(HttpServletRequest request, @RequestParam("proNumber") String proNumber,
+                                            @RequestParam("proNeed") String proNeed,@RequestParam("proDate") String proDate,@RequestParam("proType") String proType,@RequestParam("id") Long id,
+                                            @RequestParam("applicationDept") String applicationDept,@RequestParam("functionCaseDetail") String functionCaseDetail,@RequestParam("isVerification") String isVerification,
+                                            @RequestParam("otherFeedback") String otherFeedback,@RequestParam("resultsDetail") String resultsDetail,@RequestParam("technicalCaseDetail") String technicalCaseDetail,
+                                            @RequestParam("problemType") String problemType,@RequestParam("problemDetail") String problemDetail,@RequestParam("problemSerialNumber") Long problemSerialNumber,
+                                            @ModelAttribute("productionFollowDTOList") ProductionFollowReqDTO productionFollowReqDTO) {
+
+        MultipartFile file1 = ((MultipartHttpServletRequest) request).getFile("file1");
+        MultipartFile file2 = ((MultipartHttpServletRequest) request).getFile("file2");
+        VerificationResultsFeedbackBO verificationResultsFeedbackBO = new VerificationResultsFeedbackBO();
+        verificationResultsFeedbackBO.setDevpLeadDept(applicationDept);
+        verificationResultsFeedbackBO.setId(id);
+        verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
+        verificationResultsFeedbackBO.setIsVerification(isVerification);
+        verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        verificationResultsFeedbackBO.setProNumber(proNumber);
+        verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
+        verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
+        System.err.println(productionFollowReqDTO);
+        System.err.println(verificationResultsFeedbackBO);
+        ProblemBO problemBO = new ProblemBO();
+        problemBO.setDevpLeadDept(applicationDept);
+        problemBO.setProNumber(proNumber);
+        problemBO.setProNeed(proNeed);
+        problemBO.setProDate(proDate);
+        problemBO.setProType(proType);
+        problemBO.setIsJira("否");
+        problemBO.setProblemSerialNumber(problemSerialNumber);
+        problemBO.setProblemDetail(problemDetail);
+        problemBO.setProblemType(problemType);
+        List<ProductionFollowBO> followBOList= null;
+        if(JudgeUtils.isNotNull(productionFollowReqDTO.getProductionFollowDTOList())){
+            followBOList = BeanConvertUtils.convertList(productionFollowReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);
+        }
+        operationProductionService.resultsSubmitExcelbatchImport(file1,file2,verificationResultsFeedbackBO,problemBO,followBOList);
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, NoBody.class);
+    }
+
+    // 查询投产验证结果
+    @RequestMapping("/getResults")
+    public GenericRspDTO<ResultsDTO> getResults(@RequestParam("pro_number") String proNumber){
+        //
+        VerificationResultsFeedbackBO verificationResultsFeedbackBO = operationProductionService.getVerificationResultsFeedback(proNumber);
+        ProblemBO problemBO = operationProductionService.getProblem(proNumber);
+        List<ProductionFollowBO> followBOList = operationProductionService.getProductionFollow(proNumber);
+        ResultsDTO resultsDTO = new ResultsDTO();
+        resultsDTO.setFollowBOList(BeanConvertUtils.convertList(followBOList, ProductionFollowDTO.class));
+        resultsDTO.setProblemBO(BeanUtils.copyPropertiesReturnDest(new ProblemDTO(), problemBO));
+        resultsDTO.setVerificationResultsFeedbackBO(BeanUtils.copyPropertiesReturnDest(new VerificationResultsFeedbackDTO(), verificationResultsFeedbackBO));
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, resultsDTO);
     }
 }

@@ -134,6 +134,25 @@ public class ProductionDO extends BaseDO {
     @Excel(name = "回退/应急方案")
     private String crashProgramme;
 
+    private String proAudit;
+    private Timestamp proAuditTime;
+
+    public String getProAudit() {
+        return proAudit;
+    }
+
+    public void setProAudit(String proAudit) {
+        this.proAudit = proAudit;
+    }
+
+    public Timestamp getProAuditTime() {
+        return proAuditTime;
+    }
+
+    public void setProAuditTime(Timestamp proAuditTime) {
+        this.proAuditTime = proAuditTime;
+    }
+
     public String getProofScheme() {
         return proofScheme;
     }
@@ -658,6 +677,8 @@ public class ProductionDO extends BaseDO {
                 ", accessRemark='" + accessRemark + '\'' +
                 ", proofScheme='" + proofScheme + '\'' +
                 ", crashProgramme='" + crashProgramme + '\'' +
+                ", proAudit='" + proAudit + '\'' +
+                ", proAuditTime=" + proAuditTime +
                 '}';
     }
 }

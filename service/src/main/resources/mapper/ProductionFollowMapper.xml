@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IProductionFollowDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        <id column="follow_id" property="followId" jdbcType="BIGINT" />
+        <result column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="displayName" property="displayname" jdbcType="VARCHAR" />
+        <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
+        <result column="issue_status" property="issueStatus" jdbcType="VARCHAR" />
+        <result column="follow_detail" property="followDetail" jdbcType="VARCHAR" />
+        <result column="follow_user" property="followUser" jdbcType="VARCHAR" />
+        <result column="follow_time" property="followTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        follow_id, pro_number, devp_lead_dept, displayName, issuekey, issue_status, follow_detail, 
+        follow_user, follow_time, update_time, update_user
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_follow
+        where follow_id = #{followId,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_production_follow
+        where follow_id = #{followId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        insert into t_production_follow
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="followId != null" >
+                follow_id,
+            </if>
+            <if test="proNumber != null" >
+                pro_number,
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept,
+            </if>
+            <if test="displayname != null" >
+                displayName,
+            </if>
+            <if test="issuekey != null" >
+                issuekey,
+            </if>
+            <if test="issueStatus != null" >
+                issue_status,
+            </if>
+            <if test="followDetail != null" >
+                follow_detail,
+            </if>
+            <if test="followUser != null" >
+                follow_user,
+            </if>
+            <if test="followTime != null" >
+                follow_time,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="followId != null" >
+                #{followId,jdbcType=BIGINT},
+            </if>
+            <if test="proNumber != null" >
+                #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="displayname != null" >
+                #{displayname,jdbcType=VARCHAR},
+            </if>
+            <if test="issuekey != null" >
+                #{issuekey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueStatus != null" >
+                #{issueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="followDetail != null" >
+                #{followDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="followUser != null" >
+                #{followUser,jdbcType=VARCHAR},
+            </if>
+            <if test="followTime != null" >
+                #{followTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        update t_production_follow
+        <set >
+            <if test="proNumber != null" >
+                pro_number = #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="displayname != null" >
+                displayName = #{displayname,jdbcType=VARCHAR},
+            </if>
+            <if test="issuekey != null" >
+                issuekey = #{issuekey,jdbcType=VARCHAR},
+            </if>
+            <if test="issueStatus != null" >
+                issue_status = #{issueStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="followDetail != null" >
+                follow_detail = #{followDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="followUser != null" >
+                follow_user = #{followUser,jdbcType=VARCHAR},
+            </if>
+            <if test="followTime != null" >
+                follow_time = #{followTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where follow_id = #{followId,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_production_follow
+        <where >
+            <if test="followId != null" >
+                and follow_id = #{followId,jdbcType=BIGINT}
+            </if>
+            <if test="proNumber != null" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="displayname != null" >
+                and displayName = #{displayname,jdbcType=VARCHAR}
+            </if>
+            <if test="issuekey != null" >
+                and issuekey = #{issuekey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null" >
+                and issue_status = #{issueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="followDetail != null" >
+                and follow_detail = #{followDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="followUser != null" >
+                and follow_user = #{followUser,jdbcType=VARCHAR}
+            </if>
+            <if test="followTime != null" >
+                and follow_time = #{followTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateTime != null" >
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateUser != null" >
+                and update_user = #{updateUser,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

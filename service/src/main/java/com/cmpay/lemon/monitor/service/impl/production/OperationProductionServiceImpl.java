@@ -26,6 +26,7 @@ import com.cmpay.lemon.monitor.service.jira.JiraDataCollationService;
 import com.cmpay.lemon.monitor.service.jira.JiraOperationService;
 import com.cmpay.lemon.monitor.service.productTime.ProductTimeService;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
+import com.cmpay.lemon.monitor.service.sendmail.SendMailService;
 import com.cmpay.lemon.monitor.utils.*;
 import com.cmpay.lemon.monitor.utils.jira.JiraUtil;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
@@ -46,6 +47,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
@@ -85,7 +87,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     IDemandExtDao demandDao;
     @Autowired
     private IUserRoleExtDao userRoleExtDao;
-
+    @Autowired
+    private IProductionFollowDao productionFollowDao;
+    @Autowired
+    private IVerificationResultsFeedbackDao verificationResultsFeedbackDao;
     @Autowired
     SystemUserService userService;
     @Autowired
@@ -102,6 +107,10 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     private IProblemExtDao iProblemDao;
     @Autowired
     private IDemandJiraDao demandJiraDao;
+    @Autowired
+    private IPlanDao planDao;
+    @Autowired
+    private SendMailService sendMailService;
 
 
     // 180 完成产品发布
@@ -194,7 +203,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String taskIdStr) {
+    public void updateAllProduction( String taskIdStr) {
 
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
@@ -2552,9 +2561,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         iProblemDao.insert(problemDO);
         // 判断 isJira ，如果isJira = 是 ，则同步新建jira投产问题
         // 异步jira
-        if("是".equals(problemDO.getIsJira())){
-            jiraOperationService.createProduction(problemBO);
-        }
+//        if("是".equals(problemDO.getIsJira())){
+//            jiraOperationService.createProduction(problemBO);
+//        }
 
 
 
@@ -2911,22 +2920,472 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     public void productionAudit(ProductionBO productionBO){
         //获取登录用户名
         String currentUser = userService.getFullname(SecurityUtils.getLoginName());
-        // 判断用户角色 是否为超级管理员
-        if(!isDepartmentManager(SUPERADMINISTRATOR)) {
-            // 查询当前操作人的部门
-            UserInfoBO getUserInfo = userService.getUserByUserFullName(currentUser);
-            if(JudgeUtils.isNotNull(getUserInfo)){
-                if (!(productionBO.getApplicationDept().equals(getUserInfo.getDepartment()))) {
-                    String msg = "您的归属部门为"+productionBO.getApplicationDept()+"，与该投产需求归属部门不一致，只有投产所属部门成员可操作提交!";
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-                    MsgEnum.ERROR_CUSTOM.setMsgInfo(msg);
-                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//        // 判断用户角色 是否为超级管理员
+//        if(!isDepartmentManager(SUPERADMINISTRATOR)) {
+//            // 查询当前操作人的部门
+//            UserInfoBO getUserInfo = userService.getUserByUserFullName(currentUser);
+//            if(JudgeUtils.isNotNull(getUserInfo)){
+//                if (!(productionBO.getApplicationDept().equals(getUserInfo.getDepartment()))) {
+//                    String msg = "您的归属部门为"+productionBO.getApplicationDept()+"，与该投产需求归属部门不一致，只有投产所属部门成员可操作提交!";
+//                    MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+//                    MsgEnum.ERROR_CUSTOM.setMsgInfo(msg);
+//                    BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+//                }
+//            }
+//        }
+
+        ProductionDO bean = BeanUtils.copyPropertiesReturnDest(new ProductionDO(), productionBO);
+        bean.setProAudit(currentUser);
+        bean.setProAuditTime(new Timestamp(System.currentTimeMillis()));
+        operationProductionDao.productionAudit(bean);
+    }
+
+    /**
+     * 验证结果反馈保存
+     * @param file1
+     * @param file2
+     * @param verificationResultsFeedbackBO
+     * @param problemBO
+     * @param followBOList
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void resultsSaveExcelbatchImport(MultipartFile file1,MultipartFile file2,VerificationResultsFeedbackBO verificationResultsFeedbackBO,ProblemBO problemBO,List<ProductionFollowBO> followBOList){
+        // 获取当前操作人
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //依据环境配置路径
+        String functionCasePath="";
+        String technicalCasePath="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            functionCasePath= "/home/devms/temp/production/functionCase/";
+            technicalCasePath="/home/devms/temp/production/technicalCase/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            functionCasePath= "/home/devms/temp/production/functionCase/";
+            technicalCasePath="/home/devms/temp/production/technicalCase/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (file1 !=null) {
+            //  功能案例验证结果文件名
+            String functionCaseFilename = file1.getOriginalFilename();
+            verificationResultsFeedbackBO.setFunctionCaseFilename(functionCaseFilename);
+            verificationResultsFeedbackBO.setFunctionCaseTime(LocalDateTime.now());
+            File fileDir = new File(functionCasePath + verificationResultsFeedbackBO.getProNumber());
+            File filePath = new File(fileDir.getPath()+"/"+functionCaseFilename);
+            LOGGER.info(fileDir.getPath());
+            LOGGER.info(filePath.getPath());
+            if(fileDir.exists()){
+                File[] oldFile = fileDir.listFiles();
+                for(File o:oldFile) o.delete();
+            }else{
+                fileDir.mkdir();
+            }
+            try {
+                file1.transferTo(filePath);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        if (file2!=null) {
+            // 技术案例验证结果文件名
+            String technicalCaseFilename = file2.getOriginalFilename();
+            verificationResultsFeedbackBO.setTechnicalCaseFilename(technicalCaseFilename);
+            verificationResultsFeedbackBO.setTechnicalCaseTime(LocalDateTime.now());
+            File fileDir2 = new File(technicalCasePath + verificationResultsFeedbackBO.getProNumber());
+            File filePath2 = new File(fileDir2.getPath()+"/"+technicalCaseFilename);
+            LOGGER.info(fileDir2.getPath());
+            LOGGER.info(filePath2.getPath());
+
+            if(fileDir2.exists()){
+                File[] oldFile2 = fileDir2.listFiles();
+                for(File o:oldFile2) o.delete();
+            }else{
+                fileDir2.mkdir();
+            }
+            try {
+                file2.transferTo(filePath2);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        verificationResultsFeedbackBO.setUpdateTime(LocalDateTime.now());
+        verificationResultsFeedbackBO.setUpdateUser(currentUser);
+        VerificationResultsFeedbackDO verificationResultsFeedbackDO = new VerificationResultsFeedbackDO();
+        BeanConvertUtils.convert(verificationResultsFeedbackDO, verificationResultsFeedbackBO);
+        // 投产结果反馈表
+        if(JudgeUtils.isNull(verificationResultsFeedbackBO.getId())){
+            // 新增
+            verificationResultsFeedbackDao.insert(verificationResultsFeedbackDO);
+        }else{
+            // 修改
+            verificationResultsFeedbackDao.update(verificationResultsFeedbackDO);
+        }
+        //保留不变更状态
+//        // 如果 是否验证通过 = ”是“，那么将投产状态改完验证完成
+//        if("是".equals(verificationResultsFeedbackDO.getIsVerification())){
+//            // 根据投产编号查询投产状态是否为验证完成
+//            if(!"投产验证完成".equals(operationProductionDao.findProductionBean(verificationResultsFeedbackDO.getProNumber()).getProStatus())){
+//                // 调用投产记录修改接口
+//                String taskIdStr = "yzwc~~"+verificationResultsFeedbackDO.getProNumber();
+//                updateAllProduction( taskIdStr);
+//            }
+//        }
+
+        ProblemDO problemDO = new ProblemDO();
+        BeanConvertUtils.convert(problemDO, problemBO);
+        // 判断problemBO 问题描述是否为空
+        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+            // 如果id不为空，则新增
+            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(currentUser);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.insert(problemDO);
+            }else{
+                // 修改
+                problemDO.setUpdateUser(currentUser);
+                problemDO.setUpdateTime(LocalDateTime.now());
+                iProblemDao.update(problemDO);
+            }
+        }else{
+            // 如果id不为空，则新增
+            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(currentUser);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.insert(problemDO);
+            }
+        }
+        // 如果跟进项集合不为空
+        if(JudgeUtils.isNotEmpty(followBOList)){
+            for(int i=0;i<followBOList.size();i++){
+                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+                    //添加跟进项表，同步jira
+                    ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+                    BeanConvertUtils.convert(productionFollowDO, followBOList.get(i));
+                    productionFollowDO.setDevpLeadDept(verificationResultsFeedbackBO.getDevpLeadDept());
+                    productionFollowDO.setProNumber(verificationResultsFeedbackBO.getProNumber());
+                    // 如果id为空，则新增
+                    if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
+                        productionFollowDO.setDisplayname(currentUser);
+                        productionFollowDO.setFollowTime(LocalDateTime.now());
+                        productionFollowDao.insert(productionFollowDO);
+                    }else{
+                        //修改
+                        productionFollowDO.setUpdateUser(currentUser);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
+                        productionFollowDao.update(productionFollowDO);
+                    }
                 }
             }
         }
 
-        ProductionDO bean = BeanUtils.copyPropertiesReturnDest(new ProductionDO(), productionBO);
-        operationProductionDao.productionAudit(bean);
+
+    }
+
+    /**
+     * 验证结果反馈提交
+     * @param file1
+     * @param file2
+     * @param verificationResultsFeedbackBO
+     * @param problemBO
+     * @param followBOList
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void resultsSubmitExcelbatchImport(MultipartFile file1,MultipartFile file2,VerificationResultsFeedbackBO verificationResultsFeedbackBO,ProblemBO problemBO,List<ProductionFollowBO> followBOList){
+        // 获取当前操作人
+        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //依据环境配置路径
+        String functionCasePath="";
+        String technicalCasePath="";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            functionCasePath= "/home/devms/temp/production/functionCase/";
+            technicalCasePath="/home/devms/temp/production/technicalCase/";
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            functionCasePath= "/home/devms/temp/production/functionCase/";
+            technicalCasePath="/home/devms/temp/production/technicalCase/";
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        if (file1 !=null) {
+            //  功能案例验证结果文件名
+            String functionCaseFilename = file1.getOriginalFilename();
+            verificationResultsFeedbackBO.setFunctionCaseFilename(functionCaseFilename);
+            verificationResultsFeedbackBO.setFunctionCaseTime(LocalDateTime.now());
+            File fileDir = new File(functionCasePath + verificationResultsFeedbackBO.getProNumber());
+            File filePath = new File(fileDir.getPath()+"/"+functionCaseFilename);
+            LOGGER.info(fileDir.getPath());
+            LOGGER.info(filePath.getPath());
+            if(fileDir.exists()){
+                File[] oldFile = fileDir.listFiles();
+                for(File o:oldFile) o.delete();
+            }else{
+                fileDir.mkdir();
+            }
+            try {
+                file1.transferTo(filePath);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        if (file2!=null) {
+            // 技术案例验证结果文件名
+            String technicalCaseFilename = file2.getOriginalFilename();
+            verificationResultsFeedbackBO.setTechnicalCaseFilename(technicalCaseFilename);
+            verificationResultsFeedbackBO.setTechnicalCaseTime(LocalDateTime.now());
+            File fileDir2 = new File(technicalCasePath + verificationResultsFeedbackBO.getProNumber());
+            File filePath2 = new File(fileDir2.getPath()+"/"+technicalCaseFilename);
+            LOGGER.info(fileDir2.getPath());
+            LOGGER.info(filePath2.getPath());
+
+            if(fileDir2.exists()){
+                File[] oldFile2 = fileDir2.listFiles();
+                for(File o:oldFile2) o.delete();
+            }else{
+                fileDir2.mkdir();
+            }
+            try {
+                file2.transferTo(filePath2);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            } catch (IOException e) {
+                e.printStackTrace();
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+                MsgEnum.ERROR_CUSTOM.setMsgInfo("文档上传失败");
+                BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+            }
+        }
+        verificationResultsFeedbackBO.setUpdateTime(LocalDateTime.now());
+        verificationResultsFeedbackBO.setUpdateUser(currentUser);
+        VerificationResultsFeedbackDO verificationResultsFeedbackDO = new VerificationResultsFeedbackDO();
+        BeanConvertUtils.convert(verificationResultsFeedbackDO, verificationResultsFeedbackBO);
+        // 投产结果反馈表
+        if(JudgeUtils.isNull(verificationResultsFeedbackBO.getId())){
+            // 新增
+            verificationResultsFeedbackDao.insert(verificationResultsFeedbackDO);
+        }else{
+            // 修改
+            verificationResultsFeedbackDao.update(verificationResultsFeedbackDO);
+        }
+        // 如果 是否验证通过 = ”是“，那么将投产状态改完验证完成
+        if("是".equals(verificationResultsFeedbackDO.getIsVerification())){
+            // 根据投产编号查询投产状态是否为验证完成
+            if(!"投产验证完成".equals(operationProductionDao.findProductionBean(verificationResultsFeedbackDO.getProNumber()).getProStatus())){
+                // 调用投产记录修改接口
+                String taskIdStr = "yzwc~~"+verificationResultsFeedbackDO.getProNumber();
+                updateAllProduction( taskIdStr);
+            }
+        }
+
+        ProblemDO problemDO = new ProblemDO();
+        BeanConvertUtils.convert(problemDO, problemBO);
+        // 判断problemBO 问题描述是否为空
+        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+            // 如果id不为空，则新增
+            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(currentUser);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.insert(problemDO);
+            }else{
+                // 修改
+                problemDO.setUpdateUser(currentUser);
+                problemDO.setUpdateTime(LocalDateTime.now());
+                iProblemDao.update(problemDO);
+            }
+        }else{
+            // 如果id不为空，则新增
+            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(currentUser);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.insert(problemDO);
+            }
+        }
+        // 如果跟进项集合不为空
+        if(JudgeUtils.isNotEmpty(followBOList)){
+            for(int i=0;i<followBOList.size();i++){
+                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+                    //添加跟进项表，同步jira
+                    ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+                    BeanConvertUtils.convert(productionFollowDO, followBOList.get(i));
+                    productionFollowDO.setDevpLeadDept(verificationResultsFeedbackBO.getDevpLeadDept());
+                    productionFollowDO.setProNumber(verificationResultsFeedbackBO.getProNumber());
+                    // 如果id为空，则新增
+                    if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
+                        productionFollowDO.setDisplayname(currentUser);
+                        productionFollowDO.setFollowTime(LocalDateTime.now());
+                        productionFollowDO.setUpdateUser(currentUser);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
+                        productionFollowDao.insert(productionFollowDO);
+                    }else{
+                        //修改
+                        productionFollowDO.setUpdateUser(currentUser);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
+                        productionFollowDao.update(productionFollowDO);
+                    }
+                    // 建立jira任务
+                    jiraOperationService.createProduction2(productionFollowDO);
+                }
+            }
+        }
+        // 发送邮件
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+        mailInfo.setMailServerHost("smtp.qiye.163.com");
+        mailInfo.setMailServerPort("25");
+        mailInfo.setValidate(true);
+        mailInfo.setUsername(Constant.EMAIL_NAME);
+        mailInfo.setPassword(Constant.EMAIL_PSWD);
+        mailInfo.setFromAddress(Constant.EMAIL_NAME);
+        Vector<File> filesv = new Vector<File>() ;
+        // 查询
+        VerificationResultsFeedbackDO verification = new VerificationResultsFeedbackDO();
+        verification.setProNumber(verificationResultsFeedbackDO.getProNumber());
+        List<VerificationResultsFeedbackDO> verificationResultsFeedbackDOList = verificationResultsFeedbackDao.find(verification);
+        verification = verificationResultsFeedbackDOList.get(0);
+        /**
+         * 附件
+         */
+        //获取邮件附件
+        File motherFile=null;
+        File motherFile2=null;
+        //归类文件，创建编号文件夹
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            motherFile = new File("/home/devms/temp/production/functionCase/" + verificationResultsFeedbackDO.getProNumber()  + "/"+  verification.getFunctionCaseFilename());
+            motherFile2 = new File("/home/devms/temp/production/technicalCase/" + verificationResultsFeedbackDO.getProNumber()  + "/"+ verification.getTechnicalCaseFilename());
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            motherFile = new File("/home/devms/temp/production/functionCase/" + verificationResultsFeedbackDO.getProNumber()  + "/"+ verification.getFunctionCaseFilename());
+            motherFile2 = new File("/home/devms/temp/production/technicalCase/" + verificationResultsFeedbackDO.getProNumber()  + "/"+verification.getTechnicalCaseFilename());
+        }else {
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
+            MsgEnum.ERROR_CUSTOM.setMsgInfo("当前配置环境路径有误，请尽快联系管理员!");
+            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
+        }
+        filesv.add(motherFile);
+        filesv.add(motherFile2);
+        //添加附件
+        if(filesv!=null && filesv.size()!=0){
+            mailInfo.setFile(filesv);
+        }
+
+        // 根据部门获取部门经理
+        DemandDO demandDO =planDao.searchDeptUserEmail(verificationResultsFeedbackBO.getDevpLeadDept());
+        // 收件人 部门经理
+        String mailToAddress  = "feedback@hisuntech.com";
+        if(LemonUtils.getEnv().equals(Env.SIT)) {
+            mailInfo.setReceivers(mailToAddress.split(";"));
+        }
+        else if(LemonUtils.getEnv().equals(Env.DEV)) {
+            mailToAddress = "tu_yi@hisuntech.com";
+            mailInfo.setReceivers(mailToAddress.split(";"));
+        }
+        // 抄送人 mailCopyPerson  申请人 开发负责人
+        // 获取申请人邮箱 开发负责人邮箱
+        List<String> list = new ArrayList<>();
+        list.add(currentUser);
+        String [] nameList = new String[list.size()];
+        nameList = list.toArray(nameList);
+        // 部门经理邮箱
+        String mailTo  = demandDO.getMonRemark();
+        // 提交人邮箱
+        DemandDO demandDO1 =planDao.searchUserLEmail(nameList);
+        if (JudgeUtils.isNotNull(demandDO1)){
+            mailInfo.setCcs((mailTo+";"+demandDO1.getMonRemark()).split(";"));
+        }
+        //【投产验证结果反馈】+ 投产编号 + 投产描述 + 提交人名
+        mailInfo.setSubject("【投产验证结果反馈】-" + verificationResultsFeedbackBO.getProNumber() + "-" + problemBO.getProNeed() + "-" + currentUser);
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+        sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>预投产通知邮件</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>投产编号</td><td>" + problemBO.getProNumber() + "</td><td style='font-weight: bold;'>申请部门</td><td>" + problemBO.getDevpLeadDept() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>投产类型</td><td>" + problemBO.getProType() + "</td><td style='font-weight: bold;'>计划预投产日期</td><td>" + problemBO.getProDate() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>需求名称及内容描述</td><td>" + problemBO.getProNeed() + "</td><td style='font-weight: bold;'>是否验证通过</td><td>" + verificationResultsFeedbackBO.getIsVerification() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>投产结果描述</td><td colspan='5'>" + verificationResultsFeedbackBO.getResultsDetail() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>功能案例验证结果</td><td colspan='5'>" + verificationResultsFeedbackBO.getFunctionCaseDetail() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>技术案例验证结果描述</td><td colspan='5'>" + verificationResultsFeedbackBO.getTechnicalCaseDetail() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>投产过程中的问题反馈</td><td colspan='5'>" + problemBO.getProblemDetail() + "</td></tr>");
+        sb.append("<tr><td style='font-weight: bold;'>投产问题分类</td><td colspan='5'>" + problemBO.getProType() + "</td></tr>");
+        if(JudgeUtils.isNotEmpty(followBOList)){
+            for(int i=0;i<followBOList.size();i++){
+                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+                    sb.append("<tr><td style='font-weight: bold;'>跟进项</td><td>" + followBOList.get(i).getFollowDetail() + "</td><td style='font-weight: bold;'>跟进人</td><td>" + followBOList.get(i).getFollowUser() + "</td></tr>");
+                }
+            }
+        }
+        sb.append("<tr><td style='font-weight: bold;'>其它</td><td colspan='5'>" + verificationResultsFeedbackBO.getOtherFeedback() + "</td></tr></table>");
+        mailInfo.setContent("各位好:<br/>&nbsp;&nbsp;本次投产验证结果反馈请参见下表<br/>烦请查看，谢谢！<br/>" + sb.toString());
+//        // 这个类主要来发送邮件
+        sendMailService.sendMail(mailInfo);
+
+
+    }
+
+
+    @Override
+    public VerificationResultsFeedbackBO getVerificationResultsFeedback(String proNumber){
+        VerificationResultsFeedbackDO verificationResultsFeedbackDO = new VerificationResultsFeedbackDO();
+        verificationResultsFeedbackDO.setProNumber(proNumber);
+        VerificationResultsFeedbackBO verificationResultsFeedbackBO = new VerificationResultsFeedbackBO();
+        List<VerificationResultsFeedbackDO>  problemDOList=  verificationResultsFeedbackDao.find(verificationResultsFeedbackDO);
+        if(JudgeUtils.isNotEmpty(problemDOList)){
+            BeanConvertUtils.convert( verificationResultsFeedbackBO,problemDOList.get(0));
+
+        }
+        return verificationResultsFeedbackBO;
+    }
+    @Override
+    public ProblemBO getProblem(String proNumber){
+        ProblemDO problemDO = new ProblemDO();
+        problemDO.setProNumber(proNumber);
+        ProblemBO problemBO = new ProblemBO();
+        List<ProblemDO>  problemDOList= iProblemDao.find(problemDO);
+        if(JudgeUtils.isNotEmpty(problemDOList)){
+            BeanConvertUtils.convert( problemBO,problemDOList.get(0));
+
+        }
+        return problemBO;
+    }
+    @Override
+    public List<ProductionFollowBO> getProductionFollow(String proNumber){
+        ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+        productionFollowDO.setProNumber(proNumber);
+        List<ProductionFollowBO> productionFollowBOList = new ArrayList<>();
+        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollowDO);
+        productionFollowBOList = BeanConvertUtils.convertList(productionFollowDOList, ProductionFollowBO.class);
+        return productionFollowBOList;
     }
 
 }

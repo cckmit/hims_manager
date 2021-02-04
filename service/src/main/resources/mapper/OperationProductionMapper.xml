@@ -57,6 +57,8 @@
         <result property="accessRemark" jdbcType="VARCHAR" column="access_remark" />
         <result property="proofScheme" jdbcType="VARCHAR" column="proof_scheme" />
         <result property="crashProgramme" jdbcType="VARCHAR" column="crash_programme" />
+        <result property="proAudit" jdbcType="VARCHAR" column="pro_audit" />
+        <result property="proAuditTime" jdbcType="TIMESTAMP" column="pro_audit_time" />
     </resultMap>
 
     <!--<resultMap id="pm" type="com.hisun.persistence.beans.ProductionBean">-->
@@ -181,7 +183,15 @@
        pro_advance_result ,not_production_impact,identifier,identifier_tel ,pro_checker,checker_tel ,validation,development_leader,approver,update_operator, remark ,
 	   unusual_reason_phrase,urgent_reason_phrase ,completion_update,early_implementation,influence_use,
 	   influence_use_reason,influence_use_inf,operating_time,production_deployment_result,is_operation_production,mail_recipient,mail_copy_person,
-	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name,is_access_question,access_remark,proof_scheme,crash_programme
+	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name,is_access_question,access_remark,proof_scheme,crash_programme,pro_audit_time,pro_audit
+    </sql>
+    <sql id="Base_Column_List2">
+       pro_number ,pro_need ,pro_type ,pro_date,application_dept,pro_applicant,applicant_tel,pro_module,business_principal ,base_principal,
+       pro_manager,pro_status ,is_up_database ,is_up_structure, pro_operation ,is_ref_cerificate ,is_advance_production , not_advance_reason ,
+       pro_advance_result ,not_production_impact,identifier,identifier_tel ,pro_checker,checker_tel ,validation,development_leader,approver,update_operator,
+	   unusual_reason_phrase,urgent_reason_phrase ,completion_update,early_implementation,influence_use,
+	   influence_use_reason,influence_use_inf,operating_time,production_deployment_result,is_operation_production,mail_recipient,mail_copy_person,
+	   pro_pkg_status,pro_pkg_time,pro_pkg_name,mail_leader,svntab_name,is_access_question,access_remark
     </sql>
 
 
@@ -328,7 +338,7 @@
 
 
     <insert id="insertProduction"  parameterType="com.cmpay.lemon.monitor.entity.ProductionDO">
-        insert into  t_production_records(<include refid="Base_Column_List"/>)
+        insert into  t_production_records(<include refid="Base_Column_List2"/>)
         values(#{proNumber},
         #{proNeed},
         #{proType},
@@ -357,7 +367,6 @@
         #{developmentLeader},
         #{approver},
         #{updateOperator},
-        #{remark},
         #{unusualReasonPhrase},
         #{urgentReasonPhrase},
         #{completionUpdate},
@@ -376,9 +385,7 @@
         #{mailLeader},
         #{svntabName},
         #{isAccessQuestion},
-        #{accessRemark},
-        #{proofScheme},
-        #{crashProgramme}
+        #{accessRemark}
         )
     </insert>
 
@@ -909,6 +916,12 @@
             </if>
             <if test="crashProgramme != null and crashProgramme != ''">
                 crash_programme = #{crashProgramme},
+            </if>
+            <if test="proAudit != null and proAudit != ''">
+                pro_audit = #{proAudit},
+            </if>
+            <if test="proAuditTime != null ">
+                pro_audit_time = #{proAuditTime},
             </if>
         </set>
         WHERE pro_number = #{proNumber}

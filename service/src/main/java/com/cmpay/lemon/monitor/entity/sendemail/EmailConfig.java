@@ -40,11 +40,7 @@ public class EmailConfig {
         if (productionBean.getIsAdvanceProduction().equals("否")) {
             sb.append("<tr><td style='font-weight: bold;'>不做预投产验证原因</td><td colspan='5'>" + productionBean.getNotAdvanceReason() + "</td></tr>");
         }
-        sb.append("<tr><td style='font-weight: bold;'>不走正常投产原因</td><td colspan='5'>" + productionBean.getUnusualReasonPhrase() + "</td></tr>");
-
-        sb.append("<tr><td style='font-weight: bold;'>影响范围</td><td colspan='5'>" + productionBean.getRemark() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>验证方案</td><td colspan='5'>" + productionBean.getProofScheme() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>回退/应急方案</td><td colspan='5'>" + productionBean.getCrashProgramme() + "</td></tr></table>");
+        sb.append("<tr><td style='font-weight: bold;'>不走正常投产原因</td><td colspan='5'>" + productionBean.getUnusualReasonPhrase() + "</td></tr></table>");
         return sb.toString();
     }
 
@@ -82,10 +78,7 @@ public class EmailConfig {
             sb.append("<tr><td rowspan='2' style='font-weight: bold;' >是否影响客户使用</td><td  rowspan='2'>" + productionBean.getInfluenceUse() + "</td>");
             sb.append("<td style='font-weight: bold;' >如不影响客户使用，请简要描述原因</td><td colspan='3'>" + productionBean.getInfluenceUseReason() + "</td></tr>");
             sb.append("<tr><td style='font-weight: bold;' >如影响客户使用，描述具体影响范围</td><td colspan='3'>" + productionBean.getInfluenceUseInf() + "</td></tr>");
-            sb.append(" <tr><td style='font-weight: bold;'>更新时间及预计操作时长</td><td colspan='5'>" + productionBean.getOperatingTime() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>影响范围</td><td colspan='5'>" + productionBean.getRemark() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>验证方案</td><td colspan='5'>" + productionBean.getProofScheme() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>回退/应急方案</td><td colspan='5'>" + productionBean.getCrashProgramme() + "</td></tr></table>");
+            sb.append(" <tr><td style='font-weight: bold;'>更新时间及预计操作时长</td><td colspan='5'>" + productionBean.getOperatingTime() + "</td></tr></tr></table>");
 
         }else{
             sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
@@ -108,10 +101,7 @@ public class EmailConfig {
             sb.append("<tr><td rowspan='2' style='font-weight: bold;' >是否影响客户使用</td><td  rowspan='2'>" + productionBean.getInfluenceUse() + "</td>");
             sb.append("<td style='font-weight: bold;' >如不影响客户使用，请简要描述原因</td><td colspan='3'>" + productionBean.getInfluenceUseReason() + "</td></tr>");
             sb.append("<tr><td style='font-weight: bold;' >如影响客户使用，描述具体影响范围</td><td colspan='3'>" + productionBean.getInfluenceUseInf() + "</td></tr>");
-            sb.append(" <tr><td style='font-weight: bold;'>更新时间及预计操作时长</td><td colspan='5'>" + productionBean.getOperatingTime() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>影响范围</td><td colspan='5'>" + productionBean.getRemark() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>验证方案</td><td colspan='5'>" + productionBean.getProofScheme() + "</td></tr>");
-            sb.append("<tr><td style='font-weight: bold;'>回退/应急方案</td><td colspan='5'>" + productionBean.getCrashProgramme() + "</td></tr></table>");
+            sb.append(" <tr><td style='font-weight: bold;'>更新时间及预计操作时长</td><td colspan='5'>" + productionBean.getOperatingTime() + "</td></tr></table>");
         }
 
         return sb.toString();

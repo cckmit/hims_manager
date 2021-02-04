@@ -2,7 +2,7 @@
  * @ClassName ProblemDO
  * @Description
  * @version 1.0
- * @Date 2020-10-27 16:19:42
+ * @Date 2021-02-02 16:03:37
  */
 package com.cmpay.lemon.monitor.entity;
 
@@ -21,11 +21,11 @@ public class ProblemDO extends BaseDO {
      */
     private String proNumber;
     /**
-     * @Fields problemDetail 问题详情
+     * @Fields problemDetail 问题描述
      */
     private String problemDetail;
     /**
-     * @Fields problemTime 录入时间
+     * @Fields problemTime 提出时间
      */
     private LocalDateTime problemTime;
     /**
@@ -41,9 +41,21 @@ public class ProblemDO extends BaseDO {
      */
     private String devpLeadDept;
     /**
-     * @Fields isJira 是否新建jira任务
+     * @Fields isJira 是否创建jira任务
      */
     private String isJira;
+    /**
+     * @Fields problemType 投产问题分类
+     */
+    private String problemType;
+    /**
+     * @Fields updateTime 修改时间
+     */
+    private LocalDateTime updateTime;
+    /**
+     * @Fields updateUser 修改人
+     */
+    private String updateUser;
 
     private String reqStartMon;
 
@@ -54,7 +66,6 @@ public class ProblemDO extends BaseDO {
     public void setReqStartMon(String reqStartMon) {
         this.reqStartMon = reqStartMon;
     }
-
     public Long getProblemSerialNumber() {
         return problemSerialNumber;
     }
@@ -119,18 +130,27 @@ public class ProblemDO extends BaseDO {
         this.isJira = isJira;
     }
 
-    @Override
-    public String toString() {
-        return "ProblemDO{" +
-                "problemSerialNumber=" + problemSerialNumber +
-                ", proNumber='" + proNumber + '\'' +
-                ", problemDetail='" + problemDetail + '\'' +
-                ", problemTime=" + problemTime +
-                ", issuekey='" + issuekey + '\'' +
-                ", displayname='" + displayname + '\'' +
-                ", devpLeadDept='" + devpLeadDept + '\'' +
-                ", isJira='" + isJira + '\'' +
-                ", reqStartMon='" + reqStartMon + '\'' +
-                '}';
+    public String getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(String problemType) {
+        this.problemType = problemType;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
     }
 }

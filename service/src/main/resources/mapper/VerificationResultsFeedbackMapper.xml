@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cmpay.lemon.monitor.dao.IVerificationResultsFeedbackDao" >
+
+    <resultMap id="BaseResultMap" type="com.cmpay.lemon.monitor.entity.VerificationResultsFeedbackDO" >
+        <id column="id" property="id" jdbcType="BIGINT" />
+        <result column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="results_detail" property="resultsDetail" jdbcType="VARCHAR" />
+        <result column="is_verification" property="isVerification" jdbcType="VARCHAR" />
+        <result column="function_case_detail" property="functionCaseDetail" jdbcType="VARCHAR" />
+        <result column="function_case_filename" property="functionCaseFilename" jdbcType="VARCHAR" />
+        <result column="function_case_time" property="functionCaseTime" jdbcType="TIMESTAMP" />
+        <result column="technical_case_detail" property="technicalCaseDetail" jdbcType="VARCHAR" />
+        <result column="technical_case_filename" property="technicalCaseFilename" jdbcType="VARCHAR" />
+        <result column="technical_case_time" property="technicalCaseTime" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="other_feedback" property="otherFeedback" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, pro_number, devp_lead_dept, results_detail, is_verification, function_case_detail, 
+        function_case_filename, function_case_time, technical_case_detail, technical_case_filename, 
+        technical_case_time, update_user, update_time, other_feedback
+    </sql>
+
+    <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_verification_results_feedback
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.Long" >
+        delete from t_verification_results_feedback
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.VerificationResultsFeedbackDO" >
+        insert into t_verification_results_feedback
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                id,
+            </if>
+            <if test="proNumber != null" >
+                pro_number,
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept,
+            </if>
+            <if test="resultsDetail != null" >
+                results_detail,
+            </if>
+            <if test="isVerification != null" >
+                is_verification,
+            </if>
+            <if test="functionCaseDetail != null" >
+                function_case_detail,
+            </if>
+            <if test="functionCaseFilename != null" >
+                function_case_filename,
+            </if>
+            <if test="functionCaseTime != null" >
+                function_case_time,
+            </if>
+            <if test="technicalCaseDetail != null" >
+                technical_case_detail,
+            </if>
+            <if test="technicalCaseFilename != null" >
+                technical_case_filename,
+            </if>
+            <if test="technicalCaseTime != null" >
+                technical_case_time,
+            </if>
+            <if test="updateUser != null" >
+                update_user,
+            </if>
+            <if test="updateTime != null" >
+                update_time,
+            </if>
+            <if test="otherFeedback != null" >
+                other_feedback,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="id != null" >
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="proNumber != null" >
+                #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="resultsDetail != null" >
+                #{resultsDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="isVerification != null" >
+                #{isVerification,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseDetail != null" >
+                #{functionCaseDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseFilename != null" >
+                #{functionCaseFilename,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseTime != null" >
+                #{functionCaseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="technicalCaseDetail != null" >
+                #{technicalCaseDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalCaseFilename != null" >
+                #{technicalCaseFilename,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalCaseTime != null" >
+                #{technicalCaseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null" >
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="otherFeedback != null" >
+                #{otherFeedback,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="com.cmpay.lemon.monitor.entity.VerificationResultsFeedbackDO" >
+        update t_verification_results_feedback
+        <set >
+            <if test="proNumber != null" >
+                pro_number = #{proNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="devpLeadDept != null" >
+                devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR},
+            </if>
+            <if test="resultsDetail != null" >
+                results_detail = #{resultsDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="isVerification != null" >
+                is_verification = #{isVerification,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseDetail != null" >
+                function_case_detail = #{functionCaseDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseFilename != null" >
+                function_case_filename = #{functionCaseFilename,jdbcType=VARCHAR},
+            </if>
+            <if test="functionCaseTime != null" >
+                function_case_time = #{functionCaseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="technicalCaseDetail != null" >
+                technical_case_detail = #{technicalCaseDetail,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalCaseFilename != null" >
+                technical_case_filename = #{technicalCaseFilename,jdbcType=VARCHAR},
+            </if>
+            <if test="technicalCaseTime != null" >
+                technical_case_time = #{technicalCaseTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null" >
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null" >
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="otherFeedback != null" >
+                other_feedback = #{otherFeedback,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.VerificationResultsFeedbackDO" >
+        select 
+        <include refid="Base_Column_List" />
+        from t_verification_results_feedback
+        <where >
+            <if test="id != null" >
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="proNumber != null" >
+                and pro_number = #{proNumber,jdbcType=VARCHAR}
+            </if>
+            <if test="devpLeadDept != null" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="resultsDetail != null" >
+                and results_detail = #{resultsDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="isVerification != null" >
+                and is_verification = #{isVerification,jdbcType=VARCHAR}
+            </if>
+            <if test="functionCaseDetail != null" >
+                and function_case_detail = #{functionCaseDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="functionCaseFilename != null" >
+                and function_case_filename = #{functionCaseFilename,jdbcType=VARCHAR}
+            </if>
+            <if test="functionCaseTime != null" >
+                and function_case_time = #{functionCaseTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="technicalCaseDetail != null" >
+                and technical_case_detail = #{technicalCaseDetail,jdbcType=VARCHAR}
+            </if>
+            <if test="technicalCaseFilename != null" >
+                and technical_case_filename = #{technicalCaseFilename,jdbcType=VARCHAR}
+            </if>
+            <if test="technicalCaseTime != null" >
+                and technical_case_time = #{technicalCaseTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updateUser != null" >
+                and update_user = #{updateUser,jdbcType=VARCHAR}
+            </if>
+            <if test="updateTime != null" >
+                and update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="otherFeedback != null" >
+                and other_feedback = #{otherFeedback,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+</mapper>

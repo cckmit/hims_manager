@@ -270,8 +270,8 @@ public class ReqMonitorTimer {
 
     }
 
-    // 每天18点，发送当日投产清单邮件
-    @Scheduled(cron = "0 0 18 * * ?")
+    // 每天19点，发送当日投产清单邮件
+    @Scheduled(cron = "0 0 19 * * ?")
     public void productionAuditToEmail(){
         // 查询当天的投产需求
         // 获取当前日期
@@ -297,10 +297,8 @@ public class ReqMonitorTimer {
             mailInfo.setSubject("【当日投产清单 - "+date+"】");
            //组织发送内容
             StringBuffer sb = new StringBuffer();
-            sb.append("<table border ='1' style='width:3100px;border-collapse: collapse;background-color: white;'>");
-            sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th>");
-            sb.append("<th>申请部门</th><th>投产申请人</th>");
-            sb.append("<th>影响范围</th><th>验证方案</th><th>回退/应急方案</th></tr>");
+            sb.append("<table border ='1' style='width:1500px;border-collapse: collapse;background-color: white;'>");
+            sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th><th>申请部门</th><th>投产申请人</th><th>影响范围</th><th>验证方案</th><th>回退/应急方案</th><th>审核人</th></tr>");
             for (int i = 0; i < list.size(); i++) {
                 ProductionDO bean = list.get(i);
                 //投产编号
@@ -334,6 +332,12 @@ public class ReqMonitorTimer {
                 //回退/应急方案
                 if (JudgeUtils.isNotNull(bean.getCrashProgramme())){
                     sb.append("<td style='white-space: nowrap;'>" + bean.getCrashProgramme() + "</td>");
+                }else{
+                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                }
+                //审核人
+                if (JudgeUtils.isNotNull(bean.getProAudit())){
+                    sb.append("<td style='white-space: nowrap;'>" + bean.getProAudit() + "</td>");
                 }else{
                     sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
                 }

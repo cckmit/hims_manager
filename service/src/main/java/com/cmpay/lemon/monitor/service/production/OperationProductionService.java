@@ -33,7 +33,7 @@ public interface OperationProductionService {
     ScheduleRspBO find1(ScheduleBO scheduleBO);
     void exportExcel(HttpServletRequest request, HttpServletResponse response, ProductionBO productionBO);
 
-    void updateAllProduction(HttpServletRequest request, HttpServletResponse response, String str);
+    void updateAllProduction(String str);
     String updateAllProductionDtc(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExport(HttpServletRequest request, HttpServletResponse response, String str);
     void sendGoExportResult(HttpServletRequest request, HttpServletResponse response, String str);
@@ -60,6 +60,8 @@ public interface OperationProductionService {
     void updateProductionBean(ProductionBO productionBO);
 
     void productionAudit(ProductionBO productionBO);
+    void resultsSaveExcelbatchImport(MultipartFile file1,MultipartFile file2,VerificationResultsFeedbackBO verificationResultsFeedbackBO,ProblemBO problemBO,List<ProductionFollowBO> followBOList);
+    void resultsSubmitExcelbatchImport(MultipartFile file1,MultipartFile file2,VerificationResultsFeedbackBO verificationResultsFeedbackBO,ProblemBO problemBO,List<ProductionFollowBO> followBOList);
 
     void updateAllProduction(ProductionBO bean);
 
@@ -142,4 +144,7 @@ public interface OperationProductionService {
     ProblemRspBO productionProblem(ProblemBO problemBO);
 
     void checkJiraDefect(String proNumber);
+    VerificationResultsFeedbackBO getVerificationResultsFeedback(String proNumber);
+    ProblemBO getProblem(String proNumber);
+    List<ProductionFollowBO> getProductionFollow(String proNumber);
 }

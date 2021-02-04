@@ -11,11 +11,14 @@
         <result column="displayName" property="displayname" jdbcType="VARCHAR" />
         <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
         <result column="is_jira" property="isJira" jdbcType="VARCHAR" />
+        <result column="problem_type" property="problemType" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     </resultMap>
 
     <sql id="Base_Column_List" >
         problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName,
-        devp_lead_dept, is_jira
+        devp_lead_dept, is_jira, problem_type, update_time, update_user
     </sql>
 
 
