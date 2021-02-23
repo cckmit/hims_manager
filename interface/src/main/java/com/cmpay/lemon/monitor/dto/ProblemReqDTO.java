@@ -11,6 +11,8 @@ package com.cmpay.lemon.monitor.dto;
 import com.cmpay.framework.data.response.PageableRspDTO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ProblemReqDTO  extends PageableRspDTO {
@@ -66,6 +68,52 @@ public class ProblemReqDTO  extends PageableRspDTO {
 
     private String isJira;
     private String reqStartMon;
+    /**
+     * problemType 投产问题分类
+     */
+    private String problemType;
+    /**
+     *  updateTime 修改时间
+     */
+    private LocalDateTime updateTime;
+    /**
+     *  updateUser 修改人
+     */
+    private String updateUser;
+
+    private List<ProductionFollowDTO> productionFollowDTOList = new ArrayList<>();
+
+    public String getProblemType() {
+        return problemType;
+    }
+
+    public void setProblemType(String problemType) {
+        this.problemType = problemType;
+    }
+
+    public LocalDateTime getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(LocalDateTime updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getUpdateUser() {
+        return updateUser;
+    }
+
+    public void setUpdateUser(String updateUser) {
+        this.updateUser = updateUser;
+    }
+
+    public List<ProductionFollowDTO> getProductionFollowDTOList() {
+        return productionFollowDTOList;
+    }
+
+    public void setProductionFollowDTOList(List<ProductionFollowDTO> productionFollowDTOList) {
+        this.productionFollowDTOList = productionFollowDTOList;
+    }
 
     public String getProType() {
         return proType;
@@ -185,7 +233,7 @@ public class ProblemReqDTO  extends PageableRspDTO {
 
     @Override
     public String toString() {
-        return "ProblemDTO{" +
+        return "ProblemReqDTO{" +
                 "problemSerialNumber=" + problemSerialNumber +
                 ", proNumber='" + proNumber + '\'' +
                 ", problemDetail='" + problemDetail + '\'' +
@@ -200,6 +248,10 @@ public class ProblemReqDTO  extends PageableRspDTO {
                 ", proNeed='" + proNeed + '\'' +
                 ", isJira='" + isJira + '\'' +
                 ", reqStartMon='" + reqStartMon + '\'' +
+                ", problemType='" + problemType + '\'' +
+                ", updateTime=" + updateTime +
+                ", updateUser='" + updateUser + '\'' +
+                ", productionFollowDTOList=" + productionFollowDTOList +
                 '}';
     }
 }

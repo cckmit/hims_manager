@@ -297,7 +297,7 @@ public class ReqMonitorTimer {
             mailInfo.setSubject("【当日投产清单 - "+date+"】");
            //组织发送内容
             StringBuffer sb = new StringBuffer();
-            sb.append("<table border ='1' style='width:1500px;border-collapse: collapse;background-color: white;'>");
+            sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
             sb.append("<tr><th>投产编号</th><th>需求名称及内容简述</th><th>投产类型</th><th>计划投产日期</th><th>申请部门</th><th>投产申请人</th><th>影响范围</th><th>验证方案</th><th>回退/应急方案</th><th>审核人</th></tr>");
             for (int i = 0; i < list.size(); i++) {
                 ProductionDO bean = list.get(i);
@@ -306,40 +306,40 @@ public class ReqMonitorTimer {
                 //需求名称及内容简述
                 sb.append("<td >" + bean.getProNeed() + "</td>");
                 //投产类型
-                sb.append("<td style='white-space: nowrap;'>" + bean.getProType() + "</td>");
+                sb.append("<td>" + bean.getProType() + "</td>");
                 // 日期转换
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                 //计划投产日期
                 if (bean.getProDate() != null){
-                    sb.append("<td style='white-space: nowrap;'>" + sdf.format(bean.getProDate()) + "</td>");
+                    sb.append("<td>" + sdf.format(bean.getProDate()) + "</td>");
                 }
                 //申请部门
-                sb.append("<td style='white-space: nowrap;'>" + bean.getApplicationDept() + "</td>");
+                sb.append("<td>" + bean.getApplicationDept() + "</td>");
                 //投产申请人
-                sb.append("<td style='white-space: nowrap;'>" + bean.getProApplicant() + "</td>");
+                sb.append("<td>" + bean.getProApplicant() + "</td>");
                 //影响范围
                 if (JudgeUtils.isNotNull(bean.getRemark())){
-                    sb.append("<td style='white-space: nowrap;'>" + bean.getRemark() + "</td>");
+                    sb.append("<td>" + bean.getRemark() + "</td>");
                 }else {
-                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                    sb.append("<td>" + "" + "</td>");
                 }
                 //验证方案
                 if (JudgeUtils.isNotNull(bean.getProofScheme())){
-                    sb.append("<td style='white-space: nowrap;'>" + bean.getProofScheme() + "</td>");
+                    sb.append("<td>" + bean.getProofScheme() + "</td>");
                 }else {
-                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                    sb.append("<td>" + "" + "</td>");
                 }
                 //回退/应急方案
                 if (JudgeUtils.isNotNull(bean.getCrashProgramme())){
-                    sb.append("<td style='white-space: nowrap;'>" + bean.getCrashProgramme() + "</td>");
+                    sb.append("<td>" + bean.getCrashProgramme() + "</td>");
                 }else{
-                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                    sb.append("<td>" + "" + "</td>");
                 }
                 //审核人
                 if (JudgeUtils.isNotNull(bean.getProAudit())){
-                    sb.append("<td style='white-space: nowrap;'>" + bean.getProAudit() + "</td>");
+                    sb.append("<td>" + bean.getProAudit() + "</td><tr>");
                 }else{
-                    sb.append("<td style='white-space: nowrap;'>" + "" + "</td>");
+                    sb.append("<td>" + "" + "</td><tr>");
                 }
             }
             sb.append("</table>");

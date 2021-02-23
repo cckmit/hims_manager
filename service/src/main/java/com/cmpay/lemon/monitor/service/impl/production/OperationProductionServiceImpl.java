@@ -143,7 +143,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     scheduleBOList.get(i).setProType(bean.getProType());
                     scheduleBOList.get(i).setIsOperationProduction(bean.getIsOperationProduction());
                 } else {
-                    scheduleBOList.get(i).setProType("查无此信息");
+                    scheduleBOList.get(i).setProType("预投产");
                     scheduleBOList.get(i).setIsOperationProduction("");
                 }
             }
@@ -244,6 +244,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getProStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "预投产已部署", sBean.getPreOperation(), sBean.getPreOperation(), "预投产已提前部署");
+                schedule.setProType("投产");
                 operationProductionDao.insertSchedule(schedule);
             }
             return;
@@ -280,6 +281,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getProStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getProNumber(), currentUser, "预投产验证通过", sBean.getPreOperation(), sBean.getPreOperation(), "预投产验证已通过");
+                schedule.setProType("投产");
                 operationProductionDao.insertSchedule(schedule);
                 //是否预投产验证为“是”时，预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
                 if (bean.getIsAdvanceProduction().equals("是") && bean.getProAdvanceResult().equals("通过")) {
@@ -292,9 +294,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                             // 投产月份  = 需求实施月份时 ，改变需求状态
                             if(demandBOList.get(j).getReqImplMon().compareTo(month)==0){
                                 DemandDO demand = demandBOList.get(j);
-                                if (!JudgeUtils.isNull(demand)) {
+                                if (JudgeUtils.isNotNull(demand)) {
                                     //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
-                                    if(!FINISHPRD.equals(demand.getPreCurPeriod())){
+                                    if(!FINISHPRD.equals(demand.getPreCurPeriod())&&!FINISHPRD.equals(demand.getPreCurPeriod())){
                                         demand.setPreCurPeriod("160");
                                         DemandBO demandBO = new DemandBO();
                                         BeanConvertUtils.convert(demandBO, demand);
@@ -670,6 +672,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     file.delete();
                 }
             }
+            scheduleBean.setProType("投产");
             operationProductionDao.insertSchedule(scheduleBean);
             operationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
             // 根据编号查询需求信息
@@ -681,7 +684,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     // 投产月份  = 需求实施月份时 ，改变需求状态
 //                    if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
                         DemandDO demand = demandBOList.get(0);
-                        if (!JudgeUtils.isNull(demand)) {
+                        if (JudgeUtils.isNotNull(demand)) {
                             //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                             if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
                                 demand.setPreCurPeriod("170");
@@ -2332,6 +2335,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             this.updateAllProduction(bean);
             //生成流水记录
             ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", productionBean.getProStatus(), bean.getProStatus(), "无");
+            scheduleBean.setProType("投产");
             this.addScheduleBean(scheduleBean);
             //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
             if (bean.getIsAdvanceProduction().equals("否")) {
@@ -2348,6 +2352,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             this.addProduction(bean);
             //生成流水记录
             ScheduleDO scheduleBean = new ScheduleDO(bean.getProNumber(), userService.getFullname(SecurityUtils.getLoginName()), "录入", "", bean.getProStatus(), "无");
+            scheduleBean.setProType("投产");
             this.addScheduleBean(scheduleBean);
             //是否预投产验证为“否”时，需求当前阶段变更为“完成预投产”
             if (bean.getIsAdvanceProduction().equals("否")) {
@@ -2531,7 +2536,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
      * @param problemBO
      */
     @Override
-    public void questionInput(ProblemBO problemBO) {
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void questionInput(ProblemBO problemBO,List<ProductionFollowBO> followBOList) {
         //问题录入
         if (JudgeUtils.isNull(problemBO.getIsJira()) || JudgeUtils.isNull(problemBO.getProblemDetail())) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
@@ -2548,23 +2554,67 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         problemBO.setDisplayname(user);
         // 获取当前操作时间
         problemBO.setProblemTime(LocalDateTime.now());
+        problemBO.setUpdateUser(user);
+        problemBO.setUpdateTime(LocalDateTime.now());
         //BO转DO
         ProblemDO problemDO = BeanUtils.copyPropertiesReturnDest(new ProblemDO(), problemBO);
-        // 先查询id最大值
-        List<ProblemDO> list = iProblemDao.findList(new ProblemDO());
-        if(JudgeUtils.isNotEmpty(list)){
-            Long id = list.get(0).getProblemSerialNumber();
-            problemBO.setProblemSerialNumber(id+1);
-            problemDO.setProblemSerialNumber(id+1);
-        }
-        //新增问题
-        iProblemDao.insert(problemDO);
-        // 判断 isJira ，如果isJira = 是 ，则同步新建jira投产问题
-        // 异步jira
-//        if("是".equals(problemDO.getIsJira())){
-//            jiraOperationService.createProduction(problemBO);
-//        }
 
+        if(problemBO.getProblemSerialNumber() == 0){
+            problemBO.setProblemSerialNumber(null);
+        }
+        // 判断problemBO 问题描述是否为空
+        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+            // 如果id不为空，则新增
+            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(user);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.insert(problemDO);
+            }else{
+                // 修改
+                problemDO.setUpdateUser(user);
+                problemDO.setUpdateTime(LocalDateTime.now());
+                iProblemDao.update(problemDO);
+            }
+        }else{
+            // 如果描述为空，但id不为空，什么原来有值，故修改
+            if(JudgeUtils.isNotNull(problemBO.getProblemSerialNumber())){
+                problemDO.setDisplayname(user);
+                problemDO.setProblemTime(LocalDateTime.now());
+                iProblemDao.update(problemDO);
+            }
+        }
+        if(JudgeUtils.isNotEmpty(followBOList)){
+            for(int i=0;i<followBOList.size();i++){
+                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+                    //添加跟进项表，同步jira
+                    ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+                    BeanConvertUtils.convert(productionFollowDO, followBOList.get(i));
+                    productionFollowDO.setDevpLeadDept(problemBO.getDevpLeadDept());
+                    productionFollowDO.setProNumber(problemBO.getProNumber());
+                    // 如果id为空，则新增
+                    if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
+                        productionFollowDO.setDisplayname(user);
+                        productionFollowDO.setFollowTime(LocalDateTime.now());
+                        productionFollowDO.setUpdateUser(user);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
+                        productionFollowDao.insert(productionFollowDO);
+                    }else{
+                        //修改
+                        productionFollowDO.setUpdateUser(user);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
+                        productionFollowDao.update(productionFollowDO);
+                    }
+                    // 获取 productionFollowDO 的id
+                    // 建立jira任务
+                    ProductionFollowDO productionFollow = new ProductionFollowDO();
+                    productionFollow.setProNumber(productionFollowDO.getProNumber());
+                    productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                    productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                    List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                    jiraOperationService.createProduction2(productionFollowDOList.get(0));
+                }
+            }
+        }
 
 
     }
@@ -2658,6 +2708,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sBean.setPreOperation(bean.getProStatus());
         //生成流水记录
         ScheduleDO schedule = new ScheduleDO(bean.getProNumber(), currentUser, "投产审批", proStatus, bean.getProStatus(), "投产信息更新");
+        schedule.setProType("投产");
         operationProductionDao.insertSchedule(schedule);
     }
 
@@ -2682,6 +2733,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sBean.setPreOperation(bean.getProStatus());
         //生成流水记录
         ScheduleDO schedule = new ScheduleDO(bean.getProNumber(), currentUser, "修改", bean.getProStatus(), bean.getProStatus(), "投产信息更新");
+        schedule.setProType("投产");
         operationProductionDao.insertSchedule(schedule);
     }
 
@@ -2734,6 +2786,23 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         BeanConvertUtils.convert(problemDO, problemBO);
         PageInfo<ProblemBO> pageInfo = PageUtils.pageQueryWithCount(problemBO.getPageNum(), problemBO.getPageSize(),
                 () -> BeanConvertUtils.convertList(iProblemDao.findList(problemDO), ProblemBO.class));
+        return pageInfo;
+    }
+
+    @Override
+    public ProductionFollowRspBO productionFollow(ProductionFollowBO followRspBO){
+        PageInfo<ProductionFollowBO> pageInfo = getproductionFollowPageInfo(followRspBO);
+        List<ProductionFollowBO> productionDefectsBOList = BeanConvertUtils.convertList(pageInfo.getList(), ProductionFollowBO.class);
+        ProductionFollowRspBO problemRspBO = new ProductionFollowRspBO();
+        problemRspBO.setProductionFollowBOList(productionDefectsBOList);
+        problemRspBO.setPageInfo(pageInfo);
+        return problemRspBO;
+    }
+    private PageInfo<ProductionFollowBO> getproductionFollowPageInfo(ProductionFollowBO problemBO) {
+        ProductionFollowDO problemDO = new ProductionFollowDO();
+        BeanConvertUtils.convert(problemDO, problemBO);
+        PageInfo<ProductionFollowBO> pageInfo = PageUtils.pageQueryWithCount(problemBO.getPageNum(), problemBO.getPageSize(),
+                () -> BeanConvertUtils.convertList(productionFollowDao.findList(problemDO), ProductionFollowBO.class));
         return pageInfo;
     }
     @Override
@@ -2846,6 +2915,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 // 完成数加1
                 finished = finished+1;
             }
+            scheduleBean.setProType("投产");
             operationProductionDao.insertSchedule(scheduleBean);
             operationProductionDao.updateProduction(new ProductionDO(pro_number_list[j], pro_status_after));
 
@@ -2855,7 +2925,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             List<DemandDO> demandBOList = demandDao.find(demanddo);
             if(!demandBOList.isEmpty()){
                 DemandDO demand = demandBOList.get(0);
-                if (!JudgeUtils.isNull(demand)) {
+                if (JudgeUtils.isNotNull(demand)) {
                     //投产状态为“投产待部署”时，需求当前阶段变更为“待投产”  16
                     if (pro_status_after.equals("投产待部署") || (pro_status_after.equals("投产回退") && pro_status_before.equals("部署完成待验证")) ) {
                         demand.setPreCurPeriod("170");
@@ -3066,11 +3136,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 iProblemDao.update(problemDO);
             }
         }else{
-            // 如果id不为空，则新增
-            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+            // 如果描述为空，但id不为空，什么原来有值，故修改
+            if(JudgeUtils.isNotNull(problemBO.getProblemSerialNumber())){
                 problemDO.setDisplayname(currentUser);
                 problemDO.setProblemTime(LocalDateTime.now());
-                iProblemDao.insert(problemDO);
+                iProblemDao.update(problemDO);
             }
         }
         // 如果跟进项集合不为空
@@ -3225,11 +3295,11 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 iProblemDao.update(problemDO);
             }
         }else{
-            // 如果id不为空，则新增
-            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+            // 如果描述为空，但id不为空，什么原来有值，故修改
+            if(JudgeUtils.isNotNull(problemBO.getProblemSerialNumber())){
                 problemDO.setDisplayname(currentUser);
                 problemDO.setProblemTime(LocalDateTime.now());
-                iProblemDao.insert(problemDO);
+                iProblemDao.update(problemDO);
             }
         }
         // 如果跟进项集合不为空
@@ -3254,8 +3324,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                         productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.update(productionFollowDO);
                     }
+                    // 获取 productionFollowDO 的id
                     // 建立jira任务
-                    jiraOperationService.createProduction2(productionFollowDO);
+                    ProductionFollowDO productionFollow = new ProductionFollowDO();
+                    productionFollow.setProNumber(productionFollowDO.getProNumber());
+                    productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                    productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                    List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                    jiraOperationService.createProduction2(productionFollowDOList.get(0));
                 }
             }
         }
@@ -3302,7 +3378,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
         // 根据部门获取部门经理
         DemandDO demandDO =planDao.searchDeptUserEmail(verificationResultsFeedbackBO.getDevpLeadDept());
-        // 收件人 部门经理
+        // 收件人  feedback@hisuntech.com
         String mailToAddress  = "feedback@hisuntech.com";
         if(LemonUtils.getEnv().equals(Env.SIT)) {
             mailInfo.setReceivers(mailToAddress.split(";"));
@@ -3328,25 +3404,52 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         mailInfo.setSubject("【投产验证结果反馈】-" + verificationResultsFeedbackBO.getProNumber() + "-" + problemBO.getProNeed() + "-" + currentUser);
 
         StringBuffer sb = new StringBuffer();
-        sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
-        sb.append("<tr><td colspan='6' style='text-align: center;font-weight: bold;'>预投产通知邮件</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>投产编号</td><td>" + problemBO.getProNumber() + "</td><td style='font-weight: bold;'>申请部门</td><td>" + problemBO.getDevpLeadDept() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>投产类型</td><td>" + problemBO.getProType() + "</td><td style='font-weight: bold;'>计划预投产日期</td><td>" + problemBO.getProDate() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>需求名称及内容描述</td><td>" + problemBO.getProNeed() + "</td><td style='font-weight: bold;'>是否验证通过</td><td>" + verificationResultsFeedbackBO.getIsVerification() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>投产结果描述</td><td colspan='5'>" + verificationResultsFeedbackBO.getResultsDetail() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>功能案例验证结果</td><td colspan='5'>" + verificationResultsFeedbackBO.getFunctionCaseDetail() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>技术案例验证结果描述</td><td colspan='5'>" + verificationResultsFeedbackBO.getTechnicalCaseDetail() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>投产过程中的问题反馈</td><td colspan='5'>" + problemBO.getProblemDetail() + "</td></tr>");
-        sb.append("<tr><td style='font-weight: bold;'>投产问题分类</td><td colspan='5'>" + problemBO.getProType() + "</td></tr>");
+        if(verificationResultsFeedbackBO.getIsVerification().equals("是")){
+            sb.append("<br><b>是否验证通过:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+verificationResultsFeedbackBO.getIsVerification());
+
+        }else {
+            sb.append("<br><b>是否验证通过:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"color:red;\">"+verificationResultsFeedbackBO.getIsVerification()+"</span>");
+
+        }
+        sb.append("<br><br><b>投产结果描述:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getResultsDetail()+"</span>");
+        sb.append("<br><br><b>功能案例验证结果:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getFunctionCaseDetail()+"</span>");
+        sb.append("<br><br><b>技术案例验证结果描述:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getTechnicalCaseDetail()+"</span>");
+        sb.append("<br><br><b>投产过程中的问题反馈:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+problemBO.getProblemDetail()+"</span>");
+        //投产问题分类 处理
+        if(JudgeUtils.isNotNull(problemBO.getProblemType())){
+            String taskIdStr = problemBO.getProblemType();
+            String[] pro_number_list = taskIdStr.split(",");
+            sb.append("<br><br><b>投产问题分类:</b>");
+            for(int i=0;i<pro_number_list.length;i++){
+                sb.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+pro_number_list[i]);
+            }
+        }
+//        sb.append("<br><br><b>投产问题分类:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+problemBO.getProblemType());
+        sb.append("<br><br><b>待跟进项:</b><br>");
+//        sb.append("<table border='0'border-spacing:20px;'>");
+//        if(JudgeUtils.isNotEmpty(followBOList)){
+//            for(int i=0;i<followBOList.size();i++){
+//                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+//                    sb.append("<tr><td style='font-weight: bold;'>跟进项"+(i+1)+"</td><td width ='600px'>" + followBOList.get(i).getFollowDetail() + "</td><td style='font-weight: bold;'>跟进人</td><td>" + followBOList.get(i).getFollowUser() + "</td></tr>");
+//                }
+//            }
+//        }
+//        sb.append("</table>");
+        sb.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
+        sb.append("<tr><th>序号</th><th>跟进项</th><th>跟进人</th></tr>");
         if(JudgeUtils.isNotEmpty(followBOList)){
             for(int i=0;i<followBOList.size();i++){
                 if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
-                    sb.append("<tr><td style='font-weight: bold;'>跟进项</td><td>" + followBOList.get(i).getFollowDetail() + "</td><td style='font-weight: bold;'>跟进人</td><td>" + followBOList.get(i).getFollowUser() + "</td></tr>");
+                    sb.append("<tr><td>" + (i+1) + "</td>");
+                    sb.append("<td width ='600px'>" + followBOList.get(i).getFollowDetail() + "</td>");
+                    sb.append("<td >" + followBOList.get(i).getFollowUser() + "</td></tr>");
                 }
             }
         }
-        sb.append("<tr><td style='font-weight: bold;'>其它</td><td colspan='5'>" + verificationResultsFeedbackBO.getOtherFeedback() + "</td></tr></table>");
-        mailInfo.setContent("各位好:<br/>&nbsp;&nbsp;本次投产验证结果反馈请参见下表<br/>烦请查看，谢谢！<br/>" + sb.toString());
+
+        sb.append("</table></div>");
+        sb.append("<br><br><b>其它:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getOtherFeedback()+"</span>");
+        mailInfo.setContent("各位好:<br/>&nbsp;&nbsp;本次投产验证结果反馈如下<br/>" + sb.toString());
 //        // 这个类主要来发送邮件
         sendMailService.sendMail(mailInfo);
 

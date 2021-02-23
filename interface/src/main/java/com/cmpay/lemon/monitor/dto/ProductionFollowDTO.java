@@ -56,6 +56,39 @@ public class ProductionFollowDTO extends GenericDTO {
      * @Fields updateUser 修改人
      */
     private String updateUser;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+    private String reqStartMon;
+
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
 
     public Long getFollowId() {
         return followId;
@@ -147,7 +180,7 @@ public class ProductionFollowDTO extends GenericDTO {
 
     @Override
     public String toString() {
-        return "ProductionFollowBO{" +
+        return "ProductionFollowDTO{" +
                 "followId=" + followId +
                 ", proNumber='" + proNumber + '\'' +
                 ", devpLeadDept='" + devpLeadDept + '\'' +
@@ -159,6 +192,8 @@ public class ProductionFollowDTO extends GenericDTO {
                 ", followTime=" + followTime +
                 ", updateTime=" + updateTime +
                 ", updateUser='" + updateUser + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
                 '}';
     }
 }

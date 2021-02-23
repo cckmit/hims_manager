@@ -142,12 +142,14 @@ public class PreProductionServiceImpl implements PreProductionService {
             iPreproductionExtDao.updateAgain(preproductionDO);
             //生成流水记录
             ScheduleDO scheduleBean = new ScheduleDO(preproductionDO.getPreNumber(), userService.getFullname(SecurityUtils.getLoginName()), "重新录入", preproductionDO.getPreStatus(), preproductionDO.getPreStatus(), "预投产重新录入");
+            scheduleBean.setProType("预投产");
             operationProductionDao.insertSchedule(scheduleBean);
 
         }else{
             ScheduleDO sBean=new ScheduleDO();
             sBean.setPreOperation(preproductionDO.getPreStatus());
             ScheduleDO schedule=new ScheduleDO(preproductionDO.getPreNumber(), currentUser, "预投产录入", sBean.getPreOperation(), sBean.getPreOperation(), "预投产录入");
+            schedule.setProType("预投产");
             operationProductionDao.insertSchedule(schedule);
 
             iPreproductionExtDao.insert(preproductionDO);
@@ -376,6 +378,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 sendMailService.sendMail(mailInfo);
                 operationProductionDao.addMailFlow(bnb);
                 ScheduleDO schedule=new ScheduleDO(bean.getPreNumber(), currentUser, bean.getPreStatus(), PreOperation, bean.getPreStatus(), mess);
+                schedule.setProType("预投产");
                 operationProductionDao.insertSchedule(schedule);
             }
 
@@ -439,6 +442,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 ScheduleDO sBean=new ScheduleDO();
                 sBean.setPreOperation(bean.getPreStatus());
                 ScheduleDO schedule=new ScheduleDO(bean.getPreNumber(), currentUser, "预投产验证通过", "预投产部署待验证", sBean.getPreOperation(), "预投产验证已通过");
+                schedule.setProType("预投产");
                 operationProductionDao.insertSchedule(schedule);
                 //是否预投产验证为“是”时，预投产验证结果为“通过”，需求当前阶段变更为“完成预投产”
                 if ( bean.getProAdvanceResult().equals("通过")) {
@@ -451,16 +455,19 @@ public class PreProductionServiceImpl implements PreProductionService {
                             // 投产月份  = 需求实施月份时 ，改变需求状态
                             if(demandBOList.get(i).getReqImplMon().compareTo(month)==0){
                                 DemandDO demand = demandBOList.get(i);
-                                if (!JudgeUtils.isNull(demand)) {
-                                    //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
-                                    demand.setPreCurPeriod("160");
-                                    DemandBO demandBO = new DemandBO();
-                                    BeanConvertUtils.convert(demandBO, demand);
-                                    //登记需求阶段记录表
-                                    String remarks="预投产状态自动修改";
-                                    reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
-                                    demand.setReqSts("20");
-                                    demandDao.updateOperation(demand);
+                                if (JudgeUtils.isNotNull(demand)) {
+                                    // 判断需求当前状态是否已经完成
+                                    if(!demand.getPreCurPeriod().equals("180")){
+                                        //投产状态为“投产待部署”时，需求当前阶段变更为“完成预投产”  16
+                                        demand.setPreCurPeriod("160");
+                                        DemandBO demandBO = new DemandBO();
+                                        BeanConvertUtils.convert(demandBO, demand);
+                                        //登记需求阶段记录表
+                                        String remarks="预投产状态自动修改";
+                                        reqPlanService.registrationDemandPhaseRecordForm(demandBO,remarks);
+                                        demand.setReqSts("20");
+                                        demandDao.updateOperation(demand);
+                                    }
                                 }
                             }
                         }
@@ -569,6 +576,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             scheduleBean.setPreOperation(preproductionDO.getPreStatus());
             scheduleBean.setOperationReason("预投产DBA操作完成");
             scheduleBean.setAfterOperation(preproductionDO.getPreStatus());
+            scheduleBean.setProType("预投产");
             operationProductionDao.insertSchedule(scheduleBean);
             // 邮件通知版本组，及时更新状态
             // 发送邮件通知
@@ -667,6 +675,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             scheduleBean.setPreOperation("预投产待部署");
             scheduleBean.setOperationReason("预投产版本组操作完成");
             scheduleBean.setAfterOperation("预投产部署待验证");
+            scheduleBean.setProType("预投产");
             operationProductionDao.insertSchedule(scheduleBean);
             // 邮件通知版本组，及时更新状态
             // 发送邮件通知
@@ -749,6 +758,7 @@ public class PreProductionServiceImpl implements PreProductionService {
             scheduleBean.setPreOperation("预投产部署待验证");
             scheduleBean.setOperationReason("预投产验证失败待重传包");
             scheduleBean.setAfterOperation("预投产验证失败待重传包");
+            scheduleBean.setProType("预投产");
             operationProductionDao.insertSchedule(scheduleBean);
             // 发送邮件通知
             // 创建邮件信息
@@ -888,6 +898,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     scheduleBean.setPreOperation(status);
                     scheduleBean.setOperationReason("预投产包上传完成");
                     scheduleBean.setAfterOperation("预投产待部署");
+                    scheduleBean.setProType("预投产");
                     operationProductionDao.insertSchedule(scheduleBean);
                     // 邮件通知DBA和版本组更新预投产 ，备注DBA先操作ddlSQL
                     // 获取DBA邮箱组
@@ -938,6 +949,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                 scheduleBean.setPreOperation(status);
                 scheduleBean.setOperationReason("预投产包上传完成");
                 scheduleBean.setAfterOperation("预投产待部署");
+                scheduleBean.setProType("预投产");
                 operationProductionDao.insertSchedule(scheduleBean);
                 // 邮件通知版本组更新预投产
                 if(LemonUtils.getEnv().equals(Env.SIT)) {
@@ -1154,6 +1166,7 @@ public class PreProductionServiceImpl implements PreProductionService {
                     scheduleBean.setPreOperation("预投产提出");
                     scheduleBean.setOperationReason("预投产包上传完成");
                     scheduleBean.setAfterOperation("预投产待部署");
+                    scheduleBean.setProType("预投产");
                     operationProductionDao.insertSchedule(scheduleBean);
                     // 邮件通知DBA和版本组更新预投产 ，备注DBA先操作ddlSQL
                     MultiMailSenderInfo mailInfo1 = new MultiMailSenderInfo();
@@ -1433,6 +1446,7 @@ public class PreProductionServiceImpl implements PreProductionService {
         scheduleBean.setAfterOperation(pro_status_after);
         scheduleBean.setOperationType(pro_status_after);
         scheduleBean.setProNumber(productionCallbackBO.getProNumber());
+        scheduleBean.setProType("预投产");
         operationProductionDao.insertSchedule(scheduleBean);
     }
 

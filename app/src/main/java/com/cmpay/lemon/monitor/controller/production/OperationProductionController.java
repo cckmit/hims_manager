@@ -200,9 +200,13 @@ public class OperationProductionController {
      */
     @PostMapping("questionInput")
     public GenericRspDTO<NoBody> questionInput(@RequestBody ProblemReqDTO problemReqDTO) {
-
+        System.err.println(problemReqDTO);
+        List<ProductionFollowBO> followBOList= null;
+        if(JudgeUtils.isNotNull(problemReqDTO.getProductionFollowDTOList())){
+            followBOList = BeanConvertUtils.convertList(problemReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);
+        }
         ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), problemReqDTO);
-        operationProductionService.questionInput(problemBO);
+        operationProductionService.questionInput(problemBO,followBOList);
 
         return GenericRspDTO.newSuccessInstance();
     }
@@ -259,6 +263,18 @@ public class OperationProductionController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
+    @RequestMapping("/productionFollow")
+    public GenericRspDTO<ProductionFollowRspDTO> productionFollow(@RequestBody ProductionFollowDTO reqDTO) {
+        ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
+        ProductionFollowRspBO problemRspBO = operationProductionService.productionFollow(productionFollowBO);
+        ProductionFollowRspDTO rspDTO = new ProductionFollowRspDTO();
+        rspDTO.setProductionFollowDTOList(BeanConvertUtils.convertList(problemRspBO.getProductionFollowBOList(), ProductionFollowDTO.class));
+        rspDTO.setPageNum(problemRspBO.getPageInfo().getPageNum());
+        rspDTO.setPages(problemRspBO.getPageInfo().getPages());
+        rspDTO.setTotal(problemRspBO.getPageInfo().getTotal());
+        rspDTO.setPageSize(problemRspBO.getPageInfo().getPageSize());
+        return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
+    }
 
     @RequestMapping("/checkJiraDefect")
     public GenericRspDTO checkJiraDefect(@RequestParam("pro_number") String proNumber){
@@ -296,13 +312,25 @@ public class OperationProductionController {
         MultipartFile file2 = ((MultipartHttpServletRequest) request).getFile("file2");
         VerificationResultsFeedbackBO verificationResultsFeedbackBO = new VerificationResultsFeedbackBO();
         verificationResultsFeedbackBO.setDevpLeadDept(applicationDept);
-        verificationResultsFeedbackBO.setId(id);
-        verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
-        verificationResultsFeedbackBO.setIsVerification(isVerification);
-        verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        if(id != 0){
+            verificationResultsFeedbackBO.setId(id);
+        }
+        if(!"null".equals(functionCaseDetail)){
+            verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
+        }
+        if(!"null".equals(isVerification)){
+            verificationResultsFeedbackBO.setIsVerification(isVerification);
+        }
+        if(!"null".equals(otherFeedback)){
+            verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        }
+        if(!"null".equals(resultsDetail)){
+            verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
+        }
+        if(!"null".equals(technicalCaseDetail)){
+            verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
+        }
         verificationResultsFeedbackBO.setProNumber(proNumber);
-        verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
-        verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
         System.err.println(productionFollowReqDTO);
         System.err.println(verificationResultsFeedbackBO);
         ProblemBO problemBO = new ProblemBO();
@@ -312,9 +340,15 @@ public class OperationProductionController {
         problemBO.setProDate(proDate);
         problemBO.setProType(proType);
         problemBO.setIsJira("否");
-        problemBO.setProblemSerialNumber(problemSerialNumber);
-        problemBO.setProblemDetail(problemDetail);
-        problemBO.setProblemType(problemType);
+        if(problemSerialNumber != 0){
+            problemBO.setProblemSerialNumber(problemSerialNumber);
+        }
+        if(!"null".equals(problemDetail)){
+            problemBO.setProblemDetail(problemDetail);
+        }
+        if(!"null".equals(problemType)){
+            problemBO.setProblemType(problemType);
+        }
         List<ProductionFollowBO> followBOList= null;
         if(JudgeUtils.isNotNull(productionFollowReqDTO.getProductionFollowDTOList())){
             followBOList = BeanConvertUtils.convertList(productionFollowReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);
@@ -334,13 +368,25 @@ public class OperationProductionController {
         MultipartFile file2 = ((MultipartHttpServletRequest) request).getFile("file2");
         VerificationResultsFeedbackBO verificationResultsFeedbackBO = new VerificationResultsFeedbackBO();
         verificationResultsFeedbackBO.setDevpLeadDept(applicationDept);
-        verificationResultsFeedbackBO.setId(id);
-        verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
-        verificationResultsFeedbackBO.setIsVerification(isVerification);
-        verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        if(id != 0){
+            verificationResultsFeedbackBO.setId(id);
+        }
+        if(!"null".equals(functionCaseDetail)){
+            verificationResultsFeedbackBO.setFunctionCaseDetail(functionCaseDetail);
+        }
+        if(!"null".equals(isVerification)){
+            verificationResultsFeedbackBO.setIsVerification(isVerification);
+        }
+        if(!"null".equals(otherFeedback)){
+            verificationResultsFeedbackBO.setOtherFeedback(otherFeedback);
+        }
+        if(!"null".equals(resultsDetail)){
+            verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
+        }
+        if(!"null".equals(technicalCaseDetail)){
+            verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
+        }
         verificationResultsFeedbackBO.setProNumber(proNumber);
-        verificationResultsFeedbackBO.setResultsDetail(resultsDetail);
-        verificationResultsFeedbackBO.setTechnicalCaseDetail(technicalCaseDetail);
         System.err.println(productionFollowReqDTO);
         System.err.println(verificationResultsFeedbackBO);
         ProblemBO problemBO = new ProblemBO();
@@ -350,9 +396,15 @@ public class OperationProductionController {
         problemBO.setProDate(proDate);
         problemBO.setProType(proType);
         problemBO.setIsJira("否");
-        problemBO.setProblemSerialNumber(problemSerialNumber);
-        problemBO.setProblemDetail(problemDetail);
-        problemBO.setProblemType(problemType);
+        if(problemSerialNumber != 0){
+            problemBO.setProblemSerialNumber(problemSerialNumber);
+        }
+        if(!"null".equals(problemDetail)){
+            problemBO.setProblemDetail(problemDetail);
+        }
+        if(!"null".equals(problemType)){
+            problemBO.setProblemType(problemType);
+        }
         List<ProductionFollowBO> followBOList= null;
         if(JudgeUtils.isNotNull(productionFollowReqDTO.getProductionFollowDTOList())){
             followBOList = BeanConvertUtils.convertList(productionFollowReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);

@@ -1,6 +1,6 @@
 /*
  * @ClassName IProductionFollowDao
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2021-02-02 16:03:37
  */
@@ -10,6 +10,9 @@ import com.cmpay.lemon.framework.dao.BaseDao;
 import com.cmpay.lemon.monitor.entity.ProductionFollowDO;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface IProductionFollowDao extends BaseDao<ProductionFollowDO, Long> {
+    List<ProductionFollowDO> findList(ProductionFollowDO productionFollowDO);
 }

@@ -91,7 +91,7 @@ public interface OperationProductionService {
     //新增投产问题
     void insertProblemInfo(ProblemBO proBean);
 
-    void questionInput(ProblemBO problemBO);
+    void questionInput(ProblemBO problemBO,List<ProductionFollowBO> followBOList);
     //投产包下载
     void pkgDownload(HttpServletRequest request, HttpServletResponse response, String str);
 
@@ -142,7 +142,7 @@ public interface OperationProductionService {
     DemandBO verifyAndQueryTheProductionNumber(String proNumber);
 
     ProblemRspBO productionProblem(ProblemBO problemBO);
-
+    ProductionFollowRspBO productionFollow(ProductionFollowBO followRspBO);
     void checkJiraDefect(String proNumber);
     VerificationResultsFeedbackBO getVerificationResultsFeedback(String proNumber);
     ProblemBO getProblem(String proNumber);

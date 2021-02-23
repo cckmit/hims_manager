@@ -81,6 +81,8 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
 
     @Autowired
     private IProductionIssueDetailsDao productionIssueDetailsDao;
+    @Autowired
+    private IProductionFollowDao productionFollowDao;
     @Async
     @Override
     public void getIssueModifiedWithinOneDay() {
@@ -96,7 +98,7 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
             i = i + 50;
         }
 //        JiraTaskBodyBO jiraTaskBodyBO1 = new JiraTaskBodyBO();
-//        jiraTaskBodyBO1.setJiraKey("CMPAY-6014");
+//        jiraTaskBodyBO1.setJiraKey("CMPAY-16174");
 //        jiraTaskBodyBOList.add(jiraTaskBodyBO1);
         if (JudgeUtils.isNotEmpty(jiraTaskBodyBOList)) {
             HashSet<String> epicList = new HashSet<>();
@@ -677,6 +679,17 @@ public class JiraDataCollationServiceImpl implements JiraDataCollationService {
                 } else {
                     productionIssueDetailsDao.update(issueDetailsDO);
                 }
+                // 更新跟进项表的jira状态
+                ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+                productionFollowDO.setIssuekey(jiraTaskBodyBO.getJiraKey());
+                List<ProductionFollowDO> list  = productionFollowDao.find(productionFollowDO);
+                if(JudgeUtils.isNotEmpty(list)){
+                    // 修改状态
+                    productionFollowDO = list.get(0);
+                    productionFollowDO.setIssueStatus(jiraTaskBodyBO.getStatus());
+                    productionFollowDao.update(productionFollowDO);
+                }
+
             }
         }
 

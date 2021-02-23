@@ -39,17 +39,14 @@
             <if test="reqStartMon != null and reqStartMon != ''" >
                 and problem_time LIKE CONCAT('%',#{reqStartMon},'%')
             </if>
-            <if test="issuekey != null  and issuekey != ''" >
-                and issuekey = #{issuekey,jdbcType=VARCHAR}
-            </if>
             <if test="displayname != null  and displayname != ''" >
                 and displayName LIKE CONCAT('%',#{displayname},'%')
             </if>
             <if test="devpLeadDept != null  and devpLeadDept != ''" >
                 and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
             </if>
-            <if test="isJira != null and isJira != ''" >
-                and is_jira = #{isJira,jdbcType=VARCHAR}
+            <if test="problemType != null and problemType != ''" >
+                and problem_type LIKE CONCAT('%',#{problemType},'%')
             </if>
         </where>
         ORDER BY problem_serial_number DESC

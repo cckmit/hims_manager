@@ -1,6 +1,6 @@
 /*
  * @ClassName ProductionFollowDO
- * @Description 
+ * @Description
  * @version 1.0
  * @Date 2021-02-02 16:03:37
  */
@@ -56,6 +56,56 @@ public class ProductionFollowDO extends BaseDO {
      * @Fields updateUser 修改人
      */
     private String updateUser;
+    /**
+     * 页数
+     */
+    private int pageNum;
+    /**
+     * 页面大小
+     */
+    private int pageSize;
+    private String reqStartMon;
+    public String getReqStartMon() {
+        return reqStartMon;
+    }
+
+    public void setReqStartMon(String reqStartMon) {
+        this.reqStartMon = reqStartMon;
+    }
+    @Override
+    public String toString() {
+        return "ProductionFollowDO{" +
+                "followId=" + followId +
+                ", proNumber='" + proNumber + '\'' +
+                ", devpLeadDept='" + devpLeadDept + '\'' +
+                ", displayname='" + displayname + '\'' +
+                ", issuekey='" + issuekey + '\'' +
+                ", issueStatus='" + issueStatus + '\'' +
+                ", followDetail='" + followDetail + '\'' +
+                ", followUser='" + followUser + '\'' +
+                ", followTime=" + followTime +
+                ", updateTime=" + updateTime +
+                ", updateUser='" + updateUser + '\'' +
+                ", pageNum=" + pageNum +
+                ", pageSize=" + pageSize +
+                '}';
+    }
+
+    public int getPageNum() {
+        return pageNum;
+    }
+
+    public void setPageNum(int pageNum) {
+        this.pageNum = pageNum;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
 
     public Long getFollowId() {
         return followId;

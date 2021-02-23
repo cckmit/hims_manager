@@ -101,6 +101,7 @@
         <result property="svntabName"  jdbcType="VARCHAR"      column="svntab_name"/>
         <result property="operApplicationReason"  jdbcType="VARCHAR"      column="oper_application_reason"/>
         <result property="analysis"  jdbcType="VARCHAR"      column="analysis"/>
+        <result property="proType"  jdbcType="VARCHAR"      column="pro_type"/>
     </resultMap>
 
     <resultMap id="mf" type="com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO">
@@ -390,13 +391,14 @@
     </insert>
 
     <insert id="insertSchedule"  parameterType="com.cmpay.lemon.monitor.entity.ScheduleDO">
-    	insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,operation_reason)
+    	insert into  t_production_schedule(pro_number,pro_operator,operation_type,pre_operation,after_operation,pro_type,operation_reason)
     	values(
     	    #{proNumber},
     		#{proOperator},
     		#{operationType},
     		#{preOperation},
     		#{afterOperation},
+    		#{proType},
     		#{operationReason}
     		)
     </insert>
@@ -530,6 +532,7 @@
         <if test="proOperator != null and proOperator != ''">
             and pro_operator LIKE CONCAT('%',#{proOperator},'%')
         </if>
+        GROUP BY pro_type,seq_id
         order by schedule_time desc
     </select>
 

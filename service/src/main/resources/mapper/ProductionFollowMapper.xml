@@ -17,12 +17,12 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        follow_id, pro_number, devp_lead_dept, displayName, issuekey, issue_status, follow_detail, 
+        follow_id, pro_number, devp_lead_dept, displayName, issuekey, issue_status, follow_detail,
         follow_user, follow_time, update_time, update_user
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_production_follow
         where follow_id = #{followId,jdbcType=BIGINT}
@@ -145,7 +145,7 @@
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_production_follow
         <where >
@@ -183,5 +183,25 @@
                 and update_user = #{updateUser,jdbcType=VARCHAR}
             </if>
         </where>
+    </select>
+    <select id="findList" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_follow
+        <where >
+            <if test="devpLeadDept != null and devpLeadDept != ''" >
+                and devp_lead_dept = #{devpLeadDept,jdbcType=VARCHAR}
+            </if>
+            <if test="issuekey != null and issuekey != ''" >
+                and issuekey = #{issuekey,jdbcType=VARCHAR}
+            </if>
+            <if test="issueStatus != null and issueStatus != ''" >
+                and issue_status = #{issueStatus,jdbcType=VARCHAR}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''" >
+                and follow_time LIKE CONCAT('%',#{reqStartMon},'%')
+            </if>
+        </where>
+        ORDER BY follow_id DESC
     </select>
 </mapper>
