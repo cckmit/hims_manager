@@ -75,10 +75,17 @@
     </resultMap>
 
     <resultMap id="pbm" type="com.cmpay.lemon.monitor.entity.ProblemDO">
-        <result property="problemSerialNumber"         jdbcType="VARCHAR"      column="problem_serial_number"/>
-        <result property="proNumber"         jdbcType="VARCHAR"      column="pro_number"/>
-        <result property="problemDetail"         jdbcType="VARCHAR"      column="problem_detail"/>
-        <result property="problemTime"  jdbcType="TIMESTAMP"      column="problem_time"/>
+        <id column="problem_serial_number" property="problemSerialNumber" jdbcType="BIGINT" />
+        <result column="pro_number" property="proNumber" jdbcType="VARCHAR" />
+        <result column="problem_detail" property="problemDetail" jdbcType="VARCHAR" />
+        <result column="problem_time" property="problemTime" jdbcType="TIMESTAMP" />
+        <result column="issuekey" property="issuekey" jdbcType="VARCHAR" />
+        <result column="displayName" property="displayname" jdbcType="VARCHAR" />
+        <result column="devp_lead_dept" property="devpLeadDept" jdbcType="VARCHAR" />
+        <result column="is_jira" property="isJira" jdbcType="VARCHAR" />
+        <result column="problem_type" property="problemType" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR" />
     </resultMap>
 
     <resultMap id="sm" type="com.cmpay.lemon.monitor.entity.ScheduleDO">
@@ -510,7 +517,8 @@
 
     <select id="findProblemInfo" resultMap="pbm" parameterType="string">
     	SELECT
-    		problem_serial_number,pro_number,problem_detail,problem_time
+    		problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName,
+        devp_lead_dept, is_jira, problem_type, update_time, update_user
     	from  t_production_problem t1
     	WHERE
             pro_number LIKE CONCAT('%',#{proNumber},'%')

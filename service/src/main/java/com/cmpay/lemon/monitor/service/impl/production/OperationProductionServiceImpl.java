@@ -1065,7 +1065,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return mailGroupRspBO;
     }
 
-
+    // 外部投产结果通报邮件附件
     public File sendExportExcel_Result(List<ProductionDO> list) {
         String fileName = "生产验证结果表" + DateUtil.date2String(new Date(), "yyyyMMddhhmmss") + ".xls";
         File file = null;
@@ -1496,10 +1496,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("<th>产品经理</th><th>生产验证方式</th><th>验证结果</th></tr>");
         for (ProductionDO bean : list) {
             String proNumber = bean.getProNumber();
-            //REQ完全展示
-//            if(bean.getProNumber().startsWith("REQ")){
-//                proNumber = bean.getProNumber().substring(4,bean.getProNumber().length()).toString();
-//            }
             sb.append("<td >" + proNumber + "</td>");//投产编号
             sb.append("<td >" + bean.getProModule() + "</td>");//产品名称
             sb.append("<td >" + bean.getProNeed() + "</td>");//需求名称及内容简述
@@ -1510,9 +1506,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             if (bean.getProStatus().equals("投产验证完成")) {
                 sb.append("<td >验证通过</td></tr>");//验证结果
             } else {
-                sb.append("<td >验证未完成</td></tr>");//验证结果
+                // 当验证方式为当晚验证，当前状态为部署完成待验证时，验证结果为验证进行中
+                if(bean.getProStatus().equals("部署完成待验证") && bean.getValidation().equals("当晚验证")){
+                    sb.append("<td >验证进行中</td></tr>");//验证结果
+                }else{
+                    sb.append("<td >验证未完成</td></tr>");//验证结果
+                }
             }
-
         }
         sb.append("</table>");
         mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！" + sb.toString());
@@ -1529,31 +1529,101 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         MailGroupDO mpb = operationProductionDao.findMailGroupBeanDetail("3");
         mp.setMailUser(mpb.getMailUser());
         List<List<ProblemDO>> pblist = new ArrayList<List<ProblemDO>>();
+        List<List<ProductionFollowDO>> FollowList = new ArrayList<List<ProductionFollowDO>>();
+        // 循环获取投产问题
         for (int i = 0; i < list.size(); i++) {
-            pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
+            if(JudgeUtils.isNotEmpty(operationProductionDao.findProblemInfo(list.get(i).getProNumber()))){
+                pblist.add(operationProductionDao.findProblemInfo(list.get(i).getProNumber()));
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            ProductionFollowDO productionFollowDO = new ProductionFollowDO();
+            productionFollowDO.setProNumber(list.get(i).getProNumber());
+            if(JudgeUtils.isNotEmpty(productionFollowDao.find(productionFollowDO))) {
+                FollowList.add(productionFollowDao.find(productionFollowDO));
+            }
         }
         //获取登录用户名
-        String currentUser = userService.getFullname(SecurityUtils.getLoginName());
-        File file2 = exportExcel_Nei(list, pblist, currentUser);
+        //String currentUser = userService.getFullname(SecurityUtils.getLoginName());
+        //File file2 = exportExcel_Nei(list, pblist, currentUser);
         //记录邮箱信息
-        MailFlowDO bfn = new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName(), "");
+        //MailFlowDO bfn = new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName(), "");
         String[] mailToAddresss = mp.getMailUser().split(";");
         mailInfo.setReceivers(mailToAddresss);
-        /**
-         * 附件
-         */
-        Vector<File> file1 = new Vector<File>();
-        file1.add(file2);
-        mailInfo.setFile(file1);
-        mailInfo.setSubject("【每周投产通报" + sdf.format(new Date()) + "】");
-        mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情请参见附件<br/><br/>");
-        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        if (isSends) {
-            operationProductionDao.addMailFlow(bfn);
-            if (file2.isFile() && file2.exists()) {
-                file2.delete();
+//        /**
+//         * 附件
+//         */
+//        Vector<File> file1 = new Vector<File>();
+//        file1.add(file2);
+//        mailInfo.setFile(file1);
+        StringBuffer sbf = new StringBuffer();
+        sbf.append("<br><b>本次投产共"+list.size()+"个需求:</b><br>");
+        sbf.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
+        sbf.append("<tr><th>投产编号</th><th>产品名称</th><th>需求名称及内容简述</th><th>基地负责人</th>");
+        sbf.append("<th>产品经理</th><th>生产验证方式</th><th>验证结果</th></tr>");
+        for (ProductionDO bean : list) {
+            String proNumber = bean.getProNumber();
+            sbf.append("<td >" + proNumber + "</td>");//投产编号
+            sbf.append("<td >" + bean.getProModule() + "</td>");//产品名称
+            sbf.append("<td >" + bean.getProNeed() + "</td>");//需求名称及内容简述
+            sbf.append("<td >" + bean.getBasePrincipal() + "</td>");//基地负责人
+            sbf.append("<td >" + bean.getProManager() + "</td>");//产品经理
+            sbf.append("<td >" + bean.getValidation() + "</td>");//生产验证方式
+            //验证结果
+            if (bean.getProStatus().equals("投产验证完成")) {
+                sbf.append("<td >验证通过</td></tr>");//验证结果
+            } else {
+                // 当验证方式为当晚验证，当前状态为部署完成待验证时，验证结果为验证进行中
+                if(bean.getProStatus().equals("部署完成待验证") && bean.getValidation().equals("当晚验证")){
+                    sbf.append("<td >验证进行中</td></tr>");//验证结果
+                }else{
+                    sbf.append("<td >验证未完成</td></tr>");//验证结果
+                }
             }
-        } else {
+
+        }
+        sbf.append("</table></div>");
+        sbf.append("<br><br><b>投产问题:</b><br>");
+        if(JudgeUtils.isNotEmpty(pblist)){
+            sbf.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
+            sbf.append("<tr><th>投产编号</th><th>归属部门</th><th>问题描述</th><th>问题类型</th></tr>");
+            for(int i=0;i<pblist.size();i++){
+                for(int j=0;j<pblist.get(i).size();j++){
+                    sbf.append("<tr><td>" + pblist.get(i).get(j).getProNumber() + "</td>");
+                    sbf.append("<td>" + pblist.get(i).get(j).getDevpLeadDept() + "</td>");
+                    sbf.append("<td width ='500px'>" + pblist.get(i).get(j).getProblemDetail() + "</td>");
+                    sbf.append("<td >" + pblist.get(i).get(j).getProblemType() + "</td></tr>");
+
+                }
+            }
+            sbf.append("</table></div>");
+        }else{
+            sbf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span>");
+        }
+
+        sbf.append("<br><br><b>待跟进项:</b><br>");
+        if(JudgeUtils.isNotEmpty(FollowList)){
+            sbf.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
+            sbf.append("<tr><th>投产编号</th><th>归属部门</th><th>跟进项</th><th>跟进人</th></tr>");
+            for(int i=0;i<FollowList.size();i++){
+                for(int j=0;j<FollowList.get(i).size();j++){
+                    sbf.append("<tr><td>" + FollowList.get(i).get(j).getProNumber() + "</td>");
+                    sbf.append("<td>" + FollowList.get(i).get(j).getDevpLeadDept() + "</td>");
+                    sbf.append("<td width ='500px'>" + FollowList.get(i).get(j).getFollowDetail() + "</td>");
+                    sbf.append("<td >" + FollowList.get(i).get(j).getFollowUser() + "</td></tr>");
+                }
+            }
+            sbf.append("</table></div>");
+        }else{
+            sbf.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span>");
+        }
+
+
+
+        mailInfo.setSubject("【每周投产通报" + sdf.format(new Date()) + "】");
+        mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情如下<br/><br/>"+sbf);
+        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        if (!isSends) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
             BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
@@ -3414,9 +3484,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         sb.append("<br><br><b>投产结果描述:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getResultsDetail()+"</span>");
         sb.append("<br><br><b>功能案例验证结果:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getFunctionCaseDetail()+"</span>");
         sb.append("<br><br><b>技术案例验证结果描述:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getTechnicalCaseDetail()+"</span>");
-        sb.append("<br><br><b>投产过程中的问题反馈:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+problemBO.getProblemDetail()+"</span>");
+        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+            sb.append("<br><br><b>投产过程中的问题反馈:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+problemBO.getProblemDetail()+"</span>");
+        }else{
+            sb.append("<br><br><b>投产过程中的问题反馈:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span>");
+        }
+
         //投产问题分类 处理
-        if(JudgeUtils.isNotNull(problemBO.getProblemType())){
+        if(JudgeUtils.isNotEmpty(problemBO.getProblemType())){
             String taskIdStr = problemBO.getProblemType();
             String[] pro_number_list = taskIdStr.split(",");
             sb.append("<br><br><b>投产问题分类:</b>");
@@ -3435,9 +3510,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 //            }
 //        }
 //        sb.append("</table>");
-        sb.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
-        sb.append("<tr><th>序号</th><th>跟进项</th><th>跟进人</th></tr>");
         if(JudgeUtils.isNotEmpty(followBOList)){
+            sb.append("<div style ='padding-left: 40px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
+            sb.append("<tr><th>序号</th><th>跟进项</th><th>跟进人</th></tr>");
             for(int i=0;i<followBOList.size();i++){
                 if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowDetail())&&JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
                     sb.append("<tr><td>" + (i+1) + "</td>");
@@ -3445,10 +3520,13 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     sb.append("<td >" + followBOList.get(i).getFollowUser() + "</td></tr>");
                 }
             }
+            sb.append("</table></div>");
+        }else{
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span>");
         }
-
-        sb.append("</table></div>");
-        sb.append("<br><br><b>其它:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getOtherFeedback()+"</span>");
+        if(JudgeUtils.isNotNull(verificationResultsFeedbackBO.getOtherFeedback())){
+            sb.append("<br><br><b>其它:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getOtherFeedback()+"</span>");
+        }
         mailInfo.setContent("各位好:<br/>&nbsp;&nbsp;本次投产验证结果反馈如下<br/>" + sb.toString());
 //        // 这个类主要来发送邮件
         sendMailService.sendMail(mailInfo);

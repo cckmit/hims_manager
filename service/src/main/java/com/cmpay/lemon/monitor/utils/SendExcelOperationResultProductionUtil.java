@@ -32,7 +32,7 @@ public class SendExcelOperationResultProductionUtil {
 		book.close();
 		return file.getAbsolutePath();
 	}
-	
+
 	private  void setHeader(WritableSheet sheet) throws WriteException {
 		String[] headerNames = new String[]{
 				"投产编号","产品名称","需求名称及内容简述","基地负责人","产品经理","生产验证方式","验证结果"};
@@ -51,12 +51,12 @@ public class SendExcelOperationResultProductionUtil {
 		headerFormat.setFont(new WritableFont(WritableFont.COURIER,11,WritableFont.BOLD,false,UnderlineStyle.NO_UNDERLINE,Colour.BLACK));
 		//设置背景颜色
 		headerFormat.setBackground(Colour.GREY_25_PERCENT);
-		
+
 		for(int i=0,len=headerNames.length;i<len;i++) {
 			addCell(sheet, 0, i, headerNames[i], headerFormat,550,5);
 		}
 	}
-	
+
 	private  String[] setBody(WritableSheet sheet, List<ProductionDO> rowList) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setAlignment(Alignment.LEFT); // 水平居中对齐
@@ -74,7 +74,7 @@ public class SendExcelOperationResultProductionUtil {
 		for (int i = 0; i < rowList.size(); i++) {
 			msb = rowList.get(i);
 			int k = -1;
-			
+
 			//投产编号
 			addCell(sheet, i+1, ++k, msb.getProNumber(), bodyFormat,0,20);
 			//产品名称
@@ -91,7 +91,12 @@ public class SendExcelOperationResultProductionUtil {
 			if(msb.getProStatus().equals("投产验证完成")){
 				addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
 			}else{
-				addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
+				// 当验证方式为当晚验证，当前状态为部署完成待验证时，验证结果为验证进行中
+				if(msb.getProStatus().equals("部署完成待验证") && msb.getValidation().equals("当晚验证")){
+					addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
+				}else{
+					addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
+				}
 			}
 		}
 		params[0]=String.valueOf(totalRow);
@@ -99,19 +104,19 @@ public class SendExcelOperationResultProductionUtil {
 		params[2]=String.valueOf(currentWorkloadPoint);
 		return params;
 	}
-	
+
 	private  void setTotal(WritableSheet sheet, List<ProductionDO> rowList,String[] params) throws Exception {
 		WritableCellFormat bodyFormat = new WritableCellFormat();
 		bodyFormat.setAlignment(Alignment.CENTRE); // 水平居中对齐
 		bodyFormat.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
 		bodyFormat.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
-		
+
 		WritableCellFormat bodyFormatLeft = new WritableCellFormat();
 		bodyFormatLeft.setAlignment(Alignment.LEFT); // 水平居中对齐
 		bodyFormatLeft.setVerticalAlignment(VerticalAlignment.CENTRE); // 竖直方向居中对齐
 		bodyFormatLeft.setBorder(jxl.format.Border.ALL, jxl.format.BorderLineStyle.THIN);
 		}
-	
+
 	private static void addCell(WritableSheet sheet,int row,int column,String data,WritableCellFormat format,int rowWidth,int columnWidth) throws WriteException {
 		Label label = new Label(column,row,data,format);
 		if (rowWidth==0) {
