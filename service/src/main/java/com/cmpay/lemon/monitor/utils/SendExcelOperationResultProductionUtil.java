@@ -93,7 +93,7 @@ public class SendExcelOperationResultProductionUtil {
 			}else{
 				// 当验证方式为当晚验证，当前状态为部署完成待验证时，验证结果为验证进行中
 				if(msb.getProStatus().equals("部署完成待验证") && msb.getValidation().equals("当晚验证")){
-					addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
+					addCell(sheet, i+1, ++k,"验证通过", bodyFormat,0,20);
 				}else{
 					addCell(sheet, i+1, ++k,"验证未完成", bodyFormat,0,20);
 				}
