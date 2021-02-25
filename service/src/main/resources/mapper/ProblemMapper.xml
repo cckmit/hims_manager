@@ -17,12 +17,12 @@
     </resultMap>
 
     <sql id="Base_Column_List" >
-        problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName, 
+        problem_serial_number, pro_number, problem_detail, problem_time, issuekey, displayName,
         devp_lead_dept, is_jira, problem_type, update_time, update_user
     </sql>
 
     <select id="get" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_production_problem
         where problem_serial_number = #{problemSerialNumber,jdbcType=BIGINT}
@@ -36,9 +36,6 @@
     <insert id="insert" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
         insert into t_production_problem
         <trim prefix="(" suffix=")" suffixOverrides="," >
-            <if test="problemSerialNumber != null" >
-                problem_serial_number,
-            </if>
             <if test="proNumber != null" >
                 pro_number,
             </if>
@@ -71,9 +68,6 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides="," >
-            <if test="problemSerialNumber != null" >
-                #{problemSerialNumber,jdbcType=BIGINT},
-            </if>
             <if test="proNumber != null" >
                 #{proNumber,jdbcType=VARCHAR},
             </if>
@@ -145,7 +139,7 @@
     </update>
 
     <select id="find" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProblemDO" >
-        select 
+        select
         <include refid="Base_Column_List" />
         from t_production_problem
         <where >

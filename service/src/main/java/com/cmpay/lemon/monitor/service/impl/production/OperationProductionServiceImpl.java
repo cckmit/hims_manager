@@ -1488,7 +1488,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         String[] mailToAddress = (String[]) result.toArray(new String[result.size()]);
         mailInfo.setReceivers(mailToAddress);
         //记录邮箱信息
-        MailFlowDO bn = new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser() + ";" + sbfStr, file.getName(), "");
+        //MailFlowDO bn = new MailFlowDO("投产结果通报", Constant.P_EMAIL_NAME, mp.getMailUser() + ";" + sbfStr, file.getName(), "");
         //添加发送内容
         StringBuffer sb = new StringBuffer();
         sb.append("<table border='1' style='border-collapse: collapse;background-color: white; white-space: nowrap;'>");
@@ -1518,7 +1518,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         mailInfo.setContent("各位好：<br/>&nbsp;&nbsp;本周例行投产完成，投产后系统运行稳定、正常，请知悉。谢谢！" + sb.toString());
         // 这个类主要来发送邮件
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
-        operationProductionDao.addMailFlow(bn);
+        //operationProductionDao.addMailFlow(bn);
         if (isSend) {
             if (file.isFile() && file.exists()) {
                 file.delete();
@@ -2608,17 +2608,6 @@ public class OperationProductionServiceImpl implements OperationProductionServic
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void questionInput(ProblemBO problemBO,List<ProductionFollowBO> followBOList) {
-        //问题录入
-        if (JudgeUtils.isNull(problemBO.getIsJira()) || JudgeUtils.isNull(problemBO.getProblemDetail())) {
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("是否跟进jira投产问题不能为空,请选择后后再试！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
-        if (JudgeUtils.isNull(problemBO.getProblemDetail())) {
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("");
-            MsgEnum.ERROR_CUSTOM.setMsgInfo("问题描述不能为空,请输入投产问题描述后再试！");
-            BusinessException.throwBusinessException(MsgEnum.ERROR_CUSTOM);
-        }
         //1 获取当前操作人
        String user =  userService.getFullname(SecurityUtils.getLoginName());
         problemBO.setDisplayname(user);
@@ -2633,7 +2622,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
             problemBO.setProblemSerialNumber(null);
         }
         // 判断problemBO 问题描述是否为空
-        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+        if(JudgeUtils.isNotEmpty(problemBO.getProblemDetail())&&JudgeUtils.isNotEmpty(problemBO.getProblemType())){
             // 如果id不为空，则新增
             if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
                 problemDO.setDisplayname(user);
@@ -2668,20 +2657,34 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                         productionFollowDO.setUpdateUser(user);
                         productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.insert(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        productionFollow.setFollowUser(productionFollowDO.getFollowUser());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(productionFollowDOList.size()-1));
+                        }
                     }else{
                         //修改
                         productionFollowDO.setUpdateUser(user);
                         productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.update(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setFollowId(productionFollowDO.getFollowId());
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(0));
+                        }
                     }
-                    // 获取 productionFollowDO 的id
-                    // 建立jira任务
-                    ProductionFollowDO productionFollow = new ProductionFollowDO();
-                    productionFollow.setProNumber(productionFollowDO.getProNumber());
-                    productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
-                    productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
-                    List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
-                    jiraOperationService.createProduction2(productionFollowDOList.get(0));
                 }
             }
         }
@@ -3193,7 +3196,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProblemDO problemDO = new ProblemDO();
         BeanConvertUtils.convert(problemDO, problemBO);
         // 判断problemBO 问题描述是否为空
-        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+        if(JudgeUtils.isNotEmpty(problemBO.getProblemDetail())&&JudgeUtils.isNotEmpty(problemBO.getProblemType())){
             // 如果id不为空，则新增
             if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
                 problemDO.setDisplayname(currentUser);
@@ -3227,12 +3230,35 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                         productionFollowDO.setDisplayname(currentUser);
                         productionFollowDO.setFollowTime(LocalDateTime.now());
                         productionFollowDao.insert(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        productionFollow.setFollowUser(productionFollowDO.getFollowUser());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(productionFollowDOList.size()-1));
+                        }
                     }else{
                         //修改
                         productionFollowDO.setUpdateUser(currentUser);
                         productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.update(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setFollowId(productionFollowDO.getFollowId());
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(0));
+                        }
                     }
+
                 }
             }
         }
@@ -3352,9 +3378,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         ProblemDO problemDO = new ProblemDO();
         BeanConvertUtils.convert(problemDO, problemBO);
         // 判断problemBO 问题描述是否为空
-        if(JudgeUtils.isNotNull(problemBO.getProblemDetail())){
+        if(JudgeUtils.isNotEmpty(problemBO.getProblemDetail())&&JudgeUtils.isNotEmpty(problemBO.getProblemType())){
             // 如果id不为空，则新增
-            if(JudgeUtils.isNull(problemBO.getProblemSerialNumber())){
+            if(JudgeUtils.isNotNull(problemBO.getProblemSerialNumber())){
                 problemDO.setDisplayname(currentUser);
                 problemDO.setProblemTime(LocalDateTime.now());
                 iProblemDao.insert(problemDO);
@@ -3385,23 +3411,36 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
                         productionFollowDO.setDisplayname(currentUser);
                         productionFollowDO.setFollowTime(LocalDateTime.now());
-                        productionFollowDO.setUpdateUser(currentUser);
-                        productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.insert(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        productionFollow.setFollowUser(productionFollowDO.getFollowUser());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(productionFollowDOList.size()-1));
+                        }
                     }else{
                         //修改
                         productionFollowDO.setUpdateUser(currentUser);
                         productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.update(productionFollowDO);
+                        // 获取 productionFollowDO 的id
+                        // 建立jira任务
+                        ProductionFollowDO productionFollow = new ProductionFollowDO();
+                        productionFollow.setFollowId(productionFollowDO.getFollowId());
+                        productionFollow.setProNumber(productionFollowDO.getProNumber());
+                        productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
+                        productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
+                        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
+                        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+                            jiraOperationService.createProduction2(productionFollowDOList.get(0));
+                        }
                     }
-                    // 获取 productionFollowDO 的id
-                    // 建立jira任务
-                    ProductionFollowDO productionFollow = new ProductionFollowDO();
-                    productionFollow.setProNumber(productionFollowDO.getProNumber());
-                    productionFollow.setDevpLeadDept(productionFollowDO.getDevpLeadDept());
-                    productionFollow.setFollowDetail(productionFollowDO.getFollowDetail());
-                    List<ProductionFollowDO> productionFollowDOList = productionFollowDao.find(productionFollow);
-                    jiraOperationService.createProduction2(productionFollowDOList.get(0));
+
                 }
             }
         }
