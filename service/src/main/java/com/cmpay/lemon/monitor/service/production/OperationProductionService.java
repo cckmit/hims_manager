@@ -143,6 +143,8 @@ public interface OperationProductionService {
 
     ProblemRspBO productionProblem(ProblemBO problemBO);
     ProductionFollowRspBO productionFollow(ProductionFollowBO followRspBO);
+    void getDownloadProductionFollow(HttpServletResponse response,ProductionFollowBO followRspBO);
+    void getDownloadProblem(HttpServletResponse response,ProblemBO problemBO);
     void checkJiraDefect(String proNumber);
     VerificationResultsFeedbackBO getVerificationResultsFeedback(String proNumber);
     ProblemBO getProblem(String proNumber);

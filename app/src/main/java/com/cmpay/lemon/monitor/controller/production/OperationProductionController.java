@@ -5,6 +5,7 @@ import com.cmpay.framework.data.request.GenericDTO;
 import com.cmpay.framework.data.response.GenericRspDTO;
 import com.cmpay.lemon.common.utils.BeanUtils;
 import com.cmpay.lemon.common.utils.JudgeUtils;
+import com.cmpay.lemon.framework.data.DefaultRspDTO;
 import com.cmpay.lemon.framework.data.NoBody;
 import com.cmpay.lemon.monitor.bo.*;
 import com.cmpay.lemon.monitor.constant.MonitorConstants;
@@ -13,13 +14,19 @@ import com.cmpay.lemon.monitor.enums.MsgEnum;
 import com.cmpay.lemon.monitor.service.production.OperationProductionService;
 import com.cmpay.lemon.monitor.utils.BeanConvertUtils;
 import com.cmpay.lemon.monitor.utils.wechatUtil.schedule.BoardcastScheduler;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -262,7 +269,13 @@ public class OperationProductionController {
         rspDTO.setPageSize(problemRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
-
+    @RequestMapping("/downloadProblem")
+    public GenericRspDTO<NoBody> downloadProblem(@RequestBody ProblemReqDTO reqDTO, HttpServletResponse response) {
+        ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), reqDTO);
+        operationProductionService.getDownloadProblem(response, problemBO);
+        return GenericRspDTO.newSuccessInstance();
+    }
+    // 投产跟进项查询
     @RequestMapping("/productionFollow")
     public GenericRspDTO<ProductionFollowRspDTO> productionFollow(@RequestBody ProductionFollowDTO reqDTO) {
         ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
@@ -275,6 +288,13 @@ public class OperationProductionController {
         rspDTO.setPageSize(problemRspBO.getPageInfo().getPageSize());
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
+    // 投产跟进项下载
+   @RequestMapping("/downloadProductionFollow")
+   public GenericRspDTO<NoBody> downloadProductionFollow(@RequestBody ProductionFollowDTO reqDTO, HttpServletResponse response) {
+       ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
+       operationProductionService.getDownloadProductionFollow(response, productionFollowBO);
+       return GenericRspDTO.newSuccessInstance();
+   }
 
     @RequestMapping("/checkJiraDefect")
     public GenericRspDTO checkJiraDefect(@RequestParam("pro_number") String proNumber){
@@ -405,6 +425,7 @@ public class OperationProductionController {
         if(!"null".equals(problemType)){
             problemBO.setProblemType(problemType);
         }
+        System.err.println(problemBO);
         List<ProductionFollowBO> followBOList= null;
         if(JudgeUtils.isNotNull(productionFollowReqDTO.getProductionFollowDTOList())){
             followBOList = BeanConvertUtils.convertList(productionFollowReqDTO.getProductionFollowDTOList(), ProductionFollowBO.class);

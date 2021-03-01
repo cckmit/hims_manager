@@ -1096,7 +1096,10 @@
 		state_cause_classification,
 		target_cause_classification,
 		production_time,
-		update_user)
+		update_user,
+		req_background ,
+		req_retrofit ,
+		req_value )
 		values(
 		#{reqInnerSeq },
 		#{reqPrdLine },
@@ -1157,7 +1160,10 @@
 		#{stateCauseClassification},
         #{targetCauseClassification},
         #{productionTime},
-		#{updateUser})
+		#{updateUser},
+		#{reqBackground},
+		#{reqRetrofit},
+		#{reqValue} )
 	</insert>
 
     <update id="updateStockReq" parameterType="com.cmpay.lemon.monitor.entity.DemandDO">

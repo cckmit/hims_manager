@@ -6,6 +6,7 @@
  */
 package com.cmpay.lemon.monitor.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 import java.time.LocalDateTime;
@@ -19,35 +20,45 @@ public class ProductionFollowDO extends BaseDO {
     /**
      * @Fields proNumber 投产编号
      */
+    @Excel(name = "问题编号")
     private String proNumber;
-    /**
-     * @Fields devpLeadDept 归属部门
-     */
-    private String devpLeadDept;
-    /**
-     * @Fields displayname 创建提出人
-     */
-    private String displayname;
-    /**
-     * @Fields issuekey jira编号
-     */
-    private String issuekey;
-    /**
-     * @Fields issueStatus jira状态
-     */
-    private String issueStatus;
     /**
      * @Fields followDetail 跟进项描述
      */
+    @Excel(name = "跟进项描述")
     private String followDetail;
     /**
      * @Fields followUser 跟进人
      */
+    @Excel(name = "跟进人")
     private String followUser;
+    /**
+     * @Fields devpLeadDept 归属部门
+     */
+    @Excel(name = "归属部门")
+    private String devpLeadDept;
+
+    /**
+     * @Fields issuekey jira编号
+     */
+    @Excel(name = "jira编号")
+    private String issuekey;
+    /**
+     * @Fields issueStatus jira状态
+     */
+    @Excel(name = "jira状态")
+    private String issueStatus;
+
     /**
      * @Fields followTime 创建时间
      */
+    @Excel(name = "录入时间")
     private LocalDateTime followTime;
+    /**
+     * @Fields displayname 创建提出人
+     */
+    @Excel(name = "录入人")
+    private String displayname;
     /**
      * @Fields updateTime 修改时间
      */

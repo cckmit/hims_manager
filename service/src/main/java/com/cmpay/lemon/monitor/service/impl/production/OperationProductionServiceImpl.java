@@ -2854,6 +2854,29 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         return problemRspBO;
     }
 
+    @Override
+    public void getDownloadProblem(HttpServletResponse response,ProblemBO problemBO){
+        ProblemDO problemDO = new ProblemDO();
+        BeanConvertUtils.convert(problemDO, problemBO);
+        List<ProblemDO> productionDefectsBOList = iProblemDao.findList(problemDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ProblemDO.class, productionDefectsBOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "ProductionFollowDO_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+
     private PageInfo<ProblemBO> getproductionProblemPageInfo(ProblemBO problemBO) {
         ProblemDO problemDO = new ProblemDO();
         BeanConvertUtils.convert(problemDO, problemBO);
@@ -2871,6 +2894,31 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         problemRspBO.setPageInfo(pageInfo);
         return problemRspBO;
     }
+
+    //导出
+    @Override
+    public void getDownloadProductionFollow(HttpServletResponse response,ProductionFollowBO followRspBO) {
+        ProductionFollowDO problemDO = new ProductionFollowDO();
+        BeanConvertUtils.convert(problemDO, followRspBO);
+        List<ProductionFollowDO> productionDefectsBOList = productionFollowDao.findList(problemDO);
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams(), ProductionFollowDO.class, productionDefectsBOList);
+        try (OutputStream output = response.getOutputStream();
+             BufferedOutputStream bufferedOutPut = new BufferedOutputStream(output)) {
+            // 判断数据
+            if (workbook == null) {
+                BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+            }
+            // 设置excel的文件名称
+            String excelName = "ProductionFollowDO_" + DateUtil.date2String(new Date(), "yyyyMMddHHmmss") + ".xls";
+            response.setHeader(CONTENT_DISPOSITION, "attchement;filename=" + excelName);
+            response.setHeader(ACCESS_CONTROL_EXPOSE_HEADERS, CONTENT_DISPOSITION);
+            workbook.write(bufferedOutPut);
+            bufferedOutPut.flush();
+        } catch (IOException e) {
+            BusinessException.throwBusinessException(MsgEnum.BATCH_IMPORT_FAILED);
+        }
+    }
+
     private PageInfo<ProductionFollowBO> getproductionFollowPageInfo(ProductionFollowBO problemBO) {
         ProductionFollowDO problemDO = new ProductionFollowDO();
         BeanConvertUtils.convert(problemDO, problemBO);
@@ -3227,6 +3275,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     productionFollowDO.setProNumber(verificationResultsFeedbackBO.getProNumber());
                     // 如果id为空，则新增
                     if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
+                        productionFollowDO.setUpdateUser(currentUser);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDO.setDisplayname(currentUser);
                         productionFollowDO.setFollowTime(LocalDateTime.now());
                         productionFollowDao.insert(productionFollowDO);
@@ -3411,6 +3461,8 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     if(JudgeUtils.isNull(productionFollowDO.getFollowId())){
                         productionFollowDO.setDisplayname(currentUser);
                         productionFollowDO.setFollowTime(LocalDateTime.now());
+                        productionFollowDO.setUpdateUser(currentUser);
+                        productionFollowDO.setUpdateTime(LocalDateTime.now());
                         productionFollowDao.insert(productionFollowDO);
                         // 获取 productionFollowDO 的id
                         // 建立jira任务
