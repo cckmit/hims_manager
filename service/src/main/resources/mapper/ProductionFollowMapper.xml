@@ -204,4 +204,11 @@
         </where>
         ORDER BY follow_id DESC
     </select>
+
+    <select id="findUnfinished" resultMap="BaseResultMap" parameterType="com.cmpay.lemon.monitor.entity.ProductionFollowDO" >
+        select
+        <include refid="Base_Column_List" />
+        from t_production_follow
+        WHERE issue_status is NOT  NULL AND  issue_status  != '关闭'
+    </select>
 </mapper>

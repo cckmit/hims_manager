@@ -3552,6 +3552,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         // 获取申请人邮箱 开发负责人邮箱
         List<String> list = new ArrayList<>();
         list.add(currentUser);
+        //如果有跟进项，咋抄送跟进人
+        if(JudgeUtils.isNotEmpty(followBOList)){
+            for(int i=0;i<followBOList.size();i++){
+                if(JudgeUtils.isNotEmpty(followBOList.get(i).getFollowUser())){
+                    list.add(followBOList.get(i).getFollowUser());
+                }
+            }
+        }
         String [] nameList = new String[list.size()];
         nameList = list.toArray(nameList);
         // 部门经理邮箱
@@ -3611,12 +3619,12 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                     sb.append("<td >" + followBOList.get(i).getFollowUser() + "</td></tr>");
                 }
             }
-            sb.append("</table></div>");
+            sb.append("</table></div><br><br>");
         }else{
-            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span>");
+            sb.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+"无"+"</span><br><br>");
         }
         if(JudgeUtils.isNotNull(verificationResultsFeedbackBO.getOtherFeedback())){
-            sb.append("<br><br><b>其它:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getOtherFeedback()+"</span>");
+            sb.append("<b>其它:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"width: 1000px; height: auto;  word-wrap:break-word;   word-break:break-all;  overflow: hidden;\">"+verificationResultsFeedbackBO.getOtherFeedback()+"</span><br><br>");
         }
         mailInfo.setContent("各位好:<br/>&nbsp;&nbsp;本次投产验证结果反馈如下<br/>" + sb.toString());
 //        // 这个类主要来发送邮件

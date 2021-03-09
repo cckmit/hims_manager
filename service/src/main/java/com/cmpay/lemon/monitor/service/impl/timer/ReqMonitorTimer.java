@@ -269,6 +269,66 @@ public class ReqMonitorTimer {
         boolean isSend = MultiMailsender.sendMailtoMultiTest(mailInfo);
 
     }
+    @Autowired
+    private IProductionFollowDao productionFollowDao;
+    //每天（周六、周日除外）早上9点，将所有未完成的投产跟进项，发送给对应的：跟进人、录入人，抄送给对应的部门主管。
+    @Scheduled(cron = "0 0 9 * * ?")
+    public void productionFollowToEmail(){
+        // 查询所有未完成的投产跟进项
+        List<ProductionFollowDO> productionFollowDOList = productionFollowDao.findUnfinished();
+        // 如果不为空，则发送通知邮件
+        if(JudgeUtils.isNotEmpty(productionFollowDOList)){
+            for(ProductionFollowDO productionFollowDO :productionFollowDOList){
+                //邮件信息
+                MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
+                mailInfo.setMailServerHost("smtp.qiye.163.com");
+                mailInfo.setMailServerPort("25");
+                mailInfo.setValidate(true);
+                mailInfo.setUsername(Constant.EMAIL_NAME);
+                mailInfo.setPassword(Constant.EMAIL_PSWD);
+                mailInfo.setFromAddress(Constant.EMAIL_NAME);
+                // 获取跟进人， 录入人 ，部门主管邮箱
+                // 根据部门获取部门经理
+                DemandDO demandDO =planDao.searchDeptUserEmail(productionFollowDO.getDevpLeadDept());
+                // 获取申请人邮箱 开发负责人邮箱
+                List<String> list = new ArrayList<>();
+                list.add(productionFollowDO.getDisplayname());
+                list.add(productionFollowDO.getFollowUser());
+                String [] nameList = new String[list.size()];
+                nameList = list.toArray(nameList);
+                // 部门经理邮箱
+                String mailTo  = demandDO.getMonRemark();
+                // 提交人邮箱
+                DemandDO demandDO1 =planDao.searchUserLEmail(nameList);
+                if (JudgeUtils.isNotNull(demandDO1)){
+                    System.err.println((mailTo+";"+demandDO1.getMonRemark()));
+                    mailInfo.setReceivers(("tu_yi@hisuntech.com;wang_yw@hisuntech.com;"+mailTo+";"+demandDO1.getMonRemark()).split(";"));
+                    //mailInfo.setReceivers(("tu_yi@hisuntech.com").split(";"));
+                }
+                // 如果部门为 银行&公共中心研发组 则抄送人抄送吴丽萍(系统银行&公共中心研发组的部门经理为李凡，实际为李凡加吴丽萍)
+                if("银行&公共中心研发组".equals(productionFollowDO.getDevpLeadDept())){
+                    mailInfo.setCcs("wu_lp@hisuntech.com".split(";"));
+                }
+                //【投产验证结果反馈】+ 投产编号 + 部门 + 跟进人
+                mailInfo.setSubject("【跟进项未完成通知】-" + productionFollowDO.getProNumber()+ "-" + productionFollowDO.getDevpLeadDept()+ "-" + productionFollowDO.getFollowUser());
+                StringBuffer sb = new StringBuffer();
+                sb.append("<div style ='padding-left: 27px'><table border='1' style='border-collapse: collapse;background-color: white;'>");
+                sb.append("<tr><th>投产编号</th><th>跟进项</th><th>跟进人</th><th>当前状态</th><th>jira编号</th><th>录入人</th><th>录入时间</th></tr>");
+                sb.append("<tr><td>" + productionFollowDO.getProNumber() + "</td>");
+                sb.append("<td width ='450px'>" + productionFollowDO.getFollowDetail() + "</td>");
+                sb.append("<td >" + productionFollowDO.getFollowUser() + "</td>");
+                sb.append("<td>" + productionFollowDO.getIssueStatus() + "</td>");
+                sb.append("<td>" + productionFollowDO.getIssuekey() + "</td>");
+                sb.append("<td >" + productionFollowDO.getDisplayname() + "</td>");
+                sb.append("<td >" + StringUtils.substring(productionFollowDO.getFollowTime().toString(),0,10) + "</td></tr>");
+                sb.append("</table></div><br><br>");
+                mailInfo.setContent(productionFollowDO.getFollowUser()+"好,<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以下为未完成的跟进项，请及时处理！详情如下:<br/><br/>" + sb.toString());
+                // 异步发送邮件
+                sendMailService.sendMail(mailInfo);
+
+            }
+        }
+    }
 
     // 每天19点，发送当日投产清单邮件
     @Scheduled(cron = "0 0 19 * * ?")

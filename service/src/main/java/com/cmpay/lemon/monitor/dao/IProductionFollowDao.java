@@ -15,4 +15,5 @@ import java.util.List;
 @Mapper
 public interface IProductionFollowDao extends BaseDao<ProductionFollowDO, Long> {
     List<ProductionFollowDO> findList(ProductionFollowDO productionFollowDO);
+    List<ProductionFollowDO>findUnfinished();
 }
