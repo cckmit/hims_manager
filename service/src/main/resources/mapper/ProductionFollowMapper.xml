@@ -201,6 +201,18 @@
             <if test="reqStartMon != null and reqStartMon != ''" >
                 and follow_time LIKE CONCAT('%',#{reqStartMon},'%')
             </if>
+            <if test="followUser != null and followUser != ''" >
+                and follow_user LIKE CONCAT('%',#{followUser},'%')
+            </if>
+            <if test="displayname != null and displayname != ''" >
+                and displayName LIKE CONCAT('%',#{displayname},'%')
+            </if>
+            <if test="proDateStart != null and proDateEnd != null  ">
+                and follow_time between #{proDateStart} and #{proDateEnd}
+            </if>
+            <if test="reqStartMon != null and reqStartMon != ''" >
+                and follow_time LIKE CONCAT('%',#{reqStartMon},'%')
+            </if>
         </where>
         ORDER BY follow_id DESC
     </select>

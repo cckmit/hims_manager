@@ -39,6 +39,9 @@
             <if test="reqStartMon != null and reqStartMon != ''" >
                 and problem_time LIKE CONCAT('%',#{reqStartMon},'%')
             </if>
+            <if test="proDateStart != null and proDateEnd != null  ">
+                and problem_time between #{proDateStart} and #{proDateEnd}
+            </if>
             <if test="displayname != null  and displayname != ''" >
                 and displayName LIKE CONCAT('%',#{displayname},'%')
             </if>

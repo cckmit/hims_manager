@@ -137,15 +137,17 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         List<ScheduleBO> scheduleBOList = BeanConvertUtils.convertList(pageInfo.getList(), ScheduleBO.class);
         for (int i = 0; i < scheduleBOList.size(); i++) {
             if (scheduleBOList.get(i).getProNumber().startsWith("REQ") || scheduleBOList.get(i).getProNumber().startsWith("P") || scheduleBOList.get(i).getProNumber().startsWith("FIRE")) {
-
-                ProductionDO bean = operationProductionDao.findProductionBean(scheduleBOList.get(i).getProNumber());
-                if (bean != null) {
-                    scheduleBOList.get(i).setProType(bean.getProType());
-                    scheduleBOList.get(i).setIsOperationProduction(bean.getIsOperationProduction());
-                } else {
+                if("预投产".equals(scheduleBOList.get(i).getProType())){
                     scheduleBOList.get(i).setProType("预投产");
                     scheduleBOList.get(i).setIsOperationProduction("");
+                }else{
+                    ProductionDO bean = operationProductionDao.findProductionBean(scheduleBOList.get(i).getProNumber());
+                    if (JudgeUtils.isNotNull(bean)) {
+                        scheduleBOList.get(i).setProType(bean.getProType());
+                        scheduleBOList.get(i).setIsOperationProduction(bean.getIsOperationProduction());
+                    }
                 }
+
             }
             if (scheduleBOList.get(i).getProNumber().startsWith("SYS-OPR")) {
                 OperationApplicationDO bean = operationApplicationDao.findBaseOperationalApplicationInfo(scheduleBOList.get(i).getProNumber());

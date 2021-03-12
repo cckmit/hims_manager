@@ -9,6 +9,7 @@ package com.cmpay.lemon.monitor.bo;
 import com.cmpay.framework.data.BaseDO;
 import com.cmpay.lemon.framework.annotation.DataObject;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 
@@ -66,6 +67,26 @@ public class ProductionFollowBO  {
      */
     private int pageSize;
     private String reqStartMon;
+
+    private String proDateStart;
+    private String proDateEnd;
+
+    public String getProDateStart() {
+        return proDateStart;
+    }
+
+    public void setProDateStart(String proDateStart) {
+        this.proDateStart = proDateStart;
+    }
+
+    public String getProDateEnd() {
+        return proDateEnd;
+    }
+
+    public void setProDateEnd(String proDateEnd) {
+        this.proDateEnd = proDateEnd;
+    }
+
     public String getReqStartMon() {
         return reqStartMon;
     }

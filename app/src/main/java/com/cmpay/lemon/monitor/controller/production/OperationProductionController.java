@@ -259,6 +259,12 @@ public class OperationProductionController {
 
     @RequestMapping("/productionProblem")
     public GenericRspDTO<ProblemRspDTO> productionProblem(@RequestBody ProblemReqDTO reqDTO) {
+        if(reqDTO.getProDateStart()!=null && !reqDTO.getProDateStart().equals("") && (reqDTO.getProDateEnd()==null || reqDTO.getProDateEnd().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateStart());
+        }
+        if(reqDTO.getProDateEnd()!=null && !reqDTO.getProDateEnd().equals("") && (reqDTO.getProDateStart()==null || reqDTO.getProDateStart().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateEnd());
+        }
         ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), reqDTO);
         ProblemRspBO problemRspBO = operationProductionService.productionProblem(problemBO);
         ProblemRspDTO rspDTO = new ProblemRspDTO();
@@ -271,6 +277,12 @@ public class OperationProductionController {
     }
     @RequestMapping("/downloadProblem")
     public GenericRspDTO<NoBody> downloadProblem(@RequestBody ProblemReqDTO reqDTO, HttpServletResponse response) {
+        if(reqDTO.getProDateStart()!=null && !reqDTO.getProDateStart().equals("") && (reqDTO.getProDateEnd()==null || reqDTO.getProDateEnd().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateStart());
+        }
+        if(reqDTO.getProDateEnd()!=null && !reqDTO.getProDateEnd().equals("") && (reqDTO.getProDateStart()==null || reqDTO.getProDateStart().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateEnd());
+        }
         ProblemBO problemBO = BeanUtils.copyPropertiesReturnDest(new ProblemBO(), reqDTO);
         operationProductionService.getDownloadProblem(response, problemBO);
         return GenericRspDTO.newSuccessInstance();
@@ -278,6 +290,12 @@ public class OperationProductionController {
     // 投产跟进项查询
     @RequestMapping("/productionFollow")
     public GenericRspDTO<ProductionFollowRspDTO> productionFollow(@RequestBody ProductionFollowDTO reqDTO) {
+        if(reqDTO.getProDateStart()!=null && !reqDTO.getProDateStart().equals("") && (reqDTO.getProDateEnd()==null || reqDTO.getProDateEnd().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateStart());
+        }
+        if(reqDTO.getProDateEnd()!=null && !reqDTO.getProDateEnd().equals("") && (reqDTO.getProDateStart()==null || reqDTO.getProDateStart().equals(""))){
+            reqDTO.setReqStartMon(reqDTO.getProDateEnd());
+        }
         ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
         ProductionFollowRspBO problemRspBO = operationProductionService.productionFollow(productionFollowBO);
         ProductionFollowRspDTO rspDTO = new ProductionFollowRspDTO();
@@ -291,7 +309,13 @@ public class OperationProductionController {
     // 投产跟进项下载
    @RequestMapping("/downloadProductionFollow")
    public GenericRspDTO<NoBody> downloadProductionFollow(@RequestBody ProductionFollowDTO reqDTO, HttpServletResponse response) {
-       ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
+       if(reqDTO.getProDateStart()!=null && !reqDTO.getProDateStart().equals("") && (reqDTO.getProDateEnd()==null || reqDTO.getProDateEnd().equals(""))){
+           reqDTO.setReqStartMon(reqDTO.getProDateStart());
+       }
+       if(reqDTO.getProDateEnd()!=null && !reqDTO.getProDateEnd().equals("") && (reqDTO.getProDateStart()==null || reqDTO.getProDateStart().equals(""))){
+           reqDTO.setReqStartMon(reqDTO.getProDateEnd());
+       }
+        ProductionFollowBO productionFollowBO = BeanUtils.copyPropertiesReturnDest(new ProductionFollowBO(), reqDTO);
        operationProductionService.getDownloadProductionFollow(response, productionFollowBO);
        return GenericRspDTO.newSuccessInstance();
    }

@@ -76,6 +76,25 @@ public class ProblemBO  {
     private String updateUser;
     private String reqStartMon;
 
+    private String proDateStart;
+    private String proDateEnd;
+
+    public String getProDateStart() {
+        return proDateStart;
+    }
+
+    public void setProDateStart(String proDateStart) {
+        this.proDateStart = proDateStart;
+    }
+
+    public String getProDateEnd() {
+        return proDateEnd;
+    }
+
+    public void setProDateEnd(String proDateEnd) {
+        this.proDateEnd = proDateEnd;
+    }
+
     public String getProblemType() {
         return problemType;
     }

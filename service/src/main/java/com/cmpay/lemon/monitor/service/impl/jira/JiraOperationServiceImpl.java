@@ -677,7 +677,9 @@ public class JiraOperationServiceImpl implements JiraOperationService {
         }
         // 循环修改 uat测试完成时间和测试工程师人员
         demandDOList.forEach(m -> {
-            demandDao.updateTest(m);
+            if(JudgeUtils.isNotEmpty(m.getTestFinshTm())||JudgeUtils.isNotEmpty(m.getTestEng())){
+                demandDao.updateTest(m);
+            }
         });
         //讲所有需要修改的任务添加到这个list
         List<JiraTaskBodyBO> jiraTastBodyAllTestTesk = new ArrayList<>();

@@ -10,10 +10,7 @@ import com.cmpay.lemon.monitor.bo.ProductionTimeBO;
 import com.cmpay.lemon.monitor.bo.ProductionVerificationIsNotTimelyBO;
 import com.cmpay.lemon.monitor.dao.*;
 import com.cmpay.lemon.monitor.entity.*;
-import com.cmpay.lemon.monitor.entity.sendemail.MailFlowDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MailGroupDO;
-import com.cmpay.lemon.monitor.entity.sendemail.MultiMailSenderInfo;
-import com.cmpay.lemon.monitor.entity.sendemail.MultiMailsender;
+import com.cmpay.lemon.monitor.entity.sendemail.*;
 import com.cmpay.lemon.monitor.service.demand.ReqPlanService;
 import com.cmpay.lemon.monitor.service.demand.ReqTaskService;
 import com.cmpay.lemon.monitor.service.gitlab.GitlabSubmitCodeDateService;
@@ -70,6 +67,9 @@ public class ReqMonitorTimer {
     private GitlabSubmitCodeDateService gitlabSubmitCodeDateService;
     @Autowired
     private IPlanDao planDao;
+    @Autowired
+    private IOrganizationStructureDao organizationStructureDao;
+
 
 //	@Autowired
 //	private OperationProductionServiceMgr operationProductionServiceMgr;
@@ -274,6 +274,13 @@ public class ReqMonitorTimer {
     //每天（周六、周日除外）早上9点，将所有未完成的投产跟进项，发送给对应的：跟进人、录入人，抄送给对应的部门主管。
     @Scheduled(cron = "0 0 9 * * ?")
     public void productionFollowToEmail(){
+        // 获取当前星期
+        String selectTime = DateUtil.date2String(new Date(), "yyyy-MM-dd");
+        String week = DateUtil.testDate(selectTime);
+        if("星期日".equals(week)||"星期六".equals(week)){
+            System.err.println(week);
+            return;
+        }
         // 查询所有未完成的投产跟进项
         List<ProductionFollowDO> productionFollowDOList = productionFollowDao.findUnfinished();
         // 如果不为空，则发送通知邮件
@@ -287,6 +294,13 @@ public class ReqMonitorTimer {
                 mailInfo.setUsername(Constant.EMAIL_NAME);
                 mailInfo.setPassword(Constant.EMAIL_PSWD);
                 mailInfo.setFromAddress(Constant.EMAIL_NAME);
+                // 获取一级团队负责人姓名
+                String firstLevelOrganizationLeader  = organizationStructureDao.getFirstLevelOrganizationLeader(productionFollowDO.getDevpLeadDept());
+                System.err.println(firstLevelOrganizationLeader);
+                MailFlowConditionDO mfva = new MailFlowConditionDO();
+                mfva.setEmployeeName(firstLevelOrganizationLeader);
+                //获取一级团队负责人的邮箱
+                MailFlowDO mfba = operationProductionDao.searchUserEmail(mfva);
                 // 获取跟进人， 录入人 ，部门主管邮箱
                 // 根据部门获取部门经理
                 DemandDO demandDO =planDao.searchDeptUserEmail(productionFollowDO.getDevpLeadDept());
@@ -302,12 +316,16 @@ public class ReqMonitorTimer {
                 DemandDO demandDO1 =planDao.searchUserLEmail(nameList);
                 if (JudgeUtils.isNotNull(demandDO1)){
                     System.err.println((mailTo+";"+demandDO1.getMonRemark()));
-                    mailInfo.setReceivers(("tu_yi@hisuntech.com;wang_yw@hisuntech.com;"+mailTo+";"+demandDO1.getMonRemark()).split(";"));
+                    mailInfo.setReceivers((demandDO1.getMonRemark()).split(";"));
                     //mailInfo.setReceivers(("tu_yi@hisuntech.com").split(";"));
+                }else {
+                    mailInfo.setReceivers((mailTo).split(";"));
                 }
+                System.err.println((mfba.getEmployeeEmail()+";"+mailTo+";tu_yi@hisuntech.com;wang_yw@hisuntech.com"));
+                mailInfo.setCcs((mfba.getEmployeeEmail()+";"+mailTo+";tu_yi@hisuntech.com;wang_yw@hisuntech.com").split(";"));
                 // 如果部门为 银行&公共中心研发组 则抄送人抄送吴丽萍(系统银行&公共中心研发组的部门经理为李凡，实际为李凡加吴丽萍)
                 if("银行&公共中心研发组".equals(productionFollowDO.getDevpLeadDept())){
-                    mailInfo.setCcs("wu_lp@hisuntech.com".split(";"));
+                    mailInfo.setCcs((mfba.getEmployeeEmail()+";"+mailTo+";wu_lp@hisuntech.com;tu_yi@hisuntech.com;wang_yw@hisuntech.com").split(";"));
                 }
                 //【投产验证结果反馈】+ 投产编号 + 部门 + 跟进人
                 mailInfo.setSubject("【跟进项未完成通知】-" + productionFollowDO.getProNumber()+ "-" + productionFollowDO.getDevpLeadDept()+ "-" + productionFollowDO.getFollowUser());

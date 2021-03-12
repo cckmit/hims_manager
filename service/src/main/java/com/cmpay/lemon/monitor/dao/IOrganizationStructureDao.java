@@ -20,4 +20,11 @@ public interface IOrganizationStructureDao extends BaseDao<OrganizationStructure
      * @return
      */
     List<String> findFirstLevelOrganization(OrganizationStructureDO entity);
+
+    /**
+     *  根据二级部门获取一级团队负责人
+     * @param secondLevelOrganization
+     * @return
+     */
+    String getFirstLevelOrganizationLeader(String secondLevelOrganization);
 }

@@ -98,4 +98,12 @@
         DISTINCT firstLevelOrganization
         from t_organization_structure
     </select>
+    <select id="getFirstLevelOrganizationLeader" resultType="java.lang.String" parameterType="java.lang.String" >
+        select
+        firstLevelOrganizationLeader
+        from t_organization_structure
+        where
+        secondLevelOrganization = #{secondlevelorganization,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

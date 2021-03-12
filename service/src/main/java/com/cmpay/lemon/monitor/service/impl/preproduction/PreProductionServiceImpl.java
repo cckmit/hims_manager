@@ -154,6 +154,9 @@ public class PreProductionServiceImpl implements PreProductionService {
 
             iPreproductionExtDao.insert(preproductionDO);
         }
+        //登记验证人电话号码
+        userService.updateMobile(productionBO.getIdentifier(), productionBO.getIdentifierTel());
+        userService.updateMobile(productionBO.getProChecker(), productionBO.getCheckerTel());
         // 发送邮件通知
         // 创建邮件信息
         MultiMailSenderInfo mailInfo = new MultiMailSenderInfo();
