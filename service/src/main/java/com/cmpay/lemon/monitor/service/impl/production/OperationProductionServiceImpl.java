@@ -1526,7 +1526,14 @@ public class OperationProductionServiceImpl implements OperationProductionServic
                 file.delete();
             }
         }
-
+        // 创建邮件信息
+        MultiMailSenderInfo mailInfo2 = new MultiMailSenderInfo();
+        mailInfo2.setMailServerHost("smtp.qiye.163.com");
+        mailInfo2.setMailServerPort("25");
+        mailInfo2.setValidate(true);
+        mailInfo2.setUsername(Constant.EMAIL_NAME);
+        mailInfo2.setPassword(Constant.EMAIL_PSWD);
+        mailInfo2.setFromAddress(Constant.EMAIL_NAME);
 
         MailGroupDO mpb = operationProductionDao.findMailGroupBeanDetail("3");
         mp.setMailUser(mpb.getMailUser());
@@ -1551,7 +1558,7 @@ public class OperationProductionServiceImpl implements OperationProductionServic
         //记录邮箱信息
         //MailFlowDO bfn = new MailFlowDO("每周投产通报", Constant.P_EMAIL_NAME, mp.getMailUser(), file.getName(), "");
         String[] mailToAddresss = mp.getMailUser().split(";");
-        mailInfo.setReceivers(mailToAddresss);
+        mailInfo2.setReceivers(mailToAddresss);
 //        /**
 //         * 附件
 //         */
@@ -1622,9 +1629,9 @@ public class OperationProductionServiceImpl implements OperationProductionServic
 
 
 
-        mailInfo.setSubject("【每周投产通报" + sdf.format(new Date()) + "】");
-        mailInfo.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情如下<br/><br/>"+sbf);
-        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo);
+        mailInfo2.setSubject("【每周投产通报" + sdf.format(new Date()) + "】");
+        mailInfo2.setContent("各位好！<br/>&nbsp;&nbsp;本周例行投产已完成,详情如下<br/><br/>"+sbf);
+        boolean isSends = MultiMailsender.sendMailtoMultiTest(mailInfo2);
         if (!isSends) {
             MsgEnum.ERROR_CUSTOM.setMsgInfo("");
             MsgEnum.ERROR_CUSTOM.setMsgInfo("邮件发送失败!");
