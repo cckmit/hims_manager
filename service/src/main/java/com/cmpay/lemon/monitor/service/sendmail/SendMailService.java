@@ -10,11 +10,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * @author: zhou_xiong
  */
 public interface SendMailService {
     void sendMail(MultiMailSenderInfo mailInfo);
+
+    void sendListMail(List<MultiMailSenderInfo> mailInfo)  ;
 
 }

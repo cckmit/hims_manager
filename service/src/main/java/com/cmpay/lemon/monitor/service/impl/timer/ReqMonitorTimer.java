@@ -283,6 +283,7 @@ public class ReqMonitorTimer {
         }
         // 查询所有未完成的投产跟进项
         List<ProductionFollowDO> productionFollowDOList = productionFollowDao.findUnfinished();
+        List<MultiMailSenderInfo> mailListInfo = new ArrayList<>();;
         // 如果不为空，则发送通知邮件
         if(JudgeUtils.isNotEmpty(productionFollowDOList)){
             for(ProductionFollowDO productionFollowDO :productionFollowDOList){
@@ -341,10 +342,13 @@ public class ReqMonitorTimer {
                 sb.append("<td >" + StringUtils.substring(productionFollowDO.getFollowTime().toString(),0,10) + "</td></tr>");
                 sb.append("</table></div><br><br>");
                 mailInfo.setContent(productionFollowDO.getFollowUser()+"好,<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;以下为未完成的跟进项，请及时处理！详情如下:<br/><br/>" + sb.toString());
-                // 异步发送邮件
-                sendMailService.sendMail(mailInfo);
-
+                // 添加集合
+                mailListInfo.add(mailInfo);
             }
+            // 异步发送邮件
+            sendMailService.sendListMail(mailListInfo);
+
+
         }
     }
 
