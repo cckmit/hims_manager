@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+import static com.cmpay.lemon.monitor.utils.FileUtils.doWrite;
+
 @RestController
 @RequestMapping(value = MonitorConstants.SYSTEMOPERATION_VPN)
 public class VpnInfoController {
@@ -80,7 +82,7 @@ public class VpnInfoController {
     // 下载VPN操作说明及
     @RequestMapping("/pkgDownload")
     public GenericRspDTO<NoBody> pkgDownload( HttpServletRequest request, HttpServletResponse response){
-        vpnInfoService.pkgDownload(request,response);
+        doWrite("static/深信服VPN使用手册及修复工具及Mac版本安装包.zip", response);
         return GenericRspDTO.newSuccessInstance();
     }
 
