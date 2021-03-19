@@ -39,8 +39,11 @@
             <if test="reqStartMon != null and reqStartMon != ''" >
                 and problem_time LIKE CONCAT('%',#{reqStartMon},'%')
             </if>
-            <if test="proDateStart != null and proDateEnd != null  ">
-                and problem_time between #{proDateStart} and #{proDateEnd}
+            <if test="proDateStart != null and proDateStart != ''" >
+                and substr(problem_time, 1, 10) >= #{proDateStart,jdbcType=VARCHAR}
+            </if>
+            <if test="proDateEnd != null and proDateEnd != ''" >
+                and substr(problem_time, 1, 10) &lt;= #{proDateEnd,jdbcType=VARCHAR}
             </if>
             <if test="displayname != null  and displayname != ''" >
                 and displayName LIKE CONCAT('%',#{displayname},'%')
