@@ -77,4 +77,11 @@ public class VpnInfoController {
         return GenericRspDTO.newInstance(MsgEnum.SUCCESS, rspDTO);
     }
 
+    // 下载VPN操作说明及
+    @RequestMapping("/pkgDownload")
+    public GenericRspDTO<NoBody> pkgDownload( HttpServletRequest request, HttpServletResponse response){
+        vpnInfoService.pkgDownload(request,response);
+        return GenericRspDTO.newSuccessInstance();
+    }
+
 }
