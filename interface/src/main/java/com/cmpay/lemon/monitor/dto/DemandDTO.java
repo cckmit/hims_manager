@@ -122,7 +122,7 @@ public class DemandDTO extends GenericDTO {
     private int pageSize;
     private String preCurPeriod2;
     private String remarks;
-    private int projectedWorkload;
+    private double projectedWorkload;
 
     // 状态修改原因分类
     private String stateCauseClassification;
@@ -155,11 +155,11 @@ public class DemandDTO extends GenericDTO {
         this.reqValue = reqValue;
     }
 
-    public int getProjectedWorkload() {
+    public double getProjectedWorkload() {
         return projectedWorkload;
     }
 
-    public void setProjectedWorkload(int projectedWorkload) {
+    public void setProjectedWorkload(double projectedWorkload) {
         this.projectedWorkload = projectedWorkload;
     }
 
@@ -189,7 +189,7 @@ public class DemandDTO extends GenericDTO {
     public DemandDTO() {
     }
 
-    public DemandDTO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String req_proposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, int totalWorkload, int inputWorkload, int lastInputWorkload, int remainWorkload, int monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
+    public DemandDTO(String reqInnerSeq, String reqPrdLine, String reqType, String reqSts, String reqNo, String reqNm, String reqDesc, int inputRes, int devCycle, double expInput, String prdFinshTm, String actPrdFinshTm, String preCurPeriod, String curMonTarget, String expPrdReleaseTm, String devpLeadDept, String devpCoorDept, String reqProDept, String req_proposer, String reqMnger, String devpResMng, String reqStartMon, String reqImplMon, String projectMng, String productMng, String isCut, String preMonPeriod, String qaMng, String configMng, String monRemark, String devpEng, String frontEng, String testEng, String uatUpdateTm, String actUatUpdateTm, String preTm, String testFinshTm, String actTestFinshTm, String riskSolution, String riskFeedbackTm, String endMonRemark, String endFeedbackTm, double totalWorkload, double inputWorkload, double lastInputWorkload, double remainWorkload, double monInputWorkload, String leadDeptPro, String coorDeptPro, String leadDeptWorkload, String coorDeptWorkload, String isSvnBuild, Date creatTime, Date updateTime, String creatUser, String updateUser, String reqAbnorType) {
         this.reqInnerSeq = reqInnerSeq;
         this.reqPrdLine = reqPrdLine;
         this.reqType = reqType;

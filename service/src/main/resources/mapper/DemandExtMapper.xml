@@ -73,7 +73,7 @@
         <result property="actUatUploadTm" jdbcType="VARCHAR" column="act_uat_upload_tm" />
         <result property="actPreUploadTm" jdbcType="VARCHAR" column="act_pre_upload_tm" />
         <result property="actProductionUploadTm" jdbcType="VARCHAR" column="act_production_upload_tm" />
-        <result property="projectedWorkload" jdbcType="INTEGER" column="projectedWorkload" />
+        <result property="projectedWorkload" jdbcType="DOUBLE" column="projectedWorkload" />
         <result property="stateCauseClassification" jdbcType="VARCHAR" column="state_cause_classification" />
         <result property="targetCauseClassification" jdbcType="VARCHAR" column="target_cause_classification" />
         <result property="productionTime" jdbcType="INTEGER" column="production_time" />

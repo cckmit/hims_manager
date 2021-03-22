@@ -99,7 +99,7 @@ public class DemandBO {
     private String site;
 
     private String remarks;
-    private int projectedWorkload;
+    private double projectedWorkload;
 
     // 状态修改原因分类
     private String stateCauseClassification;
@@ -108,11 +108,11 @@ public class DemandBO {
     //投产时间
     private String productionTime;
 
-    public int getProjectedWorkload() {
+    public double getProjectedWorkload() {
         return projectedWorkload;
     }
 
-    public void setProjectedWorkload(int projectedWorkload) {
+    public void setProjectedWorkload(double projectedWorkload) {
         this.projectedWorkload = projectedWorkload;
     }
 

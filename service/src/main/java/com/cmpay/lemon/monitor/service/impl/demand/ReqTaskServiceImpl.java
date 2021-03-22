@@ -831,7 +831,7 @@ public class ReqTaskServiceImpl implements ReqTaskService {
                     demandDO.setExpInput(Double.parseDouble(map.get(i).get(8).toString().trim()));
                 }
                 if (!JudgeUtils.isEmpty(map.get(i).get(9).toString().trim())) {
-                    demandDO.setProjectedWorkload((int)Double.parseDouble(map.get(i).get(9).toString().trim()));
+                    demandDO.setProjectedWorkload(Double.parseDouble(map.get(i).get(9).toString().trim()));
                 }
                 demandDO.setIsCut(map.get(i).get(10).toString().trim());
                 demandDO.setMonRemark(map.get(i).get(11).toString().trim());
